@@ -8,9 +8,10 @@ export const USDC_ADDRESS =
 
 export const BUILDER_CODE = env.VITE_BUILDER_CODE || 'bc_prbyi4yj'
 
-export const SUPABASE_URL = env.VITE_SUPABASE_URL || ''
-export const SUPABASE_ANON = env.VITE_SUPABASE_ANON || ''
+export const SUPABASE_URL = env.VITE_SUPABASE_URL || 'https://xiyrzftdeefszsiukkjc.supabase.co'
+export const SUPABASE_ANON = env.VITE_SUPABASE_ANON || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhpeXJ6ZnRkZWVmc3pzaXVra2pjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NTc3MzgsImV4cCI6MjA5MTEzMzczOH0.uM1JOb9m2V-oq6IDZZGZhD4u9w2WeCRREav-9okOV9g'
 export const APP_URL = env.VITE_APP_URL || 'https://happy-hour-based.vercel.app'
+export const HAS_SUPABASE_CONFIG = Boolean(SUPABASE_URL && SUPABASE_ANON)
 
 export const WINNER_SHARE = 0.8
 export const TICKET_UNIT = 0.1
