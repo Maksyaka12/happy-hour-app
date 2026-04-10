@@ -10,6 +10,7 @@ import { ProfileSection } from './components/ProfileSection'
 import { BottomNav } from './components/BottomNav'
 import { HappyHourLogo } from './components/HappyHourLogo'
 import { CSS } from './styles'
+import { HAS_SUPABASE_CONFIG } from './config/constants'
 
 const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
 
@@ -66,6 +67,41 @@ export default function App() {
       <>
         <style dangerouslySetInnerHTML={{ __html: CSS }} />
         <ConnectScreen />
+      </>
+    )
+  }
+
+  if (!HAS_SUPABASE_CONFIG) {
+    return (
+      <>
+        <style dangerouslySetInnerHTML={{ __html: CSS }} />
+        <div style={{ minHeight: '100vh', background: '#F8F9FC', padding: '24px 16px' }}>
+          <div style={{ maxWidth: 560, margin: '0 auto', paddingTop: 72 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+              <HappyHourLogo size={40} />
+              <div style={{ fontSize: 28, fontWeight: 900, color: '#0A0B0D' }}>Happy Hour</div>
+            </div>
+            <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderLeft: '4px solid #FC401F', borderRadius: 18, padding: 20, boxShadow: '0 6px 24px rgba(10,11,13,0.06)' }}>
+              <div style={{ fontSize: 18, fontWeight: 800, color: '#0A0B0D', marginBottom: 8 }}>
+                App setup is incomplete
+              </div>
+              <div style={{ fontSize: 14, lineHeight: 1.7, color: '#717886', marginBottom: 14 }}>
+                This deployment is missing Supabase frontend environment variables, so the app cannot load live data yet.
+              </div>
+              <div style={{ background: '#EEF0F3', borderRadius: 12, padding: 14, fontFamily: "'DM Mono', monospace", fontSize: 12, color: '#32353D', lineHeight: 1.8 }}>
+                VITE_SUPABASE_URL
+                <br />
+                VITE_SUPABASE_ANON
+                <br />
+                VITE_FOUNDATION_ADDRESS
+                <br />
+                VITE_BUILDER_CODE
+                <br />
+                VITE_APP_URL
+              </div>
+            </div>
+          </div>
+        </div>
       </>
     )
   }
