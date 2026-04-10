@@ -1,0 +1,19 @@
+# .gitignore
+
+# Секрети — НІКОЛИ не пушити
+.env
+.env.local
+.env.production
+
+# Node
+node_modules/
+dist/
+.cache/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
