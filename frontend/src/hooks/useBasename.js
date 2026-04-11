@@ -8,7 +8,7 @@ import { base } from 'wagmi/chains'
 import { namehash } from 'viem'
 
 // Base Name Service — L2 Resolver on Base mainnet
-const L2_RESOLVER_ADDRESS = '0xC6d566A56A1aFf6508b41f6c90ff131615583c02'
+const L2_RESOLVER_ADDRESS = '0xC6d566a56A1aFF6508b41f6c90FF131615583C02'
 
 const RESOLVER_ABI = [
   {
