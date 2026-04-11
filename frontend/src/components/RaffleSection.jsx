@@ -49,13 +49,20 @@ export function RaffleSection({ address }) {
   useEffect(() => {
     const tick = () => {
       if (round?.ends_at) {
-        setMsLeft(Math.max(0, new Date(round.ends_at).getTime() - Date.now()))
+        const left = Math.max(0, new Date(round.ends_at).getTime() - Date.now())
+        setMsLeft(left)
+        
+        // As soon as the timer hits zero, kickstart the draw function to skip Cron delays
+        if (left === 0 && round.status === 'open') {
+          // Fire and forget: the edge function handles DB locking atomically
+          supabase.functions.invoke('draw-round').catch(console.error)
+        }
       }
     }
     tick()
     const id = setInterval(tick, 1000)
     return () => clearInterval(id)
-  }, [round?.ends_at])
+  }, [round?.ends_at, round?.status])
 
   // Roulette — triggers for ALL users via Supabase Realtime
   useEffect(() => {

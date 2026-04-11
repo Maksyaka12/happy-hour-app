@@ -152,14 +152,15 @@ serve(async (_req) => {
       console.log(`[draw-round] Processing round ${round.id}`);
 
       // Атомарно закриваємо — запобігаємо подвійному запуску
-      const { error: closeErr } = await supabase
+      const { data: updated, error: closeErr } = await supabase
         .from("rounds")
         .update({ status: "closed" })
         .eq("id", round.id)
-        .eq("status", "open"); // тільки якщо ще open
+        .eq("status", "open")
+        .select("id");
 
-      if (closeErr) {
-        console.log(`[draw-round] Round ${round.id} already being processed`);
+      if (closeErr || !updated || updated.length === 0) {
+        console.log(`[draw-round] Round ${round.id} already being processed or not open`);
         continue;
       }
 
@@ -230,10 +231,7 @@ serve(async (_req) => {
 
       console.log(`[draw-round] Round ${round.id}: status=spinning, waiting for animation...`);
 
-      // Чекаємо поки рулетка покрутиться (12 сек)
-      await new Promise(r => setTimeout(r, 12_000));
-
-      // ── Надсилаємо USDC переможцю ──
+      // ── Надсилаємо USDC переможцю (ДО таймера, асинхронно, або під час) ──
       let txHash: string | undefined;
       let payoutError: string | undefined;
 
@@ -247,7 +245,6 @@ serve(async (_req) => {
           .eq("id", round.id);
 
         // Надсилаємо USDC з Smart Wallet на адресу переможця
-        // dataSuffix з Builder Code додається автоматично через walletClient
         txHash = await walletClient.writeContract({
           address:      USDC_ADDRESS,
           abi:          USDC_ABI,
@@ -260,9 +257,10 @@ serve(async (_req) => {
       } catch (payErr) {
         payoutError = String(payErr);
         console.error(`[draw-round] ❌ Payout failed:`, payErr);
-        // ВАЖЛИВО: навіть якщо транзакція не пройшла — не платимо повторно
-        // Адмін бачить помилку в Supabase і може виправити вручну
       }
+
+      // Чекаємо поки рулетка покрутиться (12 сек)
+      await new Promise(r => setTimeout(r, 12_000));
 
       // ── Фіналізуємо раунд ──
       await supabase.from("rounds").update({
