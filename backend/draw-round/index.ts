@@ -115,8 +115,8 @@ function validatePayout(params: {
     throw new Error(`SECURITY: Round already paid`);
   }
 
-  // 4. Сума не перевищує 80% банку
-  const maxAllowed = totalPool * WINNER_SHARE;
+  // 4. Сума не перевищує 80% банку (або 100% якщо 1 гравець)
+  const maxAllowed = participants.length === 1 ? totalPool : totalPool * WINNER_SHARE;
   if (payout > maxAllowed + 0.001) { // +0.001 для float tolerance
     throw new Error(`SECURITY: Payout ${payout} exceeds max allowed ${maxAllowed}`);
   }
