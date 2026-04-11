@@ -56,6 +56,12 @@ const supabase = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
 );
 
+const CORS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Content-Type": "application/json",
+};
+
 // ── Viem wallet client з Timeout ─────────────────────────────
 function buildWalletClient() {
   const pk = Deno.env.get("BACKEND_SIGNER_PRIVATE_KEY")!;
@@ -133,7 +139,11 @@ function validatePayout(params: {
 }
 
 // ── Головна функція ──────────────────────────────────────────
-serve(async (_req) => {
+serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: CORS });
+  }
+
   const now = new Date();
   console.log(`[draw-round] Starting at ${now.toISOString()}`);
 
@@ -150,7 +160,7 @@ serve(async (_req) => {
     if (!expiredRounds || expiredRounds.length === 0) {
       console.log("[draw-round] No rounds to draw");
       await ensureNextRound(now);
-      return new Response(JSON.stringify({ ok: true, message: "No rounds to draw" }));
+      return new Response(JSON.stringify({ ok: true, message: "No rounds to draw" }), { headers: CORS });
     }
 
     for (const round of expiredRounds) {
@@ -298,14 +308,14 @@ serve(async (_req) => {
     await ensureNextRound(now);
 
     return new Response(JSON.stringify({ ok: true }), {
-      headers: { "Content-Type": "application/json" },
+      headers: CORS,
     });
 
   } catch (err) {
     console.error("[draw-round] Fatal error:", err);
     return new Response(JSON.stringify({ ok: false, error: String(err) }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: CORS,
     });
   }
 });
