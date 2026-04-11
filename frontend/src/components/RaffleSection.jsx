@@ -33,7 +33,7 @@ export function RaffleSection({ address }) {
   const { round, participants, lastWinner, myTickets, myAmount, refetch } = useRoundState(address)
   const [msLeft,       setMsLeft]       = useState(0)
   const [txModal,      setTxModal]      = useState(null) // { amount }
-  const [showRoulette, setShowRoulette] = useState(false)
+  const [spinData, setSpinData] = useState(null)
 
   // ── Chain check ──────────────────────────────────────────
   const chainId = useChainId()
@@ -41,7 +41,6 @@ export function RaffleSection({ address }) {
   const wrongChain = chainId !== base.id
 
   // ── wagmi write contract ─────────────────────────────────
-  // Per docs Step 6: useWriteContract + useWaitForTransactionReceipt
   const { data: txHash, writeContract, isPending, error: writeError, reset } = useWriteContract()
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash: txHash })
 
@@ -52,9 +51,7 @@ export function RaffleSection({ address }) {
         const left = Math.max(0, new Date(round.ends_at).getTime() - Date.now())
         setMsLeft(left)
         
-        // As soon as the timer hits zero, kickstart the draw function to skip Cron delays
         if (left === 0 && round.status === 'open') {
-          // Fire and forget: the edge function handles DB locking atomically
           supabase.functions.invoke('draw-round').catch(console.error)
         }
       }
@@ -64,9 +61,16 @@ export function RaffleSection({ address }) {
     return () => clearInterval(id)
   }, [round?.ends_at, round?.status])
 
-  // Roulette — triggers for ALL users via Supabase Realtime
+  // Roulette — triggers and FREEZES state when backend says spinning
   useEffect(() => {
-    if (round?.status === 'spinning' && !showRoulette) setShowRoulette(true)
+    if (round?.status === 'spinning' && !spinData) {
+      setSpinData({
+        participants: participants,
+        totalPot: participants.reduce((s, p) => s + p.amount, 0),
+        winner: round.winner,
+        prize: round.prize
+      })
+    }
   }, [round?.status])
 
   // After tx confirmed — close modal, refetch
@@ -327,13 +331,13 @@ export function RaffleSection({ address }) {
         />
       )}
 
-      {showRoulette && participants.length >= 1 && (
+      {spinData && spinData.participants.length >= 1 && (
         <RouletteModal
-          participants={participants}
-          totalPot={totalPot}
-          winner={round?.winner}
-          prize={round?.prize}
-          onComplete={() => { setShowRoulette(false); refetch() }}
+          participants={spinData.participants}
+          totalPot={spinData.totalPot}
+          winner={spinData.winner}
+          prize={spinData.prize}
+          onComplete={() => { setSpinData(null); refetch() }}
         />
       )}
     </div>

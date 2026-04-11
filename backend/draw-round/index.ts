@@ -259,9 +259,6 @@ serve(async (_req) => {
         console.error(`[draw-round] ❌ Payout failed:`, payErr);
       }
 
-      // Чекаємо поки рулетка покрутиться (12 сек)
-      await new Promise(r => setTimeout(r, 12_000));
-
       // ── Фіналізуємо раунд ──
       await supabase.from("rounds").update({
         status:         "done",
