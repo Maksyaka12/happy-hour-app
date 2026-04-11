@@ -1,16 +1,17 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { isAddress } from "https://esm.sh/viem@2";
+import { isAddress, formatUnits } from "https://esm.sh/viem@2";
 
-const FOUNDATION = Deno.env.get("FOUNDATION_ADDRESS")!.toLowerCase();
+const FOUNDATION = (Deno.env.get("FOUNDATION_ADDRESS") || "0x753e38C804445428C730ec53063051Eddf85446c").toLowerCase();
+const USDC = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913".toLowerCase();
 const TICKET_UNIT = 0.1;
 const MIN_DEPOSIT = 0.1;
 const MAX_DEPOSIT = 500;
 const CLOSE_BEFORE = 180;
 
 const supabase = createClient(
-  Deno.env.get("SUPABASE_URL")!,
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+  Deno.env.get("SUPABASE_URL") || "",
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "",
 );
 
 serve(async (req) => {
@@ -50,12 +51,23 @@ serve(async (req) => {
   const activities = payload?.event?.activity ?? [];
 
   for (const act of activities) {
-    if (act.asset !== "USDC") continue;
+    const tokenAddr = act.rawContract?.address?.toLowerCase();
+    const isUsdc = act.asset === "USDC" || tokenAddr === USDC;
+
+    if (!isUsdc) {
+        console.log(`[on-deposit] Skipping non-USDC asset: ${act.asset} at ${tokenAddr}`);
+        continue;
+    }
+
     if (act.toAddress?.toLowerCase() !== FOUNDATION) continue;
 
     const fromAddr = act.fromAddress?.toLowerCase();
     const txHash = act.hash?.toLowerCase();
-    const amount = Number.parseFloat(act.value ?? "0");
+    
+    let amount = Number.parseFloat(act.value ?? "0");
+    if (!amount && act.rawContract?.rawValue) {
+      amount = Number.parseFloat(formatUnits(BigInt(act.rawContract.rawValue), 6));
+    }
 
     if (!fromAddr || !txHash || !isAddress(fromAddr)) {
       console.log(`[on-deposit] Invalid activity sender ${fromAddr}`);
@@ -74,7 +86,7 @@ serve(async (req) => {
     }
 
     const cutoff = new Date(Date.now() + CLOSE_BEFORE * 1000).toISOString();
-    const { data: round } = await supabase
+    const { data: round, error: roundError } = await supabase
       .from("rounds")
       .select("id")
       .eq("status", "open")
@@ -82,6 +94,11 @@ serve(async (req) => {
       .order("ends_at", { ascending: true })
       .limit(1)
       .maybeSingle();
+
+    if (roundError) {
+      console.error(`[on-deposit] Error fetching open round:`, roundError);
+      continue;
+    }
 
     if (!round) {
       console.log(`[on-deposit] No open round available for tx ${txHash}`);
