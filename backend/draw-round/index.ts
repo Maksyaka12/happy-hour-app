@@ -56,30 +56,32 @@ const supabase = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
 );
 
-// ── Viem wallet client з Builder Code ────────────────────────
-// Backend Signer — EOA доданий як owner Smart Wallet
-// Його приватний ключ зберігається в Supabase Secrets
+// ── Viem wallet client з Timeout ─────────────────────────────
 function buildWalletClient() {
   const pk = Deno.env.get("BACKEND_SIGNER_PRIVATE_KEY")!;
   if (!pk) throw new Error("BACKEND_SIGNER_PRIVATE_KEY not set");
 
   const account = privateKeyToAccount(pk as `0x${string}`);
-
-  // Builder Code отримуєш на base.dev → Settings → Builder Code
-  // Формат: "bc_xxxxxxxx" → конвертується в dataSuffix через ox/erc8021
-  // Поки BUILDER_CODE не отримано — залишаємо undefined
-  // Після отримання: замінити undefined на свій dataSuffix
   const BUILDER_CODE_SUFFIX = Deno.env.get("BUILDER_CODE_DATA_SUFFIX");
 
+  // Ставимо жорсткий таймаут 15 сек на RPC, щоб Edge Function не висіла хвилину!
   return createWalletClient({
     account,
     chain: base,
     transport: http(
-      Deno.env.get("BASE_RPC_URL") ?? "https://mainnet.base.org"
+      Deno.env.get("BASE_RPC_URL") ?? "https://mainnet.base.org",
+      { timeout: 15000, retryCount: 1 } // Анти-зависання
     ),
-    // dataSuffix автоматично додається до КОЖНОЇ транзакції з цього client
     ...(BUILDER_CODE_SUFFIX ? { dataSuffix: BUILDER_CODE_SUFFIX as `0x${string}` } : {}),
   });
+}
+
+// ── Promise Timeout Utils ────────────────────────────────────
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => setTimeout(() => reject(new Error("RPC Timeout Exceeded")), ms))
+  ]);
 }
 
 // ── Криптографічно захищений рандом ─────────────────────────
@@ -244,13 +246,13 @@ serve(async (_req) => {
           .update({ already_paid: true })
           .eq("id", round.id);
 
-        // Надсилаємо USDC з Smart Wallet на адресу переможця
-        txHash = await walletClient.writeContract({
+        // Гарантуємо, що транзакція не зависне більше ніж на 15 секунд (запобігаємо зависанню Deno Worker)
+        txHash = await withTimeout(walletClient.writeContract({
           address:      USDC_ADDRESS,
           abi:          USDC_ABI,
           functionName: "transfer",
           args:         [winner as `0x${string}`, prizeRaw],
-        });
+        }), 15000);
 
         console.log(`[draw-round] ✅ Payout sent: ${txHash}`);
 
@@ -299,8 +301,7 @@ async function ensureNextRound(now: Date) {
   const { data: existing } = await supabase
     .from("rounds")
     .select("id")
-    .eq("status", "open")
-    .gte("ends_at", now.toISOString())
+    .in("status", ["open", "spinning"])
     .limit(1);
 
   if (existing && existing.length > 0) return;
