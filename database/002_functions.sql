@@ -276,3 +276,31 @@ GRANT EXECUTE ON FUNCTION increment_wins(TEXT) TO anon, authenticated, service_r
 GRANT EXECUTE ON FUNCTION process_checkin(TEXT, TEXT) TO anon, authenticated, service_role;
 GRANT EXECUTE ON FUNCTION claim_task_completion(TEXT, TEXT) TO anon, authenticated, service_role;
 GRANT EXECUTE ON FUNCTION record_deposit(BIGINT, TEXT, NUMERIC, INTEGER, TEXT, BIGINT) TO anon, authenticated, service_role;
+
+CREATE OR REPLACE FUNCTION admin_create_task(
+  p_admin_address TEXT,
+  p_type TEXT,
+  p_text TEXT,
+  p_url TEXT,
+  p_points INTEGER
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  ADMIN_WALLET TEXT := '0x4c91d3bed372c11795b9ce9a9017dfe447bf050a';
+BEGIN
+  IF lower(trim(p_admin_address)) <> ADMIN_WALLET THEN
+    RETURN jsonb_build_object('ok', false, 'error', 'Unauthorized');
+  END IF;
+
+  INSERT INTO tasks (type, text, url, points, expires_at)
+  VALUES (p_type, p_text, p_url, p_points, NOW() + INTERVAL '24 hours');
+
+  RETURN jsonb_build_object('ok', true);
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION admin_create_task(TEXT, TEXT, TEXT, TEXT, INTEGER) TO anon, authenticated, service_role;

@@ -141,8 +141,14 @@ export function TasksSection({ address }) {
   const [done, setDone] = useState({})
   const [claimingId, setClaimingId] = useState('')
   const [errorText, setErrorText] = useState('')
+  const [showAdmin, setShowAdmin] = useState(false)
+  const [newTask, setNewTask] = useState({ type: 'retweet', text: '', url: '', points: 5 })
+  const [isCreating, setIsCreating] = useState(false)
 
-  useEffect(() => {
+  const ADMIN_WALLET = '0x4c91d3bed372c11795b9ce9a9017dfe447bf050a'
+  const isAdmin = address?.toLowerCase() === ADMIN_WALLET
+
+  const loadTasks = () => {
     db.from('tasks')
       .select('*')
       .gt('expires_at', new Date().toISOString())
@@ -154,6 +160,31 @@ export function TasksSection({ address }) {
         }
         setTasks(data ?? [])
       })
+  }
+
+  const handleCreateTask = async () => {
+    if (!newTask.url || !newTask.text) return
+    setIsCreating(true)
+    const { error } = await db.rpc('admin_create_task', {
+      p_admin_address: address.toLowerCase(),
+      p_type: newTask.type,
+      p_text: newTask.text,
+      p_url: newTask.url,
+      p_points: Number(newTask.points),
+    })
+    if (!error) {
+      setShowAdmin(false)
+      setNewTask({ type: 'retweet', text: '', url: '', points: 5 })
+      loadTasks()
+    } else {
+      setErrorText('Failed to create task')
+      console.error(error)
+    }
+    setIsCreating(false)
+  }
+
+  useEffect(() => {
+    loadTasks()
   }, [])
 
   useEffect(() => {
@@ -237,7 +268,41 @@ export function TasksSection({ address }) {
         <div style={{ fontSize: 12, color: '#717886', fontWeight: 600 }}>
           {visible.length} active task{visible.length !== 1 ? 's' : ''}
         </div>
+        {isAdmin && (
+          <button 
+            onClick={() => setShowAdmin(!showAdmin)}
+            style={{ fontSize: 12, padding: '6px 12px', borderRadius: 50, background: '#1DA1F2', color: '#fff', border: 'none', fontWeight: 700, cursor: 'pointer' }}
+          >
+            {showAdmin ? 'Cancel' : '+ Add Task'}
+          </button>
+        )}
       </div>
+
+      {isAdmin && showAdmin && (
+        <div style={{ background: '#EEF0F3', padding: 16, borderRadius: 16, marginBottom: 16, border: '1px solid #DEE1E7', animation: 'fadeIn 0.2s ease' }}>
+          <div style={{ fontSize: 14, fontWeight: 800, marginBottom: 12, color: '#0A0B0D' }}>New Task (24h)</div>
+          
+          <select value={newTask.type} onChange={e => setNewTask({...newTask, type: e.target.value})} style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #ccc', marginBottom: 8, background: '#fff', fontSize: 13 }}>
+            <option value="retweet">Retweet</option>
+            <option value="like">Like</option>
+            <option value="comment">Comment</option>
+            <option value="bookmark">Bookmark</option>
+          </select>
+          
+          <input placeholder="Task Description (e.g. Retweet & Tag 3 friends)" value={newTask.text} onChange={e => setNewTask({...newTask, text: e.target.value})} style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #ccc', marginBottom: 8, background: '#fff', fontSize: 13, boxSizing: 'border-box' }} />
+          
+          <input placeholder="Post URL (https://x.com/...)" value={newTask.url} onChange={e => setNewTask({...newTask, url: e.target.value})} style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #ccc', marginBottom: 8, background: '#fff', fontSize: 13, boxSizing: 'border-box' }} />
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+            <span style={{ fontSize: 13, fontWeight: 600 }}>Points to Award:</span>
+            <input type="number" min="1" max="1000" value={newTask.points} onChange={e => setNewTask({...newTask, points: e.target.value})} style={{ width: 80, padding: 8, borderRadius: 8, border: '1px solid #ccc', background: '#fff', fontSize: 13 }} />
+          </div>
+
+          <button onClick={handleCreateTask} disabled={isCreating || !newTask.url || !newTask.text} style={{ width: '100%', padding: 12, borderRadius: 8, background: isCreating || !newTask.url || !newTask.text ? '#B1B7C3' : '#0000FF', color: '#fff', fontWeight: 800, border: 'none', cursor: isCreating || !newTask.url || !newTask.text ? 'not-allowed' : 'pointer' }}>
+            {isCreating ? 'Creating...' : 'Create Task'}
+          </button>
+        </div>
+      )}
 
       {errorText && (
         <div style={{ background: '#FEF3C7', border: '1px solid #D97706', borderRadius: 12, padding: '10px 12px', marginBottom: 12, fontSize: 12, color: '#B45309' }}>
