@@ -85,12 +85,10 @@ serve(async (req) => {
       continue;
     }
 
-    const cutoff = new Date(Date.now() + CLOSE_BEFORE * 1000).toISOString();
-    const { data: round, error: roundError } = await supabase
+    let { data: round, error: roundError } = await supabase
       .from("rounds")
       .select("id")
       .eq("status", "open")
-      .gte("ends_at", cutoff)
       .order("ends_at", { ascending: true })
       .limit(1)
       .maybeSingle();
@@ -101,8 +99,30 @@ serve(async (req) => {
     }
 
     if (!round) {
-      console.log(`[on-deposit] No open round available for tx ${txHash}`);
-      continue;
+      console.log(`[on-deposit] No open round exists! Creating emergency round for tx ${txHash}`);
+      const nextHour = new Date();
+      nextHour.setUTCMinutes(0, 0, 0);
+      nextHour.setUTCHours(nextHour.getUTCHours() + 1);
+
+      const startOf = new Date(nextHour);
+      startOf.setUTCHours(startOf.getUTCHours() - 1);
+
+      const { data: newRound, error: createErr } = await supabase
+        .from("rounds")
+        .insert({
+          starts_at: startOf.toISOString(),
+          ends_at: nextHour.toISOString(),
+          status: "open",
+          total_pot: 0,
+        })
+        .select("id")
+        .single();
+
+      if (createErr || !newRound) {
+        console.error(`[on-deposit] Failed to create emergency round:`, createErr);
+        continue;
+      }
+      round = newRound;
     }
 
     const { data, error } = await supabase.rpc("record_deposit", {
