@@ -320,11 +320,12 @@ export function RaffleSection({ address }) {
         />
       )}
 
-      {showRoulette && participants.length >= 2 && (
+      {showRoulette && participants.length >= 1 && (
         <RouletteModal
           participants={participants}
           totalPot={totalPot}
           winner={round?.winner}
+          prize={round?.prize}
           onComplete={() => { setShowRoulette(false); refetch() }}
         />
       )}

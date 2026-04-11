@@ -6,7 +6,7 @@ const COLORS = ["#FF6B6B","#FFD93D","#6BCB77","#4D96FF","#C77DFF","#FF9F1C","#00
 const pColor = (addr) => COLORS[parseInt(addr?.slice(2,4)||'0',16) % COLORS.length]
 const short = (a) => a ? `${a.slice(0,6)}…${a.slice(-4)}` : '—'
 
-export function RouletteModal({ participants, totalPot, winner: supabaseWinner, onComplete }) {
+export function RouletteModal({ participants, totalPot, winner: supabaseWinner, prize, onComplete }) {
   const [offset,     setOffset]     = useState(0)
   const [done,       setDone]       = useState(false)
   const [showWinner, setShowWinner] = useState(false)
@@ -21,9 +21,14 @@ export function RouletteModal({ participants, totalPot, winner: supabaseWinner, 
     })
   }
 
-  const WIN_IDX = supabaseWinner
-    ? strip.findIndex(t => t.address?.toLowerCase() === supabaseWinner.toLowerCase())
-    : Math.floor(strip.length * 0.6)
+  // Ensure spin is long by finding a matching ticket near the end of the strip
+  let winIdx = Math.floor(strip.length * 0.8)
+  if (supabaseWinner) {
+    while (winIdx >= 0 && strip[winIdx]?.address?.toLowerCase() !== supabaseWinner.toLowerCase()) {
+      winIdx--
+    }
+  }
+  const WIN_IDX = Math.max(0, winIdx)
 
   const finalOffset = -(WIN_IDX * TICKET_W - 140)
 
@@ -99,7 +104,7 @@ export function RouletteModal({ participants, totalPot, winner: supabaseWinner, 
             {winner.name || short(winner.address)}
           </div>
           <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 48, fontWeight: 900, color: '#FFD700', lineHeight: 1 }}>
-            +{(totalPot * 0.8).toFixed(2)} USDC
+            +{prize ? prize.toFixed(2) : (participants.length === 1 ? totalPot : totalPot * 0.8).toFixed(2)} USDC
           </div>
           <button onClick={onComplete} style={{
             marginTop: 24, background: '#0000FF', color: '#fff',
