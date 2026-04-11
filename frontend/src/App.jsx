@@ -21,7 +21,12 @@ function getReferralAddress() {
 }
 
 export default function App() {
-  const [tab, setTab] = useState('raffle')
+  const [tab, setTab] = useState(() => {
+    try { return localStorage.getItem('happy_tab') || 'raffle' } catch { return 'raffle' }
+  })
+  useEffect(() => {
+    try { localStorage.setItem('happy_tab', tab) } catch {}
+  }, [tab])
   const { address, isConnected, isConnecting, isReconnecting } = useAccount()
   const basename = useBasename(address)
 

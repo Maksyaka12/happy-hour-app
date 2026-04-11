@@ -148,6 +148,21 @@ export function TasksSection({ address }) {
   const ADMIN_WALLET = '0x4c91d3bed372c11795b9ce9a9017dfe447bf050a'
   const isAdmin = address?.toLowerCase() === ADMIN_WALLET
 
+  useEffect(() => {
+    if (address) {
+      try {
+        const local = localStorage.getItem('happy_tasks_' + address.toLowerCase())
+        if (local) setDone(current => ({ ...JSON.parse(local), ...current }))
+      } catch (e) {}
+    }
+  }, [address])
+
+  useEffect(() => {
+    if (address && Object.keys(done).length > 0) {
+      localStorage.setItem('happy_tasks_' + address.toLowerCase(), JSON.stringify(done))
+    }
+  }, [done, address])
+
   const loadTasks = () => {
     db.from('tasks')
       .select('*')
