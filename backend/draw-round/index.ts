@@ -61,7 +61,10 @@ function buildWalletClient() {
   const pk = Deno.env.get("BACKEND_SIGNER_PRIVATE_KEY")!;
   if (!pk) throw new Error("BACKEND_SIGNER_PRIVATE_KEY not set");
 
-  const account = privateKeyToAccount(pk as `0x${string}`);
+  let safePk = pk.trim();
+  if (!safePk.startsWith("0x")) safePk = "0x" + safePk;
+
+  const account = privateKeyToAccount(safePk as `0x${string}`);
   const BUILDER_CODE_SUFFIX = Deno.env.get("BUILDER_CODE_DATA_SUFFIX");
 
   // Ставимо жорсткий таймаут 15 сек на RPC, щоб Edge Function не висіла хвилину!
@@ -246,15 +249,26 @@ serve(async (_req) => {
           .update({ already_paid: true })
           .eq("id", round.id);
 
-        // Гарантуємо, що транзакція не зависне більше ніж на 15 секунд (запобігаємо зависанню Deno Worker)
-        txHash = await withTimeout(walletClient.writeContract({
+        const txPromise = withTimeout(walletClient.writeContract({
           address:      USDC_ADDRESS,
           abi:          USDC_ABI,
           functionName: "transfer",
           args:         [winner as `0x${string}`, prizeRaw],
         }), 15000);
 
-        console.log(`[draw-round] ✅ Payout sent: ${txHash}`);
+        // Гарантуємо, що статус spinning протримається хоча б 6 секунд,
+        // щоб фронтенди встигли його побачити і вивести анімацію
+        const [txResult] = await Promise.allSettled([
+          txPromise,
+          new Promise(r => setTimeout(r, 6000))
+        ]);
+
+        if (txResult.status === "fulfilled") {
+          txHash = txResult.value;
+          console.log(`[draw-round] ✅ Payout sent: ${txHash}`);
+        } else {
+          throw txResult.reason;
+        }
 
       } catch (payErr) {
         payoutError = String(payErr);
