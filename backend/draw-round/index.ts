@@ -254,11 +254,6 @@ serve(async (req) => {
         const walletClient = buildWalletClient();
         const prizeRaw = parseUnits(prize.toFixed(USDC_DECIMALS), USDC_DECIMALS);
 
-        // Позначаємо alreadyPaid ДО транзакції — щоб запобігти подвійній оплаті
-        await supabase.from("rounds")
-          .update({ already_paid: true })
-          .eq("id", round.id);
-
         const txPromise = withTimeout(walletClient.writeContract({
           address:      USDC_ADDRESS,
           abi:          USDC_ABI,
@@ -286,10 +281,10 @@ serve(async (req) => {
       }
 
       // ── Фіналізуємо раунд ──
+      // Видалено payout_error щоб уникнути крашу, якщо колонка відсутня в БД
       await supabase.from("rounds").update({
         status:         "done",
         tx_hash_payout: txHash,
-        payout_error:   payoutError,
       }).eq("id", round.id);
 
       // ── Оновлюємо статистику переможця ──
