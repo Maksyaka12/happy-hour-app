@@ -189,9 +189,9 @@ serve(async (_req) => {
 
       // ── Обираємо переможця ──
       let winner: string;
-      if (bets.length === 1) {
+      if (participants.length === 1) {
         // Один учасник — повертаємо депозит
-        winner = bets[0].address.toLowerCase();
+        winner = participants[0];
         console.log(`[draw-round] Round ${round.id}: single player, full refund`);
       } else {
         const idx = secureRandom(ticketPool.length);
@@ -199,7 +199,7 @@ serve(async (_req) => {
         console.log(`[draw-round] Round ${round.id}: winner = ${winner}`);
       }
 
-      const prize = bets.length === 1 ? totalPool : totalPool * WINNER_SHARE;
+      const prize = participants.length === 1 ? totalPool : totalPool * WINNER_SHARE;
 
       // ── Перевірки безпеки ──
       try {
