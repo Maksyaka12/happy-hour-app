@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useAccount } from 'wagmi'
+import { useAccount, useReadContract } from 'wagmi'
+import { formatUnits } from 'viem'
 import { db } from './config/supabase'
 import { useBasename } from './hooks/useBasename'
 import { ConnectScreen } from './components/ConnectScreen'
@@ -10,7 +11,7 @@ import { ProfileSection } from './components/ProfileSection'
 import { BottomNav } from './components/BottomNav'
 import { HappyHourLogo } from './components/HappyHourLogo'
 import { CSS } from './styles'
-import { HAS_SUPABASE_CONFIG } from './config/constants'
+import { HAS_SUPABASE_CONFIG, USDC_ADDRESS, USDC_ABI } from './config/constants'
 
 const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
 
@@ -29,6 +30,18 @@ export default function App() {
   }, [tab])
   const { address, isConnected, isConnecting, isReconnecting } = useAccount()
   const basename = useBasename(address)
+
+  const { data: usdcBalanceRaw } = useReadContract({
+    address: USDC_ADDRESS,
+    abi: USDC_ABI,
+    functionName: 'balanceOf',
+    args: address ? [address] : undefined,
+    query: { enabled: !!address, refetchInterval: 10000 },
+  })
+  
+  const usdcBalance = usdcBalanceRaw !== undefined 
+    ? Number(formatUnits(usdcBalanceRaw, 6)).toFixed(2) 
+    : '0.00'
 
   const referralAddress = useMemo(() => getReferralAddress(), [])
 
@@ -142,17 +155,38 @@ export default function App() {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: 6,
+              gap: 8,
+            }}
+          >
+            <div style={{
               background: 'var(--blue-bg)',
               border: '1px solid rgba(0,0,255,0.15)',
               borderRadius: 50,
-              padding: '5px 12px',
-            }}
-          >
-            <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--green)', animation: 'blinkDot 2s infinite' }} />
-            <span style={{ fontSize: 10, color: 'var(--blue)', fontFamily: "'DM Mono', monospace", letterSpacing: 0.5 }}>
-              {displayName}
-            </span>
+              padding: '5px 10px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4
+            }}>
+              <span style={{ fontSize: 11, fontWeight: 800, color: '#0A0B0D' }}>{usdcBalance}</span>
+              <span style={{ fontSize: 9, color: 'var(--blue)', fontWeight: 700 }}>USDC</span>
+            </div>
+
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                background: 'var(--blue-bg)',
+                border: '1px solid rgba(0,0,255,0.15)',
+                borderRadius: 50,
+                padding: '5px 12px',
+              }}
+            >
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--green)', animation: 'blinkDot 2s infinite' }} />
+              <span style={{ fontSize: 10, color: 'var(--blue)', fontFamily: "'DM Mono', monospace", letterSpacing: 0.5 }}>
+                {displayName}
+              </span>
+            </div>
           </div>
         </div>
 

@@ -231,7 +231,18 @@ export function ProfileSection({ address, basename }) {
               background: '#0000FF',
               borderRadius: 1,
               zIndex: 1,
-              width: `${Math.min((streak.count / 30) * 100, 100)}%`,
+              width: `${(() => {
+                const c = streak.count;
+                if (c >= 30) return 100;
+                if (c <= 1) return 0;
+                const m = [1, 3, 7, 14, 21, 30];
+                for (let i = 0; i < 5; i++) {
+                  if (c >= m[i] && c < m[i+1]) {
+                    return (i * 20) + (((c - m[i]) / (m[i+1] - m[i])) * 20);
+                  }
+                }
+                return 0;
+              })()}%`,
               transition: 'width 0.5s ease',
             }}
           />
@@ -269,16 +280,7 @@ export function ProfileSection({ address, basename }) {
           </div>
         </div>
 
-        <div style={{ background: '#EEF0F3', borderRadius: 12, padding: '10px 14px', marginBottom: 14, display: 'flex', justifyContent: 'space-between' }}>
-          {STREAK_REWARDS.map((r) => (
-            <div key={r.days} style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: streak.count >= r.days ? '#059669' : '#717886' }}>
-                {streak.count >= r.days ? '✓' : `Day ${r.days}`}
-              </div>
-              <div style={{ fontSize: 13, fontWeight: 800, color: streak.count >= r.days ? '#059669' : '#0000FF' }}>+{r.pts}pt</div>
-            </div>
-          ))}
-        </div>
+
 
         {checkinError && (
           <div style={{ background: '#FEF3C7', border: '1px solid #D97706', borderRadius: 12, padding: '10px 12px', marginBottom: 12, fontSize: 12, color: '#B45309' }}>
