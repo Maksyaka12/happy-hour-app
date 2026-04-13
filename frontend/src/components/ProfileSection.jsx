@@ -347,7 +347,7 @@ export function ProfileSection({ address, basename }) {
           </div>
           <div style={{ background: 'rgba(0,0,0,0.03)', borderRadius: 14, padding: '12px 10px', textAlign: 'center', border: '1px solid rgba(0,0,0,0.05)' }}>
             <div style={{ fontSize: 18, fontWeight: 900, color: '#0000FF', lineHeight: 1 }}>{userStats.referral_points} <span style={{ fontSize: 10 }}>HP</span></div>
-            <div style={{ fontSize: 10, color: '#717886', marginTop: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>Earned from Network</div>
+            <div style={{ fontSize: 10, color: '#717886', marginTop: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>Earned Points</div>
           </div>
         </div>
       </div>
