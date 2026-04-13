@@ -154,9 +154,11 @@ export function ProfileSection({ address, basename }) {
               <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {basename ? basename : short(address)}
               </div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', marginTop: 2, fontFamily: "'DM Mono',monospace" }}>
-                {basename ? short(address) : 'No Basename'}
-              </div>
+              {basename && (
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', marginTop: 2, fontFamily: "'DM Mono',monospace" }}>
+                  {short(address)}
+                </div>
+              )}
               <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.65)', marginTop: 2 }}>Base Mainnet</div>
             </div>
             <button
