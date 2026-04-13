@@ -73,7 +73,7 @@ export function LeaderboardSection({ address }) {
             <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>{myEntry?.basename || short(address)}</div>
           </div>
           <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 26, fontWeight: 900, color: '#fff' }}>
-            {(myEntry?.points ?? 0).toLocaleString()} pts
+            {(myEntry?.points ?? 0).toLocaleString()} HP
           </div>
         </div>
       )}

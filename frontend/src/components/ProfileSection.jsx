@@ -181,7 +181,7 @@ export function ProfileSection({ address, basename }) {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
             {[
-              { l: 'Points', v: userStats.points.toLocaleString() },
+              { l: 'HP', v: userStats.points.toLocaleString() },
               { l: 'Wins', v: userStats.wins },
               { l: 'Entries', v: userStats.entries },
             ].map((s) => (
@@ -255,7 +255,7 @@ export function ProfileSection({ address, basename }) {
                   {milestone ? (
                     <div style={{ fontSize: 9, fontWeight: 700, textAlign: 'center', lineHeight: 1.2 }}>
                       <div style={{ color: reached ? '#0000FF' : '#717886' }}>Day {day}</div>
-                      <div style={{ color: reached ? '#059669' : '#3C8AFF', fontWeight: 800 }}>+{milestone.pts}pt</div>
+                      <div style={{ color: reached ? '#059669' : '#3C8AFF', fontWeight: 800 }}>+{milestone.pts} HP</div>
                     </div>
                   ) : (
                     <div style={{ fontSize: 9, color: '#717886' }}>{day}</div>

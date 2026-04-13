@@ -48,7 +48,7 @@ function TaskCard({ task, taskState, onVisit, onCheck, onClaim, isClaiming }) {
           <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 6, lineHeight: 1.4, color: '#0A0B0D' }}>{task.text}</div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
             <span style={{ fontSize: 11, color: '#D97706', fontWeight: 700, background: 'rgba(217,119,6,0.1)', borderRadius: 50, padding: '2px 10px' }}>
-              +{task.points} pt{task.points > 1 ? 's' : ''}
+              +{task.points} HP
             </span>
             <span style={{ fontSize: 11, color: '#717886' }}>⏰ {fmt(left)} left</span>
           </div>
