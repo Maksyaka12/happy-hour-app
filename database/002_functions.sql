@@ -175,7 +175,7 @@ BEGIN
   SELECT COALESCE(MAX(pts), 0)
   INTO v_bonus
   FROM (
-    VALUES (3, 1), (7, 5), (14, 10), (30, 50)
+    VALUES (3, 5), (7, 10), (14, 20), (30, 50)
   ) AS rewards(days, pts)
   WHERE days = v_new_streak;
 
