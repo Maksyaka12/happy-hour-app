@@ -42,7 +42,7 @@ export function ConnectScreen() {
         </div>
 
         {/* Headline */}
-        <div style={{ fontSize: 48, fontWeight: 900, lineHeight: 1, letterSpacing: -2, marginBottom: 14, color: 'var(--text)' }}>
+        <div style={{ fontSize: 38, fontWeight: 900, lineHeight: 1.1, letterSpacing: -1.5, marginBottom: 14, color: 'var(--text)' }}>
           Chance To Win<br />USDC Every Hour
         </div>
 
