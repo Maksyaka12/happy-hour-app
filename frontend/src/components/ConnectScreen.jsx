@@ -43,7 +43,7 @@ export function ConnectScreen() {
 
         {/* Headline */}
         <div style={{ fontSize: 48, fontWeight: 900, lineHeight: 1, letterSpacing: -2, marginBottom: 14, color: 'var(--text)' }}>
-          Win USDC<br />Every Hour
+          Chance To Win<br />USDC Every Hour
         </div>
 
         {/* Dot accent */}
@@ -58,7 +58,7 @@ export function ConnectScreen() {
         </div>
 
         <p style={{ fontFamily: "'DM Mono', monospace", color: '#717886', fontSize: 12, marginBottom: 40, lineHeight: 1.9, letterSpacing: 0.5 }}>
-          Win USDC every hour · On Base · Fair draw
+          lucky-based fair draw on Base
         </p>
 
         {isPending ? (
@@ -139,7 +139,7 @@ export function ConnectScreen() {
         )}
 
         <div style={{ marginTop: 24, fontFamily: "'DM Mono', monospace", fontSize: 10, color: '#717886', letterSpacing: 2 }}>
-          L2 BY COINBASE · BASE.ORG
+          built by <a href="https://x.com/mksvibe" target="_blank" rel="noopener noreferrer" style={{ color: '#0000FF', textDecoration: 'none' }}>@mksvibe</a>
         </div>
       </div>
     </div>
