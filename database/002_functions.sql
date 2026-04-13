@@ -62,8 +62,9 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
-DECLARE
+  DECLARE
   v_address TEXT := lower(trim(p_address));
+  v_referrer TEXT;
 BEGIN
   IF v_address IS NULL OR v_address = '' OR p_points IS NULL OR p_points = 0 THEN
     RETURN;
@@ -73,6 +74,16 @@ BEGIN
   VALUES (v_address, p_points)
   ON CONFLICT (address)
   DO UPDATE SET points = users.points + EXCLUDED.points;
+
+  SELECT referrer INTO v_referrer FROM users WHERE address = v_address;
+
+  IF v_referrer IS NOT NULL AND v_referrer <> v_address THEN
+    UPDATE users
+    SET 
+      points = points + ceil(p_points::float / 2)::integer,
+      referral_points = referral_points + ceil(p_points::float / 2)::integer
+    WHERE address = v_referrer;
+  END IF;
 END;
 $$;
 
@@ -166,17 +177,10 @@ BEGIN
   UPDATE users
   SET
     streak = v_new_streak,
-    streak_last = v_today,
-    points = points + v_pts_earned
+    streak_last = v_today
   WHERE address = v_address;
 
-  IF v_user.referrer IS NOT NULL THEN
-    UPDATE users
-    SET 
-      points = points + ceil(v_pts_earned::float / 2)::integer,
-      referral_points = referral_points + ceil(v_pts_earned::float / 2)::integer
-    WHERE address = v_user.referrer;
-  END IF;
+  PERFORM add_points(v_address, v_pts_earned, 'checkin');
 
   RETURN jsonb_build_object(
     'ok', true,
