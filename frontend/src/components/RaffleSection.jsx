@@ -5,7 +5,7 @@
 // Builder Code added automatically via wagmi config dataSuffix
 // ─────────────────────────────────────────────────────────
 
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useWriteContract, useWaitForTransactionReceipt, useChainId, useSwitchChain } from 'wagmi'
 import { parseUnits } from 'viem'
 import { base } from 'wagmi/chains'
