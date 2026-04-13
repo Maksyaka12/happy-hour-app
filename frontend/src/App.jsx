@@ -155,37 +155,19 @@ export default function App() {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: 8,
             }}
           >
             <div style={{
               background: 'var(--blue-bg)',
               border: '1px solid rgba(0,0,255,0.15)',
               borderRadius: 50,
-              padding: '5px 10px',
+              padding: '6px 14px',
               display: 'flex',
               alignItems: 'center',
-              gap: 4
+              gap: 6
             }}>
-              <span style={{ fontSize: 11, fontWeight: 800, color: '#0A0B0D' }}>{usdcBalance}</span>
-              <span style={{ fontSize: 9, color: 'var(--blue)', fontWeight: 700 }}>USDC</span>
-            </div>
-
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                background: 'var(--blue-bg)',
-                border: '1px solid rgba(0,0,255,0.15)',
-                borderRadius: 50,
-                padding: '5px 12px',
-              }}
-            >
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--green)', animation: 'blinkDot 2s infinite' }} />
-              <span style={{ fontSize: 10, color: 'var(--blue)', fontFamily: "'DM Mono', monospace", letterSpacing: 0.5 }}>
-                {displayName}
-              </span>
+              <span style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>{usdcBalance}</span>
+              <span style={{ fontSize: 10, color: 'var(--blue)', fontWeight: 700 }}>USDC</span>
             </div>
           </div>
         </div>
