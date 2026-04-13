@@ -138,8 +138,12 @@ export function ConnectScreen() {
           </div>
         )}
 
-        <div style={{ marginTop: 24, fontFamily: "'DM Mono', monospace", fontSize: 10, color: '#717886', letterSpacing: 2 }}>
-          built by <a href="https://x.com/mksvibe" target="_blank" rel="noopener noreferrer" style={{ color: '#0000FF', textDecoration: 'none' }}>@mksvibe</a>
+        <div style={{ marginTop: 24, fontFamily: "'DM Mono', monospace", fontSize: 10, color: '#717886', letterSpacing: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+          <span>built by</span>
+          <a href="https://x.com/mksvibe" target="_blank" rel="noopener noreferrer" style={{ color: '#0000FF', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <img src="/mksvibe.jpg" alt="@mksvibe" style={{ width: 14, height: 14, borderRadius: '50%', objectFit: 'cover' }} />
+            <span>@mksvibe</span>
+          </a>
         </div>
       </div>
     </div>
