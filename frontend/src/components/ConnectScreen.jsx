@@ -15,6 +15,9 @@ export function ConnectScreen() {
   const baseConnector     = connectors.find(c => c.id === 'base-account' || c.name?.toLowerCase().includes('base'))
   const injectedConnector = connectors.find(c => c.id === 'injected')
 
+  // Check if user is inside a mobile Web3 DApp browser (Coinbase Wallet, MetaMask app, etc.)
+  const isMobileDappBrowser = typeof window !== 'undefined' && window.ethereum && /Mobi|Android|iPhone/i.test(navigator.userAgent)
+
   return (
     <div className="connect-bg" style={{
       minHeight: '100vh', display: 'flex', flexDirection: 'column',
@@ -64,6 +67,22 @@ export function ConnectScreen() {
             <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 12, letterSpacing: 1, color: '#0000FF' }}>
               CONNECTING…
             </span>
+          </div>
+        ) : isMobileDappBrowser ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {injectedConnector && (
+              <button
+                onClick={() => connect({ connector: injectedConnector })}
+                style={{
+                  background: '#0000FF', color: '#fff',
+                  borderRadius: 50, padding: '15px 22px', fontSize: 15, fontWeight: 700,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none',
+                  boxShadow: '0 6px 24px rgba(0,0,255,0.35)', cursor: 'pointer',
+                }}
+              >
+                Play on Base
+              </button>
+            )}
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
