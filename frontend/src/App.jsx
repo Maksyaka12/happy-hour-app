@@ -15,10 +15,9 @@ import { HAS_SUPABASE_CONFIG, USDC_ADDRESS, USDC_ABI } from './config/constants'
 
 const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
 
-function getReferralAddress() {
+function getReferralCode() {
   const ref = new URLSearchParams(window.location.search).get('ref')?.trim()
-  if (!ref) return null
-  return /^0x[a-fA-F0-9]{40}$/.test(ref) ? ref.toLowerCase() : null
+  return ref || null
 }
 
 export default function App() {
@@ -43,7 +42,7 @@ export default function App() {
     ? Number(formatUnits(usdcBalanceRaw, 6)).toFixed(2) 
     : '0.00'
 
-  const referralAddress = useMemo(() => getReferralAddress(), [])
+  const referralCode = useMemo(() => getReferralCode(), [])
 
   const tabLabels = {
     raffle: 'Raffle',
@@ -58,7 +57,7 @@ export default function App() {
     db.rpc('sync_user_profile', {
       p_address: address.toLowerCase(),
       p_basename: basename ?? null,
-      p_referrer: referralAddress,
+      p_ref_code: referralCode,
     }).then(({ error }) => {
       if (error) console.error('sync_user_profile:', error)
     })

@@ -21,6 +21,7 @@ function normalizeUserRow(data) {
     entries: data?.entries ?? 0,
     referral_count: data?.referral_count ?? 0,
     referral_points: data?.referral_points ?? 0,
+    ref_code: data?.ref_code ?? null,
   }
 }
 
@@ -37,20 +38,25 @@ export function ProfileSection({ address, basename }) {
     wins: 0, 
     entries: 0,
     referral_count: 0,
-    referral_points: 0
+    referral_points: 0,
+    ref_code: null
   })
   const [checkinError, setCheckinError] = useState('')
   const processedTxRef = useRef(null)
   const today = todayUTC()
 
   const displayName = basename || short(address)
-  const referralLink = useMemo(() => `${APP_URL}?ref=${address}`, [address])
+  const referralLink = useMemo(() => {
+    return userStats.ref_code 
+      ? `${APP_URL}?ref=${userStats.ref_code}`
+      : `${APP_URL}?ref=${address}` // Fallback while loading
+  }, [address, userStats.ref_code])
 
   const loadProfile = async () => {
     if (!address) return
     const { data, error } = await db
       .from('users')
-      .select('streak, streak_last, points, wins, entries, referral_count, referral_points')
+      .select('streak, streak_last, points, wins, entries, referral_count, referral_points, ref_code')
       .eq('address', address.toLowerCase())
       .maybeSingle()
 

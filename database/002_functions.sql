@@ -4,7 +4,7 @@
 CREATE OR REPLACE FUNCTION sync_user_profile(
   p_address TEXT,
   p_basename TEXT DEFAULT NULL,
-  p_referrer TEXT DEFAULT NULL
+  p_ref_code TEXT DEFAULT NULL
 )
 RETURNS users
 LANGUAGE plpgsql
@@ -14,12 +14,18 @@ AS $$
 DECLARE
   v_address TEXT := lower(trim(p_address));
   v_basename TEXT := NULLIF(trim(p_basename), '');
-  v_referrer TEXT := lower(NULLIF(trim(p_referrer), ''));
+  v_ref_code TEXT := lower(trim(p_ref_code));
+  v_referrer TEXT;
   v_user users;
   v_is_new BOOLEAN;
 BEGIN
   IF v_address IS NULL OR v_address = '' THEN
     RAISE EXCEPTION 'address is required';
+  END IF;
+
+  -- Resolve short code to address
+  IF v_ref_code IS NOT NULL THEN
+    SELECT address INTO v_referrer FROM users WHERE ref_code = v_ref_code;
   END IF;
 
   IF v_referrer = v_address THEN
@@ -40,12 +46,13 @@ BEGIN
     UPDATE users SET referral_count = referral_count + 1 WHERE address = v_referrer;
   END IF;
 
-  INSERT INTO users (address, basename, referrer)
-  VALUES (v_address, v_basename, v_referrer)
+  INSERT INTO users (address, basename, referrer, ref_code)
+  VALUES (v_address, v_basename, v_referrer, substring(md5(v_address || now()::text), 1, 8))
   ON CONFLICT (address)
   DO UPDATE SET
     basename = COALESCE(EXCLUDED.basename, users.basename),
-    referrer = COALESCE(users.referrer, EXCLUDED.referrer);
+    referrer = COALESCE(users.referrer, EXCLUDED.referrer),
+    ref_code = COALESCE(users.ref_code, EXCLUDED.ref_code);
 
   SELECT * INTO v_user FROM users WHERE address = v_address;
   RETURN v_user;

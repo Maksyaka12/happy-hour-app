@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS users (
   referrer     TEXT REFERENCES users(address),
   referral_count  INTEGER NOT NULL DEFAULT 0,
   referral_points INTEGER NOT NULL DEFAULT 0,
-  created_at   TIMESTAMPTZ DEFAULT NOW()
+  ref_code        TEXT UNIQUE,
+  created_at      TIMESTAMPTZ DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS rounds (
