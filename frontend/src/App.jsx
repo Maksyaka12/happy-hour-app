@@ -97,7 +97,7 @@ export default function App() {
           <div style={{ maxWidth: 560, margin: '0 auto', paddingTop: 72 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
               <HappyHourLogo size={40} />
-              <div style={{ fontSize: 28, fontWeight: 900, color: '#0A0B0D' }}>Happy Hour</div>
+              <div style={{ fontSize: 28, fontWeight: 900, color: '#0A0B0D' }}>happy hour <span style={{ color: '#0052FF' }}>based</span></div>
             </div>
             <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderLeft: '4px solid #FC401F', borderRadius: 18, padding: 20, boxShadow: '0 6px 24px rgba(10,11,13,0.06)' }}>
               <div style={{ fontSize: 18, fontWeight: 800, color: '#0A0B0D', marginBottom: 8 }}>
@@ -147,7 +147,7 @@ export default function App() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <HappyHourLogo size={30} />
             <span style={{ fontSize: 17, fontWeight: 800, color: 'var(--text)', letterSpacing: -0.5 }}>
-              happy hour
+              happy hour <span style={{ color: '#0052FF' }}>based</span>
             </span>
           </div>
 
