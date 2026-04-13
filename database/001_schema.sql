@@ -12,6 +12,8 @@ CREATE TABLE IF NOT EXISTS users (
   streak       INTEGER NOT NULL DEFAULT 0,
   streak_last  DATE,
   referrer     TEXT REFERENCES users(address),
+  referral_count  INTEGER NOT NULL DEFAULT 0,
+  referral_points INTEGER NOT NULL DEFAULT 0,
   created_at   TIMESTAMPTZ DEFAULT NOW()
 );
 

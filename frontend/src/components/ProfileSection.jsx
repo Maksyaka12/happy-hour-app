@@ -19,6 +19,8 @@ function normalizeUserRow(data) {
     points: data?.points ?? 0,
     wins: data?.wins ?? 0,
     entries: data?.entries ?? 0,
+    referral_count: data?.referral_count ?? 0,
+    referral_points: data?.referral_points ?? 0,
   }
 }
 
@@ -30,7 +32,13 @@ export function ProfileSection({ address, basename }) {
   const [copied, setCopied] = useState(false)
   const [streak, setStreak] = useState({ count: 0, last: null })
   const [checkedToday, setCheckedToday] = useState(false)
-  const [userStats, setUserStats] = useState({ points: 0, wins: 0, entries: 0 })
+  const [userStats, setUserStats] = useState({ 
+    points: 0, 
+    wins: 0, 
+    entries: 0,
+    referral_count: 0,
+    referral_points: 0
+  })
   const [checkinError, setCheckinError] = useState('')
   const processedTxRef = useRef(null)
   const today = todayUTC()
@@ -42,7 +50,7 @@ export function ProfileSection({ address, basename }) {
     if (!address) return
     const { data, error } = await db
       .from('users')
-      .select('streak, streak_last, points, wins, entries')
+      .select('streak, streak_last, points, wins, entries, referral_count, referral_points')
       .eq('address', address.toLowerCase())
       .maybeSingle()
 
@@ -54,7 +62,13 @@ export function ProfileSection({ address, basename }) {
     const user = normalizeUserRow(data)
     setStreak({ count: user.streak, last: user.streak_last })
     setCheckedToday(user.streak_last === today)
-    setUserStats({ points: user.points, wins: user.wins, entries: user.entries })
+    setUserStats({ 
+      points: user.points, 
+      wins: user.wins, 
+      entries: user.entries,
+      referral_count: user.referral_count,
+      referral_points: user.referral_points
+    })
   }
 
   useEffect(() => {
@@ -320,10 +334,22 @@ export function ProfileSection({ address, basename }) {
             fontWeight: 700,
             transition: 'all 0.2s',
             cursor: 'pointer',
+            marginBottom: 16,
           }}
         >
           {copied ? '✓ Copied!' : 'Copy Referral Link'}
         </button>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <div style={{ background: 'rgba(0,0,0,0.03)', borderRadius: 14, padding: '12px 10px', textAlign: 'center', border: '1px solid rgba(0,0,0,0.05)' }}>
+            <div style={{ fontSize: 18, fontWeight: 900, color: '#0A0B0D', lineHeight: 1 }}>{userStats.referral_count}</div>
+            <div style={{ fontSize: 10, color: '#717886', marginTop: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>Friends Invited</div>
+          </div>
+          <div style={{ background: 'rgba(0,0,0,0.03)', borderRadius: 14, padding: '12px 10px', textAlign: 'center', border: '1px solid rgba(0,0,0,0.05)' }}>
+            <div style={{ fontSize: 18, fontWeight: 900, color: '#0000FF', lineHeight: 1 }}>{userStats.referral_points} <span style={{ fontSize: 10 }}>HP</span></div>
+            <div style={{ fontSize: 10, color: '#717886', marginTop: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>Earned from Network</div>
+          </div>
+        </div>
       </div>
 
       {txModal && (

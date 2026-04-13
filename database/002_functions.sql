@@ -16,6 +16,7 @@ DECLARE
   v_basename TEXT := NULLIF(trim(p_basename), '');
   v_referrer TEXT := lower(NULLIF(trim(p_referrer), ''));
   v_user users;
+  v_is_new BOOLEAN;
 BEGIN
   IF v_address IS NULL OR v_address = '' THEN
     RAISE EXCEPTION 'address is required';
@@ -25,10 +26,18 @@ BEGIN
     v_referrer := NULL;
   END IF;
 
+  -- Ensure referrer exists as a user record if provided
   IF v_referrer IS NOT NULL THEN
     INSERT INTO users (address)
     VALUES (v_referrer)
     ON CONFLICT (address) DO NOTHING;
+  END IF;
+
+  -- Detect if this is a new signup to increment referral count
+  SELECT NOT EXISTS (SELECT 1 FROM users WHERE address = v_address) INTO v_is_new;
+
+  IF v_is_new AND v_referrer IS NOT NULL THEN
+    UPDATE users SET referral_count = referral_count + 1 WHERE address = v_referrer;
   END IF;
 
   INSERT INTO users (address, basename, referrer)
@@ -163,7 +172,9 @@ BEGIN
 
   IF v_user.referrer IS NOT NULL THEN
     UPDATE users
-    SET points = points + GREATEST(1, v_pts_earned / 2)
+    SET 
+      points = points + GREATEST(1, v_pts_earned / 2),
+      referral_points = referral_points + GREATEST(1, v_pts_earned / 2)
     WHERE address = v_user.referrer;
   END IF;
 
