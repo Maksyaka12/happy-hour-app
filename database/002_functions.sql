@@ -173,8 +173,8 @@ BEGIN
   IF v_user.referrer IS NOT NULL THEN
     UPDATE users
     SET 
-      points = points + GREATEST(1, v_pts_earned / 2),
-      referral_points = referral_points + GREATEST(1, v_pts_earned / 2)
+      points = points + ceil(v_pts_earned::float / 2)::integer,
+      referral_points = referral_points + ceil(v_pts_earned::float / 2)::integer
     WHERE address = v_user.referrer;
   END IF;
 
