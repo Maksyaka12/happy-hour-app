@@ -253,12 +253,14 @@ serve(async (req) => {
       try {
         const walletClient = buildWalletClient();
         const prizeRaw = parseUnits(prize.toFixed(USDC_DECIMALS), USDC_DECIMALS);
+        const builderCode = Deno.env.get("BUILDER_CODE_DATA_SUFFIX") as `0x${string}` | undefined;
 
         const txPromise = withTimeout(walletClient.writeContract({
           address:      USDC_ADDRESS,
           abi:          USDC_ABI,
           functionName: "transfer",
           args:         [winner as `0x${string}`, prizeRaw],
+          ...(builderCode ? { dataSuffix: builderCode } : {}),
         }), 15000);
 
         // Гарантуємо, що статус spinning протримається хоча б 6 секунд,
