@@ -5,6 +5,7 @@ import { base } from 'wagmi/chains'
 import { APP_URL, FOUNDATION, USDC_ADDRESS, USDC_ABI, CHECKIN_AMOUNT, STREAK_REWARDS } from '../config/constants'
 import { db } from '../config/supabase'
 import { TxModal } from './TxModal'
+import { UserAvatar } from './UserAvatar'
 
 const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
 const todayUTC = () => new Date().toISOString().slice(0, 10)
@@ -148,24 +149,7 @@ export function ProfileSection({ address, basename }) {
         />
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 18 }}>
-            <div
-              style={{
-                width: 54,
-                height: 54,
-                borderRadius: '50%',
-                flexShrink: 0,
-                background: pColor(address),
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 20,
-                fontWeight: 900,
-                color: '#fff',
-                boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
-              }}
-            >
-              {displayName.slice(0, 2).toUpperCase()}
-            </div>
+            <UserAvatar address={address} size={54} />
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {basename ? basename : short(address)}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { db } from '../config/supabase'
+import { UserAvatar } from './UserAvatar'
 
 const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
 const colors = ['#FF6B6B', '#FFD93D', '#6BCB77', '#4D96FF', '#C77DFF', '#FF9F1C', '#00B4D8', '#F72585', '#3A86FF', '#8338EC']
@@ -103,23 +104,7 @@ export function LeaderboardSection({ address }) {
                 <div style={{ width: 30, textAlign: 'center', fontSize: i < 3 ? 20 : 13, fontWeight: 700, color: '#717886' }}>
                   {i < 3 ? medals[i] : i + 1}
                 </div>
-                <div
-                  style={{
-                    width: 34,
-                    height: 34,
-                    borderRadius: '50%',
-                    flexShrink: 0,
-                    background: pColor(u.address),
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 12,
-                    fontWeight: 800,
-                    color: '#fff',
-                  }}
-                >
-                  {(u.basename || short(u.address)).slice(0, 2).toUpperCase()}
-                </div>
+                <UserAvatar address={u.address} size={34} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div
                     style={{

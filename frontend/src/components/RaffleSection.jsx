@@ -15,6 +15,7 @@ import { useRoundState } from '../hooks/useRoundState'
 import { TxModal } from './TxModal'
 import { RouletteModal } from './RouletteModal'
 import { PBar } from './PBar'
+import { UserAvatar } from './UserAvatar'
 
 const short   = (a) => a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—'
 const pColor  = (addr) => {
@@ -245,14 +246,7 @@ export function RaffleSection({ address }) {
                 background: '#fff', borderBottom: i < participants.length - 1 ? '1px solid #DEE1E7' : 'none',
                 borderLeft: `3px solid ${pColor(p.address)}`,
               }}>
-                <div style={{
-                  width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
-                  background: pColor(p.address),
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 11, fontWeight: 800, color: '#fff',
-                }}>
-                  {(p.name || short(p.address)).slice(0, 2).toUpperCase()}
-                </div>
+                <UserAvatar address={p.address} size={30} />
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: '#0A0B0D' }}>{p.name || short(p.address)}</div>
                   <div style={{ fontSize: 10, color: '#717886', marginTop: 1 }}>{p.tickets || Math.round(p.amount / TICKET_UNIT)} tickets</div>

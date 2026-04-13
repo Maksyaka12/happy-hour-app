@@ -1,5 +1,6 @@
 // src/components/RouletteModal.jsx
 import { useState, useEffect, useRef } from 'react'
+import { UserAvatar } from './UserAvatar'
 
 const TICKET_W = 80
 const COLORS = ["#FF6B6B","#FFD93D","#6BCB77","#4D96FF","#C77DFF","#FF9F1C","#00B4D8","#F72585","#3A86FF","#8338EC"]
@@ -84,9 +85,7 @@ export function RouletteModal({ participants, totalPot, winner: supabaseWinner, 
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4,
               opacity: done && i !== WIN_IDX ? 0.25 : 1,
             }}>
-              <div style={{ width: 28, height: 28, borderRadius: '50%', background: pColor(tk.address), display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 800, color: '#fff' }}>
-                {(tk.name||short(tk.address)).slice(0,2).toUpperCase()}
-              </div>
+              <UserAvatar address={tk.address} size={28} />
               <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.6)', textAlign: 'center', padding: '0 4px' }}>
                 {(tk.name||short(tk.address)).slice(0,8)}
               </span>
