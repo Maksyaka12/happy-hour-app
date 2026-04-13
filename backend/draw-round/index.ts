@@ -153,7 +153,7 @@ serve(async (req) => {
       .from("rounds")
       .select("*")
       .in("status", ["open", "closed"])
-      .lte("ends_at", now.toISOString());
+      .lte("ends_at", new Date(now.getTime() + 2000).toISOString());
 
     if (fetchErr) throw fetchErr;
 

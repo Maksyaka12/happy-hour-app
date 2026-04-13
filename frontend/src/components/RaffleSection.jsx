@@ -45,6 +45,11 @@ export function RaffleSection({ address }) {
   const { data: txHash, writeContract, isPending, error: writeError, reset } = useWriteContract()
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash: txHash })
 
+  const drawnRef = useRef(false)
+  useEffect(() => {
+    if (round?.status === 'open') drawnRef.current = false
+  }, [round?.id, round?.status])
+
   // Timer synced with Supabase round
   useEffect(() => {
     const tick = () => {
@@ -52,8 +57,9 @@ export function RaffleSection({ address }) {
         const left = Math.max(0, new Date(round.ends_at).getTime() - Date.now())
         setMsLeft(left)
         
-        if (left === 0 && round.status === 'open') {
-          supabase.functions.invoke('draw-round').catch(console.error)
+        if (left <= 0 && round.status === 'open' && !drawnRef.current) {
+          drawnRef.current = true
+          db.functions.invoke('draw-round').catch(console.error)
         }
       }
     }
