@@ -291,7 +291,7 @@ serve(async (req) => {
       if (!payoutError) {
         await supabase.rpc("add_points", {
           p_address: winner,
-          p_points:  10,
+          p_points:  100,
           p_reason:  `Won round ${round.id}`,
         });
         await supabase.rpc("increment_wins", { p_address: winner });
