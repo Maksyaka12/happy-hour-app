@@ -73,7 +73,8 @@ export function ProfileSection({ address, basename }) {
       wins: user.wins, 
       entries: user.entries,
       referral_count: user.referral_count,
-      referral_points: user.referral_points
+      referral_points: user.referral_points,
+      ref_code: user.ref_code
     })
   }
 

@@ -61,7 +61,7 @@ export default function App() {
     }).then(({ error }) => {
       if (error) console.error('sync_user_profile:', error)
     })
-  }, [isConnected, address, basename, referralAddress])
+  }, [isConnected, address, basename, referralCode])
 
   if (isConnecting || isReconnecting) {
     return (
