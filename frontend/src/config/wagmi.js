@@ -18,7 +18,7 @@ import { BUILDER_CODE } from './constants'
 // Generate dataSuffix from Builder Code
 // Per docs: Attribution.toDataSuffix({ codes: ["YOUR-BUILDER-CODE"] })
 // Get your code: base.dev → Settings → Builder Code
-const DATA_SUFFIX = BUILDER_CODE
+export const DATA_SUFFIX = BUILDER_CODE
   ? Attribution.toDataSuffix({ codes: [BUILDER_CODE] })
   : undefined
 
@@ -35,8 +35,5 @@ export const config = createConfig({
   transports: {
     [base.id]: http(),
   },
-  // Builder Code suffix — automatically appended to EVERY transaction
-  // from this config: deposits, check-ins, any future transactions
-  // No changes needed in individual components
-  ...(DATA_SUFFIX ? { dataSuffix: DATA_SUFFIX } : {}),
+  // Global dataSuffix is NOT supported in wagmi, so we keep it here only for export
 })
