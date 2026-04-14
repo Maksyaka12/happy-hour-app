@@ -68,9 +68,15 @@ export function RaffleSection({ address }) {
     return () => clearInterval(id)
   }, [round?.ends_at, round?.status])
 
-  // Roulette — triggers and FREEZES state when backend says spinning
+  // Roulette — triggers and FREEZES state when backend says spinning or just finished
   useEffect(() => {
-    if (round?.status === 'spinning' && !spinData) {
+    // If spinning OR if just done but we haven't shown it for this round ID
+    if ((round?.status === 'spinning' || round?.status === 'done') && round?.winner && !spinData) {
+      if (round.status === 'done' && drawnRef.current) {
+        // We already processed this round, skip duplicate roulette if any
+        return
+      }
+
       setSpinData({
         participants: participants,
         totalPot: participants.reduce((s, p) => s + p.amount, 0),
@@ -78,7 +84,7 @@ export function RaffleSection({ address }) {
         prize: round.prize
       })
     }
-  }, [round?.status])
+  }, [round?.status, round?.id])
 
   // After tx confirmed — close modal, refetch
   useEffect(() => {

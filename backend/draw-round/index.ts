@@ -311,11 +311,11 @@ serve(async (req) => {
           ...(dataSuffix ? { dataSuffix } : {}),
         }), 15000);
 
-        // Гарантуємо, що статус spinning протримається хоча б 6 секунд,
+        // Гарантуємо, що статус spinning протримається хоча б 13 секунд,
         // щоб фронтенди встигли його побачити і вивести анімацію
         const [txResult] = await Promise.allSettled([
           txPromise,
-          new Promise(r => setTimeout(r, 6000))
+          new Promise(r => setTimeout(r, 13000))
         ]);
 
         if (txResult.status === "fulfilled") {

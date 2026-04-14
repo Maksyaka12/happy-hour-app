@@ -60,7 +60,7 @@ export function useRoundState(address) {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, fetchState)
       .subscribe()
 
-    const poll = setInterval(fetchState, 15000)
+    const poll = setInterval(fetchState, 5000)
 
     return () => {
       db.removeChannel(channel)
