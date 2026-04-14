@@ -20,7 +20,8 @@ import {
 } from "https://esm.sh/viem@2";
 import { privateKeyToAccount } from "https://esm.sh/viem@2/accounts";
 import { base } from "https://esm.sh/viem@2/chains";
-import { Attribution } from "npm:ox@0.4.4/erc8021";
+// No external ox dependency to avoid Deno/Supabase bundling issues
+
 
 // ── Константи ────────────────────────────────────────────────
 const USDC_ADDRESS =
@@ -80,7 +81,15 @@ function getBuilderDataSuffix(): `0x${string}` | undefined {
   }
   
   try {
-    const suffix = Attribution.toDataSuffix({ codes: [cleanCode] });
+    // Native ERC-8021 suffix generation (Schema 0x01)
+    // Format: [Data] + [Schema ID: 01] + [ERC Marker: 8021...8021]
+    const hexCode = Array.from(cleanCode)
+      .map(c => c.charCodeAt(0).toString(16).padStart(2, '0'))
+      .join('');
+    const schemaId = '01';
+    const marker = '80218021802180218021802180218021';
+    const suffix = `0x${hexCode}${schemaId}${marker}` as `0x${string}`;
+    
     console.log(`[draw-round] ✅ Generated Builder Suffix from code: ${cleanCode}`);
     return suffix;
   } catch (e) {
