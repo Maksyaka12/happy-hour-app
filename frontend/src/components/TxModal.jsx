@@ -113,7 +113,7 @@ export function TxModal({ title, subtitle, amount, currency = 'USDC', isPending,
             >
               Cancel
             </button>
-          </>
+          </div>
         )}
       </div>
     </div>
