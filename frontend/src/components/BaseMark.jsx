@@ -1,10 +1,9 @@
-export function BaseMark({ size = 24, color = '#0000FF' }) {
+export function BaseMark({ size = 24 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <rect width="10" height="10" fill={color}/>
-      <rect x="14" width="10" height="10" fill={color} opacity="0.4"/>
-      <rect y="14" width="10" height="10" fill={color} opacity="0.4"/>
-      <rect x="14" y="14" width="10" height="10" fill={color} opacity="0.15"/>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" fill="#fff"/>
+      <path d="M12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20Z" fill="#0052FF"/>
+      <path d="M12 17C14.7614 17 17 14.7614 17 12C17 9.23858 14.7614 7 12 7C9.23858 7 7 9.23858 7 12C7 14.7614 9.23858 17 12 17Z" fill="white"/>
     </svg>
   )
 }
