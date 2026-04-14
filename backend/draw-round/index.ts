@@ -200,8 +200,6 @@ serve(async (req) => {
     }
 
     for (const round of expiredRounds) {
-      console.log(`[draw-round] Processing round ${round.id}`);
-
       // Атомарно закриваємо — запобігаємо подвійному запуску
       const { data: updated, error: closeErr } = await supabase
         .from("rounds")
@@ -211,9 +209,11 @@ serve(async (req) => {
         .select("id");
 
       if (closeErr || !updated || updated.length === 0) {
-        console.log(`[draw-round] Round ${round.id} already being processed or not open`);
+        // Раунд уже підхоплений іншим екземпляром — мовчки пропускаємо
         continue;
       }
+
+      console.log(`[draw-round] ✅ Processing round ${round.id} (Lock acquired)`);
 
       // ── Отримуємо всі ставки раунду ──
       const { data: bets } = await supabase
