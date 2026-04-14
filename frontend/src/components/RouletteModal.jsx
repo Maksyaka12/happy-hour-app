@@ -3,15 +3,15 @@ import { useState, useEffect, useRef } from 'react'
 import { UserAvatar } from './UserAvatar'
 
 const TICKET_W = 80
-const COLORS = ["#FF6B6B","#FFD93D","#6BCB77","#4D96FF","#C77DFF","#FF9F1C","#00B4D8","#F72585","#3A86FF","#8338EC"]
-const pColor = (addr) => COLORS[parseInt(addr?.slice(2,4)||'0',16) % COLORS.length]
-const short = (a) => a ? `${a.slice(0,6)}…${a.slice(-4)}` : '—'
+const COLORS = ["#FF6B6B", "#FFD93D", "#6BCB77", "#4D96FF", "#C77DFF", "#FF9F1C", "#00B4D8", "#F72585", "#3A86FF", "#8338EC"]
+const pColor = (addr) => COLORS[parseInt(addr?.slice(2, 4) || '0', 16) % COLORS.length]
+const short = (a) => a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—'
 
 export function RouletteModal({ participants, totalPot, winner: supabaseWinner, prize, onComplete }) {
-  const [offset,     setOffset]     = useState(0)
-  const [done,       setDone]       = useState(false)
+  const [offset, setOffset] = useState(0)
+  const [done, setDone] = useState(false)
   const [showWinner, setShowWinner] = useState(false)
-  const [winner,     setWinner]     = useState(null)
+  const [winner, setWinner] = useState(null)
   const rafRef = useRef(null)
 
   // Build ticket pool
@@ -35,10 +35,10 @@ export function RouletteModal({ participants, totalPot, winner: supabaseWinner, 
 
   useEffect(() => {
     const totalMs = 6000
-    const start   = performance.now()
+    const start = performance.now()
     const startOff = offset
 
-    const ease = (t) => t < 0.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2
+    const ease = (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
 
     const animate = (now) => {
       const t = Math.min((now - start) / totalMs, 1)
@@ -87,7 +87,7 @@ export function RouletteModal({ participants, totalPot, winner: supabaseWinner, 
             }}>
               <UserAvatar address={tk.address} size={28} />
               <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.6)', textAlign: 'center', padding: '0 4px' }}>
-                {(tk.name||short(tk.address)).slice(0,8)}
+                {(tk.name || short(tk.address)).slice(0, 8)}
               </span>
             </div>
           ))}

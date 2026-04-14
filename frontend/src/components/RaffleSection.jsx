@@ -2,7 +2,10 @@
 // ─────────────────────────────────────────────────────────
 // USDC transfer via useWriteContract (wagmi v2)
 // Per docs.base.org/get-started/build-app (Step 6)
-// Builder Code added automatically via wagmi config dataSuffix
+//
+// Draw trigger: pg_cron (primary) fires every hour at :00.
+// Browser fallback: only triggers if round is overdue by >5 min
+// (safety net in case cron misses a cycle).
 // ─────────────────────────────────────────────────────────
 
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
@@ -45,20 +48,31 @@ export function RaffleSection({ address }) {
   const { data: txHash, writeContract, isPending, error: writeError, reset } = useWriteContract()
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash: txHash })
 
-  const drawnRef = useRef(false)
+  const fallbackRef = useRef(false)
   useEffect(() => {
-    if (round?.status === 'open') drawnRef.current = false
+    if (round?.status === 'open') fallbackRef.current = false
   }, [round?.id, round?.status])
 
   // Timer synced with Supabase round
+  // Primary trigger: pg_cron (server-side, fires every hour at :00)
+  // Fallback: browser triggers ONLY if round is overdue by >5 minutes
   useEffect(() => {
     const tick = () => {
       if (round?.ends_at) {
         const left = Math.max(0, new Date(round.ends_at).getTime() - Date.now())
         setMsLeft(left)
-        
-        if (left <= 0 && round.status === 'open' && !drawnRef.current) {
-          drawnRef.current = true
+
+        const overdueMs = -( new Date(round.ends_at).getTime() - Date.now() )
+        const FALLBACK_THRESHOLD_MS = 5 * 60 * 1000 // 5 хвилин
+
+        if (
+          overdueMs > FALLBACK_THRESHOLD_MS &&
+          round.status === 'open' &&
+          !fallbackRef.current
+        ) {
+          // pg_cron не спрацював — браузер підстрахує
+          console.warn('[raffle] pg_cron missed the round, browser fallback triggered')
+          fallbackRef.current = true
           db.functions.invoke('draw-round').catch(console.error)
         }
       }
