@@ -12,33 +12,15 @@
 import { http, createConfig } from 'wagmi'
 import { base } from 'wagmi/chains'
 import { baseAccount, injected } from 'wagmi/connectors'
+import { Attribution } from 'ox/erc8021'
 import { BUILDER_CODE } from './constants'
 
-/**
- * ERC-8021 Builder Code Suffix Generator (Native)
- * Format: [HexCode][LenByte][FlagsByte][8x 0x8021 Magic]
- */
-function toErc8021Suffix(code) {
-  if (!code || !code.startsWith('bc_')) return undefined
-  
-  // Convert string to hex
-  const hex = Array.from(code).map(c => 
-    c.charCodeAt(0).toString(16).padStart(2, '0')
-  ).join('')
-  
-  // Length in hex (1 byte)
-  const len = code.length.toString(16).padStart(2, '0')
-  
-  // Flags (1 byte, usually 00)
-  const flags = '00'
-  
-  // MAGIC 8021 (8 times)
-  const magic = '80218021802180218021802180218021'
-  
-  return `0x${hex}${len}${flags}${magic}`
-}
-
-export const DATA_SUFFIX = toErc8021Suffix(BUILDER_CODE)
+// Generate dataSuffix from Builder Code
+// Per docs: Attribution.toDataSuffix({ codes: ["YOUR-BUILDER-CODE"] })
+// Get your code: base.dev → Settings → Builder Code
+const DATA_SUFFIX = BUILDER_CODE
+  ? Attribution.toDataSuffix({ codes: [BUILDER_CODE] })
+  : undefined
 
 export const config = createConfig({
   chains: [base],
@@ -53,5 +35,8 @@ export const config = createConfig({
   transports: {
     [base.id]: http(),
   },
-  // Global dataSuffix is NOT supported in wagmi, so we keep it here only for export
+  // Builder Code suffix — automatically appended to EVERY transaction
+  // from this config: deposits, check-ins, any future transactions
+  // No changes needed in individual components
+  ...(DATA_SUFFIX ? { dataSuffix: DATA_SUFFIX } : {}),
 })
