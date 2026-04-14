@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { db } from '../config/supabase'
 
-const taskIcons = { retweet: '🔁', like: '❤️', comment: '💬' }
+const taskIcons = { retweet: '🔁', like: '❤️', comment: '💬', bookmark: '🔖', follow: '👤' }
 
 const fmt = (ms) => {
   const h = Math.floor(ms / 3600000)
@@ -75,7 +75,7 @@ function TaskCard({ task, taskState, onVisit, onCheck, onClaim, isClaiming }) {
             textDecoration: 'none',
           }}
         >
-          {task.type === 'retweet' ? 'Retweet' : task.type === 'like' ? 'Like' : 'Comment'}
+          {task.type === 'retweet' ? 'Retweet' : task.type === 'like' ? 'Like' : task.type === 'follow' ? 'Follow' : task.type === 'comment' ? 'Comment' : 'Visit'}
         </a>
 
         {canClaim ? (
@@ -302,6 +302,7 @@ export function TasksSection({ address }) {
             <option value="like">Like</option>
             <option value="comment">Comment</option>
             <option value="bookmark">Bookmark</option>
+            <option value="follow">Follow</option>
           </select>
           
           <input placeholder="Task Description (e.g. Retweet & Tag 3 friends)" value={newTask.text} onChange={e => setNewTask({...newTask, text: e.target.value})} style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #ccc', marginBottom: 8, background: '#fff', fontSize: 13, boxSizing: 'border-box' }} />
