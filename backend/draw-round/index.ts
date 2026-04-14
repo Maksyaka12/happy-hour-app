@@ -144,8 +144,9 @@ function validatePayout(params: {
   payout: number;
   totalPool: number;
   alreadyPaid: boolean;
+  maxAllowed: number;
 }) {
-  const { winner, participants, payout, totalPool, alreadyPaid } = params;
+  const { winner, participants, payout, totalPool, alreadyPaid, maxAllowed } = params;
 
   // 1. Валідна адреса
   if (!isAddress(winner)) {
@@ -163,7 +164,6 @@ function validatePayout(params: {
   }
 
   // 4. Сума не перевищує 80% банку (або 100% якщо 1 гравець)
-  const maxAllowed = participants.length === 1 ? totalPool : totalPool * WINNER_SHARE;
   if (payout > maxAllowed + 0.001) { // +0.001 для float tolerance
     throw new Error(`SECURITY: Payout ${payout} exceeds max allowed ${maxAllowed}`);
   }
@@ -251,7 +251,18 @@ serve(async (req) => {
         console.log(`[draw-round] Round ${round.id}: winner = ${winner}`);
       }
 
-      const prize = participants.length === 1 ? totalPool : totalPool * WINNER_SHARE;
+      // ── Розрахунок призу з гарантією повернення депозиту ──
+      const winnerStake = bets
+        .filter(b => b.address.toLowerCase() === winner.toLowerCase())
+        .reduce((s, b) => s + parseFloat(b.amount), 0);
+
+      let prize = participants.length === 1 ? totalPool : totalPool * WINNER_SHARE;
+      
+      // Якщо 2+ учасники, гарантуємо що переможець не отримає менше ніж вклав
+      if (participants.length > 1 && prize < winnerStake) {
+        console.log(`[draw-round] Round ${round.id}: Prize adjusted to cover winner's stake (${winnerStake} USDC)`);
+        prize = winnerStake;
+      }
 
       // ── Перевірки безпеки ──
       try {
@@ -261,6 +272,7 @@ serve(async (req) => {
           payout: prize,
           totalPool,
           alreadyPaid: round.already_paid ?? false,
+          maxAllowed: prize, // Тепер дозволяємо виплату розрахованого призу
         });
       } catch (secErr) {
         console.error(`[draw-round] SECURITY CHECK FAILED:`, secErr);
