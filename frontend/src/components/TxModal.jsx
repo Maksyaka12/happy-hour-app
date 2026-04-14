@@ -63,7 +63,7 @@ export function TxModal({ title, subtitle, amount, currency = 'USDC', isPending,
               <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
                 <span style={{ color: '#717886', fontSize: 13 }}>To</span>
                 <span style={{ color: '#32353D', fontSize: 13, fontFamily: "'DM Mono',monospace" }}>
-                  {`${String(typeof window !== 'undefined' ? '' : '').slice(0, 0)}Happy Hour pool`}
+                  {`${String(typeof window !== 'undefined' ? '' : '').slice(0,0)}Happy Hour pool`}
                 </span>
               </div>
             </div>
