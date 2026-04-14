@@ -20,6 +20,7 @@ import {
 } from "https://esm.sh/viem@2";
 import { privateKeyToAccount } from "https://esm.sh/viem@2/accounts";
 import { base } from "https://esm.sh/viem@2/chains";
+import { Attribution } from "https://esm.sh/ox@0.1.1/erc8021";
 
 // ── Константи ────────────────────────────────────────────────
 const USDC_ADDRESS =
@@ -62,6 +63,28 @@ const CORS = {
   "Content-Type": "application/json",
 };
 
+// ── Helper для отримання суфікса ──────────────────────────────
+function getBuilderDataSuffix(): `0x${string}` | undefined {
+  // Пробуємо отримати або BUILDER_CODE (як на фронті), або BUILDER_CODE_DATA_SUFFIX
+  const code = Deno.env.get("BUILDER_CODE") || Deno.env.get("BUILDER_CODE_DATA_SUFFIX");
+  if (!code) return undefined;
+
+  const cleanCode = code.trim();
+  
+  // Якщо це вже готовий Hex-суфікс (починається з 0x)
+  if (cleanCode.startsWith("0x")) {
+    return cleanCode as `0x${string}`;
+  }
+  
+  // Якщо це текстовий код (типу bc_...), перетворюємо його через Attribution
+  try {
+    return Attribution.toDataSuffix({ codes: [cleanCode] });
+  } catch (e) {
+    console.error("[draw-round] Failed to generate data suffix:", e);
+    return undefined;
+  }
+}
+
 // ── Viem wallet client з Timeout ─────────────────────────────
 function buildWalletClient() {
   const pk = Deno.env.get("BACKEND_SIGNER_PRIVATE_KEY")!;
@@ -71,7 +94,7 @@ function buildWalletClient() {
   if (!safePk.startsWith("0x")) safePk = "0x" + safePk;
 
   const account = privateKeyToAccount(safePk as `0x${string}`);
-  const BUILDER_CODE_SUFFIX = Deno.env.get("BUILDER_CODE_DATA_SUFFIX");
+  const dataSuffix = getBuilderDataSuffix();
 
   // Ставимо жорсткий таймаут 15 сек на RPC, щоб Edge Function не висіла хвилину!
   return createWalletClient({
@@ -81,7 +104,7 @@ function buildWalletClient() {
       Deno.env.get("BASE_RPC_URL") ?? "https://mainnet.base.org",
       { timeout: 15000, retryCount: 1 } // Анти-зависання
     ),
-    ...(BUILDER_CODE_SUFFIX ? { dataSuffix: BUILDER_CODE_SUFFIX as `0x${string}` } : {}),
+    ...(dataSuffix ? { dataSuffix } : {}),
   });
 }
 
@@ -253,14 +276,14 @@ serve(async (req) => {
       try {
         const walletClient = buildWalletClient();
         const prizeRaw = parseUnits(prize.toFixed(USDC_DECIMALS), USDC_DECIMALS);
-        const builderCode = Deno.env.get("BUILDER_CODE_DATA_SUFFIX") as `0x${string}` | undefined;
+        const dataSuffix = getBuilderDataSuffix();
 
         const txPromise = withTimeout(walletClient.writeContract({
           address:      USDC_ADDRESS,
           abi:          USDC_ABI,
           functionName: "transfer",
           args:         [winner as `0x${string}`, prizeRaw],
-          ...(builderCode ? { dataSuffix: builderCode } : {}),
+          ...(dataSuffix ? { dataSuffix } : {}),
         }), 15000);
 
         // Гарантуємо, що статус spinning протримається хоча б 6 секунд,
