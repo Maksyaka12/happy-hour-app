@@ -20,7 +20,7 @@ import {
 } from "https://esm.sh/viem@2";
 import { privateKeyToAccount } from "https://esm.sh/viem@2/accounts";
 import { base } from "https://esm.sh/viem@2/chains";
-import { Attribution } from "https://esm.sh/ox@0.1.1/erc8021";
+import { Attribution } from "https://esm.sh/ox@0.4.4/erc8021";
 
 // ── Константи ────────────────────────────────────────────────
 const USDC_ADDRESS =
@@ -65,22 +65,26 @@ const CORS = {
 
 // ── Helper для отримання суфікса ──────────────────────────────
 function getBuilderDataSuffix(): `0x${string}` | undefined {
-  // Пробуємо отримати або BUILDER_CODE (як на фронті), або BUILDER_CODE_DATA_SUFFIX
   const code = Deno.env.get("BUILDER_CODE") || Deno.env.get("BUILDER_CODE_DATA_SUFFIX");
-  if (!code) return undefined;
+  
+  if (!code) {
+    console.log("[draw-round] ℹ️ No Builder Code found in secrets. Skipping attribution.");
+    return undefined;
+  }
 
   const cleanCode = code.trim();
   
-  // Якщо це вже готовий Hex-суфікс (починається з 0x)
   if (cleanCode.startsWith("0x")) {
+    console.log("[draw-round] ✅ Using raw Hex Builder Suffix from secrets.");
     return cleanCode as `0x${string}`;
   }
   
-  // Якщо це текстовий код (типу bc_...), перетворюємо його через Attribution
   try {
-    return Attribution.toDataSuffix({ codes: [cleanCode] });
+    const suffix = Attribution.toDataSuffix({ codes: [cleanCode] });
+    console.log(`[draw-round] ✅ Generated Builder Suffix from code: ${cleanCode}`);
+    return suffix;
   } catch (e) {
-    console.error("[draw-round] Failed to generate data suffix:", e);
+    console.error(`[draw-round] ❌ Failed to generate data suffix for code '${cleanCode}':`, e);
     return undefined;
   }
 }
