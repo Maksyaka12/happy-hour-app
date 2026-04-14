@@ -20,7 +20,7 @@ import {
 } from "https://esm.sh/viem@2";
 import { privateKeyToAccount } from "https://esm.sh/viem@2/accounts";
 import { base } from "https://esm.sh/viem@2/chains";
-import { Attribution } from "https://esm.sh/ox@0.4.4/erc8021";
+import { Attribution } from "npm:ox@0.4.4/erc8021";
 
 // ── Константи ────────────────────────────────────────────────
 const USDC_ADDRESS =
