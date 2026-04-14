@@ -42,7 +42,20 @@ export function TxModal({ title, subtitle, amount, currency = 'USDC', isPending,
             </div>
           </div>
         ) : (
-          <>
+          <div style={{ position: 'relative' }}>
+            {/* Close Button at top-right */}
+            <button
+              onClick={onCancel}
+              style={{
+                position: 'absolute', top: -10, right: 0,
+                background: '#F1F3F7', border: 'none', borderRadius: '50%',
+                width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer', color: '#717886', fontSize: 18, zIndex: 10,
+              }}
+            >
+              ✕
+            </button>
+
             <div style={{ fontSize: 19, fontWeight: 800, marginBottom: 4, color: '#0A0B0D' }}>{title}</div>
             {subtitle && <div style={{ color: '#717886', fontSize: 13, marginBottom: 20 }}>{subtitle}</div>}
 
