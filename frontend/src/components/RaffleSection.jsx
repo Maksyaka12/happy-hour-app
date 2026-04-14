@@ -2,6 +2,7 @@
 // ─────────────────────────────────────────────────────────
 // USDC transfer via useWriteContract (wagmi v2)
 // Per docs.base.org/get-started/build-app (Step 6)
+// Builder Code added automatically via wagmi config dataSuffix
 //
 // Draw trigger: pg_cron (primary) fires every hour at :00.
 // Browser fallback: only triggers if round is overdue by >5 min
