@@ -30,15 +30,9 @@ export default function App() {
   }, [tab])
   const { address, isConnected, isConnecting, isReconnecting } = useAccount()
   const chainId = useChainId()
-  const { switchChain } = useSwitchChain()
+  const { switchChain, isPending: isSwitching } = useSwitchChain()
   const basename = useBasename(address)
-
-  // Auto-switch to Base when EOA wallet connects on wrong network
-  useEffect(() => {
-    if (isConnected && chainId && chainId !== base.id) {
-      switchChain({ chainId: base.id })
-    }
-  }, [isConnected, chainId])
+  const onWrongChain = isConnected && chainId !== base.id
 
   const { data: usdcBalanceRaw } = useReadContract({
     address: USDC_ADDRESS,
@@ -139,10 +133,39 @@ export default function App() {
     <>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
       <div className="app-bg" style={{ minHeight: '100vh', color: 'var(--text)', position: 'relative' }}>
+
+        {/* Wrong Network Banner */}
+        {onWrongChain && (
+          <div style={{
+            position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
+            background: '#FC401F', color: '#fff',
+            padding: '10px 16px',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            gap: 12,
+          }}>
+            <span style={{ fontSize: 13, fontWeight: 600 }}>
+              ⚠️ Wrong network. Switch to Base to use the app.
+            </span>
+            <button
+              onClick={() => switchChain({ chainId: base.id })}
+              disabled={isSwitching}
+              style={{
+                background: '#fff', color: '#FC401F',
+                border: 'none', borderRadius: 20,
+                padding: '6px 16px', fontSize: 13, fontWeight: 700,
+                cursor: isSwitching ? 'wait' : 'pointer',
+                flexShrink: 0,
+              }}
+            >
+              {isSwitching ? 'Switching…' : 'Switch to Base'}
+            </button>
+          </div>
+        )}
+
         <div
           style={{
             position: 'sticky',
-            top: 0,
+            top: onWrongChain ? 44 : 0,
             zIndex: 40,
             background: 'var(--bg)',
             borderBottom: '1px solid var(--border2)',
@@ -181,7 +204,7 @@ export default function App() {
           </div>
         </div>
 
-        <div style={{ padding: '14px 16px 8px' }}>
+        <div style={{ padding: '14px 16px 8px', marginTop: onWrongChain ? 0 : 0 }}>
           <span style={{ fontSize: 24, fontWeight: 800, color: 'var(--text)', letterSpacing: -0.5 }}>
             {tabLabels[tab]}
           </span>
