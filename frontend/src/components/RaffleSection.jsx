@@ -10,8 +10,8 @@
 // ─────────────────────────────────────────────────────────
 
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
-import { useWriteContract, useSendTransaction, useWaitForTransactionReceipt, useChainId, useSwitchChain } from 'wagmi'
-import { encodeFunctionData, parseUnits } from 'viem'
+import { useWriteContract, useWaitForTransactionReceipt, useChainId, useSwitchChain } from 'wagmi'
+import { parseUnits } from 'viem'
 import { base } from 'wagmi/chains'
 import { FOUNDATION, USDC_ADDRESS, USDC_ABI, BET_OPTS, TICKET_UNIT, CLOSE_BEFORE_MS, WINNER_SHARE } from '../config/constants'
 import { DATA_SUFFIX } from '../config/wagmi'
@@ -46,11 +46,8 @@ export function RaffleSection({ address }) {
   const { switchChain, isPending: isSwitching } = useSwitchChain()
   const wrongChain = chainId !== base.id
 
-  // ── wagmi send transaction ───────────────────────────────
-  // Using useSendTransaction + manual calldata to guarantee dataSuffix
-  // is appended for ALL wallet types (MetaMask, Coinbase Wallet, etc.)
-  // useWriteContract ignores dataSuffix with injected connectors.
-  const { data: txHash, sendTransaction, isPending, error: writeError, reset } = useSendTransaction()
+  // ── wagmi write contract ─────────────────────────────────
+  const { data: txHash, writeContract, isPending, error: writeError, reset } = useWriteContract()
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash: txHash })
 
   const fallbackRef = useRef(false)
@@ -119,22 +116,15 @@ export function RaffleSection({ address }) {
     if (isClosed || !address) return
     if (wrongChain) { switchChain({ chainId: base.id }); return }
 
-    // encodeFunctionData creates the standard USDC transfer calldata
-    // dataSuffix is passed as a SEPARATE parameter per Base docs:
-    // docs.base.org/apps/builder-codes/app-developers (Legacy Per-Transaction)
-    const encoded = encodeFunctionData({
+    writeContract({
+      address:      USDC_ADDRESS,
       abi:          USDC_ABI,
       functionName: 'transfer',
       args:         [FOUNDATION, parseUnits(amount.toFixed(6), 6)],
-    })
-
-    sendTransaction({
-      to:      USDC_ADDRESS,
-      data:    encoded,
-      chainId: base.id,
+      chainId:      base.id,
       ...(DATA_SUFFIX ? { dataSuffix: DATA_SUFFIX } : {}),
     })
-  }, [isClosed, address, wrongChain, sendTransaction, switchChain])
+  }, [isClosed, address, wrongChain, writeContract, switchChain])
 
   const onBetClick = (amount) => {
     setTxModal({ amount })
