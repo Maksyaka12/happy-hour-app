@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useAccount, useReadContract, useChainId, useSwitchChain } from 'wagmi'
+import { useAccount, useReadContract, useSwitchChain } from 'wagmi'
 import { base } from 'wagmi/chains'
 import { formatUnits } from 'viem'
 import { db } from './config/supabase'
@@ -28,11 +28,12 @@ export default function App() {
   useEffect(() => {
     try { localStorage.setItem('happy_tab', tab) } catch {}
   }, [tab])
-  const { address, isConnected, isConnecting, isReconnecting } = useAccount()
-  const chainId = useChainId()
+  // useAccount().chainId returns the REAL wallet chain (even if unsupported)
+  // useChainId() returns base.id by default when chain is not in wagmi config — can't use it here
+  const { address, isConnected, isConnecting, isReconnecting, chainId: accountChainId } = useAccount()
   const { switchChain, isPending: isSwitching } = useSwitchChain()
   const basename = useBasename(address)
-  const onWrongChain = isConnected && chainId !== base.id
+  const onWrongChain = isConnected && !!accountChainId && accountChainId !== base.id
 
   const { data: usdcBalanceRaw } = useReadContract({
     address: USDC_ADDRESS,
