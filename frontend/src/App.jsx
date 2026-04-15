@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useAccount, useReadContract } from 'wagmi'
+import { useAccount, useReadContract, useChainId, useSwitchChain } from 'wagmi'
+import { base } from 'wagmi/chains'
 import { formatUnits } from 'viem'
 import { db } from './config/supabase'
 import { useBasename } from './hooks/useBasename'
@@ -28,7 +29,16 @@ export default function App() {
     try { localStorage.setItem('happy_tab', tab) } catch {}
   }, [tab])
   const { address, isConnected, isConnecting, isReconnecting } = useAccount()
+  const chainId = useChainId()
+  const { switchChain } = useSwitchChain()
   const basename = useBasename(address)
+
+  // Auto-switch to Base when EOA wallet connects on wrong network
+  useEffect(() => {
+    if (isConnected && chainId && chainId !== base.id) {
+      switchChain({ chainId: base.id })
+    }
+  }, [isConnected, chainId])
 
   const { data: usdcBalanceRaw } = useReadContract({
     address: USDC_ADDRESS,
