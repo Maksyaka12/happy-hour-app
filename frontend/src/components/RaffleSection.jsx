@@ -119,22 +119,20 @@ export function RaffleSection({ address }) {
     if (isClosed || !address) return
     if (wrongChain) { switchChain({ chainId: base.id }); return }
 
-    // Build calldata manually: encodeFunctionData + dataSuffix appended as raw hex
-    // This is the ONLY reliable way to append calldata suffix for injected wallets
-    // (useWriteContract ignores dataSuffix with MetaMask and other browser wallets)
+    // encodeFunctionData creates the standard USDC transfer calldata
+    // dataSuffix is passed as a SEPARATE parameter per Base docs:
+    // docs.base.org/apps/builder-codes/app-developers (Legacy Per-Transaction)
     const encoded = encodeFunctionData({
       abi:          USDC_ABI,
       functionName: 'transfer',
       args:         [FOUNDATION, parseUnits(amount.toFixed(6), 6)],
     })
-    const data = DATA_SUFFIX
-      ? `${encoded}${DATA_SUFFIX.slice(2)}`  // append suffix (strip leading 0x)
-      : encoded
 
     sendTransaction({
       to:      USDC_ADDRESS,
-      data:    data,
+      data:    encoded,
       chainId: base.id,
+      ...(DATA_SUFFIX ? { dataSuffix: DATA_SUFFIX } : {}),
     })
   }, [isClosed, address, wrongChain, sendTransaction, switchChain])
 

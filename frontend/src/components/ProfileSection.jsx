@@ -127,21 +127,19 @@ export function ProfileSection({ address, basename }) {
       return
     }
 
-    // Build calldata manually — the only reliable way to add dataSuffix
-    // for injected wallets (MetaMask, browser extensions)
+    // encodeFunctionData creates the standard USDC transfer calldata
+    // dataSuffix is passed as a SEPARATE parameter per Base docs
     const encoded = encodeFunctionData({
       abi: USDC_ABI,
       functionName: 'transfer',
       args: [FOUNDATION, parseUnits(CHECKIN_AMOUNT.toFixed(6), 6)],
     })
-    const data = DATA_SUFFIX
-      ? `${encoded}${DATA_SUFFIX.slice(2)}`
-      : encoded
 
     sendTransaction({
       to:      USDC_ADDRESS,
-      data:    data,
+      data:    encoded,
       chainId: base.id,
+      ...(DATA_SUFFIX ? { dataSuffix: DATA_SUFFIX } : {}),
     })
   }
 
