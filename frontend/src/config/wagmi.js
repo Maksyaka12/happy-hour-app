@@ -17,8 +17,9 @@ import { BUILDER_CODE } from './constants'
 
 // Generate dataSuffix from Builder Code
 // Per docs: Attribution.toDataSuffix({ codes: ["YOUR-BUILDER-CODE"] })
-// Get your code: base.dev → Settings → Builder Code
-const DATA_SUFFIX = BUILDER_CODE
+// "Legacy Per-Transaction Approach" — guaranteed to work for ALL wallet types
+// (injected: MetaMask, Coinbase Wallet, etc.) AND Smart Wallet in Base App
+export const DATA_SUFFIX = BUILDER_CODE
   ? Attribution.toDataSuffix({ codes: [BUILDER_CODE] })
   : undefined
 

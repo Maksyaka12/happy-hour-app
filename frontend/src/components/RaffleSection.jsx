@@ -14,6 +14,7 @@ import { useWriteContract, useWaitForTransactionReceipt, useChainId, useSwitchCh
 import { parseUnits } from 'viem'
 import { base } from 'wagmi/chains'
 import { FOUNDATION, USDC_ADDRESS, USDC_ABI, BET_OPTS, TICKET_UNIT, CLOSE_BEFORE_MS, WINNER_SHARE } from '../config/constants'
+import { DATA_SUFFIX } from '../config/wagmi'
 import { db } from '../config/supabase'
 import { useRoundState } from '../hooks/useRoundState'
 import { TxModal } from './TxModal'
@@ -118,13 +119,14 @@ export function RaffleSection({ address }) {
     if (wrongChain) { switchChain({ chainId: base.id }); return }
 
     // useWriteContract sends the tx
-    // dataSuffix (Builder Code) is added automatically by wagmi config
+    // dataSuffix passed explicitly — works for ALL connectors (injected + Smart Wallet)
     writeContract({
       address:      USDC_ADDRESS,
       abi:          USDC_ABI,
       functionName: 'transfer',
       args:         [FOUNDATION, parseUnits(amount.toFixed(6), 6)],
       chainId:      base.id,
+      ...(DATA_SUFFIX ? { dataSuffix: DATA_SUFFIX } : {}),
     })
   }, [isClosed, address, wrongChain, writeContract, switchChain])
 
