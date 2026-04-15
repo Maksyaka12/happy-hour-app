@@ -4,7 +4,6 @@ import { parseUnits } from 'viem'
 import { base } from 'wagmi/chains'
 import { APP_URL, FOUNDATION, USDC_ADDRESS, USDC_ABI, CHECKIN_AMOUNT, STREAK_REWARDS } from '../config/constants'
 import { db } from '../config/supabase'
-import { DATA_SUFFIX } from '../config/wagmi'
 import { TxModal } from './TxModal'
 import { UserAvatar } from './UserAvatar'
 
@@ -133,7 +132,6 @@ export function ProfileSection({ address, basename }) {
       functionName: 'transfer',
       args: [FOUNDATION, parseUnits(CHECKIN_AMOUNT.toFixed(6), 6)],
       chainId: base.id,
-      ...(DATA_SUFFIX ? { dataSuffix: DATA_SUFFIX } : {}),
     })
   }
 
