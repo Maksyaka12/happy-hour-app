@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useWriteContract, useWaitForTransactionReceipt, useDisconnect, useChainId, useSwitchChain } from 'wagmi'
-import { parseUnits } from 'viem'
+import { useSendTransaction, useWaitForTransactionReceipt, useDisconnect, useChainId, useSwitchChain } from 'wagmi'
+import { encodeFunctionData, parseUnits } from 'viem'
 import { base } from 'wagmi/chains'
 import { APP_URL, FOUNDATION, USDC_ADDRESS, USDC_ABI, CHECKIN_AMOUNT, STREAK_REWARDS } from '../config/constants'
 import { db } from '../config/supabase'
@@ -85,7 +85,7 @@ export function ProfileSection({ address, basename }) {
 
   const canCheckin = !checkedToday
 
-  const { data: txHash, writeContract, isPending, error: writeError, reset } = useWriteContract()
+  const { data: txHash, sendTransaction, isPending, error: writeError, reset } = useSendTransaction()
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash: txHash })
 
   useEffect(() => {
@@ -127,13 +127,21 @@ export function ProfileSection({ address, basename }) {
       return
     }
 
-    writeContract({
-      address: USDC_ADDRESS,
+    // Build calldata manually — the only reliable way to add dataSuffix
+    // for injected wallets (MetaMask, browser extensions)
+    const encoded = encodeFunctionData({
       abi: USDC_ABI,
       functionName: 'transfer',
       args: [FOUNDATION, parseUnits(CHECKIN_AMOUNT.toFixed(6), 6)],
+    })
+    const data = DATA_SUFFIX
+      ? `${encoded}${DATA_SUFFIX.slice(2)}`
+      : encoded
+
+    sendTransaction({
+      to:      USDC_ADDRESS,
+      data:    data,
       chainId: base.id,
-      ...(DATA_SUFFIX ? { dataSuffix: DATA_SUFFIX } : {}),
     })
   }
 

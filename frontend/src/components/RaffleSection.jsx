@@ -10,8 +10,8 @@
 // ─────────────────────────────────────────────────────────
 
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
-import { useWriteContract, useWaitForTransactionReceipt, useChainId, useSwitchChain } from 'wagmi'
-import { parseUnits } from 'viem'
+import { useWriteContract, useSendTransaction, useWaitForTransactionReceipt, useChainId, useSwitchChain } from 'wagmi'
+import { encodeFunctionData, parseUnits } from 'viem'
 import { base } from 'wagmi/chains'
 import { FOUNDATION, USDC_ADDRESS, USDC_ABI, BET_OPTS, TICKET_UNIT, CLOSE_BEFORE_MS, WINNER_SHARE } from '../config/constants'
 import { DATA_SUFFIX } from '../config/wagmi'
@@ -46,8 +46,11 @@ export function RaffleSection({ address }) {
   const { switchChain, isPending: isSwitching } = useSwitchChain()
   const wrongChain = chainId !== base.id
 
-  // ── wagmi write contract ─────────────────────────────────
-  const { data: txHash, writeContract, isPending, error: writeError, reset } = useWriteContract()
+  // ── wagmi send transaction ───────────────────────────────
+  // Using useSendTransaction + manual calldata to guarantee dataSuffix
+  // is appended for ALL wallet types (MetaMask, Coinbase Wallet, etc.)
+  // useWriteContract ignores dataSuffix with injected connectors.
+  const { data: txHash, sendTransaction, isPending, error: writeError, reset } = useSendTransaction()
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash: txHash })
 
   const fallbackRef = useRef(false)
@@ -114,21 +117,26 @@ export function RaffleSection({ address }) {
   // ── Send USDC ────────────────────────────────────────────
   const sendBet = useCallback((amount) => {
     if (isClosed || !address) return
-
-    // Switch chain if needed
     if (wrongChain) { switchChain({ chainId: base.id }); return }
 
-    // useWriteContract sends the tx
-    // dataSuffix passed explicitly — works for ALL connectors (injected + Smart Wallet)
-    writeContract({
-      address:      USDC_ADDRESS,
+    // Build calldata manually: encodeFunctionData + dataSuffix appended as raw hex
+    // This is the ONLY reliable way to append calldata suffix for injected wallets
+    // (useWriteContract ignores dataSuffix with MetaMask and other browser wallets)
+    const encoded = encodeFunctionData({
       abi:          USDC_ABI,
       functionName: 'transfer',
       args:         [FOUNDATION, parseUnits(amount.toFixed(6), 6)],
-      chainId:      base.id,
-      ...(DATA_SUFFIX ? { dataSuffix: DATA_SUFFIX } : {}),
     })
-  }, [isClosed, address, wrongChain, writeContract, switchChain])
+    const data = DATA_SUFFIX
+      ? `${encoded}${DATA_SUFFIX.slice(2)}`  // append suffix (strip leading 0x)
+      : encoded
+
+    sendTransaction({
+      to:      USDC_ADDRESS,
+      data:    data,
+      chainId: base.id,
+    })
+  }, [isClosed, address, wrongChain, sendTransaction, switchChain])
 
   const onBetClick = (amount) => {
     setTxModal({ amount })
