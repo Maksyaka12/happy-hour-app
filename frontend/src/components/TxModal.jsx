@@ -99,7 +99,10 @@ export function TxModal({ title, subtitle, amount, currency = 'USDC', isPending,
                 borderRadius: 12, padding: '10px 14px', marginBottom: 10,
                 fontSize: 13, color: '#FC401F', textAlign: 'center',
               }}>
-                {error.message?.includes('rejected') ? 'Transaction cancelled' : 'Transaction failed'}
+                {error.message?.includes('rejected') || error.message?.includes('denied')
+                  ? 'Transaction cancelled'
+                  : error.shortMessage || error.message || 'Transaction failed'
+                }
               </div>
             )}
 
