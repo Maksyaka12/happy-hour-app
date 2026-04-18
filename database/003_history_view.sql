@@ -23,7 +23,7 @@ SELECT
   'Streak' AS badge,
   '+1 PTS' AS value,
   'checkin' AS type,
-  created_at
+  checked_date::timestamp AT TIME ZONE 'UTC' AS created_at
 FROM checkins
 
 UNION ALL
