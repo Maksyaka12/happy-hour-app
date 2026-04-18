@@ -18,7 +18,7 @@ export const TICKET_UNIT = 0.1
 export const CHECKIN_AMOUNT = 0.0001
 export const CLOSE_BEFORE_MS = 3 * 60 * 1000
 
-export const BET_OPTS = [0.1, 0.5, 1, 5, 10, 30]
+export const BET_OPTS = [0.1, 0.5, 1, 3, 5, 10]
 
 export const STREAK_REWARDS = [
   { days: 3, pts: 5 },
