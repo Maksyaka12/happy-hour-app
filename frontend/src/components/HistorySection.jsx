@@ -106,42 +106,56 @@ export function HistorySection({ address }) {
         {history.map((record, index) => {
           const config = TYPE_CONFIG[record.type] || TYPE_CONFIG.default
           const isDeposit = record.type === 'deposit'
+
+          let displayValue = record.value
+          if (isDeposit && displayValue.includes('USDC')) {
+             const numStr = displayValue.replace(/[^\d.]/g, '')
+             const num = parseFloat(numStr) || 0
+             // Convert USDC to points (10 PTS per 1 USDC)
+             const pts = Math.floor(num * 10)
+             displayValue = `+${pts} PTS`
+          }
           
           return (
             <div key={record.id} style={{
-              display: 'flex',
-              justifyContent: 'space-between',
+              display: 'grid',
+              gridTemplateColumns: '65px 105px 45px 1fr',
               alignItems: 'center',
-              padding: '14px 0',
+              gap: 8,
+              padding: '12px 0',
               borderBottom: index !== history.length - 1 ? '1px solid #F1F3F7' : 'none'
             }}>
-              {/* Left Side */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span style={{ fontSize: 15, fontWeight: 800, color: config.title }}>
-                  {record.action}
-                </span>
+              {/* 1. Action */}
+              <div style={{ fontSize: 14, fontWeight: 800, color: config.title, whiteSpace: 'nowrap' }}>
+                {record.action}
+              </div>
 
+              {/* 2. Badge */}
+              <div>
                 {record.badge && (
                   <span style={{
                     background: config.badgeBg,
                     color: config.badgeText,
                     fontSize: 12,
                     fontWeight: 700,
-                    padding: '2px 8px',
-                    borderRadius: 8
+                    padding: '3px 8px',
+                    borderRadius: 8,
+                    whiteSpace: 'nowrap',
+                    display: 'inline-block'
                   }}>
                     {record.badge}
                   </span>
                 )}
-
-                <span style={{ fontSize: 13, color: '#717886', marginLeft: 4 }}>
-                  {formatDate(record.created_at)}
-                </span>
               </div>
 
-              {/* Right Side */}
-              <div style={{ fontSize: 15, fontWeight: 800, color: config.value }}>
-                {record.value}
+              {/* 3. Date */}
+              <div style={{ fontSize: 13, color: '#717886', whiteSpace: 'nowrap' }}>
+                {formatDate(record.created_at)}
+              </div>
+
+              {/* 4. Value */}
+              <div style={{ fontSize: 15, fontWeight: 800, color: config.value, textAlign: 'right', whiteSpace: 'nowrap' }}>
+                {displayValue}
               </div>
             </div>
           )
