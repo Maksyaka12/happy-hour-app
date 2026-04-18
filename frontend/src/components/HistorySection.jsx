@@ -170,16 +170,16 @@ export function HistorySection({ address }) {
           disabled={loading}
           style={{
             width: '100%',
-            background: 'transparent',
-            border: '1px solid #E5E7EB',
+            background: hasMore ? 'transparent' : '#FEF2F2',
+            border: `1px solid ${hasMore ? '#E5E7EB' : '#FCA5A5'}`,
             borderRadius: 30,
             padding: '12px',
             marginTop: 8,
             fontSize: 14,
             fontWeight: 600,
-            color: '#32353D',
+            color: hasMore ? '#32353D' : '#DC2626',
             cursor: loading ? 'not-allowed' : 'pointer',
-            transition: 'background 0.2s'
+            transition: 'all 0.2s'
           }}
         >
           {loading ? 'Loading...' : (hasMore ? 'Show more' : 'Show less')}
