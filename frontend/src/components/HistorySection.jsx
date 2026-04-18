@@ -7,7 +7,7 @@ const TYPE_CONFIG = {
     title: '#0A0B0D',
     badgeBg: '#F0FDF4',
     badgeText: '#15803D',
-    value: '#059669' // Green text for deposit
+    value: '#0A0B0D' // Black text for deposit points
   },
   checkin: {
     title: '#0A0B0D',
@@ -73,10 +73,11 @@ export function HistorySection({ address }) {
   }, [address, limit])
 
   const onLoadMore = () => {
-    // 5 -> 10 -> 20 -> 150
-    if (limit === 5) setLimit(10)
-    else if (limit === 10) setLimit(20)
-    else if (limit === 20) setLimit(150)
+    setLimit((prev) => prev + 5)
+  }
+
+  const onShowLess = () => {
+    setLimit(5)
   }
 
   if (loading && history.length === 0) {
@@ -163,9 +164,9 @@ export function HistorySection({ address }) {
       </div>
 
       {/* Load More Button */}
-      {hasMore && (
+      {(hasMore || history.length > 5) && (
         <button
-          onClick={onLoadMore}
+          onClick={hasMore ? onLoadMore : onShowLess}
           disabled={loading}
           style={{
             width: '100%',
@@ -181,7 +182,7 @@ export function HistorySection({ address }) {
             transition: 'background 0.2s'
           }}
         >
-          {loading ? 'Loading...' : 'More'}
+          {loading ? 'Loading...' : (hasMore ? 'Show more' : 'Show less')}
         </button>
       )}
     </div>
