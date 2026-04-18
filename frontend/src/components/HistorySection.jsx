@@ -5,8 +5,8 @@ import { db } from '../config/supabase'
 const TYPE_CONFIG = {
   deposit: {
     title: '#0A0B0D',
-    badgeBg: '#F0FDF4',
-    badgeText: '#15803D',
+    badgeBg: '#FFFBEB',
+    badgeText: '#D97706',
     value: '#0A0B0D' // Black text for deposit points
   },
   checkin: {
@@ -17,8 +17,8 @@ const TYPE_CONFIG = {
   },
   win: {
     title: '#0A0B0D',
-    badgeBg: '#FFFBEB',
-    badgeText: '#D97706',
+    badgeBg: '#F0FDF4',
+    badgeText: '#15803D',
     value: '#0A0B0D'
   },
   quest: {
@@ -116,6 +116,11 @@ export function HistorySection({ address }) {
              const pts = Math.floor(num * 10)
              displayValue = `+${pts} PTS`
           }
+
+          let displayAction = record.action
+          if (displayAction === 'Daily Claim') {
+            displayAction = 'Daily'
+          }
           
           return (
             <div key={record.id} style={{
@@ -128,7 +133,7 @@ export function HistorySection({ address }) {
             }}>
               {/* 1. Action */}
               <div style={{ fontSize: 14, fontWeight: 800, color: config.title, whiteSpace: 'nowrap' }}>
-                {record.action}
+                {displayAction}
               </div>
 
               {/* 2. Badge */}
