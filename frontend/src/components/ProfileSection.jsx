@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useWriteContract, useWaitForTransactionReceipt, useDisconnect, useChainId, useSwitchChain } from 'wagmi'
+import { useWaitForTransactionReceipt, useDisconnect, useChainId, useSwitchChain } from 'wagmi'
 import { parseUnits } from 'viem'
 import { base } from 'wagmi/chains'
 import { APP_URL, FOUNDATION, USDC_ADDRESS, USDC_ABI, CHECKIN_AMOUNT, STREAK_REWARDS } from '../config/constants'
 import { db } from '../config/supabase'
 import { TxModal } from './TxModal'
 import { UserAvatar } from './UserAvatar'
+import { useBuilderWrite } from '../hooks/useBuilderWrite'
 
 const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
 const todayUTC = () => new Date().toISOString().slice(0, 10)
@@ -84,7 +85,7 @@ export function ProfileSection({ address, basename }) {
 
   const canCheckin = !checkedToday
 
-  const { data: txHash, writeContract, isPending, error: writeError, reset } = useWriteContract()
+  const { data: txHash, writeContract, isPending, error: writeError, reset } = useBuilderWrite()
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash: txHash })
 
   useEffect(() => {

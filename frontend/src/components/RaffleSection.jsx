@@ -10,12 +10,13 @@
 // ─────────────────────────────────────────────────────────
 
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
-import { useWriteContract, useWaitForTransactionReceipt, useChainId, useSwitchChain } from 'wagmi'
+import { useWaitForTransactionReceipt, useChainId, useSwitchChain } from 'wagmi'
 import { parseUnits } from 'viem'
 import { base } from 'wagmi/chains'
 import { FOUNDATION, USDC_ADDRESS, USDC_ABI, BET_OPTS, TICKET_UNIT, CLOSE_BEFORE_MS, WINNER_SHARE } from '../config/constants'
 import { db } from '../config/supabase'
 import { useRoundState } from '../hooks/useRoundState'
+import { useBuilderWrite } from '../hooks/useBuilderWrite'
 import { TxModal } from './TxModal'
 import { RouletteModal } from './RouletteModal'
 import { PBar } from './PBar'
@@ -45,8 +46,8 @@ export function RaffleSection({ address }) {
   const { switchChain, isPending: isSwitching } = useSwitchChain()
   const wrongChain = chainId !== base.id
 
-  // ── wagmi write contract ─────────────────────────────────
-  const { data: txHash, writeContract, isPending, error: writeError, reset } = useWriteContract()
+  // ── Builder write contract ───────────────────────────────
+  const { data: txHash, writeContract, isPending, error: writeError, reset } = useBuilderWrite()
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash: txHash })
 
   const fallbackRef = useRef(false)
