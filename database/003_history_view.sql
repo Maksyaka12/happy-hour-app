@@ -34,7 +34,7 @@ SELECT
   lower(winner) AS address,
   'Reward' AS action,
   'Win Round ' || id AS badge,
-  '+10 PTS' AS value,
+  '+30 PTS' AS value,
   'win' AS type,
   ends_at AS created_at
 FROM rounds
