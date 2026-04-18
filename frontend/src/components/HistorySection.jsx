@@ -52,7 +52,7 @@ export function HistorySection({ address }) {
       if (!address) return
       
       setLoading(true)
-      const { data, error } = await db.client
+      const { data, error } = await db
         .from('user_activity')
         .select('*')
         .eq('address', address.toLowerCase())
