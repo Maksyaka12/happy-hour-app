@@ -6,6 +6,7 @@ import { APP_URL, FOUNDATION, USDC_ADDRESS, USDC_ABI, CHECKIN_AMOUNT, STREAK_REW
 import { db } from '../config/supabase'
 import { TxModal } from './TxModal'
 import { UserAvatar } from './UserAvatar'
+import { HistorySection } from './HistorySection'
 import { useBuilderWrite } from '../hooks/useBuilderWrite'
 
 const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
@@ -359,6 +360,8 @@ export function ProfileSection({ address, basename }) {
           </div>
         </div>
       </div>
+
+      <HistorySection address={address} />
 
       {txModal && (
         <TxModal
