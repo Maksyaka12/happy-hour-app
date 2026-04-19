@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useWaitForTransactionReceipt, useDisconnect, useChainId, useSwitchChain, useSendTransaction } from 'wagmi'
+import { useWaitForTransactionReceipt, useDisconnect, useChainId, useSwitchChain } from 'wagmi'
 import { parseUnits } from 'viem'
 import { base } from 'wagmi/chains'
 import { APP_URL, FOUNDATION, USDC_ADDRESS, USDC_ABI, CHECKIN_AMOUNT, STREAK_REWARDS } from '../config/constants'
@@ -8,7 +8,6 @@ import { TxModal } from './TxModal'
 import { UserAvatar } from './UserAvatar'
 import { HistorySection } from './HistorySection'
 import { useBuilderWrite } from '../hooks/useBuilderWrite'
-import { VAULT_BYTECODE } from '../VaultDeployData'
 
 const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
 const todayUTC = () => new Date().toISOString().slice(0, 10)
@@ -30,11 +29,6 @@ function normalizeUserRow(data) {
 
 export function ProfileSection({ address, basename }) {
   const { disconnect } = useDisconnect()
-  const { sendTransaction: sendDeployContract, data: deployHash } = useSendTransaction()
-  const deployVault = () => {
-    const encodedArg = USDC_ADDRESS.replace('0x', '').padStart(64, '0')
-    sendDeployContract({ data: VAULT_BYTECODE + encodedArg })
-  }
   const chainId = useChainId()
   const { switchChain } = useSwitchChain()
   const [txModal, setTxModal] = useState(false)
@@ -366,30 +360,6 @@ export function ProfileSection({ address, basename }) {
           </div>
         </div>
       </div>
-
-      {/* TEMPORARY ADMIN DEPLOYMENT BUTTON - ONLY VISIBLE TO FOUNDER */}
-      {address && FOUNDATION && address.toLowerCase() === FOUNDATION.toLowerCase() && (
-        <div style={{ marginTop: 30, background: '#FEF2F2', padding: 20, borderRadius: 16, border: '1px solid #FCA5A5' }}>
-          <div style={{ fontWeight: 800, color: '#DC2626', marginBottom: 10 }}>🛠 ADMIN ZONE</div>
-          <p style={{ color: '#0A0B0D', fontSize: 13, marginBottom: 15 }}>
-            You are viewing this because your connected Smart Wallet is the approved founder (`{FOUNDATION}`). 
-            Click the button below to natively deploy your new Vault Smart Contract to Base Mainnet!
-          </p>
-          <button 
-            onClick={deployVault}
-            style={{ width: '100%', padding: 15, background: '#DC2626', color: '#fff', borderRadius: 30, fontWeight: 800, border: 'none', cursor: 'pointer' }}
-          >
-            Deploy Vault Contract
-          </button>
-          {deployHash && (
-             <div style={{ marginTop: 15, fontSize: 14, wordBreak: 'break-all', color: '#059669', background: '#F0FDF4', padding: 10, borderRadius: 8 }}>
-                ✅ Transaction sent!<br /><br />
-                Tx Hash: <a href={`https://basescan.org/tx/${deployHash}`} target="_blank" rel="noreferrer" style={{fontWeight: 'bold', textDecoration: 'underline'}}>{deployHash}</a><br /><br />
-                <i>Open the BaseScan link above. Look for "Contract Created: [Адреса]" — це і є адреса вашого контракту!</i>
-             </div>
-          )}
-        </div>
-      )}
 
       <HistorySection address={address} />
 
