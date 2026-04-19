@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { isAddress, formatUnits } from "https://esm.sh/viem@2";
 
-const FOUNDATION = (Deno.env.get("FOUNDATION_ADDRESS") || "0x753e38C804445428C730ec53063051Eddf85446c").toLowerCase();
+const FOUNDATION = (Deno.env.get("FOUNDATION_ADDRESS") || "0xdD226C7Bb871B2f6175FA71F13E839aaDa9Efe07").toLowerCase();
 const USDC = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913".toLowerCase();
 const TICKET_UNIT = 0.1;
 const MIN_DEPOSIT = 0.1;
