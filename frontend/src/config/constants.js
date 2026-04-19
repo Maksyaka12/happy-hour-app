@@ -13,7 +13,7 @@ export const SUPABASE_ANON = env.VITE_SUPABASE_ANON || 'eyJhbGciOiJIUzI1NiIsInR5
 export const APP_URL = env.VITE_APP_URL || 'https://happy-hour-based.vercel.app'
 export const HAS_SUPABASE_CONFIG = Boolean(SUPABASE_URL && SUPABASE_ANON)
 
-export const WINNER_SHARE = 0.8
+export const WINNER_SHARE = 0.85
 export const TICKET_UNIT = 0.1
 export const CHECKIN_AMOUNT = 0.0001
 export const CLOSE_BEFORE_MS = 3 * 60 * 1000
