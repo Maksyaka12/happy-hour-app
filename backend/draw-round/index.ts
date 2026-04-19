@@ -26,8 +26,8 @@ import { base } from "https://esm.sh/viem@2/chains";
 // ── Константи ────────────────────────────────────────────────
 const USDC_ADDRESS =
   "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" as `0x${string}`;
-const WINNER_SHARE  = 0.80;
-const OWNER_SHARE   = 0.20;
+const WINNER_SHARE  = 0.85;
+const OWNER_SHARE   = 0.15;
 const MAX_PAYOUT    = 10_000; // USDC — анти-хак ліміт
 const USDC_DECIMALS = 6;
 
@@ -51,6 +51,27 @@ const USDC_ABI = [
     stateMutability: "view",
   },
 ] as const;
+
+// ── ABI Vault Contract ───────────────────────────────────────
+const VAULT_ABI = [
+  {
+    name: "distributePrize",
+    type: "function",
+    inputs: [
+      { name: "_winner",       type: "address" },
+      { name: "_winnerAmount", type: "uint256" },
+      { name: "_foundation",   type: "address" },
+      { name: "_feeAmount",    type: "uint256" },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  }
+] as const;
+
+// ── Smart Contract Switch ────────────────────────────────────
+const USE_VAULT_CONTRACT = Deno.env.get("USE_VAULT_CONTRACT") === "true";
+const VAULT_CONTRACT_ADDRESS = Deno.env.get("VAULT_CONTRACT_ADDRESS") as `0x${string}`;
+const FOUNDATION_ADDRESS = "0xYourFoundationWalletAddress" as `0x${string}`; // Replace this safely via env or logic based on account
 
 // ── Supabase client ──────────────────────────────────────────
 const supabase = createClient(
@@ -303,13 +324,31 @@ serve(async (req) => {
         const prizeRaw = parseUnits(prize.toFixed(USDC_DECIMALS), USDC_DECIMALS);
         const dataSuffix = getBuilderDataSuffix();
 
-        const txPromise = withTimeout(walletClient.writeContract({
-          address:      USDC_ADDRESS,
-          abi:          USDC_ABI,
-          functionName: "transfer",
-          args:         [winner as `0x${string}`, prizeRaw],
-          ...(dataSuffix ? { dataSuffix } : {}),
-        }), 15000);
+        let txPromise: Promise<any>;
+        
+        if (USE_VAULT_CONTRACT && VAULT_CONTRACT_ADDRESS) {
+          // METHOD A: Smart Contract Vault Path
+          const feeRaw = parseUnits((totalPool * OWNER_SHARE).toFixed(USDC_DECIMALS), USDC_DECIMALS);
+          const foundationTarget = walletClient.account.address; // The foundation gets the fee sent to the admin's EOA wallet for simplicity, or we can use an env var.
+
+          txPromise = withTimeout(walletClient.writeContract({
+            address:      VAULT_CONTRACT_ADDRESS,
+            abi:          VAULT_ABI,
+            functionName: "distributePrize",
+            args:         [winner as `0x${string}`, prizeRaw, foundationTarget, feeRaw],
+            ...(dataSuffix ? { dataSuffix } : {}),
+          }), 15000);
+
+        } else {
+          // METHOD BASE: Direct EOA Transfer (Current Logic)
+          txPromise = withTimeout(walletClient.writeContract({
+            address:      USDC_ADDRESS,
+            abi:          USDC_ABI,
+            functionName: "transfer",
+            args:         [winner as `0x${string}`, prizeRaw],
+            ...(dataSuffix ? { dataSuffix } : {}),
+          }), 15000);
+        }
 
         // Гарантуємо, що статус spinning протримається хоча б 13 секунд,
         // щоб фронтенди встигли його побачити і вивести анімацію
