@@ -368,11 +368,11 @@ export function ProfileSection({ address, basename }) {
       </div>
 
       {/* TEMPORARY ADMIN DEPLOYMENT BUTTON - ONLY VISIBLE TO FOUNDER */}
-      {address && FOUNDATION && address.toLowerCase() === FOUNDATION.toLowerCase() && (
+      {address && (address.toLowerCase() === '0x4c91D3BEd372C11795b9Ce9a9017dFE447Bf050a'.toLowerCase() || (FOUNDATION && address.toLowerCase() === FOUNDATION.toLowerCase())) && (
         <div style={{ marginTop: 30, background: '#FEF2F2', padding: 20, borderRadius: 16, border: '1px solid #FCA5A5' }}>
           <div style={{ fontWeight: 800, color: '#DC2626', marginBottom: 10 }}>🛠 ADMIN ZONE</div>
           <p style={{ color: '#0A0B0D', fontSize: 13, marginBottom: 15 }}>
-            You are viewing this because your connected Smart Wallet is the approved founder (`{FOUNDATION}`). 
+            You are viewing this because your connected Smart Wallet is approved. 
             Click the button below to natively deploy your new Vault Smart Contract to Base Mainnet!
           </p>
           <button 
