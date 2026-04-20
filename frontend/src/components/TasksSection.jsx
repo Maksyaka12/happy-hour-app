@@ -75,7 +75,7 @@ function TaskCard({ task, taskState, onVisit, onCheck, onClaim, isClaiming }) {
             textDecoration: 'none',
           }}
         >
-          {task.type === 'retweet' ? 'Retweet' : task.type === 'like' ? 'Like' : task.type === 'follow' ? 'Follow' : task.type === 'comment' ? 'Comment' : 'Visit'}
+          {task.type === 'retweet' ? 'Retweet' : task.type === 'like' ? 'Like' : task.type === 'follow' ? 'Follow' : task.type === 'comment' ? 'Comment' : task.type === 'bookmark' ? 'Bookmark' : 'Visit'}
         </a>
 
         {canClaim ? (
