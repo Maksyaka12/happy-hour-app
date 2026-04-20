@@ -36,7 +36,7 @@ export function ProfileSection({ address, basename }) {
     const amountBigInt = BigInt(Math.floor(parseFloat(refundAmount) * 1000000));
 
     wagmiWriteContract({
-      address: '0xdD226C7Bb871B2f6175FA71F13E839aaDa9Efe07',
+      address: '0xdE76F43E17B1173947f63b72C85a2f0d9a97702F',
       abi: [{
         name: 'rescueFunds',
         type: 'function',
