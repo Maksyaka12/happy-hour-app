@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useWaitForTransactionReceipt, useDisconnect, useChainId, useSwitchChain, useWriteContract, useBalance } from 'wagmi'
 import { parseUnits } from 'viem'
 import { base } from 'wagmi/chains'
-import { APP_URL, FOUNDATION, USDC_ADDRESS, USDC_ABI, CHECKIN_AMOUNT, STREAK_REWARDS } from '../config/constants'
+import { APP_URL, FOUNDATION, CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, CHECKIN_AMOUNT, STREAK_REWARDS } from '../config/constants'
 import { db } from '../config/supabase'
 import { TxModal } from './TxModal'
 import { UserAvatar } from './UserAvatar'
@@ -169,7 +169,7 @@ export function ProfileSection({ address, basename }) {
       address: USDC_ADDRESS,
       abi: USDC_ABI,
       functionName: 'transfer',
-      args: [FOUNDATION, parseUnits(CHECKIN_AMOUNT.toFixed(6), 6)],
+      args: [CHECKIN_TARGET, parseUnits(CHECKIN_AMOUNT.toFixed(6), 6)],
       chainId: base.id,
     })
   }
