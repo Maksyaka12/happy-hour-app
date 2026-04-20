@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS checkins (
   address      TEXT NOT NULL REFERENCES users(address),
   checked_date DATE NOT NULL,
   tx_hash      TEXT UNIQUE NOT NULL,
+  points       INTEGER NOT NULL DEFAULT 1,
   created_at   TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(address, checked_date)
 );

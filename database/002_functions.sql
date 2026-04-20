@@ -163,9 +163,6 @@ BEGIN
   WHERE address = v_address
   FOR UPDATE;
 
-  INSERT INTO checkins (address, checked_date, tx_hash)
-  VALUES (v_address, v_today, v_tx_hash);
-
   IF v_user.streak_last = v_today - 1 THEN
     v_new_streak := v_user.streak + 1;
   ELSE
@@ -180,6 +177,9 @@ BEGIN
   WHERE days = v_new_streak;
 
   v_pts_earned := v_pts_earned + v_bonus;
+
+  INSERT INTO checkins (address, checked_date, tx_hash, points)
+  VALUES (v_address, v_today, v_tx_hash, v_pts_earned);
 
   UPDATE users
   SET

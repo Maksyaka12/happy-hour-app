@@ -21,9 +21,9 @@ SELECT
   lower(address) AS address,
   'Daily Claim' AS action,
   'Streak' AS badge,
-  '+1 PTS' AS value,
+  '+' || points || ' PTS' AS value,
   'checkin' AS type,
-  checked_date::timestamp AT TIME ZONE 'UTC' AS created_at
+  created_at
 FROM checkins
 
 UNION ALL
