@@ -328,7 +328,8 @@ serve(async (req) => {
         
         if (USE_VAULT_CONTRACT && VAULT_CONTRACT_ADDRESS) {
           // METHOD A: Smart Contract Vault Path
-          const feeRaw = parseUnits((totalPool * OWNER_SHARE).toFixed(USDC_DECIMALS), USDC_DECIMALS);
+          const fee = totalPool - prize;
+          const feeRaw = parseUnits(Math.max(0, fee).toFixed(USDC_DECIMALS), USDC_DECIMALS);
           const foundationTarget = walletClient.account.address; // The foundation gets the fee sent to the admin's EOA wallet for simplicity, or we can use an env var.
 
           txPromise = withTimeout(walletClient.writeContract({
