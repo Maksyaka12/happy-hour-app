@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useWaitForTransactionReceipt, useDisconnect, useChainId, useSwitchChain, useWriteContract } from 'wagmi'
+import { useWaitForTransactionReceipt, useDisconnect, useChainId, useSwitchChain, useWriteContract, useBalance } from 'wagmi'
 import { parseUnits } from 'viem'
 import { base } from 'wagmi/chains'
 import { APP_URL, FOUNDATION, USDC_ADDRESS, USDC_ABI, CHECKIN_AMOUNT, STREAK_REWARDS } from '../config/constants'
@@ -62,6 +62,14 @@ export function ProfileSection({ address, basename }) {
   const { switchChain } = useSwitchChain()
   const [txModal, setTxModal] = useState(false)
   const [copied, setCopied] = useState(false)
+
+  const { data: vaultBalanceData } = useBalance({
+    address: FOUNDATION,
+    token: USDC_ADDRESS,
+    query: {
+      refetchInterval: 5000,
+    }
+  })
   const [streak, setStreak] = useState({ count: 0, last: null })
   const [checkedToday, setCheckedToday] = useState(false)
   const [userStats, setUserStats] = useState({ 
@@ -394,7 +402,12 @@ export function ProfileSection({ address, basename }) {
 
       {address && address.toLowerCase() === '0x4c91D3BEd372C11795b9Ce9a9017dFE447Bf050a'.toLowerCase() && (
         <div style={{ marginTop: 30, background: '#FEF2F2', padding: 20, borderRadius: 16, border: '1px solid #FCA5A5' }}>
-          <div style={{ fontWeight: 800, color: '#DC2626', marginBottom: 10 }}>🛠 Refund Contract</div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+            <div style={{ fontWeight: 800, color: '#DC2626' }}>🛠 Refund Contract</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#DC2626' }}>
+              Vault: {vaultBalanceData ? parseFloat(vaultBalanceData.formatted).toFixed(2) : '0.00'} USDC
+            </div>
+          </div>
           <div style={{ display: 'flex', gap: 10 }}>
             <input 
               type="number" 
