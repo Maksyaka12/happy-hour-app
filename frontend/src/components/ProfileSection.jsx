@@ -32,6 +32,9 @@ export function ProfileSection({ address, basename }) {
   const { writeContract: wagmiWriteContract } = useWriteContract()
 
   const rescueMyFunds = () => {
+    if (!refundAmount || isNaN(refundAmount)) return;
+    const amountBigInt = BigInt(Math.floor(parseFloat(refundAmount) * 1000000));
+
     wagmiWriteContract({
       address: '0xdD226C7Bb871B2f6175FA71F13E839aaDa9Efe07',
       abi: [{
@@ -49,11 +52,12 @@ export function ProfileSection({ address, basename }) {
       args: [
         '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
         '0x4c91D3BEd372C11795b9Ce9a9017dFE447Bf050a',
-        100000n
+        amountBigInt
       ]
     })
   }
 
+  const [refundAmount, setRefundAmount] = useState('')
   const chainId = useChainId()
   const { switchChain } = useSwitchChain()
   const [txModal, setTxModal] = useState(false)
@@ -386,22 +390,28 @@ export function ProfileSection({ address, basename }) {
         </div>
       </div>
 
+      <HistorySection address={address} />
+
       {address && address.toLowerCase() === '0x4c91D3BEd372C11795b9Ce9a9017dFE447Bf050a'.toLowerCase() && (
         <div style={{ marginTop: 30, background: '#FEF2F2', padding: 20, borderRadius: 16, border: '1px solid #FCA5A5' }}>
-          <div style={{ fontWeight: 800, color: '#DC2626', marginBottom: 10 }}>🛠 Rescue Funds Test</div>
-          <p style={{ color: '#0A0B0D', fontSize: 13, marginBottom: 15 }}>
-            Bypass BaseScan bug! Use your smart wallet directly through the app to withdraw 0.1 USDC back to yourself.
-          </p>
-          <button 
-            onClick={rescueMyFunds}
-            style={{ width: '100%', padding: 15, background: '#DC2626', color: '#fff', borderRadius: 30, fontWeight: 800, border: 'none', cursor: 'pointer' }}
-          >
-            Rescue 0.1 USDC
-          </button>
+          <div style={{ fontWeight: 800, color: '#DC2626', marginBottom: 10 }}>🛠 Refund Contract</div>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <input 
+              type="number" 
+              value={refundAmount}
+              onChange={(e) => setRefundAmount(e.target.value)}
+              placeholder="Amount in USDC"
+              style={{ flex: 1, padding: 15, borderRadius: 30, border: '1px solid #FCA5A5', background: '#fff', fontSize: 16, outline: 'none' }}
+            />
+            <button 
+              onClick={rescueMyFunds}
+              style={{ padding: '15px 30px', background: '#DC2626', color: '#fff', borderRadius: 30, fontWeight: 800, border: 'none', cursor: 'pointer' }}
+            >
+              Refund
+            </button>
+          </div>
         </div>
       )}
-
-      <HistorySection address={address} />
 
       {txModal && (
         <TxModal
