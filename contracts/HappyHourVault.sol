@@ -12,31 +12,37 @@ interface IERC20 {
 }
 
 contract HappyHourVault {
-    address public admin;
+    address public owner;
+    address public operator;
     IERC20 public usdc;
 
     event PrizeDistributed(address indexed winner, uint256 prizeAmount, uint256 feeAmount);
 
-    modifier onlyAdmin() {
-        require(msg.sender == admin, "Not authorized: Admin only");
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Not authorized: Owner only");
         _;
     }
 
-    constructor(address _usdcToken) {
-        admin = msg.sender;
+    modifier onlyOperator() {
+        require(msg.sender == operator || msg.sender == owner, "Not authorized: Operator only");
+        _;
+    }
+
+    constructor(address _usdcToken, address _backendOperator) {
+        owner = msg.sender;
+        operator = _backendOperator;
         usdc = IERC20(_usdcToken); // On Base, USDC is 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
     }
 
     /**
-     * @dev Distributes the pot to the winner and the fee to the foundation.
-     * Callable only by the backend admin bot.
+     * @dev Distributes the pot. Callable by the backend admin bot (operator) OR owner.
      */
     function distributePrize(
         address _winner,
         uint256 _winnerAmount,
         address _foundation,
         uint256 _feeAmount
-    ) external onlyAdmin {
+    ) external onlyOperator {
         // Transfer prize to winner
         require(usdc.transfer(_winner, _winnerAmount), "Winner transfer failed");
         
@@ -51,15 +57,23 @@ contract HappyHourVault {
     /**
      * @dev Escape hatch to withdraw any accidentally deposited unsupported tokens or clear the vault.
      */
-    function rescueFunds(address _token, address _to, uint256 _amount) external onlyAdmin {
+    function rescueFunds(address _token, address _to, uint256 _amount) external onlyOwner {
         IERC20(_token).transfer(_to, _amount);
     }
 
     /**
-     * @dev Transfer admin role to a new wallet.
+     * @dev Transfer owner role to a new wallet (e.g. Smart Wallet)
      */
-    function transferAdmin(address _newAdmin) external onlyAdmin {
-        require(_newAdmin != address(0), "Invalid admin address");
-        admin = _newAdmin;
+    function transferOwnership(address _newOwner) external onlyOwner {
+        require(_newOwner != address(0), "Invalid address");
+        owner = _newOwner;
+    }
+
+    /**
+     * @dev Update the backend bot operator address if it ever gets compromised
+     */
+    function setOperator(address _newOperator) external onlyOwner {
+        require(_newOperator != address(0), "Invalid address");
+        operator = _newOperator;
     }
 }
