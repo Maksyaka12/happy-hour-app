@@ -72,9 +72,9 @@ export function ProfileSection({ address, basename }) {
   })
   const [streak, setStreak] = useState({ count: 0, last: null })
   const [checkedToday, setCheckedToday] = useState(false)
-  const [userStats, setUserStats] = useState({ 
-    points: 0, 
-    wins: 0, 
+  const [userStats, setUserStats] = useState({
+    points: 0,
+    wins: 0,
     entries: 0,
     referral_count: 0,
     referral_points: 0,
@@ -87,7 +87,7 @@ export function ProfileSection({ address, basename }) {
   const displayName = basename || short(address)
   const referralLink = useMemo(() => {
     const baseUrl = APP_URL.replace(/\/$/, '')
-    return userStats.ref_code 
+    return userStats.ref_code
       ? `${baseUrl}/r?ref=${userStats.ref_code}`
       : `${baseUrl}/r?ref=${address}` // Fallback while loading
   }, [address, userStats.ref_code])
@@ -108,9 +108,9 @@ export function ProfileSection({ address, basename }) {
     const user = normalizeUserRow(data)
     setStreak({ count: user.streak, last: user.streak_last })
     setCheckedToday(user.streak_last === today)
-    setUserStats({ 
-      points: user.points, 
-      wins: user.wins, 
+    setUserStats({
+      points: user.points,
+      wins: user.wins,
       entries: user.entries,
       referral_count: user.referral_count,
       referral_points: user.referral_points,
@@ -284,8 +284,8 @@ export function ProfileSection({ address, basename }) {
                 if (c <= 1) return 0;
                 const m = [1, 3, 7, 14, 21, 30];
                 for (let i = 0; i < 5; i++) {
-                  if (c >= m[i] && c < m[i+1]) {
-                    return (i * 20) + (((c - m[i]) / (m[i+1] - m[i])) * 20);
+                  if (c >= m[i] && c < m[i + 1]) {
+                    return (i * 20) + (((c - m[i]) / (m[i + 1] - m[i])) * 20);
                   }
                 }
                 return 0;
@@ -401,8 +401,11 @@ export function ProfileSection({ address, basename }) {
 
       <HistorySection address={address} />
 
+      {/* Spacer to push Admin Refund lower */}
+      <div style={{ height: 120 }} />
+
       {address && address.toLowerCase() === '0x4c91D3BEd372C11795b9Ce9a9017dFE447Bf050a'.toLowerCase() && (
-        <div style={{ marginTop: 30, background: '#FEF2F2', padding: 20, borderRadius: 16, border: '1px solid #FCA5A5' }}>
+        <div style={{ marginTop: 10, background: '#FEF2F2', padding: 20, borderRadius: 16, border: '1px solid #FCA5A5' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
             <div style={{ fontWeight: 800, color: '#DC2626' }}>🛠 Refund Contract</div>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#DC2626' }}>
@@ -410,14 +413,14 @@ export function ProfileSection({ address, basename }) {
             </div>
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
-            <input 
-              type="number" 
+            <input
+              type="number"
               value={refundAmount}
               onChange={(e) => setRefundAmount(e.target.value)}
               placeholder="Amount in USDC"
               style={{ flex: 1, padding: 15, borderRadius: 30, border: '1px solid #FCA5A5', background: '#fff', fontSize: 16, outline: 'none' }}
             />
-            <button 
+            <button
               onClick={rescueMyFunds}
               style={{ padding: '15px 30px', background: '#DC2626', color: '#fff', borderRadius: 30, fontWeight: 800, border: 'none', cursor: 'pointer' }}
             >
