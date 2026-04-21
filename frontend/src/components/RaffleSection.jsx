@@ -317,13 +317,14 @@ export function RaffleSection({ address }) {
           How it works
         </div>
         {[
-          ['How long does each round last?',   'Each round runs exactly 60 minutes. A new round starts automatically.'],
+          ['How long does each round last?',   'Each round runs exactly 60 minutes.'],
           ['When do deposits close?',           'Deposits close 3 minutes before the draw.'],
-          ['How is the winner selected?',       'Secure random selection. 0.1 USDC = 1 ticket. More bets = more chances.'],
-          ['How much does the winner receive?', 'Winner takes 80% of the total pot. 20% goes to the foundation.'],
-          ['Can I bet multiple times?',         'Yes! Multiple deposits per round are allowed and all add to your ticket count.'],
-          ['Minimum bet?',                      '0.1 USDC (1 ticket). Choose from 0.1, 0.5, 1, 5, 10, or 30 USDC.'],
-          ['When are winnings paid?',           'Automatically after the draw, directly to the winner\'s wallet.'],
+          ['How is the winner selected?',       'Secure random selection, lucky-based. Anyone with 1+ ticket can win. More tickets = more chances.'],
+          ['How many points do I get for playing?', '1 ticket = 1 HP. The winner receives 30 HP.'],
+          ['What happens if I’m the only player in a round?', 'You will receive a 100% refund and 30 HP as the winner.'],
+          ['How much does the winner receive?', 'Winner takes 85% of the total pot. The remaining 15% goes to the foundation for future rewards.'],
+          ['When are winnings paid?',           'Automatically after the draw, directly to the winner\'s wallet via the smart contract.'],
+          ['Can I deposit multiple times?',     'Yes! Multiple deposits per round are allowed and all contribute to your ticket count.'],
         ].map(([q, a], i, arr) => (
           <div key={i} style={{ marginBottom: i < arr.length - 1 ? 12 : 0 }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: '#32353D', marginBottom: 3 }}>{q}</div>
