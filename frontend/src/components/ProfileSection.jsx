@@ -87,8 +87,8 @@ export function ProfileSection({ address, basename }) {
   const displayName = basename || short(address)
   const referralLink = useMemo(() => {
     return userStats.ref_code 
-      ? `${APP_URL}?ref=${userStats.ref_code}`
-      : `${APP_URL}?ref=${address}` // Fallback while loading
+      ? `${APP_URL}/r?ref=${userStats.ref_code}`
+      : `${APP_URL}/r?ref=${address}` // Fallback while loading
   }, [address, userStats.ref_code])
 
   const loadProfile = async () => {
