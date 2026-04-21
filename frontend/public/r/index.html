@@ -27,8 +27,12 @@
 
   
   <script>
-    // Fallback JavaScript redirect
-    window.location.href = "https://base.app/app/happy-hour-based.vercel.app";
+    // Capture any query parameters (like ?ref=vibe)
+    const urlParams = window.location.search;
+    const targetUrl = "https://base.app/app/happy-hour-based.vercel.app" + urlParams;
+    
+    // Perform the redirect
+    window.location.href = targetUrl;
   </script>
 
   <style>
