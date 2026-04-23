@@ -25,6 +25,7 @@ export const STREAK_REWARDS = [
   { days: 3, pts: 10 },
   { days: 7, pts: 30 },
   { days: 14, pts: 100 },
+  { days: 21, pts: 300 },
   { days: 30, pts: 500 },
 ]
 
