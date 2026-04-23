@@ -142,7 +142,7 @@ export function TasksSection({ address }) {
   const [claimingId, setClaimingId] = useState('')
   const [errorText, setErrorText] = useState('')
   const [showAdmin, setShowAdmin] = useState(false)
-  const [newTask, setNewTask] = useState({ type: 'retweet', text: '', url: '', points: 5 })
+  const [newTasks, setNewTasks] = useState([{ type: 'retweet', text: '', url: '', points: 1 }])
   const [isCreating, setIsCreating] = useState(false)
 
   const ADMIN_WALLET = '0x4c91d3bed372c11795b9ce9a9017dfe447bf050a'
@@ -178,24 +178,50 @@ export function TasksSection({ address }) {
   }
 
   const handleCreateTask = async () => {
-    if (!newTask.url || !newTask.text) return
+    const validTasks = newTasks.filter(t => t.url && t.text)
+    if (validTasks.length === 0) return
+    
     setIsCreating(true)
-    const { error } = await db.rpc('admin_create_task', {
-      p_admin_address: address.toLowerCase(),
-      p_type: newTask.type,
-      p_text: newTask.text,
-      p_url: newTask.url,
-      p_points: Number(newTask.points),
-    })
-    if (!error) {
+    setErrorText('')
+    
+    let successCount = 0
+    for (const task of validTasks) {
+      const { error } = await db.rpc('admin_create_task', {
+        p_admin_address: address.toLowerCase(),
+        p_type: task.type,
+        p_text: task.text,
+        p_url: task.url,
+        p_points: Number(task.points),
+      })
+      if (!error) successCount++
+    }
+
+    if (successCount > 0) {
       setShowAdmin(false)
-      setNewTask({ type: 'retweet', text: '', url: '', points: 5 })
+      setNewTasks([{ type: 'retweet', text: '', url: '', points: 1 }])
       loadTasks()
+      if (successCount < validTasks.length) {
+        setErrorText(`Created ${successCount} of ${validTasks.length} tasks. Some failed.`)
+      }
     } else {
-      setErrorText('Failed to create task')
-      console.error(error)
+      setErrorText('Failed to create tasks')
     }
     setIsCreating(false)
+  }
+
+  const addTaskRow = () => {
+    setNewTasks([...newTasks, { type: 'retweet', text: '', url: '', points: 1 }])
+  }
+
+  const removeTaskRow = (index) => {
+    if (newTasks.length <= 1) return
+    setNewTasks(newTasks.filter((_, i) => i !== index))
+  }
+
+  const updateTaskRow = (index, field, value) => {
+    const next = [...newTasks]
+    next[index] = { ...next[index], [field]: value }
+    setNewTasks(next)
   }
 
   useEffect(() => {
@@ -295,27 +321,42 @@ export function TasksSection({ address }) {
 
       {isAdmin && showAdmin && (
         <div style={{ background: '#EEF0F3', padding: 16, borderRadius: 16, marginBottom: 16, border: '1px solid #DEE1E7', animation: 'fadeIn 0.2s ease' }}>
-          <div style={{ fontSize: 14, fontWeight: 800, marginBottom: 12, color: '#0A0B0D' }}>New Task (24h)</div>
+          <div style={{ fontSize: 14, fontWeight: 800, marginBottom: 12, color: '#0A0B0D' }}>Bulk Create Tasks (24h)</div>
           
-          <select value={newTask.type} onChange={e => setNewTask({...newTask, type: e.target.value})} style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #ccc', marginBottom: 8, background: '#fff', fontSize: 13 }}>
-            <option value="retweet">Retweet</option>
-            <option value="like">Like</option>
-            <option value="comment">Comment</option>
-            <option value="bookmark">Bookmark</option>
-            <option value="follow">Follow</option>
-          </select>
-          
-          <input placeholder="Task Description (e.g. Retweet & Tag 3 friends)" value={newTask.text} onChange={e => setNewTask({...newTask, text: e.target.value})} style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #ccc', marginBottom: 8, background: '#fff', fontSize: 13, boxSizing: 'border-box' }} />
-          
-          <input placeholder="Post URL (https://x.com/...)" value={newTask.url} onChange={e => setNewTask({...newTask, url: e.target.value})} style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #ccc', marginBottom: 8, background: '#fff', fontSize: 13, boxSizing: 'border-box' }} />
-          
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-            <span style={{ fontSize: 13, fontWeight: 600 }}>Points to Award:</span>
-            <input type="number" min="1" max="1000" value={newTask.points} onChange={e => setNewTask({...newTask, points: e.target.value})} style={{ width: 80, padding: 8, borderRadius: 8, border: '1px solid #ccc', background: '#fff', fontSize: 13 }} />
-          </div>
+          {newTasks.map((task, idx) => (
+            <div key={idx} style={{ marginBottom: 20, paddingBottom: 20, borderBottom: idx < newTasks.length - 1 ? '1px solid #DEE1E7' : 'none' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: '#717886' }}>Task #{idx + 1}</span>
+                {newTasks.length > 1 && (
+                  <button onClick={() => removeTaskRow(idx)} style={{ background: 'none', border: 'none', color: '#DC2626', fontSize: 11, cursor: 'pointer', fontWeight: 600 }}>Remove</button>
+                )}
+              </div>
 
-          <button onClick={handleCreateTask} disabled={isCreating || !newTask.url || !newTask.text} style={{ width: '100%', padding: 12, borderRadius: 8, background: isCreating || !newTask.url || !newTask.text ? '#B1B7C3' : '#0000FF', color: '#fff', fontWeight: 800, border: 'none', cursor: isCreating || !newTask.url || !newTask.text ? 'not-allowed' : 'pointer' }}>
-            {isCreating ? 'Creating...' : 'Create Task'}
+              <select value={task.type} onChange={e => updateTaskRow(idx, 'type', e.target.value)} style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #ccc', marginBottom: 8, background: '#fff', fontSize: 13 }}>
+                <option value="retweet">Retweet</option>
+                <option value="like">Like</option>
+                <option value="comment">Comment</option>
+                <option value="bookmark">Bookmark</option>
+                <option value="follow">Follow</option>
+              </select>
+              
+              <input placeholder="Task Description (e.g. Retweet & Tag 3 friends)" value={task.text} onChange={e => updateTaskRow(idx, 'text', e.target.value)} style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #ccc', marginBottom: 8, background: '#fff', fontSize: 13, boxSizing: 'border-box' }} />
+              
+              <input placeholder="Post URL (https://x.com/...)" value={task.url} onChange={e => updateTaskRow(idx, 'url', e.target.value)} style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #ccc', marginBottom: 8, background: '#fff', fontSize: 13, boxSizing: 'border-box' }} />
+              
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 13, fontWeight: 600 }}>Points:</span>
+                <input type="number" min="1" max="1000" value={task.points} onChange={e => updateTaskRow(idx, 'points', e.target.value)} style={{ width: 80, padding: 8, borderRadius: 8, border: '1px solid #ccc', background: '#fff', fontSize: 13 }} />
+              </div>
+            </div>
+          ))}
+
+          <button onClick={addTaskRow} style={{ width: '100%', padding: 10, borderRadius: 8, border: '2px dashed #B1B7C3', background: 'none', color: '#717886', fontWeight: 700, cursor: 'pointer', marginBottom: 12, fontSize: 13 }}>
+            + Add Another Task
+          </button>
+
+          <button onClick={handleCreateTask} disabled={isCreating} style={{ width: '100%', padding: 12, borderRadius: 8, background: isCreating ? '#B1B7C3' : '#0000FF', color: '#fff', fontWeight: 800, border: 'none', cursor: isCreating ? 'not-allowed' : 'pointer' }}>
+            {isCreating ? 'Creating...' : `Create ${newTasks.length} Task${newTasks.length !== 1 ? 's' : ''}`}
           </button>
         </div>
       )}
