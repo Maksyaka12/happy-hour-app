@@ -22,10 +22,10 @@ export const CLOSE_BEFORE_MS = 3 * 60 * 1000
 export const BET_OPTS = [0.1, 0.5, 1, 3, 5, 10]
 
 export const STREAK_REWARDS = [
-  { days: 3, pts: 5 },
-  { days: 7, pts: 10 },
-  { days: 14, pts: 20 },
-  { days: 30, pts: 50 },
+  { days: 3, pts: 10 },
+  { days: 7, pts: 30 },
+  { days: 14, pts: 100 },
+  { days: 30, pts: 500 },
 ]
 
 export const USDC_ABI = [
