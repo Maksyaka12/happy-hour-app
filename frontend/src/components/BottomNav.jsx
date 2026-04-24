@@ -22,8 +22,8 @@ export function BottomNav({ tab, setTab }) {
     { id: 'profile',     label: 'Profile', icon: '👤' },
   ]
 
-  // In Base App, lift the nav up by 60px to avoid overlapping the native bottom bar
-  const bottomOffset = isBaseApp() ? 60 : 0
+  // In Base App, lift the nav up by 50px to sit right above the native bottom bar
+  const bottomOffset = isBaseApp() ? 50 : 0
 
   return (
     <div style={{
