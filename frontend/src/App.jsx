@@ -9,7 +9,7 @@ import { RaffleSection } from './components/RaffleSection'
 import { TasksSection } from './components/TasksSection'
 import { LeaderboardSection } from './components/LeaderboardSection'
 import { ProfileSection } from './components/ProfileSection'
-import { BottomNav } from './components/BottomNav'
+import { BottomNav, TopNav, isBaseApp } from './components/BottomNav'
 import { HappyHourLogo } from './components/HappyHourLogo'
 import { CSS } from './styles'
 import { HAS_SUPABASE_CONFIG, USDC_ADDRESS, USDC_ABI } from './config/constants'
@@ -28,6 +28,9 @@ export default function App() {
   useEffect(() => {
     try { localStorage.setItem('happy_tab', tab) } catch {}
   }, [tab])
+
+  // Detect Base App environment once on mount
+  const [inBaseApp] = useState(() => isBaseApp())
   // useAccount().chainId returns the REAL wallet chain (even if unsupported)
   // useChainId() returns base.id by default when chain is not in wagmi config — can't use it here
   const { address, isConnected, isConnecting, isReconnecting, chainId: accountChainId } = useAccount()
@@ -205,11 +208,17 @@ export default function App() {
           </div>
         </div>
 
-        <div style={{ padding: '14px 16px 8px', marginTop: onWrongChain ? 0 : 0 }}>
-          <span style={{ fontSize: 24, fontWeight: 800, color: 'var(--text)', letterSpacing: -0.5 }}>
-            {tabLabels[tab]}
-          </span>
-        </div>
+        {/* TopNav — only in Base App, right below the header */}
+        {inBaseApp && <TopNav tab={tab} setTab={setTab} />}
+
+        {/* Section title — hidden in Base App since TopNav shows labels */}
+        {!inBaseApp && (
+          <div style={{ padding: '14px 16px 8px' }}>
+            <span style={{ fontSize: 24, fontWeight: 800, color: 'var(--text)', letterSpacing: -0.5 }}>
+              {tabLabels[tab]}
+            </span>
+          </div>
+        )}
 
         <div style={{ position: 'relative', zIndex: 1, maxWidth: 640, margin: '0 auto' }}>
           {tab === 'raffle' && <RaffleSection address={address} basename={basename} />}
@@ -218,7 +227,7 @@ export default function App() {
           {tab === 'profile' && <ProfileSection address={address} basename={basename} />}
         </div>
 
-        <BottomNav tab={tab} setTab={setTab} />
+        {!inBaseApp && <BottomNav tab={tab} setTab={setTab} />}
       </div>
     </>
   )
