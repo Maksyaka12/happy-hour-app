@@ -32,9 +32,9 @@ export function BottomNav({ tab, setTab }) {
       pointerEvents: 'none',
     }}>
       <div style={{
-        background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(20px)',
-        borderRadius: 20, border: '1px solid #DEE1E7',
-        boxShadow: '0 4px 24px rgba(10,11,13,0.10)',
+        background: 'rgba(235, 242, 255, 0.97)', backdropFilter: 'blur(20px)',
+        borderRadius: 20, border: '1px solid rgba(0, 82, 255, 0.35)',
+        boxShadow: '0 4px 24px rgba(0, 82, 255, 0.10)',
         display: 'flex', padding: '6px 8px',
         pointerEvents: 'all', maxWidth: 480, margin: '0 auto',
       }}>
