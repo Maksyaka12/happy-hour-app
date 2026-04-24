@@ -1,9 +1,18 @@
 // src/components/BottomNav.jsx
 
-// Detect if running inside Base App (Coinbase Wallet WebView)
-const isBaseApp = () =>
-  typeof navigator !== 'undefined' &&
-  /CoinbaseWallet/i.test(navigator.userAgent)
+// Detect if running inside Base App / Coinbase Wallet
+// Multiple checks for reliability
+const isBaseApp = () => {
+  if (typeof window === 'undefined') return false
+  const ua = navigator.userAgent || ''
+  // Check user agent variants
+  if (/CoinbaseWallet/i.test(ua)) return true
+  if (/CB_WALLET/i.test(ua)) return true
+  // Check injected wallet provider
+  if (window.ethereum?.isCoinbaseWallet) return true
+  if (window.coinbaseWalletExtension) return true
+  return false
+}
 
 export function BottomNav({ tab, setTab }) {
   const tabs = [
@@ -13,8 +22,8 @@ export function BottomNav({ tab, setTab }) {
     { id: 'profile',     label: 'Profile', icon: '👤' },
   ]
 
-  // In Base App, lift the nav up by ~44px to avoid overlapping the native bottom bar
-  const bottomOffset = isBaseApp() ? 44 : 0
+  // In Base App, lift the nav up by 60px to avoid overlapping the native bottom bar
+  const bottomOffset = isBaseApp() ? 60 : 0
 
   return (
     <div style={{
