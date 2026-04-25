@@ -39,6 +39,7 @@ export function useRoundState(address) {
           name: data.lastRound.basename || short(data.lastRound.winner),
           amount: Number(data.lastRound.prize ?? 0).toFixed(2),
           pot: Number(data.lastRound.total_pot ?? 0).toFixed(2),
+          chance: data.lastRound.chance ?? '0.0',
         })
       } else {
         setLastWinner(null)

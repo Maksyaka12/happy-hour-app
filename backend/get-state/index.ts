@@ -40,15 +40,21 @@ serve(async (req) => {
 
     let lastRound = lastRoundBase;
     if (lastRoundBase?.winner) {
-      const { data: winnerUser } = await supabase
-        .from("users")
-        .select("basename")
-        .eq("address", lastRoundBase.winner.toLowerCase())
-        .maybeSingle();
+      const [winnerUserRes, winnerBetsRes, allBetsRes] = await Promise.all([
+        supabase.from("users").select("basename").eq("address", lastRoundBase.winner.toLowerCase()).maybeSingle(),
+        supabase.from("bets").select("amount").eq("round_id", lastRoundBase.id).eq("address", lastRoundBase.winner.toLowerCase()),
+        supabase.from("bets").select("amount").eq("round_id", lastRoundBase.id)
+      ]);
+
+      const winnerStake = (winnerBetsRes.data ?? []).reduce((s, b) => s + Number(b.amount), 0);
+      const totalPot = (allBetsRes.data ?? []).reduce((s, b) => s + Number(b.amount), 0);
+      const chance = totalPot > 0 ? ((winnerStake / totalPot) * 100).toFixed(1) : "100.0";
 
       lastRound = {
         ...lastRoundBase,
-        basename: winnerUser?.basename ?? null,
+        basename: winnerUserRes.data?.basename ?? null,
+        total_pot: totalPot, // ensure we have the latest sum
+        chance: chance
       };
     }
 
