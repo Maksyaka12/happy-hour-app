@@ -301,7 +301,7 @@ export function RaffleSection({ address }) {
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 11, color: '#3C8AFF', fontWeight: 600, marginBottom: 2 }}>LAST WINNER</div>
             <div style={{ fontSize: 14, fontWeight: 700, color: '#0A0B0D' }}>{lastWinner.name}</div>
-            <div style={{ fontSize: 10, color: '#717886', marginTop: 1 }}>Win chance: {lastWinner.chance}%</div>
+            <div style={{ fontSize: 10, color: '#3C8AFF', marginTop: 1 }}>Win chance: {lastWinner.chance}%</div>
           </div>
           <div style={{ textAlign: 'right' }}>
             <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 22, fontWeight: 900, color: '#0000FF' }}>
