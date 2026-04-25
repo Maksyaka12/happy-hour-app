@@ -10,11 +10,15 @@ const medals = ['🥇', '🥈', '🥉']
 export function LeaderboardSection({ address }) {
   const [leaders, setLeaders] = useState([])
   const [loading, setLoading] = useState(true)
+  const [totalUsers, setTotalUsers] = useState(0)
+
+  const isAdmin = address?.toLowerCase() === '0x4c91d3bed372c11795b9ce9a9017dfe447bf050a'
 
   useEffect(() => {
     let alive = true
 
     const loadLeaders = async () => {
+      // Load top 50
       const { data, error } = await db
         .from('users')
         .select('address, basename, points, wins, entries')
@@ -24,6 +28,14 @@ export function LeaderboardSection({ address }) {
       if (error) {
         console.error('loadLeaders:', error)
         return
+      }
+
+      // Load total count for admin
+      if (isAdmin) {
+        const { count, error: countError } = await db
+          .from('users')
+          .select('*', { count: 'exact', head: true })
+        if (!countError && alive) setTotalUsers(count || 0)
       }
 
       if (alive) {
@@ -54,6 +66,26 @@ export function LeaderboardSection({ address }) {
 
   return (
     <div style={{ paddingBottom: 120, padding: '0 12px 120px' }}>
+      {isAdmin && (
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          marginBottom: 16 
+        }}>
+          <div style={{ 
+            background: '#F1F3F7', 
+            border: '1px solid #DEE1E7', 
+            borderRadius: 50, 
+            padding: '4px 12px', 
+            fontSize: 12, 
+            fontWeight: 700, 
+            color: '#717886' 
+          }}>
+            📊 Total Users: <span style={{ color: '#0000FF' }}>{totalUsers}</span>
+          </div>
+        </div>
+      )}
+
       {myRank > 0 && (
         <div
           style={{
