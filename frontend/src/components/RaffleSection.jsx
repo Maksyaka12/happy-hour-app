@@ -337,7 +337,7 @@ export function RaffleSection({ address }) {
       {txModal && (
         <TxModal
           title="Place Raffle Bet"
-          subtitle={`+${Math.round(txModal.amount / TICKET_UNIT)} tickets`}
+          subtitle={`+${Math.round(txModal.amount / TICKET_UNIT)} tickets · +${Math.round(txModal.amount / TICKET_UNIT)} HP`}
           amount={txModal.amount}
           isPending={isPending}
           isConfirming={isConfirming}

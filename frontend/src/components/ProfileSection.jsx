@@ -433,7 +433,7 @@ export function ProfileSection({ address, basename }) {
       {txModal && (
         <TxModal
           title="Daily Check-In"
-          subtitle="Send 0.0001 USDC · Earn streak bonus"
+          subtitle="Keep your streak daily · Earn streak bonus"
           amount={CHECKIN_AMOUNT}
           isPending={isPending}
           isConfirming={isConfirming}
