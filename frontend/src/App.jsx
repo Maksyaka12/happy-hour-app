@@ -68,6 +68,20 @@ export default function App() {
     })
   }, [isConnected, address, basename, referralCode])
 
+  const [totalUsers, setTotalUsers] = useState(0)
+  const isAdmin = address?.toLowerCase() === '0x4c91d3bed372c11795b9ce9a9017dfe447bf050a'
+
+  useEffect(() => {
+    if (!isAdmin) return
+    const fetchTotal = async () => {
+      const { count } = await db.from('users').select('*', { count: 'exact', head: true })
+      setTotalUsers(count || 0)
+    }
+    fetchTotal()
+    const sub = db.channel('admin-stats').on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, fetchTotal).subscribe()
+    return () => { db.removeChannel(sub) }
+  }, [address, isAdmin])
+
   if (isConnecting || isReconnecting) {
     return (
       <>
@@ -205,10 +219,28 @@ export default function App() {
           </div>
         </div>
 
-        <div style={{ padding: '14px 16px 8px', marginTop: onWrongChain ? 0 : 0 }}>
+        <div style={{ 
+          padding: '14px 16px 8px', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between' 
+        }}>
           <span style={{ fontSize: 24, fontWeight: 800, color: 'var(--text)', letterSpacing: -0.5 }}>
             {tabLabels[tab]}
           </span>
+          {tab === 'leaderboard' && isAdmin && (
+            <div style={{ 
+              background: 'var(--blue-bg)', 
+              border: '1px solid rgba(0,0,255,0.15)', 
+              borderRadius: 50, 
+              padding: '4px 12px', 
+              fontSize: 12, 
+              fontWeight: 700, 
+              color: '#717886' 
+            }}>
+              📊 Total Users: <span style={{ color: '#0000FF' }}>{totalUsers}</span>
+            </div>
+          )}
         </div>
 
         <div style={{ position: 'relative', zIndex: 1, maxWidth: 640, margin: '0 auto' }}>
