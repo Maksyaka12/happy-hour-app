@@ -25,9 +25,12 @@ export function BottomNav({ tab, setTab }) {
   // In Base App, lift the nav up by 50px to sit right above the native bottom bar
   const bottomOffset = isBaseApp() ? 50 : 0
 
+  // In Base App: lower z-index so the wallet confirmation modal appears above nav
+  const navZIndex = isBaseApp() ? 10 : 50
+
   return (
     <div style={{
-      position: 'fixed', bottom: bottomOffset, left: 0, right: 0, zIndex: 50,
+      position: 'fixed', bottom: bottomOffset, left: 0, right: 0, zIndex: navZIndex,
       padding: '8px 12px max(16px, env(safe-area-inset-bottom))',
       pointerEvents: 'none',
     }}>

@@ -259,7 +259,7 @@ export function ProfileSection({ address, basename }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
           <div>
             <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 3, color: '#0A0B0D' }}>Daily Check-In</div>
-            <div style={{ fontSize: 12, color: '#717886' }}>0.0001 USDC · Build your streak</div>
+            <div style={{ fontSize: 12, color: '#717886' }}>Earn +1 HP per day · Build your streak</div>
           </div>
           <div style={{ background: '#0000FF', borderRadius: 50, padding: '5px 12px', display: 'flex', alignItems: 'center', gap: 5 }}>
             <span style={{ fontSize: 13 }}>🔥</span>
@@ -351,7 +351,7 @@ export function ProfileSection({ address, basename }) {
               cursor: 'pointer',
             }}
           >
-            ✓ Check In Today
+            ✓ Check In Today (free)
           </button>
         ) : (
           <div style={{ textAlign: 'center', padding: 13, background: '#EEF0F3', borderRadius: 50, border: '1px solid #DEE1E7', fontSize: 13, color: '#717886' }}>
