@@ -1,7 +1,8 @@
 // src/components/TxModal.jsx
+import { createPortal } from 'react-dom'
 
 export function TxModal({ title, subtitle, amount, currency = 'USDC', isPending, isConfirming, isSuccess, error, onConfirm, onCancel }) {
-  return (
+  return createPortal(
     <div style={{
       position: 'fixed', inset: 0, background: 'rgba(10,11,13,0.45)', zIndex: 1000,
       display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
@@ -119,6 +120,7 @@ export function TxModal({ title, subtitle, amount, currency = 'USDC', isPending,
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
