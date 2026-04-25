@@ -3,7 +3,7 @@
 export function TxModal({ title, subtitle, amount, currency = 'USDC', isPending, isConfirming, isSuccess, error, onConfirm, onCancel }) {
   return (
     <div style={{
-      position: 'fixed', inset: 0, background: 'rgba(10,11,13,0.45)', zIndex: 200,
+      position: 'fixed', inset: 0, background: 'rgba(10,11,13,0.45)', zIndex: 1000,
       display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
       backdropFilter: 'blur(8px)',
     }}>
