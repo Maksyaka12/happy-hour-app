@@ -24,7 +24,7 @@ WHERE EXISTS (
 -- Відправляє нотіфікейшн усім хто ще не зробив чекін сьогодні
 SELECT cron.schedule(
   'streak-reminder-daily',
-  '0 20 * * *',
+  '0 18 * * *',
   $$
   SELECT net.http_post(
     url     := 'https://xiyrzftdeefszsiukkjc.supabase.co/functions/v1/streak-reminder',

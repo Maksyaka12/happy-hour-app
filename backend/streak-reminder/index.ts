@@ -61,7 +61,7 @@ serve(async (req) => {
           app_url: APP_URL,
           wallet_addresses: batch,
           title: "🔥 Daily Check-In Reminder",
-          message: "Don't lose your streak! Check in now and earn HP. 4 hours left today!",
+          message: "Don't lose your streak! Check in now and earn HP. 6 hours left today!",
           target_path: "/?tab=profile",
         }),
       });
