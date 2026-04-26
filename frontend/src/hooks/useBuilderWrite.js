@@ -30,7 +30,7 @@ export function useBuilderWrite() {
       const isSmartWallet = connector?.id === 'baseAccount' || connector?.id === 'coinbaseWalletSDK'
 
       if (isSmartWallet) {
-        // Smart Wallet relies on domain attribution via Developer Portal settings.
+        // Smart Wallet uses capabilities (ERC-5792) for builder code attribution.
         wagmiWriteContract({
           address,
           abi,
@@ -38,6 +38,12 @@ export function useBuilderWrite() {
           args,
           value,
           chainId: chainId || base.id,
+          capabilities: DATA_SUFFIX ? {
+            dataSuffix: {
+              value: DATA_SUFFIX,
+              optional: true
+            }
+          } : undefined
         })
       } else {
         // MetaMask / EOA requires hardcoding the Builder Code in the payload.
