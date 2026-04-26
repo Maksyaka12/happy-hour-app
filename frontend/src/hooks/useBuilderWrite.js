@@ -56,9 +56,11 @@ export function useBuilderWrite() {
 
   const txHashFromSw = callsStatus?.receipts?.[0]?.transactionHash
   
-  // Important: if it's confirmed, we mark as success even if hash is a split second away
-  const isSuccessSw = callsStatus?.status === 'confirmed'
-  const isConfirmingSw = !!callsId && !isSuccessSw && !errorSw
+  // Case-insensitive check for 'confirmed' status
+  const isSuccessSw = callsStatus?.status?.toLowerCase() === 'confirmed'
+  
+  // It is confirming if we have an ID but not yet confirmed and no error
+  const isConfirmingSw = !!callsId && !isSuccessSw && !errorSw && !statusError
 
   const writeContract = useCallback(
     ({ address: contractAddress, abi, functionName, args, value, chainId }) => {
