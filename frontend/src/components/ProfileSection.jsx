@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useWaitForTransactionReceipt, useDisconnect, useChainId, useSwitchChain, useWriteContract, useBalance } from 'wagmi'
 import { parseUnits } from 'viem'
 import { base } from 'wagmi/chains'
-import { APP_URL, FOUNDATION, CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, CHECKIN_AMOUNT, STREAK_REWARDS } from '../config/constants'
+import { APP_URL, FOUNDATION, CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, CHECKIN_AMOUNT, BOOST_AMOUNT, BOOST_HP, STREAK_REWARDS } from '../config/constants'
 import { db } from '../config/supabase'
 import { TxModal } from './TxModal'
 import { UserAvatar } from './UserAvatar'
@@ -24,6 +24,7 @@ function normalizeUserRow(data) {
     referral_count: data?.referral_count ?? 0,
     referral_points: data?.referral_points ?? 0,
     ref_code: data?.ref_code ?? null,
+    boost_last: data?.boost_last ?? null,
   }
 }
 
@@ -80,8 +81,12 @@ export function ProfileSection({ address, basename }) {
     referral_points: 0,
     ref_code: null
   })
+  const [checkedToday, setCheckedToday] = useState(false)
+  const [boostedToday, setBoostedToday] = useState(false)
   const [checkinError, setCheckinError] = useState('')
+  const [boostError, setBoostError] = useState('')
   const processedTxRef = useRef(null)
+  const processedBoostTxRef = useRef(null)
   const today = todayUTC()
 
   const displayName = basename || short(address)
@@ -96,7 +101,7 @@ export function ProfileSection({ address, basename }) {
     if (!address) return
     const { data, error } = await db
       .from('users')
-      .select('streak, streak_last, points, wins, entries, referral_count, referral_points, ref_code')
+      .select('streak, streak_last, boost_last, points, wins, entries, referral_count, referral_points, ref_code')
       .eq('address', address.toLowerCase())
       .maybeSingle()
 
@@ -108,6 +113,7 @@ export function ProfileSection({ address, basename }) {
     const user = normalizeUserRow(data)
     setStreak({ count: user.streak, last: user.streak_last })
     setCheckedToday(user.streak_last === today)
+    setBoostedToday(user.boost_last === today)
     setUserStats({
       points: user.points,
       wins: user.wins,
@@ -123,8 +129,10 @@ export function ProfileSection({ address, basename }) {
   }, [address, today])
 
   const canCheckin = !checkedToday
+  const canBoost = !boostedToday
 
   const { data: txHash, writeContract, isPending, isConfirming, isSuccess, error: writeError, reset } = useBuilderWrite()
+  const { data: boostTxHash, writeContract: writeBoost, isPending: isPendingBoost, isConfirming: isConfirmingBoost, isSuccess: isSuccessBoost, error: boostWriteError, reset: resetBoost } = useBuilderWrite()
 
   useEffect(() => {
     if (!isSuccess || !txHash || processedTxRef.current === txHash || !address) return
@@ -158,6 +166,38 @@ export function ProfileSection({ address, basename }) {
     })
   }, [address, isSuccess, txHash, today, reset])
 
+  // --- Boost Effect ---
+  useEffect(() => {
+    if (!isSuccessBoost || !boostTxHash || processedBoostTxRef.current === boostTxHash || !address) return
+
+    processedBoostTxRef.current = boostTxHash
+    setBoostError('')
+
+    db.rpc('process_hp_boost', {
+      p_address: address.toLowerCase(),
+      p_tx_hash: boostTxHash,
+    }).then(async ({ data, error }) => {
+      if (error) {
+        console.error('process_hp_boost:', error)
+        setBoostError('Boost saved onchain, but database sync failed.')
+        await loadProfile()
+        return
+      }
+
+      if (!data?.ok) {
+        setBoostError(data?.error || 'Boost was not accepted.')
+        await loadProfile()
+        return
+      }
+
+      setBoostedToday(true)
+      setUserStats((stats) => ({ ...stats, points: stats.points + BOOST_HP }))
+      setTxModal(false)
+    }).finally(() => {
+      resetBoost()
+    })
+  }, [address, isSuccessBoost, boostTxHash, today, resetBoost])
+
   const sendCheckin = () => {
     setCheckinError('')
     if (chainId !== base.id) {
@@ -170,6 +210,22 @@ export function ProfileSection({ address, basename }) {
       abi: USDC_ABI,
       functionName: 'transfer',
       args: [CHECKIN_TARGET, parseUnits(CHECKIN_AMOUNT.toFixed(6), 6)],
+      chainId: base.id,
+    })
+  }
+
+  const sendBoost = () => {
+    setBoostError('')
+    if (chainId !== base.id) {
+      switchChain({ chainId: base.id })
+      return
+    }
+
+    writeBoost({
+      address: USDC_ADDRESS,
+      abi: USDC_ABI,
+      functionName: 'transfer',
+      args: [FOUNDATION, parseUnits(BOOST_AMOUNT.toFixed(6), 6)],
       chainId: base.id,
     })
   }
@@ -359,6 +415,38 @@ export function ProfileSection({ address, basename }) {
         )}
       </div>
 
+      <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 18, marginBottom: 12 }}>
+        <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 4, color: '#0A0B0D' }}>Daily HP Boost</div>
+        <div style={{ fontSize: 13, color: '#717886', marginBottom: 14, lineHeight: 1.6 }}>
+          Get an extra <span style={{ color: '#0000FF', fontWeight: 700 }}>100 HP</span> to climb the leaderboard faster!
+        </div>
+        {canBoost ? (
+          <button
+            onClick={() => setTxModal('boost')}
+            style={{
+              width: '100%',
+              background: '#0000FF',
+              color: '#fff',
+              borderRadius: 50,
+              padding: 13,
+              fontSize: 13,
+              fontWeight: 700,
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            Daily HP Boost (0.10 USDC)
+          </button>
+        ) : (
+          <div style={{ textAlign: 'center', padding: 13, background: '#EEF0F3', borderRadius: 50, border: '1px solid #DEE1E7', fontSize: 13, color: '#717886' }}>
+            Next boost at 00:00 UTC
+          </div>
+        )}
+        {boostError && (
+          <div style={{ color: '#DC2626', fontSize: 12, marginTop: 10, textAlign: 'center' }}>{boostError}</div>
+        )}
+      </div>
+
       <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 18 }}>
         <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 4, color: '#0A0B0D' }}>Referral Program</div>
         <div style={{ fontSize: 13, color: '#717886', marginBottom: 14, lineHeight: 1.6 }}>
@@ -429,7 +517,7 @@ export function ProfileSection({ address, basename }) {
         </div>
       )}
 
-      {txModal && (
+      {txModal === 'checkin' && (
         <TxModal
           title="Daily Check-In"
           subtitle="Keep your streak daily · Earn streak bonus"
@@ -442,6 +530,23 @@ export function ProfileSection({ address, basename }) {
           onCancel={() => {
             setTxModal(false)
             reset()
+          }}
+        />
+      )}
+
+      {txModal === 'boost' && (
+        <TxModal
+          title="Daily HP Boost"
+          subtitle="Get +100 HP instantly"
+          amount={BOOST_AMOUNT}
+          isPending={isPendingBoost}
+          isConfirming={isConfirmingBoost}
+          isSuccess={isSuccessBoost}
+          error={boostWriteError}
+          onConfirm={sendBoost}
+          onCancel={() => {
+            setTxModal(false)
+            resetBoost()
           }}
         />
       )}

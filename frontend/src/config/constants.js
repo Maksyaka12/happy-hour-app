@@ -17,6 +17,8 @@ export const HAS_SUPABASE_CONFIG = Boolean(SUPABASE_URL && SUPABASE_ANON)
 export const WINNER_SHARE = 0.85
 export const TICKET_UNIT = 0.1
 export const CHECKIN_AMOUNT = 0.0001
+export const BOOST_AMOUNT = 0.1
+export const BOOST_HP = 100
 export const CLOSE_BEFORE_MS = 3 * 60 * 1000
 
 export const BET_OPTS = [0.1, 0.5, 1, 3, 5, 10]
