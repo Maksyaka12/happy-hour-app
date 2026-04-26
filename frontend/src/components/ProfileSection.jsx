@@ -224,7 +224,7 @@ export function ProfileSection({ address, basename }) {
       address: USDC_ADDRESS,
       abi: USDC_ABI,
       functionName: 'transfer',
-      args: [FOUNDATION, parseUnits(BOOST_AMOUNT.toFixed(6), 6)],
+      args: [CHECKIN_TARGET, parseUnits(BOOST_AMOUNT.toFixed(6), 6)],
       chainId: base.id,
     })
   }
