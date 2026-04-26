@@ -41,7 +41,7 @@ export function useBuilderWrite() {
 
   const { 
     data: callsStatus,
-    isLoading: isConfirmingSw 
+    error: statusError
   } = useCallsStatus({ 
     id: swCallsId || callsId,
     query: {
@@ -50,14 +50,19 @@ export function useBuilderWrite() {
     }
   })
 
-  const isSuccessSw = callsStatus?.status === 'confirmed'
+  // A Smart Wallet call is only truly "successful" for us when we have the on-chain TX hash
+  const txHashFromSw = callsStatus?.receipts?.[0]?.transactionHash
+  const isSuccessSw = callsStatus?.status === 'confirmed' && !!txHashFromSw
+  
+  // It is confirming if it's pending OR if it's confirmed but we are still waiting for the indexer to give us the hash
+  const isConfirmingSw = (swCallsId || callsId) && !isSuccessSw && !errorSw && !statusError
 
   const writeContract = useCallback(
     ({ address: contractAddress, abi, functionName, args, value, chainId }) => {
       if (!contractAddress) return
 
       if (isSmartWallet) {
-        // Use sendCalls for Smart Wallets with capabilities
+        setCallsId(null) // Reset old IDs
         sendCalls({
           calls: [{
             to: contractAddress,
@@ -73,7 +78,7 @@ export function useBuilderWrite() {
           chainId: chainId || base.id
         })
       } else {
-        // Use sendTransaction for EOA with manual suffix
+        setTxHash(null) // Reset old hashes
         const calldata = encodeFunctionData({ abi, functionName, args })
         const dataWithSuffix = DATA_SUFFIX 
           ? `${calldata}${DATA_SUFFIX.slice(2)}` 
@@ -98,12 +103,12 @@ export function useBuilderWrite() {
   }, [resetEoa, resetSw])
 
   return {
-    data: eoaHash || (callsStatus?.receipts?.[0]?.transactionHash),
+    data: eoaHash || txHashFromSw,
     writeContract,
     isPending: isPendingEoa || isPendingSw,
     isConfirming: isConfirmingEoa || isConfirmingSw,
     isSuccess: isSuccessEoa || isSuccessSw,
-    error: errorEoa || errorSw,
+    error: errorEoa || errorSw || statusError,
     reset,
   }
 }
