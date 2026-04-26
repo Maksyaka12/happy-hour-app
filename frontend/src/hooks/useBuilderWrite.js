@@ -70,7 +70,11 @@ export function useBuilderWrite() {
     swStatus === 'success' || 
     swStatus === 'completed' || 
     swStatus === 'processed' ||
-    (!!txHashFromSw && swStatus !== 'pending')
+    (!!txHashFromSw && 
+     swStatus !== 'pending' && 
+     swStatus !== 'failed' && 
+     swStatus !== 'error' && 
+     swStatus !== 'reverted')
 
   // It is confirming if we have an active ID and no success/error yet
   const isConfirmingSw = !!callsId && !isSuccessSw && !errorSw && !statusError
