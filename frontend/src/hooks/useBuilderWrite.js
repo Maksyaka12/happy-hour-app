@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
+import { useAccount, useWriteContract, useSendTransaction, useWaitForTransactionReceipt } from 'wagmi'
 import { encodeFunctionData } from 'viem'
 import { DATA_SUFFIX } from '../config/wagmi'
 import { base } from 'wagmi/chains'
