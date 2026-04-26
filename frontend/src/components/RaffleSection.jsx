@@ -47,8 +47,7 @@ export function RaffleSection({ address }) {
   const wrongChain = chainId !== base.id
 
   // ── Builder write contract ───────────────────────────────
-  const { data: txHash, writeContract, isPending, error: writeError, reset } = useBuilderWrite()
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash: txHash })
+  const { data: txHash, writeContract, isPending, isConfirming, isSuccess, error: writeError, reset } = useBuilderWrite()
 
   const fallbackRef = useRef(false)
   useEffect(() => {
