@@ -33,8 +33,6 @@ export const config = createConfig({
     injected(),
   ],
   transports: {
-    [base.id]: http({
-      dataSuffix: DATA_SUFFIX,
-    }),
+    [base.id]: http(),
   },
 })
