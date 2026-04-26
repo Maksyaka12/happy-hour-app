@@ -72,7 +72,6 @@ export function ProfileSection({ address, basename }) {
     }
   })
   const [streak, setStreak] = useState({ count: 0, last: null })
-  const [checkedToday, setCheckedToday] = useState(false)
   const [userStats, setUserStats] = useState({
     points: 0,
     wins: 0,
