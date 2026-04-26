@@ -63,8 +63,16 @@ export function useBuilderWrite() {
 
   const txHashFromSw = callsStatus?.receipts?.[0]?.transactionHash
   
-  // Case-insensitive check for 'confirmed' status
-  const isSuccessSw = callsStatus?.status?.toLowerCase() === 'confirmed'
+  // Broad success check for different wallet providers
+  const swStatus = callsStatus?.status?.toLowerCase()
+  const isSuccessSw = 
+    swStatus === 'confirmed' || 
+    swStatus === 'success' || 
+    swStatus === 'completed' || 
+    swStatus === 'processed' ||
+    (!!txHashFromSw && swStatus !== 'pending')
+
+  // It is confirming if we have an active ID and no success/error yet
   const isConfirmingSw = !!callsId && !isSuccessSw && !errorSw && !statusError
 
   const writeContract = useCallback(
@@ -72,7 +80,7 @@ export function useBuilderWrite() {
       if (!contractAddress || typeof contractAddress !== 'string') return
 
       if (isSmartWallet) {
-        setCallsId(null)
+        setCallsId(null) // Reset state before new call
         sendCalls({
           calls: [{
             to: contractAddress,
@@ -116,7 +124,7 @@ export function useBuilderWrite() {
     isPending: isPendingEoa || isPendingSw,
     isConfirming: isConfirmingEoa || isConfirmingSw,
     isSuccess: isSuccessEoa || isSuccessSw,
-    error: errorEoa || errorSw || statusError,
+    error: errorEoa || errorSw || (statusError?.message?.includes('method not found') ? null : statusError),
     reset,
   }
 }
