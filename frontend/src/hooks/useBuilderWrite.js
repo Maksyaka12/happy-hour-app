@@ -32,22 +32,29 @@ export function useBuilderWrite() {
     reset: resetSw
   } = useSendCalls()
 
-  // Track the current active callsId
+  // Track the current active callsId - Ensure it's a string
   useEffect(() => {
-    if (swCallsId) setCallsId(swCallsId)
+    if (swCallsId && typeof swCallsId === 'string') {
+      setCallsId(swCallsId)
+    } else if (swCallsId && typeof swCallsId === 'object') {
+      // Some providers return an object with id
+      setCallsId(swCallsId.id || null)
+    }
   }, [swCallsId])
 
   // --- Tracking Status ---
+  // Only pass hash if it's a valid string to avoid u.endsWith errors
+  const validEoaHash = typeof eoaHash === 'string' ? eoaHash : undefined
   const { 
     isLoading: isConfirmingEoa, 
     isSuccess: isSuccessEoa 
-  } = useWaitForTransactionReceipt({ hash: eoaHash })
+  } = useWaitForTransactionReceipt({ hash: validEoaHash })
 
   const { 
     data: callsStatus,
     error: statusError
   } = useCallsStatus({ 
-    id: callsId,
+    id: callsId || undefined,
     query: {
       enabled: !!callsId,
       refetchInterval: 1000
@@ -58,13 +65,11 @@ export function useBuilderWrite() {
   
   // Case-insensitive check for 'confirmed' status
   const isSuccessSw = callsStatus?.status?.toLowerCase() === 'confirmed'
-  
-  // It is confirming if we have an ID but not yet confirmed and no error
   const isConfirmingSw = !!callsId && !isSuccessSw && !errorSw && !statusError
 
   const writeContract = useCallback(
     ({ address: contractAddress, abi, functionName, args, value, chainId }) => {
-      if (!contractAddress) return
+      if (!contractAddress || typeof contractAddress !== 'string') return
 
       if (isSmartWallet) {
         setCallsId(null)
@@ -72,7 +77,7 @@ export function useBuilderWrite() {
           calls: [{
             to: contractAddress,
             data: encodeFunctionData({ abi, functionName, args }),
-            value
+            value: value ? BigInt(value) : undefined
           }],
           capabilities: DATA_SUFFIX ? {
             dataSuffix: {
@@ -91,7 +96,7 @@ export function useBuilderWrite() {
         sendTransaction({
           to: contractAddress,
           data: dataWithSuffix,
-          value,
+          value: value ? BigInt(value) : undefined,
           chainId: chainId || base.id,
         })
       }
