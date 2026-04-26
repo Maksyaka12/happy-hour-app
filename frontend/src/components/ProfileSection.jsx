@@ -351,7 +351,7 @@ export function ProfileSection({ address, basename }) {
               cursor: 'pointer',
             }}
           >
-            ✓ Check In Today (free)
+            ✓ Check-In Today (free)
           </button>
         ) : (
           <div style={{ textAlign: 'center', padding: 13, background: '#EEF0F3', borderRadius: 50, border: '1px solid #DEE1E7', fontSize: 13, color: '#717886' }}>
