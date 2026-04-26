@@ -91,3 +91,72 @@ BEGIN
     ALTER PUBLICATION supabase_realtime ADD TABLE hp_boosts;
   END IF;
 END $$;
+
+-- Update history view to include HP Boosts
+CREATE OR REPLACE VIEW user_activity AS
+-- 1. Deposits (Bets)
+SELECT 
+  'bet-' || id AS id,
+  lower(address) AS address,
+  'Deposit' AS action,
+  'Round ' || round_id AS badge,
+  '+' || amount || ' USDC' AS value,
+  'deposit' AS type,
+  created_at
+FROM bets
+
+UNION ALL
+
+-- 2. Daily Check-ins
+SELECT 
+  'checkin-' || id AS id,
+  lower(address) AS address,
+  'Daily Claim' AS action,
+  'Streak' AS badge,
+  '+' || points || ' PTS' AS value,
+  'checkin' AS type,
+  created_at
+FROM checkins
+
+UNION ALL
+
+-- 3. Wins in Raffle
+SELECT 
+  'win-' || id AS id,
+  lower(winner) AS address,
+  'Reward' AS action,
+  'Win Round ' || id AS badge,
+  '+30 PTS' AS value,
+  'win' AS type,
+  ends_at AS created_at
+FROM rounds
+WHERE winner IS NOT NULL AND status = 'done'
+
+UNION ALL
+
+-- 4. Completed Tasks
+SELECT 
+  'tc-' || tc.id AS id,
+  lower(tc.address) AS address,
+  'Quest' AS action,
+  t.type AS badge,
+  '+' || t.points || ' PTS' AS value,
+  'quest' AS type,
+  tc.completed_at AS created_at
+FROM task_completions tc
+JOIN tasks t ON tc.task_id = t.id
+
+UNION ALL
+
+-- 5. HP Boosts
+SELECT 
+  'boost-' || id AS id,
+  lower(address) AS address,
+  'HP Boost' AS action,
+  'Daily' AS badge,
+  '+' || points || ' PTS' AS value,
+  'boost' AS type,
+  created_at
+FROM hp_boosts;
+
+GRANT SELECT ON user_activity TO anon, authenticated;

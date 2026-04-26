@@ -21,6 +21,12 @@ const TYPE_CONFIG = {
     badgeText: '#15803D',
     value: '#0A0B0D'
   },
+  boost: {
+    title: '#0A0B0D',
+    badgeBg: '#F0F5FF',
+    badgeText: '#0000FF',
+    value: '#0A0B0D'
+  },
   quest: {
     title: '#0A0B0D',
     badgeBg: '#F5ECFF', // Purple-ish
