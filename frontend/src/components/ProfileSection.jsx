@@ -434,10 +434,18 @@ export function ProfileSection({ address, basename }) {
               border: 'none',
               boxShadow: '0 4px 16px rgba(0,0,255,0.3)',
               cursor: 'pointer',
-              fontFamily: 'inherit'
+              fontFamily: 'inherit',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 6
             }}
           >
-            Daily HP Boost (0.10 USDC)
+            Daily HP Boost (0.10 
+            <svg width="18" height="18" viewBox="0 0 32 32" fill="none" style={{ display: 'inline-block' }}>
+              <circle cx="16" cy="16" r="16" fill="#2775CA" />
+              <path d="M19.3 22.3v.5c0 .3-.2.5-.5.5h-.7c-.3 0-.5-.2-.5-.5v-.5c-1.3-.1-2.4-.6-3.1-1.3-.2-.2-.2-.5 0-.7l.5-.5c.2-.2.5-.2.7 0 .5.5 1.2.8 2 .9V17c-2.1-.5-3.5-1.2-3.5-3.1 0-1.7 1.2-2.8 2.9-3v-.5c0-.3.2-.5.5-.5h.7c.3 0 .5.2.5.5v.5c1.1.1 2.1.5 2.8 1.1.2.2.2.5 0 .7l-.5.5c-.2.2-.5.2-.7 0-.5-.4-1.1-.7-1.6-.8v3.4c2.2.6 3.6 1.3 3.6 3.2 0 1.9-1.3 3.1-3.1 3.3zm-1.8-8.8c-.7.1-1.2.5-1.2 1.1 0 .6.5.9 1.2 1.1v-2.2zm0 7.5v-2.6c-.8-.2-1.3-.6-1.3-1.2 0-.7.6-1.1 1.3-1.3v5.1z" fill="white" />
+            </svg>)
           </button>
         ) : (
           <div style={{ textAlign: 'center', padding: 13, background: '#EEF0F3', borderRadius: 50, border: '1px solid #DEE1E7', fontSize: 13, color: '#717886' }}>
