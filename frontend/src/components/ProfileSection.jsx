@@ -406,7 +406,7 @@ export function ProfileSection({ address, basename }) {
               fontFamily: 'inherit'
             }}
           >
-            ✓ Check-in Today (free)
+            ✓ Check-in Today ( free )
           </button>
         ) : (
           <div style={{ textAlign: 'center', padding: 13, background: '#EEF0F3', borderRadius: 50, border: '1px solid #DEE1E7', fontSize: 13, color: '#717886' }}>
