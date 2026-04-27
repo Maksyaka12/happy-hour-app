@@ -152,8 +152,8 @@ UNION ALL
 SELECT 
   'boost-' || id AS id,
   lower(address) AS address,
-  'HP Boost' AS action,
-  'Daily' AS badge,
+  'Daily' AS action,
+  'Boost' AS badge,
   '+' || points || ' PTS' AS value,
   'boost' AS type,
   created_at

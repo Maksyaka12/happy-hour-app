@@ -312,7 +312,7 @@ export function ProfileSection({ address, basename }) {
       <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 18, marginBottom: 12 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 3, color: '#0A0B0D' }}>Daily Check-In</div>
+            <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 3, color: '#0A0B0D' }}>Daily Check-in</div>
             <div style={{ fontSize: 12, color: '#717886' }}>Earn +1 HP per day · Build your streak</div>
           </div>
           <div style={{ background: '#0000FF', borderRadius: 50, padding: '5px 12px', display: 'flex', alignItems: 'center', gap: 5 }}>
@@ -391,7 +391,7 @@ export function ProfileSection({ address, basename }) {
 
         {canCheckin ? (
           <button
-            onClick={() => setTxModal(true)}
+            onClick={() => setTxModal('checkin')}
             style={{
               width: '100%',
               background: '#0000FF',
@@ -403,9 +403,10 @@ export function ProfileSection({ address, basename }) {
               border: 'none',
               boxShadow: '0 4px 16px rgba(0,0,255,0.3)',
               cursor: 'pointer',
+              fontFamily: 'inherit'
             }}
           >
-            ✓ Check In Today (free)
+            ✓ Check-in Today (free)
           </button>
         ) : (
           <div style={{ textAlign: 'center', padding: 13, background: '#EEF0F3', borderRadius: 50, border: '1px solid #DEE1E7', fontSize: 13, color: '#717886' }}>
@@ -427,11 +428,13 @@ export function ProfileSection({ address, basename }) {
               background: '#0000FF',
               color: '#fff',
               borderRadius: 50,
-              padding: 13,
-              fontSize: 13,
+              padding: '14px',
+              fontSize: 15,
               fontWeight: 700,
               border: 'none',
+              boxShadow: '0 4px 16px rgba(0,0,255,0.3)',
               cursor: 'pointer',
+              fontFamily: 'inherit'
             }}
           >
             Daily HP Boost (0.10 USDC)
