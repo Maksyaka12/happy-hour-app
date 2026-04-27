@@ -437,12 +437,10 @@ export function ProfileSection({ address, basename }) {
               fontFamily: 'inherit',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              gap: 6
+              justifyContent: 'center'
             }}
           >
-            Daily HP Boost (0.10 
-            <img src="/usdc-logo.png" alt="USDC" style={{ width: 18, height: 18, display: 'inline-block' }} />)
+            Daily HP Boost ( 0.10<img src="/usdc-logo.png" alt="USDC" style={{ width: 18, height: 18, marginLeft: 2, display: 'inline-block', verticalAlign: 'middle' }} /> )
           </button>
         ) : (
           <div style={{ textAlign: 'center', padding: 13, background: '#EEF0F3', borderRadius: 50, border: '1px solid #DEE1E7', fontSize: 13, color: '#717886' }}>
