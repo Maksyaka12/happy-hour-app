@@ -406,7 +406,7 @@ export function ProfileSection({ address, basename }) {
               fontFamily: 'inherit'
             }}
           >
-            ✓ Check-in Today ( free )
+            ✓ Check-in Today <span style={{ color: '#A5B4FC', marginLeft: 4 }}>free</span>
           </button>
         ) : (
           <div style={{ textAlign: 'center', padding: 13, background: '#EEF0F3', borderRadius: 50, border: '1px solid #DEE1E7', fontSize: 13, color: '#717886' }}>
@@ -440,7 +440,7 @@ export function ProfileSection({ address, basename }) {
               justifyContent: 'center'
             }}
           >
-            Daily HP Boost ( 0.10<img src="/usdc-logo.png" alt="USDC" style={{ width: 18, height: 18, marginLeft: 2, display: 'inline-block', verticalAlign: 'middle' }} /> )
+            Daily HP Boost <span style={{ color: '#A5B4FC', marginLeft: 8, display: 'flex', alignItems: 'center' }}>0.10<img src="/usdc-logo.png" alt="USDC" style={{ width: 18, height: 18, marginLeft: 3, display: 'inline-block', verticalAlign: 'middle' }} /></span>
           </button>
         ) : (
           <div style={{ textAlign: 'center', padding: 13, background: '#EEF0F3', borderRadius: 50, border: '1px solid #DEE1E7', fontSize: 13, color: '#717886' }}>
