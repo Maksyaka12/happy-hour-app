@@ -418,7 +418,7 @@ export function ProfileSection({ address, basename }) {
       <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 18, marginBottom: 12 }}>
         <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 4, color: '#0A0B0D' }}>Daily HP Boost</div>
         <div style={{ fontSize: 13, color: '#717886', marginBottom: 14, lineHeight: 1.6 }}>
-          Get an extra <span style={{ color: '#0000FF', fontWeight: 700 }}>100 HP</span> to climb the leaderboard faster!
+          Get an extra <span style={{ color: '#0000FF', fontWeight: 700 }}>100 HP</span> per day
         </div>
         {canBoost ? (
           <button
