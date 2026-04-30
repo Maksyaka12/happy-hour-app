@@ -8,6 +8,8 @@ ALTER TABLE bets ADD COLUMN IF NOT EXISTS multiplier NUMERIC DEFAULT 1.0;
 ALTER TABLE rounds ADD COLUMN IF NOT EXISTS winner_multiplier NUMERIC DEFAULT 1.0;
 
 -- 2. Modify add_points to return the applied multiplier
+DROP FUNCTION IF EXISTS add_points(TEXT, INTEGER, TEXT);
+
 CREATE OR REPLACE FUNCTION add_points(
   p_address TEXT,
   p_points INTEGER,
