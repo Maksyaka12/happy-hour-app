@@ -7,6 +7,7 @@ import { useBasename } from './hooks/useBasename'
 import { ConnectScreen } from './components/ConnectScreen'
 import { RaffleSection } from './components/RaffleSection'
 import { TasksSection } from './components/TasksSection'
+import { HappyBoxesSection } from './components/HappyBoxesSection'
 import { LeaderboardSection } from './components/LeaderboardSection'
 import { ProfileSection } from './components/ProfileSection'
 import { BottomNav } from './components/BottomNav'
@@ -51,6 +52,7 @@ export default function App() {
 
   const tabLabels = {
     raffle: 'Raffle',
+    boxes: 'Happy Boxes',
     tasks: 'Tasks',
     leaderboard: 'Leaderboard',
     profile: 'Profile',
@@ -245,6 +247,7 @@ export default function App() {
 
         <div style={{ position: 'relative', zIndex: 1, maxWidth: 640, margin: '0 auto' }}>
           {tab === 'raffle' && <RaffleSection address={address} basename={basename} />}
+          {tab === 'boxes' && <HappyBoxesSection address={address} />}
           {tab === 'tasks' && <TasksSection address={address} />}
           {tab === 'leaderboard' && <LeaderboardSection address={address} />}
           {tab === 'profile' && <ProfileSection address={address} basename={basename} />}

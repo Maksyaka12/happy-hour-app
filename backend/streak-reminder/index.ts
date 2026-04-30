@@ -71,6 +71,10 @@ serve(async (req) => {
       totalFailed += result.failedCount ?? 0;
 
       console.log(`Batch ${i / BATCH_SIZE + 1}: sent=${result.sentCount}, failed=${result.failedCount}`);
+      
+      if (result.errors && result.errors.length > 0) {
+        console.log("Sample errors from this batch:", JSON.stringify(result.errors.slice(0, 3)));
+      }
     }
 
     return new Response(
