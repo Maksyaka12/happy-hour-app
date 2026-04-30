@@ -115,13 +115,6 @@ export function HistorySection({ address }) {
           const isDeposit = record.type === 'deposit'
 
           let displayValue = record.value
-          if (isDeposit && displayValue.includes('USDC')) {
-             const numStr = displayValue.replace(/[^\d.]/g, '')
-             const num = parseFloat(numStr) || 0
-             // Convert USDC to points (10 PTS per 1 USDC)
-             const pts = Math.floor(num * 10)
-             displayValue = `+${pts} PTS`
-          }
 
           let displayAction = record.action
           if (displayAction === 'Daily Claim') {
@@ -138,8 +131,24 @@ export function HistorySection({ address }) {
               borderBottom: index !== history.length - 1 ? '1px solid #F1F3F7' : 'none'
             }}>
               {/* 1. Action */}
-              <div style={{ fontSize: 14, fontWeight: 800, color: config.title, whiteSpace: 'nowrap' }}>
-                {displayAction}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <div style={{ fontSize: 14, fontWeight: 800, color: config.title, whiteSpace: 'nowrap' }}>
+                  {displayAction}
+                </div>
+                {record.boost_mult > 1 && (
+                  <div style={{
+                    fontSize: 9,
+                    fontWeight: 800,
+                    color: record.boost_mult >= 5 ? '#9333EA' : '#059669',
+                    background: record.boost_mult >= 5 ? 'rgba(147, 51, 234, 0.1)' : 'rgba(5, 150, 105, 0.1)',
+                    padding: '2px 6px',
+                    borderRadius: 4,
+                    display: 'inline-block',
+                    width: 'fit-content'
+                  }}>
+                    {record.boost_mult}x Boost
+                  </div>
+                )}
               </div>
 
               {/* 2. Badge */}

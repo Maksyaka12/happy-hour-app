@@ -86,6 +86,7 @@ export function ProfileSection({ address, basename }) {
   const [boostedToday, setBoostedToday] = useState(false)
   const [activeMultiplier, setActiveMultiplier] = useState(1.0)
   const [multiplierExpiresAt, setMultiplierExpiresAt] = useState(null)
+  const [timeLeft, setTimeLeft] = useState('')
   const [checkinError, setCheckinError] = useState('')
   const [boostError, setBoostError] = useState('')
   const [multError, setMultError] = useState('')
@@ -134,6 +135,28 @@ export function ProfileSection({ address, basename }) {
   useEffect(() => {
     loadProfile()
   }, [address, today])
+
+  // --- Timer Effect ---
+  useEffect(() => {
+    if (!multiplierExpiresAt || activeMultiplier <= 1) {
+      setTimeLeft('')
+      return
+    }
+    const interval = setInterval(() => {
+      const diff = new Date(multiplierExpiresAt).getTime() - new Date().getTime()
+      if (diff <= 0) {
+        setTimeLeft('')
+        setActiveMultiplier(1.0)
+        clearInterval(interval)
+      } else {
+        const h = Math.floor(diff / (1000 * 60 * 60))
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+        const s = Math.floor((diff % (1000 * 60)) / 1000)
+        setTimeLeft(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`)
+      }
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [multiplierExpiresAt, activeMultiplier])
 
   const canCheckin = !checkedToday
   const canBoost = !boostedToday
@@ -515,10 +538,11 @@ export function ProfileSection({ address, basename }) {
 
       <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 18, marginBottom: 12 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: '#0A0B0D' }}>Consumable Boosts</div>
-          {activeMultiplier > 1 && multiplierExpiresAt && new Date(multiplierExpiresAt) > new Date() && (
-            <div style={{ background: 'rgba(5, 150, 105, 0.1)', color: '#059669', padding: '4px 8px', borderRadius: 50, fontSize: 11, fontWeight: 800 }}>
-              {activeMultiplier}x Active
+          <div style={{ fontSize: 15, fontWeight: 700, color: '#0A0B0D' }}>Happy Bar (Boosts)</div>
+          {activeMultiplier > 1 && timeLeft && (
+            <div style={{ background: activeMultiplier >= 5 ? 'rgba(147, 51, 234, 0.1)' : 'rgba(5, 150, 105, 0.1)', color: activeMultiplier >= 5 ? '#9333EA' : '#059669', padding: '4px 8px', borderRadius: 50, fontSize: 11, fontWeight: 800, display: 'flex', gap: 6, alignItems: 'center' }}>
+              <span>{activeMultiplier}x Active</span>
+              <span style={{ opacity: 0.7 }}>{timeLeft}</span>
             </div>
           )}
         </div>
