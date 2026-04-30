@@ -70,7 +70,7 @@ export function HappyBoxesSection({ address }) {
           <div key={box.id} className="box-card" style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 18, boxShadow: '0 4px 12px rgba(10,11,13,0.03)' }}>
             <div style={{ display: 'flex', gap: 16 }}>
               {/* Icon / Image Placeholder */}
-              <div style={{ width: 64, height: 64, background: box.bg, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, flexShrink: 0, border: \`1px solid \${box.color}30\` }}>
+              <div style={{ width: 64, height: 64, background: box.bg, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, flexShrink: 0, border: `1px solid ${box.color}30` }}>
                 {box.icon}
               </div>
               
