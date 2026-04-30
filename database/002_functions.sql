@@ -69,16 +69,27 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
-  DECLARE
+DECLARE
   v_address TEXT := lower(trim(p_address));
   v_referrer TEXT;
+  v_user_multiplier NUMERIC := 1.0;
+  v_user_expires TIMESTAMPTZ;
+  v_actual_points INTEGER := p_points;
 BEGIN
   IF v_address IS NULL OR v_address = '' OR p_points IS NULL OR p_points = 0 THEN
     RETURN;
   END IF;
 
+  -- Get user multiplier status
+  SELECT active_multiplier, multiplier_expires_at INTO v_user_multiplier, v_user_expires
+  FROM users WHERE address = v_address;
+
+  IF v_user_expires > NOW() AND v_user_multiplier > 1.0 THEN
+    v_actual_points := ceil(p_points * v_user_multiplier)::integer;
+  END IF;
+
   INSERT INTO users (address, points)
-  VALUES (v_address, p_points)
+  VALUES (v_address, v_actual_points)
   ON CONFLICT (address)
   DO UPDATE SET points = users.points + EXCLUDED.points;
 

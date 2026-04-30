@@ -25,6 +25,8 @@ function normalizeUserRow(data) {
     referral_points: data?.referral_points ?? 0,
     ref_code: data?.ref_code ?? null,
     boost_last: data?.boost_last ?? null,
+    active_multiplier: data?.active_multiplier ?? 1.0,
+    multiplier_expires_at: data?.multiplier_expires_at ?? null,
   }
 }
 
@@ -82,10 +84,14 @@ export function ProfileSection({ address, basename }) {
   })
   const [checkedToday, setCheckedToday] = useState(false)
   const [boostedToday, setBoostedToday] = useState(false)
+  const [activeMultiplier, setActiveMultiplier] = useState(1.0)
+  const [multiplierExpiresAt, setMultiplierExpiresAt] = useState(null)
   const [checkinError, setCheckinError] = useState('')
   const [boostError, setBoostError] = useState('')
+  const [multError, setMultError] = useState('')
   const processedTxRef = useRef(null)
   const processedBoostTxRef = useRef(null)
+  const processedMultTxRef = useRef(null)
   const today = todayUTC()
 
   const displayName = basename || short(address)
@@ -100,7 +106,7 @@ export function ProfileSection({ address, basename }) {
     if (!address) return
     const { data, error } = await db
       .from('users')
-      .select('streak, streak_last, boost_last, points, wins, entries, referral_count, referral_points, ref_code')
+      .select('streak, streak_last, boost_last, points, wins, entries, referral_count, referral_points, ref_code, active_multiplier, multiplier_expires_at')
       .eq('address', address.toLowerCase())
       .maybeSingle()
 
@@ -113,6 +119,8 @@ export function ProfileSection({ address, basename }) {
     setStreak({ count: user.streak, last: user.streak_last })
     setCheckedToday(user.streak_last === today)
     setBoostedToday(user.boost_last === today)
+    setActiveMultiplier(user.active_multiplier)
+    setMultiplierExpiresAt(user.multiplier_expires_at)
     setUserStats({
       points: user.points,
       wins: user.wins,
@@ -132,6 +140,9 @@ export function ProfileSection({ address, basename }) {
 
   const { data: txHash, writeContract, isPending, isConfirming, isSuccess, error: writeError, reset } = useBuilderWrite()
   const { data: boostTxHash, writeContract: writeBoost, isPending: isPendingBoost, isConfirming: isConfirmingBoost, isSuccess: isSuccessBoost, error: boostWriteError, reset: resetBoost } = useBuilderWrite()
+  const { data: multTxHash, writeContract: writeMult, isPending: isPendingMult, isConfirming: isConfirmingMult, isSuccess: isSuccessMult, error: multWriteError, reset: resetMult } = useBuilderWrite()
+
+  const [selectedBoost, setSelectedBoost] = useState(null)
 
   useEffect(() => {
     if (!isSuccess || !txHash || processedTxRef.current === txHash || !address) return
@@ -197,6 +208,39 @@ export function ProfileSection({ address, basename }) {
     })
   }, [address, isSuccessBoost, boostTxHash, today, resetBoost])
 
+  // --- Multiplier Effect ---
+  useEffect(() => {
+    if (!isSuccessMult || !multTxHash || processedMultTxRef.current === multTxHash || !address || !selectedBoost) return
+
+    processedMultTxRef.current = multTxHash
+    setMultError('')
+
+    db.rpc('buy_multiplier', {
+      p_address: address.toLowerCase(),
+      p_tx_hash: multTxHash,
+      p_multiplier: selectedBoost.multiplier,
+    }).then(async ({ data, error }) => {
+      if (error) {
+        console.error('buy_multiplier:', error)
+        setMultError('Transaction saved onchain, but database sync failed.')
+        await loadProfile()
+        return
+      }
+
+      if (!data?.ok) {
+        setMultError(data?.error || 'Multiplier purchase was not accepted.')
+        await loadProfile()
+        return
+      }
+
+      await loadProfile() // Reload to get new expiry time and multiplier
+      setTxModal(false)
+      setSelectedBoost(null)
+    }).finally(() => {
+      resetMult()
+    })
+  }, [address, isSuccessMult, multTxHash, selectedBoost, resetMult])
+
   const sendCheckin = () => {
     setCheckinError('')
     if (chainId !== base.id) {
@@ -225,6 +269,23 @@ export function ProfileSection({ address, basename }) {
       abi: USDC_ABI,
       functionName: 'transfer',
       args: [CHECKIN_TARGET, parseUnits(BOOST_AMOUNT.toFixed(6), 6)],
+      chainId: base.id,
+    })
+  }
+
+  const sendMultiplier = () => {
+    if (!selectedBoost) return
+    setMultError('')
+    if (chainId !== base.id) {
+      switchChain({ chainId: base.id })
+      return
+    }
+
+    writeMult({
+      address: USDC_ADDRESS,
+      abi: USDC_ABI,
+      functionName: 'transfer',
+      args: [CHECKIN_TARGET, parseUnits(selectedBoost.price.toFixed(6), 6)],
       chainId: base.id,
     })
   }
@@ -452,6 +513,76 @@ export function ProfileSection({ address, basename }) {
         )}
       </div>
 
+      <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 18, marginBottom: 12 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: '#0A0B0D' }}>Consumable Boosts</div>
+          {activeMultiplier > 1 && multiplierExpiresAt && new Date(multiplierExpiresAt) > new Date() && (
+            <div style={{ background: 'rgba(5, 150, 105, 0.1)', color: '#059669', padding: '4px 8px', borderRadius: 50, fontSize: 11, fontWeight: 800 }}>
+              {activeMultiplier}x Active
+            </div>
+          )}
+        </div>
+        <div style={{ fontSize: 13, color: '#717886', marginBottom: 14, lineHeight: 1.6 }}>
+          Multiply <span style={{ fontWeight: 700 }}>all HP earned</span> for 24 hours. Does not apply to referral HP.
+        </div>
+
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button
+            onClick={() => {
+              setSelectedBoost({ type: '2x', multiplier: 2.0, price: 0.50 })
+              setTxModal('multiplier')
+            }}
+            style={{
+              flex: 1,
+              background: '#EEF0F3',
+              border: '1px solid #DEE1E7',
+              borderRadius: 16,
+              padding: '12px 8px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+          >
+            <div style={{ fontSize: 24, marginBottom: 4 }}>🍷</div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>2x Boost</div>
+            <div style={{ fontSize: 11, color: '#717886', display: 'flex', alignItems: 'center', gap: 4, marginTop: 4 }}>
+              0.50 <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12 }} />
+            </div>
+          </button>
+
+          <button
+            onClick={() => {
+              setSelectedBoost({ type: '5x', multiplier: 5.0, price: 1.00 })
+              setTxModal('multiplier')
+            }}
+            style={{
+              flex: 1,
+              background: 'linear-gradient(135deg, rgba(0,0,255,0.05) 0%, rgba(0,0,255,0.15) 100%)',
+              border: '1px solid rgba(0,0,255,0.2)',
+              borderRadius: 16,
+              padding: '12px 8px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+          >
+            <div style={{ fontSize: 24, marginBottom: 4 }}>🍾</div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#0000FF' }}>5x Boost</div>
+            <div style={{ fontSize: 11, color: '#0000FF', display: 'flex', alignItems: 'center', gap: 4, marginTop: 4 }}>
+              1.00 <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12 }} />
+            </div>
+          </button>
+        </div>
+
+        {multError && (
+          <div style={{ color: '#DC2626', fontSize: 12, marginTop: 10, textAlign: 'center' }}>{multError}</div>
+        )}
+      </div>
+
       <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 18 }}>
         <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 4, color: '#0A0B0D' }}>Referral Program</div>
         <div style={{ fontSize: 13, color: '#717886', marginBottom: 14, lineHeight: 1.6 }}>
@@ -552,6 +683,24 @@ export function ProfileSection({ address, basename }) {
           onCancel={() => {
             setTxModal(false)
             resetBoost()
+          }}
+        />
+      )}
+
+      {txModal === 'multiplier' && selectedBoost && (
+        <TxModal
+          title={`${selectedBoost.type} Point Multiplier`}
+          subtitle={`Multiply all earned HP by ${selectedBoost.multiplier}x for 24 hours.`}
+          amount={selectedBoost.price}
+          isPending={isPendingMult}
+          isConfirming={isConfirmingMult}
+          isSuccess={isSuccessMult}
+          error={multWriteError}
+          onConfirm={sendMultiplier}
+          onCancel={() => {
+            setTxModal(false)
+            setSelectedBoost(null)
+            resetMult()
           }}
         />
       )}

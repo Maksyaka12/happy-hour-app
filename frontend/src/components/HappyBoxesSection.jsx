@@ -10,7 +10,7 @@ export function HappyBoxesSection({ address }) {
       bg: '#FAF4ED',
       icon: '📦',
       description: 'A solid start. Good chance for a quick HP boost.',
-      rewards: 'Up to 250 HP'
+      rewards: 'Up to 250 HP + Chance for 2x Boost'
     },
     {
       id: 'epic',
@@ -20,7 +20,7 @@ export function HappyBoxesSection({ address }) {
       bg: '#F3E8FF',
       icon: '🎁',
       description: 'High stakes, high rewards. Better odds for jackpots.',
-      rewards: 'Up to 1,500 HP + Tickets'
+      rewards: 'Up to 1,500 HP + Chance for 5x Boost'
     },
     {
       id: 'legendary',
@@ -30,7 +30,7 @@ export function HappyBoxesSection({ address }) {
       bg: '#FEF3C7',
       icon: '👑',
       description: 'The ultimate prize pool. Guaranteed massive rewards.',
-      rewards: 'Up to 5,000 HP + VIP Badge'
+      rewards: 'Up to 5,000 HP + Guaranteed 5x Boost'
     }
   ]
 
@@ -60,7 +60,7 @@ export function HappyBoxesSection({ address }) {
         <div style={{ fontSize: 32, marginBottom: 8, animation: 'bouncePulse 2s infinite' }}>🎁</div>
         <div style={{ fontSize: 22, fontWeight: 900, marginBottom: 8, letterSpacing: -0.5 }}>Happy Boxes</div>
         <div style={{ fontSize: 14, color: '#A5B4FC', lineHeight: 1.5, fontWeight: 500 }}>
-          Test your luck! Open a box to win massive HP, free raffle tickets, and exclusive badges.
+          Test your luck! Open a box to win massive HP, point multipliers, and exclusive badges.
         </div>
       </div>
 
