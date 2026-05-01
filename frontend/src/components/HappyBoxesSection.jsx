@@ -65,10 +65,10 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           if (data?.ok) {
             // Artificial delay for opening animation
             await new Promise(r => setTimeout(r, 2000))
-            const baseHp = Math.round(data.hp_won / data.multiplier_won)
+            const baseHp = Math.round(data.hp_won / data.applied_multiplier)
             setOpenResult({
               hp: data.hp_won,
-              mult: data.multiplier_won,
+              mult: data.applied_multiplier,
               baseHp: baseHp
             })
             if (onUpdate) onUpdate()
