@@ -278,6 +278,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                   <img src="/usdc-logo.png" alt="USDC" style={{ width: 15, height: 15, marginLeft: 3, display: 'inline-block', verticalAlign: 'middle' }} />
                 </span>
               </button>
+            </div>
           </div>
         ))}
       </div>
