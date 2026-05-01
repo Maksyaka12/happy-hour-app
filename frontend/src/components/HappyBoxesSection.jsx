@@ -45,7 +45,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       price: 0.95,
       color: '#D97706',
       bg: '#FEF3C7',
-      icon: '👑',
+      icon: '🧳',
       rewards: 'Up to 200 HP + Chance for 5x Boost'
     }
   ]
@@ -303,7 +303,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           backdropFilter: 'blur(8px)'
         }}>
-           <div style={{ fontSize: 80, animation: 'magicBox 0.5s infinite' }}>🎁</div>
+         <div style={{ fontSize: 80, animation: 'magicBox 0.5s infinite' }}>{selectedBox?.icon ?? '🎁'}</div>
         </div>
       )}
 
