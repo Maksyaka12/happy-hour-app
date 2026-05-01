@@ -12,15 +12,16 @@ export function LeaderboardSection({ address }) {
   const [loading, setLoading] = useState(true)
   const [outsideRank, setOutsideRank] = useState(null)
   useEffect(() => {
+    if (!address) return
     let alive = true
 
     const loadLeaders = async () => {
-      // Load top 50
+      // Load top 100
       const { data, error } = await db
         .from('users')
         .select('address, basename, points, wins, entries')
         .order('points', { ascending: false })
-        .limit(50)
+        .limit(100)
 
       if (error) {
         console.error('loadLeaders:', error)
@@ -29,13 +30,22 @@ export function LeaderboardSection({ address }) {
 
       if (alive) {
         setLeaders(data ?? [])
-        
-        const inTop50Index = (data ?? []).findIndex(u => u.address?.toLowerCase() === address?.toLowerCase())
-        if (inTop50Index === -1 && address) {
-          const { data: myData } = await db.from('users').select('points, basename').eq('address', address).single()
-          if (myData) {
-             const { count } = await db.from('users').select('*', { count: 'exact', head: true }).gt('points', myData.points)
-             setOutsideRank({ rank: (count || 0) + 1, points: myData.points, basename: myData.basename })
+
+        const inTopIndex = (data ?? []).findIndex(u => u.address?.toLowerCase() === address?.toLowerCase())
+        if (inTopIndex === -1) {
+          // User not in top 100 — fetch their exact rank
+          const { data: myData } = await db
+            .from('users')
+            .select('points, basename')
+            .eq('address', address.toLowerCase())
+            .single()
+
+          if (myData && alive) {
+            const { count } = await db
+              .from('users')
+              .select('*', { count: 'exact', head: true })
+              .gt('points', myData.points)
+            setOutsideRank({ rank: (count || 0) + 1, points: myData.points, basename: myData.basename })
           }
         } else {
           setOutsideRank(null)
@@ -56,7 +66,7 @@ export function LeaderboardSection({ address }) {
       alive = false
       db.removeChannel(channel)
     }
-  }, [])
+  }, [address])
 
   const myRank = leaders.findIndex((u) => u.address?.toLowerCase() === address?.toLowerCase()) + 1
   const myEntry = leaders.find((u) => u.address?.toLowerCase() === address?.toLowerCase())
