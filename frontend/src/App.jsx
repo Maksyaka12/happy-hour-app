@@ -51,7 +51,7 @@ export default function App() {
   const referralCode = useMemo(() => getReferralCode(), [])
 
   const tabLabels = {
-    raffle: 'Raffle',
+    raffle: 'Happy Raffle',
     boxes: 'Happy Boxes',
     tasks: 'Tasks',
     leaderboard: 'Leaderboard',

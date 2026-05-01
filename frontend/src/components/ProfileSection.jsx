@@ -397,7 +397,7 @@ export function ProfileSection({ address, basename }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
           <div>
             <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 3, color: '#0A0B0D' }}>Daily Check-in</div>
-            <div style={{ fontSize: 12, color: '#717886' }}>Earn <span style={{ color: '#0000FF', fontWeight: 700 }}>+1 HP</span> per day · Build your streak</div>
+            <div style={{ fontSize: 13, color: '#717886' }}>Earn <span style={{ color: '#0000FF', fontWeight: 700 }}>+1 HP</span> per day · Build your streak</div>
           </div>
           <div style={{ background: '#0000FF', borderRadius: 50, padding: '5px 12px', display: 'flex', alignItems: 'center', gap: 5 }}>
             <span style={{ fontSize: 13 }}>🔥</span>
@@ -558,8 +558,8 @@ export function ProfileSection({ address, basename }) {
             }}
             style={{
               flex: 1,
-              background: '#EEF0F3',
-              border: '1px solid #DEE1E7',
+              background: 'rgba(5, 150, 105, 0.08)',
+              border: '1px solid rgba(5, 150, 105, 0.2)',
               borderRadius: 16,
               padding: '12px 8px',
               display: 'flex',
@@ -570,8 +570,8 @@ export function ProfileSection({ address, basename }) {
             }}
           >
             <div style={{ fontSize: 24, marginBottom: 4 }}>🍷</div>
-            <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>2x Boost</div>
-            <div style={{ fontSize: 11, color: '#717886', display: 'flex', alignItems: 'center', gap: 4, marginTop: 4 }}>
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#059669' }}>2x Boost</div>
+            <div style={{ fontSize: 11, color: '#059669', display: 'flex', alignItems: 'center', gap: 4, marginTop: 4 }}>
               0.50 <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12 }} />
             </div>
           </button>
@@ -583,8 +583,8 @@ export function ProfileSection({ address, basename }) {
             }}
             style={{
               flex: 1,
-              background: 'linear-gradient(135deg, rgba(0,0,255,0.05) 0%, rgba(0,0,255,0.15) 100%)',
-              border: '1px solid rgba(0,0,255,0.2)',
+              background: 'rgba(147, 51, 234, 0.08)',
+              border: '1px solid rgba(147, 51, 234, 0.2)',
               borderRadius: 16,
               padding: '12px 8px',
               display: 'flex',
@@ -595,8 +595,8 @@ export function ProfileSection({ address, basename }) {
             }}
           >
             <div style={{ fontSize: 24, marginBottom: 4 }}>🍾</div>
-            <div style={{ fontSize: 13, fontWeight: 800, color: '#0000FF' }}>5x Boost</div>
-            <div style={{ fontSize: 11, color: '#0000FF', display: 'flex', alignItems: 'center', gap: 4, marginTop: 4 }}>
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#9333EA' }}>5x Boost</div>
+            <div style={{ fontSize: 11, color: '#9333EA', display: 'flex', alignItems: 'center', gap: 4, marginTop: 4 }}>
               1.00 <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12 }} />
             </div>
           </button>
@@ -612,27 +612,28 @@ export function ProfileSection({ address, basename }) {
         <div style={{ fontSize: 13, color: '#717886', marginBottom: 14, lineHeight: 1.6 }}>
           Invite friends and earn <span style={{ color: '#D97706', fontWeight: 700 }}>50% of their points</span> forever.
         </div>
-        <div style={{ background: '#EEF0F3', border: '1px solid #DEE1E7', borderRadius: 12, padding: '12px 14px', marginBottom: 10 }}>
-          <span style={{ fontFamily: "'DM Mono',monospace", fontSize: 11, color: '#717886', wordBreak: 'break-all' }}>{referralLink}</span>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+          <div style={{ flex: 1, background: '#EEF0F3', border: '1px solid #DEE1E7', borderRadius: 12, padding: '12px 14px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center' }}>
+            <span style={{ fontFamily: "'DM Mono',monospace", fontSize: 11, color: '#717886', overflow: 'hidden', textOverflow: 'ellipsis' }}>{referralLink}</span>
+          </div>
+          <button
+            onClick={copyRef}
+            style={{
+              background: copied ? 'rgba(5,150,105,0.1)' : 'rgba(217,119,6,0.1)',
+              border: `1px solid ${copied ? '#059669' : '#D97706'}`,
+              color: copied ? '#059669' : '#D97706',
+              borderRadius: 12,
+              padding: '0 16px',
+              fontSize: 13,
+              fontWeight: 700,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              transition: 'all 0.2s'
+            }}
+          >
+            {copied ? '✓ Copied!' : 'Copy'}
+          </button>
         </div>
-        <button
-          onClick={copyRef}
-          style={{
-            width: '100%',
-            background: copied ? 'rgba(5,150,105,0.1)' : 'rgba(217,119,6,0.1)',
-            border: `1px solid ${copied ? '#059669' : '#D97706'}`,
-            color: copied ? '#059669' : '#D97706',
-            borderRadius: 50,
-            padding: 13,
-            fontSize: 13,
-            fontWeight: 700,
-            transition: 'all 0.2s',
-            cursor: 'pointer',
-            marginBottom: 16,
-          }}
-        >
-          {copied ? '✓ Copied!' : 'Copy Referral Link'}
-        </button>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
           <div style={{ background: 'rgba(0,0,0,0.03)', borderRadius: 14, padding: '12px 10px', textAlign: 'center', border: '1px solid rgba(0,0,0,0.05)' }}>

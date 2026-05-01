@@ -56,7 +56,7 @@ export function HappyBoxesSection({ address }) {
       </style>
 
       {/* Header Banner */}
-      <div style={{ background: 'linear-gradient(135deg, #0000FF 0%, #4F46E5 100%)', borderRadius: 24, padding: 24, marginBottom: 20, color: '#fff', boxShadow: '0 8px 32px rgba(0,0,255,0.2)' }}>
+      <div style={{ background: 'linear-gradient(135deg, #0000FF 0%, #4F46E5 100%)', borderRadius: 20, padding: '22px 20px 18px', marginBottom: 12, color: '#fff', boxShadow: '0 8px 32px rgba(0,0,255,0.2)' }}>
         <div style={{ fontSize: 32, marginBottom: 8, animation: 'bouncePulse 2s infinite' }}>🎁</div>
         <div style={{ fontSize: 22, fontWeight: 900, marginBottom: 8, letterSpacing: -0.5 }}>Happy Boxes</div>
         <div style={{ fontSize: 14, color: '#A5B4FC', lineHeight: 1.5, fontWeight: 500 }}>
