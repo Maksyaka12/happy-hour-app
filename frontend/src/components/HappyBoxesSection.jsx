@@ -45,7 +45,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       price: 0.95,
       color: '#D97706',
       bg: '#FEF3C7',
-      icon: '🗃️',
+      icon: '💰',
       rewards: 'Up to 200 HP + Chance for 5x Boost'
     }
   ]
