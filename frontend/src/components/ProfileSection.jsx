@@ -502,7 +502,7 @@ export function ProfileSection({ address, basename }) {
       <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 18, marginBottom: 12 }}>
         <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4, color: '#0A0B0D' }}>Daily HP Boost</div>
         <div style={{ fontSize: 12, color: '#717886', marginBottom: 14, lineHeight: 1.6 }}>
-          Get an extra <span style={{ color: '#0000FF', fontWeight: 700 }}>+100 HP</span> per day · Boost your rank
+          Get an extra <span style={{ color: '#0000FF', fontWeight: 700 }}>+11 HP</span> per day · Boost your rank
         </div>
         {canBoost ? (
           <button
