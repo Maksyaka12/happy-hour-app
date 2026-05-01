@@ -138,20 +138,21 @@ export function HistorySection({ address }) {
                 {record.boost_mult > 1 && (
                   <span style={{
                     position: 'absolute',
-                    top: -6,
-                    left: -4,
-                    fontSize: 8,
+                    top: -5,
+                    left: 2,
+                    fontSize: 7,
                     fontWeight: 900,
                     color: record.boost_mult >= 5 ? '#9333EA' : '#059669',
-                    background: record.boost_mult >= 5 ? 'rgba(147, 51, 234, 0.15)' : 'rgba(5, 150, 105, 0.15)',
-                    border: `1px solid ${record.boost_mult >= 5 ? 'rgba(147, 51, 234, 0.3)' : 'rgba(5, 150, 105, 0.3)'}`,
-                    padding: '2px 4px',
-                    borderRadius: 6,
-                    transform: 'rotate(-4deg)',
+                    background: record.boost_mult >= 5 ? 'rgba(147, 51, 234, 0.2)' : 'rgba(5, 150, 105, 0.2)',
+                    border: `1px solid ${record.boost_mult >= 5 ? 'rgba(147, 51, 234, 0.4)' : 'rgba(5, 150, 105, 0.4)'}`,
+                    padding: '1px 3px',
+                    borderRadius: 4,
+                    transform: 'rotate(-2deg)',
                     zIndex: 1,
-                    backdropFilter: 'blur(4px)'
+                    backdropFilter: 'blur(4px)',
+                    textTransform: 'lowercase'
                   }}>
-                    {record.boost_mult}x
+                    {record.boost_mult}x boost
                   </span>
                 )}
               </div>
