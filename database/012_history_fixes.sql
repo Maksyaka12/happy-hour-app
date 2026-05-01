@@ -51,9 +51,9 @@ SELECT
   lower(tc.address) AS address,
   'Quest' AS action,
   t.type AS badge,
-  '+' || ceil(t.points * tc.multiplier) || ' HP' AS value,
+  '+' || ceil(t.points * COALESCE(tc.multiplier, 1.0)) || ' HP' AS value,
   'quest' AS type,
-  tc.multiplier AS boost_mult,
+  COALESCE(tc.multiplier, 1.0) AS boost_mult,
   tc.completed_at AS created_at
 FROM task_completions tc
 JOIN tasks t ON tc.task_id = t.id
