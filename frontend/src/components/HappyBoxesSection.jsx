@@ -45,7 +45,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       price: 0.95,
       color: '#D97706',
       bg: '#FEF3C7',
-      icon: '🧳',
+      icon: '🗃️',
       rewards: 'Up to 200 HP + Chance for 5x Boost'
     }
   ]
@@ -96,31 +96,31 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       if (openResult.mult > 1) {
         setDisplayHp(openResult.baseHp)
         setAnimPhase(1)
-        
+
         setTimeout(() => {
           setAnimPhase(2) // show mult sticker
-          
+
           setTimeout(() => {
             setAnimPhase(3) // start counting
             const target = openResult.hp
             const duration = 1200
             const start = Date.now()
-            
+
             const timer = setInterval(() => {
               const timePassed = Date.now() - start
               if (timePassed >= duration) {
-                 setDisplayHp(target)
-                 setAnimPhase(4)
-                 clearInterval(timer)
+                setDisplayHp(target)
+                setAnimPhase(4)
+                clearInterval(timer)
               } else {
-                 const progress = timePassed / duration
-                 const easeProgress = progress * (2 - progress)
-                 setDisplayHp(Math.round(openResult.baseHp + (target - openResult.baseHp) * easeProgress))
+                const progress = timePassed / duration
+                const easeProgress = progress * (2 - progress)
+                setDisplayHp(Math.round(openResult.baseHp + (target - openResult.baseHp) * easeProgress))
               }
             }, 16)
           }, 800)
         }, 800)
-        
+
       } else {
         setDisplayHp(openResult.hp)
         setAnimPhase(4)
@@ -135,7 +135,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
   const handleConfirm = () => {
     if (wrongChain) { switchChain({ chainId: base.id }); return }
     if (!selectedBox) return
-    
+
     writeContract({
       address: USDC_ADDRESS,
       abi: USDC_ABI,
@@ -196,10 +196,10 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.9) 1.5px, transparent 1.5px)',
           backgroundSize: '20px 20px',
         }} />
-        
+
         <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 20 }}>
-          <div style={{ 
-            fontSize: 64, 
+          <div style={{
+            fontSize: 64,
             animation: 'magicBox 2.5s ease-in-out infinite',
             flexShrink: 0,
             lineHeight: 1
@@ -236,7 +236,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             {/* Right side — 3 rows stack */}
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
               <div style={{ fontSize: 16, fontWeight: 800, color: '#0A0B0D' }}>{box.name}</div>
-              
+
               <div style={{ display: 'flex' }}>
                 <span style={{
                   background: box.bg, color: box.color,
@@ -303,7 +303,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           backdropFilter: 'blur(8px)'
         }}>
-         <div style={{ fontSize: 80, animation: 'magicBox 0.5s infinite' }}>{selectedBox?.icon ?? '🎁'}</div>
+          <div style={{ fontSize: 80, animation: 'magicBox 0.5s infinite' }}>{selectedBox?.icon ?? '🎁'}</div>
         </div>
       )}
 
@@ -320,27 +320,27 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           }}>
             <div style={{ fontSize: 60, marginBottom: 10, animation: 'bouncePulse 1.5s infinite' }}>🎉</div>
             <div style={{ fontSize: 24, fontWeight: 900, color: '#0A0B0D', marginBottom: 8 }}>You Won!</div>
-            
+
             <div style={{ fontSize: 36, fontWeight: 900, color: '#0000FF', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 16 }}>
               +{displayHp} HP
             </div>
 
             {openResult.mult > 1 && animPhase >= 2 && (
-              <div style={{ 
-                display: 'inline-block', background: openResult.mult >= 5 ? 'rgba(147, 51, 234, 0.1)' : 'rgba(5, 150, 105, 0.1)', 
-                color: openResult.mult >= 5 ? '#9333EA' : '#059669', 
+              <div style={{
+                display: 'inline-block', background: openResult.mult >= 5 ? 'rgba(147, 51, 234, 0.1)' : 'rgba(5, 150, 105, 0.1)',
+                color: openResult.mult >= 5 ? '#9333EA' : '#059669',
                 padding: '6px 16px', borderRadius: 50, fontSize: 15, fontWeight: 800, border: `1px solid ${openResult.mult >= 5 ? 'rgba(147, 51, 234, 0.3)' : 'rgba(5, 150, 105, 0.3)'}`,
                 marginBottom: 16,
                 animation: 'fadeIn 0.4s ease'
               }}>
-                {openResult.wonNewMult 
-                  ? `⭐ You won a ${openResult.mult}x Boost!` 
+                {openResult.wonNewMult
+                  ? `⭐ You won a ${openResult.mult}x Boost!`
                   : `⭐ Active ${openResult.mult}x Boost Applied!`}
               </div>
             )}
-            
+
             {animPhase < 4 && openResult.mult > 1 && (
-               <div style={{ height: 43, marginBottom: 16 }} /> /* Placeholder to prevent jumping */
+              <div style={{ height: 43, marginBottom: 16 }} /> /* Placeholder to prevent jumping */
             )}
 
             <button
