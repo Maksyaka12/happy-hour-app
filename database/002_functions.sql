@@ -59,14 +59,12 @@ BEGIN
 END;
 $$;
 
-DROP FUNCTION IF EXISTS add_points(TEXT, INTEGER, TEXT);
-
 CREATE OR REPLACE FUNCTION add_points(
   p_address TEXT,
   p_points INTEGER,
   p_reason TEXT DEFAULT ''
 )
-RETURNS NUMERIC
+RETURNS void
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
@@ -79,7 +77,7 @@ DECLARE
   v_actual_points INTEGER := p_points;
 BEGIN
   IF v_address IS NULL OR v_address = '' OR p_points IS NULL OR p_points = 0 THEN
-    RETURN 1.0;
+    RETURN;
   END IF;
 
   -- Get user multiplier status
@@ -88,8 +86,6 @@ BEGIN
 
   IF v_user_expires > NOW() AND v_user_multiplier > 1.0 THEN
     v_actual_points := ceil(p_points * v_user_multiplier)::integer;
-  ELSE
-    v_user_multiplier := 1.0;
   END IF;
 
   INSERT INTO users (address, points)
@@ -106,8 +102,6 @@ BEGIN
       referral_points = referral_points + ceil(p_points::float / 2)::integer
     WHERE address = v_referrer;
   END IF;
-
-  RETURN v_user_multiplier;
 END;
 $$;
 
@@ -160,7 +154,6 @@ DECLARE
   v_new_streak INTEGER;
   v_pts_earned INTEGER := 1;
   v_bonus INTEGER := 0;
-  v_mult NUMERIC;
 BEGIN
   IF v_address IS NULL OR v_address = '' OR v_tx_hash IS NULL OR v_tx_hash = '' THEN
     RETURN jsonb_build_object('ok', false, 'error', 'Missing address or tx hash');
@@ -187,7 +180,6 @@ BEGIN
     v_new_streak := 1;
   END IF;
 
-  -- Milestone bonuses
   SELECT COALESCE(MAX(pts), 0)
   INTO v_bonus
   FROM (
@@ -197,11 +189,8 @@ BEGIN
 
   v_pts_earned := v_pts_earned + v_bonus;
 
-  -- Capture multiplier for history
-  SELECT add_points(v_address, v_pts_earned, 'checkin') INTO v_mult;
-
-  INSERT INTO checkins (address, checked_date, tx_hash, points, multiplier)
-  VALUES (v_address, v_today, v_tx_hash, v_pts_earned, v_mult);
+  INSERT INTO checkins (address, checked_date, tx_hash, points)
+  VALUES (v_address, v_today, v_tx_hash, v_pts_earned);
 
   UPDATE users
   SET
@@ -209,11 +198,12 @@ BEGIN
     streak_last = v_today
   WHERE address = v_address;
 
+  PERFORM add_points(v_address, v_pts_earned, 'checkin');
+
   RETURN jsonb_build_object(
     'ok', true,
     'newStreak', v_new_streak,
-    'ptsEarned', v_pts_earned,
-    'appliedMultiplier', v_mult
+    'ptsEarned', v_pts_earned
   );
 END;
 $$;
@@ -231,7 +221,6 @@ DECLARE
   v_address TEXT := lower(trim(p_address));
   v_task tasks;
   v_inserted BIGINT;
-  v_mult NUMERIC;
 BEGIN
   IF v_address IS NULL OR v_address = '' OR p_task_id IS NULL OR trim(p_task_id) = '' THEN
     RETURN jsonb_build_object('ok', false, 'error', 'Missing task or address');
@@ -248,11 +237,8 @@ BEGIN
     RETURN jsonb_build_object('ok', false, 'error', 'Task not found or expired');
   END IF;
 
-  -- Capture multiplier for history
-  SELECT add_points(v_address, v_task.points, 'task:' || p_task_id) INTO v_mult;
-
-  INSERT INTO task_completions (task_id, address, multiplier)
-  VALUES (p_task_id, v_address, v_mult)
+  INSERT INTO task_completions (task_id, address)
+  VALUES (p_task_id, v_address)
   ON CONFLICT (task_id, address) DO NOTHING
   RETURNING id INTO v_inserted;
 
@@ -260,10 +246,11 @@ BEGIN
     RETURN jsonb_build_object('ok', false, 'error', 'Task already claimed');
   END IF;
 
+  PERFORM add_points(v_address, v_task.points, 'task:' || p_task_id);
+
   RETURN jsonb_build_object(
     'ok', true,
-    'pointsAwarded', v_task.points,
-    'appliedMultiplier', v_mult
+    'pointsAwarded', v_task.points
   );
 END;
 $$;
@@ -284,7 +271,6 @@ AS $$
 DECLARE
   v_address TEXT := lower(trim(p_address));
   v_inserted BIGINT;
-  v_mult NUMERIC;
 BEGIN
   IF p_round_id IS NULL OR v_address IS NULL OR v_address = '' OR p_amount IS NULL OR p_amount <= 0 OR p_tickets IS NULL OR p_tickets <= 0 OR p_tx_hash IS NULL OR trim(p_tx_hash) = '' THEN
     RETURN jsonb_build_object('ok', false, 'error', 'Invalid deposit payload');
@@ -292,11 +278,8 @@ BEGIN
 
   PERFORM sync_user_profile(v_address, NULL, NULL);
 
-  -- Capture multiplier for history
-  SELECT add_points(v_address, p_tickets, 'deposit:' || p_tx_hash) INTO v_mult;
-
-  INSERT INTO bets (round_id, address, amount, tickets, tx_hash, block_number, multiplier)
-  VALUES (p_round_id, v_address, p_amount, p_tickets, lower(trim(p_tx_hash)), p_block_number, v_mult)
+  INSERT INTO bets (round_id, address, amount, tickets, tx_hash, block_number)
+  VALUES (p_round_id, v_address, p_amount, p_tickets, lower(trim(p_tx_hash)), p_block_number)
   ON CONFLICT (tx_hash) DO NOTHING
   RETURNING id INTO v_inserted;
 
@@ -308,13 +291,13 @@ BEGIN
   SET total_pot = total_pot + p_amount
   WHERE id = p_round_id;
 
+  PERFORM add_points(v_address, p_tickets, 'deposit:' || p_tx_hash);
   PERFORM increment_entries(v_address);
 
   RETURN jsonb_build_object(
     'ok', true,
     'roundId', p_round_id,
-    'tickets', p_tickets,
-    'appliedMultiplier', v_mult
+    'tickets', p_tickets
   );
 END;
 $$;
