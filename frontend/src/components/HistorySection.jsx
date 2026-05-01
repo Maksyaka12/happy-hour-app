@@ -107,7 +107,7 @@ export function HistorySection({ address }) {
       boxShadow: '0 4px 14px rgba(10,11,13,0.03)',
       border: '1px solid rgba(0,0,0,0.04)'
     }}>
-      <div style={{ fontSize: 18, fontWeight: 800, color: '#0A0B0D', marginBottom: 12 }}>History</div>
+      <div style={{ fontSize: 14, fontWeight: 700, color: '#0A0B0D', marginBottom: 12 }}>History</div>
       
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         {history.map((record, index) => {
