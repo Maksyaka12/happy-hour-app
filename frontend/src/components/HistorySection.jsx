@@ -124,30 +124,35 @@ export function HistorySection({ address }) {
           return (
             <div key={record.id} style={{
               display: 'grid',
-              gridTemplateColumns: '65px 105px 45px 1fr',
+              gridTemplateColumns: '60px 95px 45px 1fr',
               alignItems: 'center',
-              gap: 8,
-              padding: '12px 0',
+              gap: 6,
+              padding: '10px 0',
               borderBottom: index !== history.length - 1 ? '1px solid #F1F3F7' : 'none'
             }}>
               {/* 1. Action */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <div style={{ fontSize: 14, fontWeight: 800, color: config.title, whiteSpace: 'nowrap' }}>
+              <div style={{ position: 'relative', whiteSpace: 'nowrap', paddingTop: record.boost_mult > 1 ? 4 : 0 }}>
+                <span style={{ fontSize: 13, fontWeight: 800, color: config.title }}>
                   {displayAction}
-                </div>
+                </span>
                 {record.boost_mult > 1 && (
-                  <div style={{
-                    fontSize: 9,
-                    fontWeight: 800,
+                  <span style={{
+                    position: 'absolute',
+                    top: -6,
+                    left: -4,
+                    fontSize: 8,
+                    fontWeight: 900,
                     color: record.boost_mult >= 5 ? '#9333EA' : '#059669',
-                    background: record.boost_mult >= 5 ? 'rgba(147, 51, 234, 0.1)' : 'rgba(5, 150, 105, 0.1)',
-                    padding: '2px 6px',
-                    borderRadius: 4,
-                    display: 'inline-block',
-                    width: 'fit-content'
+                    background: record.boost_mult >= 5 ? 'rgba(147, 51, 234, 0.15)' : 'rgba(5, 150, 105, 0.15)',
+                    border: `1px solid ${record.boost_mult >= 5 ? 'rgba(147, 51, 234, 0.3)' : 'rgba(5, 150, 105, 0.3)'}`,
+                    padding: '2px 4px',
+                    borderRadius: 6,
+                    transform: 'rotate(-4deg)',
+                    zIndex: 1,
+                    backdropFilter: 'blur(4px)'
                   }}>
-                    {record.boost_mult}x Boost
-                  </div>
+                    {record.boost_mult}x
+                  </span>
                 )}
               </div>
 
@@ -157,10 +162,10 @@ export function HistorySection({ address }) {
                   <span style={{
                     background: config.badgeBg,
                     color: config.badgeText,
-                    fontSize: 12,
+                    fontSize: 10,
                     fontWeight: 700,
-                    padding: '3px 8px',
-                    borderRadius: 8,
+                    padding: '2px 6px',
+                    borderRadius: 6,
                     whiteSpace: 'nowrap',
                     display: 'inline-block'
                   }}>
@@ -170,12 +175,12 @@ export function HistorySection({ address }) {
               </div>
 
               {/* 3. Date */}
-              <div style={{ fontSize: 13, color: '#717886', whiteSpace: 'nowrap' }}>
+              <div style={{ fontSize: 11, color: '#717886', whiteSpace: 'nowrap' }}>
                 {formatDate(record.created_at)}
               </div>
 
               {/* 4. Value */}
-              <div style={{ fontSize: 15, fontWeight: 800, color: config.value, textAlign: 'right', whiteSpace: 'nowrap' }}>
+              <div style={{ fontSize: 14, fontWeight: 800, color: config.value, textAlign: 'right', whiteSpace: 'nowrap' }}>
                 {displayValue}
               </div>
             </div>
