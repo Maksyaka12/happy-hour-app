@@ -69,6 +69,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             setOpenResult({
               hp: data.hp_won,
               mult: data.applied_multiplier,
+              wonNewMult: data.multiplier_won > 1,
               baseHp: baseHp
             })
             if (onUpdate) onUpdate()
@@ -311,7 +312,9 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                 marginBottom: 16,
                 animation: 'fadeIn 0.4s ease'
               }}>
-                ⭐ {openResult.mult}x Boost Activated!
+                {openResult.wonNewMult 
+                  ? `⭐ You won a ${openResult.mult}x Boost!` 
+                  : `⭐ Active ${openResult.mult}x Boost Applied!`}
               </div>
             )}
             
