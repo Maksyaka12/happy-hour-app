@@ -1,43 +1,107 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import { useChainId, useSwitchChain } from 'wagmi'
+import { parseUnits } from 'viem'
+import { base } from 'wagmi/chains'
+import { FOUNDATION, USDC_ADDRESS, USDC_ABI } from '../config/constants'
+import { db } from '../config/supabase'
+import { useBuilderWrite } from '../hooks/useBuilderWrite'
+import { TxModal } from './TxModal'
 
-export function HappyBoxesSection({ address }) {
+export function HappyBoxesSection({ address, profile, onUpdate }) {
+  const [selectedBox, setSelectedBox] = useState(null)
+  const [isOpening, setIsOpening] = useState(false)
+  const [openResult, setOpenResult] = useState(null)
+
+  const chainId = useChainId()
+  const { switchChain, isPending: isSwitching } = useSwitchChain()
+  const wrongChain = chainId !== base.id
+
+  const { data: txHash, writeContract, isPending, isConfirming, isSuccess, error: writeError, reset } = useBuilderWrite()
+
   const boxes = [
     {
       id: 'common',
       name: 'Common Box',
-      price: '0.50',
-      color: '#8B5A2B', // Bronze-ish
+      price: 0.20,
+      color: '#8B5A2B',
       bg: '#FAF4ED',
       icon: '📦',
-      description: 'A solid start. Good chance for a quick HP boost.',
-      rewards: 'Up to 250 HP + Chance for 2x Boost'
+      rewards: 'Up to 300 HP'
     },
     {
       id: 'epic',
       name: 'Epic Box',
-      price: '2.00',
-      color: '#9333EA', // Purple
+      price: 0.45,
+      color: '#9333EA',
       bg: '#F3E8FF',
       icon: '🎁',
-      description: 'High stakes, high rewards. Better odds for jackpots.',
-      rewards: 'Up to 1,500 HP + Chance for 5x Boost'
+      rewards: 'Up to 1000 HP + Chance for 2x Boost'
     },
     {
       id: 'legendary',
       name: 'Legendary Box',
-      price: '5.00',
-      color: '#D97706', // Gold
+      price: 0.95,
+      color: '#D97706',
       bg: '#FEF3C7',
       icon: '👑',
-      description: 'The ultimate prize pool. Guaranteed massive rewards.',
-      rewards: 'Up to 5,000 HP + Guaranteed 5x Boost'
+      rewards: 'Up to 2300 HP + Chance for 5x Boost'
     }
   ]
 
-  const handleOpenBox = (boxId) => {
-    // For now, just a placeholder. Later this will open TxModal.
-    console.log(`User wants to open: ${boxId}`)
-    alert(`Opening ${boxId} box... (Smart contract integration coming soon!)`)
+  // Process RPC after successful tx
+  useEffect(() => {
+    async function processBox() {
+      if (isSuccess && selectedBox && txHash && !isOpening) {
+        setIsOpening(true)
+        try {
+          const { data, error } = await db.rpc('open_happy_box', {
+            p_address: address.toLowerCase(),
+            p_box_type: selectedBox.id,
+            p_tx_hash: txHash
+          })
+          if (error) throw error
+          if (data?.ok) {
+            setOpenResult({
+              hp: data.hp_won,
+              mult: data.multiplier_won
+            })
+            if (onUpdate) onUpdate()
+          } else {
+            console.error(data?.error)
+            alert(data?.error || 'Failed to open box')
+          }
+        } catch (err) {
+          console.error(err)
+          alert('Something went wrong opening the box.')
+        } finally {
+          setIsOpening(false)
+          setSelectedBox(null)
+          reset()
+        }
+      }
+    }
+    processBox()
+  }, [isSuccess, txHash, selectedBox, address, onUpdate, reset, isOpening])
+
+  const handleOpenClick = (box) => {
+    setSelectedBox(box)
+  }
+
+  const handleConfirm = () => {
+    if (wrongChain) { switchChain({ chainId: base.id }); return }
+    if (!selectedBox) return
+    
+    writeContract({
+      address: USDC_ADDRESS,
+      abi: USDC_ABI,
+      functionName: 'transfer',
+      args: [FOUNDATION, parseUnits(selectedBox.price.toString(), 6)],
+      chainId: base.id,
+    })
+  }
+
+  const closeResultModal = () => {
+    setOpenResult(null)
   }
 
   return (
@@ -45,42 +109,75 @@ export function HappyBoxesSection({ address }) {
       <style>
         {`
           @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-          @keyframes bouncePulse { 
-            0% { transform: scale(1); } 
-            50% { transform: scale(1.05); } 
-            100% { transform: scale(1); } 
+          
+          @keyframes magicBox {
+            0%, 100% { transform: rotate(0deg) scale(1); filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); }
+            25% { transform: rotate(-8deg) scale(1.1); filter: drop-shadow(0 0 25px rgba(255,255,255,0.7)); }
+            50% { transform: rotate(8deg) scale(1.1); filter: drop-shadow(0 0 35px rgba(255,255,255,0.9)); }
+            75% { transform: rotate(-8deg) scale(1.1); filter: drop-shadow(0 0 25px rgba(255,255,255,0.7)); }
           }
+          
           .box-card { transition: all 0.2s ease; }
           .box-card:active { transform: scale(0.98); }
         `}
       </style>
 
-      {/* Header Banner */}
-      <div style={{ background: 'linear-gradient(135deg, #0000FF 0%, #4F46E5 100%)', borderRadius: 20, padding: '22px 20px 18px', marginBottom: 12, color: '#fff', boxShadow: '0 8px 32px rgba(0,0,255,0.2)' }}>
-        <div style={{ fontSize: 32, marginBottom: 8, animation: 'bouncePulse 2s infinite' }}>🎁</div>
-        <div style={{ fontSize: 22, fontWeight: 900, marginBottom: 8, letterSpacing: -0.5 }}>Happy Boxes</div>
-        <div style={{ fontSize: 14, color: '#A5B4FC', lineHeight: 1.5, fontWeight: 500 }}>
-          Test your luck! Open a box to win massive HP, point multipliers, and exclusive badges.
+      {wrongChain && (
+        <div style={{
+          background: '#FFFBEB', border: '1px solid #FEF3C7',
+          borderRadius: 12, padding: '10px 16px', marginBottom: 12,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8,
+        }}>
+          <span style={{ fontSize: 13, color: '#D97706', fontWeight: 600 }}>Switch to Base Mainnet</span>
+          <button
+            onClick={() => switchChain({ chainId: base.id })}
+            style={{ background: '#D97706', color: '#fff', borderRadius: 50, padding: '6px 14px', fontSize: 12, fontWeight: 700, border: 'none', cursor: 'pointer' }}
+          >
+            {isSwitching ? 'Switching…' : 'Switch'}
+          </button>
+        </div>
+      )}
+
+      {/* Header Banner - Matching Raffle Layout */}
+      <div style={{
+        background: 'linear-gradient(135deg, #0000FF 0%, #4F46E5 100%)', borderRadius: 20, padding: '22px 20px 18px',
+        marginBottom: 12, position: 'relative', overflow: 'hidden',
+        boxShadow: '0 8px 32px rgba(0,0,255,0.3)',
+      }}>
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.1,
+          backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.9) 1.5px, transparent 1.5px)',
+          backgroundSize: '20px 20px',
+        }} />
+        
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 20 }}>
+          <div style={{ 
+            fontSize: 64, 
+            animation: 'magicBox 2.5s ease-in-out infinite',
+            flexShrink: 0,
+            lineHeight: 1
+          }}>
+            🎁
+          </div>
+          <div>
+            <div style={{ fontSize: 18, color: '#fff', lineHeight: 1.35, fontWeight: 800 }}>
+              Open a box to win more HP and a chance to win boosts!
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Box List */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
         {boxes.map((box) => (
-          <div key={box.id} className="box-card" style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 18, boxShadow: '0 4px 12px rgba(10,11,13,0.03)' }}>
-            <div style={{ display: 'flex', gap: 16 }}>
-              {/* Icon / Image Placeholder */}
-              <div style={{ width: 64, height: 64, background: box.bg, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, flexShrink: 0, border: `1px solid ${box.color}30` }}>
+          <div key={box.id} className="box-card" style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, boxShadow: '0 4px 12px rgba(10,11,13,0.03)' }}>
+            <div style={{ display: 'flex', gap: 14, alignItems: 'center', marginBottom: 12 }}>
+              <div style={{ width: 56, height: 56, background: box.bg, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, flexShrink: 0, border: `1px solid ${box.color}30` }}>
                 {box.icon}
               </div>
-              
-              {/* Content */}
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 17, fontWeight: 800, color: '#0A0B0D', marginBottom: 4 }}>
+                <div style={{ fontSize: 16, fontWeight: 800, color: '#0A0B0D', marginBottom: 6 }}>
                   {box.name}
-                </div>
-                <div style={{ fontSize: 13, color: '#717886', lineHeight: 1.4, marginBottom: 8 }}>
-                  {box.description}
                 </div>
                 <div style={{ display: 'inline-block', background: box.bg, color: box.color, padding: '4px 8px', borderRadius: 8, fontSize: 11, fontWeight: 800 }}>
                   🏆 {box.rewards}
@@ -88,12 +185,11 @@ export function HappyBoxesSection({ address }) {
               </div>
             </div>
 
-            {/* Action Button */}
             <button
-              onClick={() => handleOpenBox(box.id)}
+              onClick={() => handleOpenClick(box)}
+              disabled={isPending || isConfirming || isOpening}
               style={{
                 width: '100%',
-                marginTop: 16,
                 background: box.id === 'epic' || box.id === 'legendary' ? '#0000FF' : '#EEF0F3',
                 color: box.id === 'epic' || box.id === 'legendary' ? '#fff' : '#0A0B0D',
                 borderRadius: 50,
@@ -106,11 +202,12 @@ export function HappyBoxesSection({ address }) {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: box.id === 'legendary' ? '0 4px 16px rgba(0,0,255,0.3)' : 'none'
+                boxShadow: box.id === 'legendary' ? '0 4px 16px rgba(0,0,255,0.3)' : 'none',
+                opacity: (isPending || isConfirming || isOpening) ? 0.6 : 1
               }}
             >
               Open for <span style={{ color: box.id === 'common' ? '#0000FF' : '#A5B4FC', marginLeft: 6, display: 'flex', alignItems: 'center' }}>
-                {box.price}
+                {box.price.toFixed(2)}
                 <img src="/usdc-logo.png" alt="USDC" style={{ width: 16, height: 16, marginLeft: 3, display: 'inline-block', verticalAlign: 'middle' }} />
               </span>
             </button>
@@ -118,6 +215,73 @@ export function HappyBoxesSection({ address }) {
         ))}
       </div>
 
+      {selectedBox && !isSuccess && !isOpening && (
+        <TxModal
+          title={`Open ${selectedBox.name}`}
+          subtitle="Try your luck!"
+          amount={selectedBox.price.toFixed(2)}
+          isPending={isPending}
+          isConfirming={isConfirming}
+          isSuccess={isSuccess}
+          error={writeError}
+          onConfirm={handleConfirm}
+          onCancel={() => { setSelectedBox(null); reset() }}
+        />
+      )}
+
+      {isOpening && (
+        <div style={{
+          position: 'fixed', inset: 0, background: 'rgba(10,11,13,0.7)', zIndex: 2000,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          backdropFilter: 'blur(8px)'
+        }}>
+           <div style={{ fontSize: 80, animation: 'magicBox 0.5s infinite' }}>🎁</div>
+        </div>
+      )}
+
+      {openResult && (
+        <div style={{
+          position: 'fixed', inset: 0, background: 'rgba(10,11,13,0.7)', zIndex: 2000,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          backdropFilter: 'blur(8px)'
+        }}>
+          <div style={{
+            background: '#fff', borderRadius: 24, padding: '30px 24px', width: '90%', maxWidth: 360,
+            textAlign: 'center', animation: 'fadeIn 0.3s ease', position: 'relative',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
+          }}>
+            <div style={{ fontSize: 60, marginBottom: 10, animation: 'bouncePulse 1.5s infinite' }}>🎉</div>
+            <div style={{ fontSize: 24, fontWeight: 900, color: '#0A0B0D', marginBottom: 8 }}>You Won!</div>
+            
+            <div style={{ fontSize: 36, fontWeight: 900, color: '#0000FF', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 16 }}>
+              +{openResult.hp} HP
+            </div>
+
+            {openResult.mult > 1 && (
+              <div style={{ 
+                display: 'inline-block', background: openResult.mult >= 5 ? 'rgba(147, 51, 234, 0.1)' : 'rgba(5, 150, 105, 0.1)', 
+                color: openResult.mult >= 5 ? '#9333EA' : '#059669', 
+                padding: '6px 16px', borderRadius: 50, fontSize: 15, fontWeight: 800, border: `1px solid ${openResult.mult >= 5 ? 'rgba(147, 51, 234, 0.3)' : 'rgba(5, 150, 105, 0.3)'}`,
+                marginBottom: 16
+              }}>
+                ⭐ {openResult.mult}x Boost Activated!
+              </div>
+            )}
+
+            <button
+              onClick={closeResultModal}
+              style={{
+                width: '100%', background: '#0000FF', color: '#fff',
+                borderRadius: 50, padding: '14px', fontSize: 15, fontWeight: 700,
+                border: 'none', cursor: 'pointer', marginTop: 10,
+                boxShadow: '0 4px 14px rgba(0,0,255,0.3)'
+              }}
+            >
+              Awesome
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
