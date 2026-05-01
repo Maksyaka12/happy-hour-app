@@ -59,6 +59,8 @@ BEGIN
 END;
 $$;
 
+DROP FUNCTION IF EXISTS add_points(TEXT, INTEGER, TEXT);
+
 CREATE OR REPLACE FUNCTION add_points(
   p_address TEXT,
   p_points INTEGER,

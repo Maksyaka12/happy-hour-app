@@ -280,6 +280,7 @@ END;
 $$;
 
 -- 7. Update user_activity view to return multiplied points and boost_mult
+DROP VIEW IF EXISTS user_activity;
 CREATE OR REPLACE VIEW user_activity AS
 -- 1. Deposits (Bets)
 SELECT 
