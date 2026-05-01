@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useChainId, useSwitchChain } from 'wagmi'
 import { parseUnits } from 'viem'
 import { base } from 'wagmi/chains'
-import { FOUNDATION, USDC_ADDRESS, USDC_ABI } from '../config/constants'
+import { CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI } from '../config/constants'
 import { db } from '../config/supabase'
 import { useBuilderWrite } from '../hooks/useBuilderWrite'
 import { TxModal } from './TxModal'
@@ -95,7 +95,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       address: USDC_ADDRESS,
       abi: USDC_ABI,
       functionName: 'transfer',
-      args: [FOUNDATION, parseUnits(selectedBox.price.toString(), 6)],
+      args: [CHECKIN_TARGET, parseUnits(selectedBox.price.toString(), 6)],
       chainId: base.id,
     })
   }
