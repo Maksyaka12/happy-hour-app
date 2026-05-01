@@ -10,6 +10,7 @@ const medals = ['🥇', '🥈', '🥉']
 export function LeaderboardSection({ address }) {
   const [leaders, setLeaders] = useState([])
   const [loading, setLoading] = useState(true)
+  const [outsideRank, setOutsideRank] = useState(null)
   useEffect(() => {
     let alive = true
 
@@ -28,6 +29,18 @@ export function LeaderboardSection({ address }) {
 
       if (alive) {
         setLeaders(data ?? [])
+        
+        const inTop50Index = (data ?? []).findIndex(u => u.address?.toLowerCase() === address?.toLowerCase())
+        if (inTop50Index === -1 && address) {
+          const { data: myData } = await db.from('users').select('points, basename').eq('address', address).single()
+          if (myData) {
+             const { count } = await db.from('users').select('*', { count: 'exact', head: true }).gt('points', myData.points)
+             setOutsideRank({ rank: (count || 0) + 1, points: myData.points, basename: myData.basename })
+          }
+        } else {
+          setOutsideRank(null)
+        }
+
         setLoading(false)
       }
     }
@@ -48,13 +61,16 @@ export function LeaderboardSection({ address }) {
   const myRank = leaders.findIndex((u) => u.address?.toLowerCase() === address?.toLowerCase()) + 1
   const myEntry = leaders.find((u) => u.address?.toLowerCase() === address?.toLowerCase())
 
+  const displayRank = myRank > 0 ? myRank : outsideRank?.rank
+  const displayEntry = myRank > 0 ? myEntry : outsideRank
+
   if (loading) {
     return <div style={{ textAlign: 'center', padding: '60px 20px', color: '#717886' }}>Loading…</div>
   }
 
   return (
     <div style={{ paddingBottom: 120, padding: '0 12px 120px' }}>
-      {myRank > 0 && (
+      {displayRank > 0 && (
         <div
           style={{
             background: 'linear-gradient(135deg,#0000FF,#3C8AFF)',
@@ -67,13 +83,13 @@ export function LeaderboardSection({ address }) {
             boxShadow: '0 6px 24px rgba(0,0,255,0.35)',
           }}
         >
-          <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 30, fontWeight: 900, color: '#fff', minWidth: 44 }}>#{myRank}</div>
+          <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 30, fontWeight: 900, color: '#fff', minWidth: 44 }}>#{displayRank}</div>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.65)', fontWeight: 600, marginBottom: 2 }}>YOUR POSITION</div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>{myEntry?.basename || short(address)}</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>{displayEntry?.basename || short(address)}</div>
           </div>
           <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 26, fontWeight: 900, color: '#fff' }}>
-            {(myEntry?.points ?? 0).toLocaleString()} HP
+            {(displayEntry?.points ?? 0).toLocaleString()} HP
           </div>
         </div>
       )}
