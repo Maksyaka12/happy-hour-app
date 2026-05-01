@@ -217,47 +217,67 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       {/* Box List */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
         {boxes.map((box) => (
-          <div key={box.id} className="box-card" style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, boxShadow: '0 4px 12px rgba(10,11,13,0.03)' }}>
-            <div style={{ display: 'flex', gap: 14, alignItems: 'center', marginBottom: 12 }}>
-              <div style={{ width: 56, height: 56, background: box.bg, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, flexShrink: 0, border: `1px solid ${box.color}30` }}>
-                {box.icon}
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 16, fontWeight: 800, color: '#0A0B0D', marginBottom: 6 }}>
-                  {box.name}
-                </div>
-                <div style={{ display: 'inline-block', background: box.bg, color: box.color, padding: '4px 8px', borderRadius: 8, fontSize: 11, fontWeight: 800 }}>
-                  🏆 {box.rewards}
-                </div>
-              </div>
+          <div key={box.id} className="box-card" style={{
+            background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20,
+            padding: 14, boxShadow: '0 4px 12px rgba(10,11,13,0.03)',
+            display: 'flex', alignItems: 'stretch', gap: 14
+          }}>
+            {/* Box Icon — full card height */}
+            <div style={{
+              width: 60, minHeight: 60,
+              background: box.bg, borderRadius: 14,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 34, flexShrink: 0,
+              border: `1px solid ${box.color}30`,
+              alignSelf: 'stretch'
+            }}>
+              {box.icon}
             </div>
 
-            <button
-              onClick={() => handleOpenClick(box)}
-              disabled={isPending || isConfirming || isOpening}
-              style={{
-                width: '100%',
-                background: box.id === 'epic' || box.id === 'legendary' ? '#0000FF' : '#EEF0F3',
-                color: box.id === 'epic' || box.id === 'legendary' ? '#fff' : '#0A0B0D',
-                borderRadius: 50,
-                padding: '12px',
-                fontSize: 15,
-                fontWeight: 700,
-                border: 'none',
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: box.id === 'legendary' ? '0 4px 16px rgba(0,0,255,0.3)' : 'none',
-                opacity: (isPending || isConfirming || isOpening) ? 0.6 : 1
-              }}
-            >
-              Open for <span style={{ color: box.id === 'common' ? '#0000FF' : '#A5B4FC', marginLeft: 6, display: 'flex', alignItems: 'center' }}>
-                {box.price.toFixed(2)}
-                <img src="/usdc-logo.png" alt="USDC" style={{ width: 16, height: 16, marginLeft: 3, display: 'inline-block', verticalAlign: 'middle' }} />
-              </span>
-            </button>
+            {/* Right side */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 8 }}>
+              {/* Top row: name + rewards badge */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                <span style={{ fontSize: 15, fontWeight: 800, color: '#0A0B0D' }}>{box.name}</span>
+                <span style={{
+                  background: box.bg, color: box.color,
+                  padding: '3px 7px', borderRadius: 8,
+                  fontSize: 10, fontWeight: 800,
+                  border: `1px solid ${box.color}25`,
+                  whiteSpace: 'nowrap'
+                }}>
+                  🏆 {box.rewards}
+                </span>
+              </div>
+
+              {/* Bottom: Open button */}
+              <button
+                onClick={() => handleOpenClick(box)}
+                disabled={isPending || isConfirming || isOpening}
+                style={{
+                  background: box.id === 'epic' || box.id === 'legendary' ? '#0000FF' : '#EEF0F3',
+                  color: box.id === 'epic' || box.id === 'legendary' ? '#fff' : '#0A0B0D',
+                  borderRadius: 50,
+                  padding: '9px 14px',
+                  fontSize: 14,
+                  fontWeight: 700,
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: box.id === 'legendary' ? '0 4px 16px rgba(0,0,255,0.3)' : 'none',
+                  opacity: (isPending || isConfirming || isOpening) ? 0.6 : 1,
+                  alignSelf: 'flex-start',
+                  width: '100%'
+                }}
+              >
+                Open for <span style={{ color: box.id === 'common' ? '#0000FF' : '#A5B4FC', marginLeft: 6, display: 'flex', alignItems: 'center' }}>
+                  {box.price.toFixed(2)}
+                  <img src="/usdc-logo.png" alt="USDC" style={{ width: 15, height: 15, marginLeft: 3, display: 'inline-block', verticalAlign: 'middle' }} />
+                </span>
+              </button>
           </div>
         ))}
       </div>
