@@ -22,8 +22,8 @@ export function BottomNav({ tab, setTab }) {
     { id: 'profile',     label: 'Profile', icon: '👤' },
   ]
 
-  // In Base App, lift the nav up by 50px to sit right above the native bottom bar
-  const bottomOffset = isBaseApp() ? 50 : 0
+  // Base App bug fixed, no offset needed
+  const bottomOffset = 0
 
   // In Base App: lower z-index so the wallet confirmation modal appears above nav
   const navZIndex = isBaseApp() ? 10 : 50
