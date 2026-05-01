@@ -132,7 +132,7 @@ export function HistorySection({ address }) {
             }}>
               {/* 1. Action */}
               <div style={{ position: 'relative', whiteSpace: 'nowrap', paddingTop: record.boost_mult > 1 ? 4 : 0 }}>
-                <span style={{ fontSize: 13, fontWeight: 800, color: config.title }}>
+                <span style={{ fontSize: 11, fontWeight: 800, color: config.title }}>
                   {displayAction}
                 </span>
                 {record.boost_mult > 1 && (
@@ -180,7 +180,7 @@ export function HistorySection({ address }) {
               </div>
 
               {/* 4. Value */}
-              <div style={{ fontSize: 14, fontWeight: 800, color: config.value, textAlign: 'right', whiteSpace: 'nowrap' }}>
+              <div style={{ fontSize: 12, fontWeight: 800, color: config.value, textAlign: 'right', whiteSpace: 'nowrap' }}>
                 {displayValue}
               </div>
             </div>
