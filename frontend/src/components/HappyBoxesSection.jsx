@@ -11,6 +11,8 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
   const [selectedBox, setSelectedBox] = useState(null)
   const [isOpening, setIsOpening] = useState(false)
   const [openResult, setOpenResult] = useState(null)
+  const [animPhase, setAnimPhase] = useState(0) // 0: init, 1: show base hp, 2: show mult, 3: count up, 4: done
+  const [displayHp, setDisplayHp] = useState(0)
 
   const chainId = useChainId()
   const { switchChain, isPending: isSwitching } = useSwitchChain()
@@ -61,9 +63,13 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           })
           if (error) throw error
           if (data?.ok) {
+            // Artificial delay for opening animation
+            await new Promise(r => setTimeout(r, 2000))
+            const baseHp = Math.round(data.hp_won / data.multiplier_won)
             setOpenResult({
               hp: data.hp_won,
-              mult: data.multiplier_won
+              mult: data.multiplier_won,
+              baseHp: baseHp
             })
             if (onUpdate) onUpdate()
           } else {
@@ -82,6 +88,44 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
     }
     processBox()
   }, [isSuccess, txHash, selectedBox, address, onUpdate, reset, isOpening])
+
+  // Counting animation
+  useEffect(() => {
+    if (openResult && animPhase === 0) {
+      if (openResult.mult > 1) {
+        setDisplayHp(openResult.baseHp)
+        setAnimPhase(1)
+        
+        setTimeout(() => {
+          setAnimPhase(2) // show mult sticker
+          
+          setTimeout(() => {
+            setAnimPhase(3) // start counting
+            const target = openResult.hp
+            const duration = 1200
+            const start = Date.now()
+            
+            const timer = setInterval(() => {
+              const timePassed = Date.now() - start
+              if (timePassed >= duration) {
+                 setDisplayHp(target)
+                 setAnimPhase(4)
+                 clearInterval(timer)
+              } else {
+                 const progress = timePassed / duration
+                 const easeProgress = progress * (2 - progress)
+                 setDisplayHp(Math.round(openResult.baseHp + (target - openResult.baseHp) * easeProgress))
+              }
+            }, 16)
+          }, 800)
+        }, 800)
+        
+      } else {
+        setDisplayHp(openResult.hp)
+        setAnimPhase(4)
+      }
+    }
+  }, [openResult, animPhase])
 
   const handleOpenClick = (box) => {
     setSelectedBox(box)
@@ -102,6 +146,8 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
 
   const closeResultModal = () => {
     setOpenResult(null)
+    setAnimPhase(0)
+    setDisplayHp(0)
   }
 
   return (
@@ -254,27 +300,34 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             <div style={{ fontSize: 24, fontWeight: 900, color: '#0A0B0D', marginBottom: 8 }}>You Won!</div>
             
             <div style={{ fontSize: 36, fontWeight: 900, color: '#0000FF', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 16 }}>
-              +{openResult.hp} HP
+              +{displayHp} HP
             </div>
 
-            {openResult.mult > 1 && (
+            {openResult.mult > 1 && animPhase >= 2 && (
               <div style={{ 
                 display: 'inline-block', background: openResult.mult >= 5 ? 'rgba(147, 51, 234, 0.1)' : 'rgba(5, 150, 105, 0.1)', 
                 color: openResult.mult >= 5 ? '#9333EA' : '#059669', 
                 padding: '6px 16px', borderRadius: 50, fontSize: 15, fontWeight: 800, border: `1px solid ${openResult.mult >= 5 ? 'rgba(147, 51, 234, 0.3)' : 'rgba(5, 150, 105, 0.3)'}`,
-                marginBottom: 16
+                marginBottom: 16,
+                animation: 'fadeIn 0.4s ease'
               }}>
                 ⭐ {openResult.mult}x Boost Activated!
               </div>
             )}
+            
+            {animPhase < 4 && openResult.mult > 1 && (
+               <div style={{ height: 43, marginBottom: 16 }} /> /* Placeholder to prevent jumping */
+            )}
 
             <button
               onClick={closeResultModal}
+              disabled={animPhase < 4}
               style={{
-                width: '100%', background: '#0000FF', color: '#fff',
+                width: '100%', background: animPhase < 4 ? '#A5B4FC' : '#0000FF', color: '#fff',
                 borderRadius: 50, padding: '14px', fontSize: 15, fontWeight: 700,
-                border: 'none', cursor: 'pointer', marginTop: 10,
-                boxShadow: '0 4px 14px rgba(0,0,255,0.3)'
+                border: 'none', cursor: animPhase < 4 ? 'default' : 'pointer', marginTop: 10,
+                boxShadow: animPhase < 4 ? 'none' : '0 4px 14px rgba(0,0,255,0.3)',
+                transition: 'all 0.3s'
               }}
             >
               Awesome
