@@ -219,35 +219,37 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         {boxes.map((box) => (
           <div key={box.id} className="box-card" style={{
             background: '#fff', border: '1px solid #DEE1E7', borderRadius: 24,
-            padding: 14, boxShadow: '0 4px 12px rgba(10,11,13,0.03)',
-            display: 'flex', alignItems: 'stretch', gap: 16
+            padding: 12, boxShadow: '0 4px 12px rgba(10,11,13,0.03)',
+            display: 'flex', alignItems: 'center', gap: 14
           }}>
-            {/* Box Icon — Square spanning full height */}
+            {/* Box Icon — Fixed Square */}
             <div style={{
-              aspectRatio: '1/1',
-              background: box.bg, borderRadius: 18,
+              width: 110, height: 110,
+              background: box.bg, borderRadius: 20,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 38, flexShrink: 0,
-              border: `1px solid ${box.color}20`,
+              fontSize: 48, flexShrink: 0,
+              border: `1px solid ${box.color}15`,
             }}>
               {box.icon}
             </div>
 
-            {/* Right side — Vertical Stack aligned to Icon's top/bottom */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '2px 0' }}>
-              <div>
-                <div style={{ fontSize: 16, fontWeight: 800, color: '#0A0B0D', marginBottom: 4 }}>{box.name}</div>
-                <div style={{ display: 'flex' }}>
-                  <span style={{
-                    background: box.bg, color: box.color,
-                    padding: '3px 8px', borderRadius: 8,
-                    fontSize: 10, fontWeight: 800,
-                    border: `1px solid ${box.color}25`,
-                    whiteSpace: 'nowrap'
-                  }}>
-                    🏆 {box.rewards}
-                  </span>
-                </div>
+            {/* Right side — 3 rows stack */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ fontSize: 17, fontWeight: 800, color: '#0A0B0D' }}>{box.name}</div>
+              
+              <div style={{ display: 'flex' }}>
+                <span style={{
+                  background: box.bg, color: box.color,
+                  padding: '4px 10px', borderRadius: 10,
+                  fontSize: 11, fontWeight: 800,
+                  border: `1px solid ${box.color}20`,
+                  whiteSpace: 'nowrap',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 4
+                }}>
+                  🏆 {box.rewards}
+                </span>
               </div>
 
               <button
@@ -257,8 +259,8 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                   background: '#0000FF',
                   color: '#fff',
                   borderRadius: 50,
-                  padding: '10px 16px',
-                  fontSize: 14,
+                  padding: '12px 16px',
+                  fontSize: 15,
                   fontWeight: 700,
                   border: 'none',
                   cursor: 'pointer',
@@ -273,7 +275,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
               >
                 Open for <span style={{ color: '#A5B4FC', marginLeft: 6, display: 'flex', alignItems: 'center' }}>
                   {box.price.toFixed(2)}
-                  <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14, marginLeft: 3, display: 'inline-block', verticalAlign: 'middle' }} />
+                  <img src="/usdc-logo.png" alt="USDC" style={{ width: 15, height: 15, marginLeft: 4, display: 'inline-block', verticalAlign: 'middle' }} />
                 </span>
               </button>
             </div>
