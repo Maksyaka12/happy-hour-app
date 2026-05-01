@@ -396,8 +396,8 @@ export function ProfileSection({ address, basename }) {
       <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 18, marginBottom: 12 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 3, color: '#0A0B0D' }}>Daily Check-in</div>
-            <div style={{ fontSize: 13, color: '#717886' }}>Earn <span style={{ color: '#0000FF', fontWeight: 700 }}>+1 HP</span> per day · Build your streak</div>
+            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 3, color: '#0A0B0D' }}>Daily Check-in</div>
+            <div style={{ fontSize: 12, color: '#717886' }}>Earn <span style={{ color: '#0000FF', fontWeight: 700 }}>+1 HP</span> per day · Build your streak</div>
           </div>
           <div style={{ background: '#0000FF', borderRadius: 50, padding: '5px 12px', display: 'flex', alignItems: 'center', gap: 5 }}>
             <span style={{ fontSize: 13 }}>🔥</span>
@@ -500,8 +500,8 @@ export function ProfileSection({ address, basename }) {
       </div>
 
       <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 18, marginBottom: 12 }}>
-        <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 4, color: '#0A0B0D' }}>Daily HP Boost</div>
-        <div style={{ fontSize: 13, color: '#717886', marginBottom: 14, lineHeight: 1.6 }}>
+        <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4, color: '#0A0B0D' }}>Daily HP Boost</div>
+        <div style={{ fontSize: 12, color: '#717886', marginBottom: 14, lineHeight: 1.6 }}>
           Get an extra <span style={{ color: '#0000FF', fontWeight: 700 }}>+100 HP</span> per day · Boost your rank
         </div>
         {canBoost ? (
@@ -538,7 +538,7 @@ export function ProfileSection({ address, basename }) {
 
       <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 18, marginBottom: 12 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: '#0A0B0D' }}>Happy Bar (Boosts)</div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: '#0A0B0D' }}>Happy Bar (Boosts)</div>
           {activeMultiplier > 1 && timeLeft && (
             <div style={{ background: activeMultiplier >= 5 ? 'rgba(147, 51, 234, 0.1)' : 'rgba(5, 150, 105, 0.1)', color: activeMultiplier >= 5 ? '#9333EA' : '#059669', padding: '4px 8px', borderRadius: 50, fontSize: 11, fontWeight: 800, display: 'flex', gap: 6, alignItems: 'center' }}>
               <span>{activeMultiplier}x Active</span>
@@ -546,7 +546,7 @@ export function ProfileSection({ address, basename }) {
             </div>
           )}
         </div>
-        <div style={{ fontSize: 13, color: '#717886', marginBottom: 14, lineHeight: 1.6 }}>
+        <div style={{ fontSize: 12, color: '#717886', marginBottom: 14, lineHeight: 1.6 }}>
           Multiply <span style={{ fontWeight: 700 }}>all HP earned</span> for 24 hours. Does not apply to referral HP.
         </div>
 
@@ -608,8 +608,8 @@ export function ProfileSection({ address, basename }) {
       </div>
 
       <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 18 }}>
-        <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 4, color: '#0A0B0D' }}>Referral Program</div>
-        <div style={{ fontSize: 13, color: '#717886', marginBottom: 14, lineHeight: 1.6 }}>
+        <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4, color: '#0A0B0D' }}>Referral Program</div>
+        <div style={{ fontSize: 12, color: '#717886', marginBottom: 14, lineHeight: 1.6 }}>
           Invite friends and earn <span style={{ color: '#D97706', fontWeight: 700 }}>50% of their points</span> forever.
         </div>
         <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>

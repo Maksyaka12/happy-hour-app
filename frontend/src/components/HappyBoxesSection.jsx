@@ -41,7 +41,7 @@ export function HappyBoxesSection({ address }) {
   }
 
   return (
-    <div style={{ paddingBottom: 80, animation: 'fadeIn 0.3s ease' }}>
+    <div style={{ padding: '0 16px 120px', animation: 'fadeIn 0.3s ease' }}>
       <style>
         {`
           @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
