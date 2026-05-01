@@ -31,7 +31,7 @@ export function BottomNav({ tab, setTab }) {
   return (
     <div style={{
       position: 'fixed', bottom: bottomOffset, left: 0, right: 0, zIndex: navZIndex,
-      padding: '8px 12px max(16px, env(safe-area-inset-bottom))',
+      padding: '8px 12px 10px',
       pointerEvents: 'none',
     }}>
       <div style={{
