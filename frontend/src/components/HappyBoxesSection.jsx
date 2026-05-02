@@ -294,7 +294,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {[
-            { icon: '📦', title: 'Choose your box', desc: 'Each box contains a different HP amount. MAX possible HP reward is shown on each box.' },
+            { icon: '📦', title: 'Choose your box', desc: 'Each box contains a different amount of HP. MAX possible HP reward is shown on each box.' },
             { icon: '🏆', title: 'Win HP instantly', desc: 'After opening a box, your HP reward is instantly added to your HP balance.' },
             { icon: '⭐', title: 'Chance for a boost', desc: 'Epic and Legendary boxes give you a chance to win 2x or 5x boosts, in addition to HP.' },
             { icon: '⚡', title: 'Instant boost application', desc: 'If you win a boost, it is immediately applied to the HP reward you won in the same box.' },
