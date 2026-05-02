@@ -547,7 +547,7 @@ export function ProfileSection({ address, basename }) {
           )}
         </div>
         <div style={{ fontSize: 12, color: '#717886', marginBottom: 14, lineHeight: 1.6 }}>
-          Multiply <span style={{ fontWeight: 700 }}>all HP earned</span> for 24 hours. Does not apply to referral HP.
+          Multiply <span style={{ fontWeight: 700 }}>all HP earned</span> for 24h · Except referrals HP
         </div>
 
         <div style={{ display: 'flex', gap: 10 }}>
