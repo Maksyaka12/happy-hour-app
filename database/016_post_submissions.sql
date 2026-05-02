@@ -5,12 +5,14 @@
 -- STEP 1: Create post_submissions table
 -- ============================================================
 CREATE TABLE IF NOT EXISTS post_submissions (
-  id          BIGSERIAL PRIMARY KEY,
-  address     TEXT NOT NULL,
-  url         TEXT NOT NULL,
-  status      TEXT NOT NULL DEFAULT 'pending',  -- pending | approved | rejected
-  submitted_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  reviewed_at  TIMESTAMPTZ
+  id                BIGSERIAL PRIMARY KEY,
+  address           TEXT NOT NULL,
+  url               TEXT NOT NULL,
+  status            TEXT NOT NULL DEFAULT 'pending',  -- pending | approved | rejected
+  hp_awarded        INTEGER DEFAULT 10,
+  applied_multiplier NUMERIC DEFAULT 1.0,
+  submitted_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  reviewed_at       TIMESTAMPTZ
 );
 
 CREATE INDEX IF NOT EXISTS idx_post_submissions_address ON post_submissions(address);
@@ -92,7 +94,11 @@ BEGIN
   v_mult := add_points(v_sub.address, POST_HP, 'post_approval');
 
   UPDATE post_submissions
-  SET status = 'approved', reviewed_at = NOW()
+  SET
+    status = 'approved',
+    reviewed_at = NOW(),
+    hp_awarded = ceil(POST_HP * v_mult),
+    applied_multiplier = v_mult
   WHERE id = p_submission_id;
 
   RETURN jsonb_build_object(
@@ -272,9 +278,9 @@ SELECT
   lower(address) AS address,
   'Task' AS action,
   'Approved' AS badge,
-  '+' || ceil(10 * 1.0) || ' HP' AS value,  -- base display; actual was tracked at approval time
+  '+' || COALESCE(hp_awarded, 10) || ' HP' AS value,
   'quest' AS type,
-  1.0 AS boost_mult,  -- multiplier was applied at approve_post() call time
+  COALESCE(applied_multiplier, 1.0) AS boost_mult,
   reviewed_at AS created_at
 FROM post_submissions
 WHERE status = 'approved';
