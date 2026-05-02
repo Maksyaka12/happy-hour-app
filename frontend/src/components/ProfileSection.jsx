@@ -551,55 +551,89 @@ export function ProfileSection({ address, basename }) {
         </div>
 
         <div style={{ display: 'flex', gap: 10 }}>
-          <button
-            onClick={() => {
-              setSelectedBoost({ type: '2x', multiplier: 2.0, price: 0.50 })
-              setTxModal('multiplier')
-            }}
+          {/* 2x Boost Card */}
+          <div
             style={{
               flex: 1,
               background: 'rgba(5, 150, 105, 0.08)',
               border: '1px solid rgba(5, 150, 105, 0.2)',
               borderRadius: 16,
-              padding: '12px 8px',
+              padding: '12px 10px',
               display: 'flex',
               flexDirection: 'column',
-              alignItems: 'center',
-              cursor: 'pointer',
-              transition: 'all 0.2s'
+              gap: 10,
             }}
           >
-            <div style={{ fontSize: 24, marginBottom: 4 }}>🍷</div>
-            <div style={{ fontSize: 13, fontWeight: 800, color: '#059669' }}>2x Boost</div>
-            <div style={{ fontSize: 11, color: '#059669', display: 'flex', alignItems: 'center', gap: 4, marginTop: 4 }}>
-              0.50 <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12 }} />
+            {/* Top row: icon + label */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ fontSize: 26, lineHeight: 1, flexShrink: 0 }}>🍷</div>
+              <div style={{ fontSize: 14, fontWeight: 800, color: '#059669', lineHeight: 1 }}>2x Boost</div>
             </div>
-          </button>
+            {/* Blue buy button */}
+            <button
+              onClick={() => {
+                setSelectedBoost({ type: '2x', multiplier: 2.0, price: 0.50 })
+                setTxModal('multiplier')
+              }}
+              style={{
+                background: '#0000FF',
+                border: 'none',
+                borderRadius: 50,
+                padding: '8px 10px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 5,
+                cursor: 'pointer',
+                width: '100%',
+              }}
+            >
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#A5B4FC' }}>0.50</span>
+              <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14 }} />
+            </button>
+          </div>
 
-          <button
-            onClick={() => {
-              setSelectedBoost({ type: '5x', multiplier: 5.0, price: 1.00 })
-              setTxModal('multiplier')
-            }}
+          {/* 5x Boost Card */}
+          <div
             style={{
               flex: 1,
               background: 'rgba(147, 51, 234, 0.08)',
               border: '1px solid rgba(147, 51, 234, 0.2)',
               borderRadius: 16,
-              padding: '12px 8px',
+              padding: '12px 10px',
               display: 'flex',
               flexDirection: 'column',
-              alignItems: 'center',
-              cursor: 'pointer',
-              transition: 'all 0.2s'
+              gap: 10,
             }}
           >
-            <div style={{ fontSize: 24, marginBottom: 4 }}>🍾</div>
-            <div style={{ fontSize: 13, fontWeight: 800, color: '#9333EA' }}>5x Boost</div>
-            <div style={{ fontSize: 11, color: '#9333EA', display: 'flex', alignItems: 'center', gap: 4, marginTop: 4 }}>
-              1.00 <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12 }} />
+            {/* Top row: icon + label */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ fontSize: 26, lineHeight: 1, flexShrink: 0 }}>🍾</div>
+              <div style={{ fontSize: 14, fontWeight: 800, color: '#9333EA', lineHeight: 1 }}>5x Boost</div>
             </div>
-          </button>
+            {/* Blue buy button */}
+            <button
+              onClick={() => {
+                setSelectedBoost({ type: '5x', multiplier: 5.0, price: 1.00 })
+                setTxModal('multiplier')
+              }}
+              style={{
+                background: '#0000FF',
+                border: 'none',
+                borderRadius: 50,
+                padding: '8px 10px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 5,
+                cursor: 'pointer',
+                width: '100%',
+              }}
+            >
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#A5B4FC' }}>1.00</span>
+              <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14 }} />
+            </button>
+          </div>
         </div>
 
         {multError && (
