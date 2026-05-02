@@ -565,9 +565,9 @@ export function ProfileSection({ address, basename }) {
             }}
           >
             {/* Top row: icon + label */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ fontSize: 26, lineHeight: 1, flexShrink: 0 }}>🍷</div>
-              <div style={{ fontSize: 14, fontWeight: 800, color: '#059669', lineHeight: 1 }}>2x Boost</div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+              <div style={{ fontSize: 28, lineHeight: 1, flexShrink: 0 }}>🍷</div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: '#059669', lineHeight: 1 }}>2x Boost</div>
             </div>
             {/* Blue buy button */}
             <button
@@ -607,9 +607,9 @@ export function ProfileSection({ address, basename }) {
             }}
           >
             {/* Top row: icon + label */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ fontSize: 26, lineHeight: 1, flexShrink: 0 }}>🍾</div>
-              <div style={{ fontSize: 14, fontWeight: 800, color: '#9333EA', lineHeight: 1 }}>5x Boost</div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+              <div style={{ fontSize: 28, lineHeight: 1, flexShrink: 0 }}>🍾</div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: '#9333EA', lineHeight: 1 }}>5x Boost</div>
             </div>
             {/* Blue buy button */}
             <button
