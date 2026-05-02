@@ -294,11 +294,11 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {[
-            { icon: '📦', title: 'Choose your box', desc: 'Common (0.20 USDC), Epic (0.45 USDC), or Legendary (0.95 USDC) — each with bigger rewards and higher boost chances.' },
-            { icon: '💳', title: 'Pay with USDC', desc: 'Send USDC on Base network to open your box. Each payment is a separate transaction confirmed on-chain.' },
-            { icon: '🏆', title: 'Win HP instantly', desc: 'Common gives up to 45 HP, Epic up to 130 HP, and Legendary up to 300 HP — all boosted by your active multiplier.' },
-            { icon: '⭐', title: 'Chance for a boost', desc: 'Epic boxes have a 10% chance to win a 2x Boost. Legendary boxes have a 5% chance to win a 5x Boost. Boosts last 24 hours.' },
-            { icon: '🔥', title: 'Stack your multiplier', desc: "If you already have an active boost, opening a box won't downgrade it. You only upgrade to a better multiplier, never lose it." },
+            { icon: '📦', title: 'Choose your box', desc: 'Each box contains a different amount of points. The maximum possible reward is shown on each box.' },
+            { icon: '🏆', title: 'Win HP instantly', desc: 'After opening a box, your HP reward is instantly added to your HP balance.' },
+            { icon: '⭐', title: 'Chance for a boost', desc: 'Epic and Legendary boxes give you a chance to win 2x or 5x boosts respectively, in addition to your HP reward.' },
+            { icon: '⚡', title: 'Instant boost application', desc: 'If you win a boost, it is immediately applied to the HP reward you won in the same box.' },
+            { icon: '🔥', title: 'Smart multiplier stack', desc: 'Active boosts are never lowered, only upgraded. For example, if you have a 2x boost and win a 5x boost, the better one is automatically applied.' },
           ].map((item, i) => (
             <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
               <div style={{
