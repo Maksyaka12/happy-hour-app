@@ -148,6 +148,14 @@ export function TasksSection({ address }) {
   const ADMIN_WALLET = '0x4c91d3bed372c11795b9ce9a9017dfe447bf050a'
   const isAdmin = address?.toLowerCase() === ADMIN_WALLET
 
+  // Post submission state
+  const [postUrl, setPostUrl] = useState('')
+  const [postStatus, setPostStatus] = useState('') // '' | 'submitting' | 'success' | 'error'
+  const [postMsg, setPostMsg] = useState('')
+  const [pendingPosts, setPendingPosts] = useState([])
+  const [showPendingPosts, setShowPendingPosts] = useState(false)
+  const [reviewingId, setReviewingId] = useState(null)
+
   useEffect(() => {
     if (address) {
       try {
@@ -228,6 +236,54 @@ export function TasksSection({ address }) {
     loadTasks()
   }, [])
 
+  // Load pending posts for admin
+  const loadPendingPosts = async () => {
+    if (!isAdmin) return
+    const { data } = await db.rpc('get_pending_posts', { p_admin_address: address.toLowerCase() })
+    setPendingPosts(data ?? [])
+  }
+
+  useEffect(() => {
+    if (isAdmin) loadPendingPosts()
+  }, [isAdmin])
+
+  const handleSubmitPost = async () => {
+    if (!address) return
+    if (!postUrl.startsWith('http://') && !postUrl.startsWith('https://')) {
+      setPostMsg('Link must start with http:// or https://')
+      setPostStatus('error')
+      return
+    }
+    setPostStatus('submitting')
+    setPostMsg('')
+    const { data, error } = await db.rpc('submit_post', {
+      p_address: address.toLowerCase(),
+      p_url: postUrl.trim()
+    })
+    if (error || !data?.ok) {
+      setPostMsg(data?.error || 'Failed to submit. Try again.')
+      setPostStatus('error')
+    } else {
+      setPostMsg('Submitted! We\'ll review your post soon.')
+      setPostStatus('success')
+      setPostUrl('')
+    }
+  }
+
+  const handleApprove = async (id) => {
+    setReviewingId(id)
+    await db.rpc('approve_post', { p_admin_address: address.toLowerCase(), p_submission_id: id })
+    setReviewingId(null)
+    loadPendingPosts()
+  }
+
+  const handleReject = async (id) => {
+    setReviewingId(id)
+    await db.rpc('reject_post', { p_admin_address: address.toLowerCase(), p_submission_id: id })
+    setReviewingId(null)
+    loadPendingPosts()
+  }
+
   useEffect(() => {
     if (!address) return
 
@@ -305,19 +361,127 @@ export function TasksSection({ address }) {
 
   return (
     <div style={{ paddingBottom: 120, padding: '0 12px 120px' }}>
+
+      {/* Blue Banner — Post about us */}
+      <div style={{
+        background: 'linear-gradient(135deg, #0000FF 0%, #4F46E5 100%)',
+        borderRadius: 20, padding: '18px 16px', marginBottom: 12,
+        position: 'relative', overflow: 'hidden',
+        boxShadow: '0 8px 32px rgba(0,0,255,0.25)',
+      }}>
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.08,
+          backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.9) 1.5px, transparent 1.5px)',
+          backgroundSize: '20px 20px',
+        }} />
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <div style={{ fontSize: 16, fontWeight: 800, color: '#fff', marginBottom: 4 }}>
+            ✍️ Post about us and get <span style={{ color: '#A5B4FC' }}>+10 HP</span>
+          </div>
+          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)', marginBottom: 12, lineHeight: 1.5 }}>
+            We value creators on Base. Post about our app or share useful content about Base and submit your link below.
+          </div>
+          {postStatus === 'success' ? (
+            <div style={{ background: 'rgba(5,150,105,0.25)', borderRadius: 12, padding: '10px 14px', fontSize: 13, color: '#6EE7B7', fontWeight: 600 }}>
+              ✓ {postMsg}
+            </div>
+          ) : (
+            <div style={{ display: 'flex', gap: 8 }}>
+              <input
+                value={postUrl}
+                onChange={e => { setPostUrl(e.target.value); setPostStatus(''); setPostMsg('') }}
+                placeholder="Paste your link here…"
+                style={{
+                  flex: 1, padding: '10px 14px', borderRadius: 50,
+                  border: postStatus === 'error' ? '1.5px solid #FCA5A5' : '1.5px solid rgba(255,255,255,0.2)',
+                  background: 'rgba(255,255,255,0.1)', color: '#fff',
+                  fontSize: 13, outline: 'none', fontFamily: 'inherit',
+                }}
+              />
+              <button
+                onClick={handleSubmitPost}
+                disabled={postStatus === 'submitting' || !postUrl}
+                style={{
+                  background: '#fff', color: '#0000FF', borderRadius: 50,
+                  padding: '10px 18px', fontSize: 13, fontWeight: 800,
+                  border: 'none', cursor: postStatus === 'submitting' || !postUrl ? 'not-allowed' : 'pointer',
+                  opacity: postStatus === 'submitting' || !postUrl ? 0.6 : 1,
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {postStatus === 'submitting' ? '…' : 'Submit'}
+              </button>
+            </div>
+          )}
+          {postStatus === 'error' && (
+            <div style={{ fontSize: 11, color: '#FCA5A5', marginTop: 6 }}>{postMsg}</div>
+          )}
+        </div>
+      </div>
+
+      {/* Admin controls */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
         <div style={{ fontSize: 12, color: '#717886', fontWeight: 600 }}>
           {visible.length} active task{visible.length !== 1 ? 's' : ''}
         </div>
-        {isAdmin && (
-          <button 
-            onClick={() => setShowAdmin(!showAdmin)}
-            style={{ fontSize: 12, padding: '6px 12px', borderRadius: 50, background: '#1DA1F2', color: '#fff', border: 'none', fontWeight: 700, cursor: 'pointer' }}
-          >
-            {showAdmin ? 'Cancel' : '+ Add Task'}
-          </button>
-        )}
+        <div style={{ display: 'flex', gap: 8 }}>
+          {isAdmin && (
+            <button
+              onClick={() => { setShowPendingPosts(!showPendingPosts); if (!showPendingPosts) loadPendingPosts() }}
+              style={{ fontSize: 12, padding: '6px 12px', borderRadius: 50, background: pendingPosts.length > 0 ? '#DC2626' : '#717886', color: '#fff', border: 'none', fontWeight: 700, cursor: 'pointer', position: 'relative' }}
+            >
+              📬 Posts {pendingPosts.length > 0 ? `(${pendingPosts.length})` : ''}
+            </button>
+          )}
+          {isAdmin && (
+            <button
+              onClick={() => setShowAdmin(!showAdmin)}
+              style={{ fontSize: 12, padding: '6px 12px', borderRadius: 50, background: '#1DA1F2', color: '#fff', border: 'none', fontWeight: 700, cursor: 'pointer' }}
+            >
+              {showAdmin ? 'Cancel' : '+ Add Task'}
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* Admin: pending post submissions */}
+      {isAdmin && showPendingPosts && (
+        <div style={{ background: '#FFF7ED', border: '1px solid #FED7AA', borderRadius: 16, padding: 16, marginBottom: 16, animation: 'fadeIn 0.2s ease' }}>
+          <div style={{ fontSize: 14, fontWeight: 800, color: '#9A3412', marginBottom: 12 }}>📬 Pending Posts ({pendingPosts.length})</div>
+          {pendingPosts.length === 0 ? (
+            <div style={{ fontSize: 13, color: '#B45309', textAlign: 'center', padding: '12px 0' }}>No pending submissions</div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {pendingPosts.map(p => (
+                <div key={p.id} style={{ background: '#fff', borderRadius: 12, padding: '12px 14px', border: '1px solid #FED7AA' }}>
+                  <div style={{ fontSize: 11, color: '#717886', marginBottom: 4, fontFamily: "'DM Mono',monospace" }}>
+                    {p.address.slice(0, 6)}...{p.address.slice(-4)}
+                  </div>
+                  <a href={p.url} target="_blank" rel="noopener noreferrer"
+                    style={{ fontSize: 12, color: '#0000FF', wordBreak: 'break-all', display: 'block', marginBottom: 10 }}
+                  >{p.url}</a>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button
+                      onClick={() => handleApprove(p.id)}
+                      disabled={reviewingId === p.id}
+                      style={{ flex: 1, background: '#059669', color: '#fff', border: 'none', borderRadius: 50, padding: '8px', fontSize: 12, fontWeight: 800, cursor: 'pointer' }}
+                    >
+                      ✓ Approve
+                    </button>
+                    <button
+                      onClick={() => handleReject(p.id)}
+                      disabled={reviewingId === p.id}
+                      style={{ flex: 1, background: '#DC2626', color: '#fff', border: 'none', borderRadius: 50, padding: '8px', fontSize: 12, fontWeight: 800, cursor: 'pointer' }}
+                    >
+                      ✗ Reject
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {isAdmin && showAdmin && (
         <div style={{ background: '#EEF0F3', padding: 16, borderRadius: 16, marginBottom: 16, border: '1px solid #DEE1E7', animation: 'fadeIn 0.2s ease' }}>
