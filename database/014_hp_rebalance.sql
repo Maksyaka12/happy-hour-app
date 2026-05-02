@@ -53,8 +53,8 @@ GRANT EXECUTE ON FUNCTION process_hp_boost(TEXT, TEXT) TO anon, authenticated, s
 
 -- 2. Update open_happy_box: new HP ranges
 --    Common:     20-45 HP
---    Epic:       46-100 HP  (10% chance 2x boost)
---    Legendary:  101-200 HP (5% chance 5x boost)
+--    Epic:       46-130 HP  (10% chance 2x boost)
+--    Legendary:  131-300 HP (5% chance 5x boost)
 CREATE OR REPLACE FUNCTION open_happy_box(
   p_address TEXT,
   p_box_type TEXT,
@@ -93,8 +93,8 @@ BEGIN
 
   ELSIF p_box_type = 'epic' THEN
     v_price := 0.45;
-    -- 46 to 100 HP
-    v_hp_won := floor(random() * 55) + 46;
+    -- 46 to 130 HP
+    v_hp_won := floor(random() * 85) + 46;
     -- 10% chance for 2x
     IF v_rand_num < 0.10 THEN
       v_mult_won := 2.0;
@@ -102,8 +102,8 @@ BEGIN
 
   ELSIF p_box_type = 'legendary' THEN
     v_price := 0.95;
-    -- 101 to 200 HP
-    v_hp_won := floor(random() * 100) + 101;
+    -- 131 to 300 HP
+    v_hp_won := floor(random() * 170) + 131;
     -- 5% chance for 5x
     IF v_rand_num < 0.05 THEN
       v_mult_won := 5.0;

@@ -37,7 +37,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       color: '#9333EA',
       bg: '#F3E8FF',
       icon: '🎁',
-      rewards: 'Up to 100 HP + Chance for 2x Boost'
+      rewards: 'Up to 130 HP + Chance for 2x Boost'
     },
     {
       id: 'legendary',
@@ -46,7 +46,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       color: '#D97706',
       bg: '#FEF3C7',
       icon: '💰',
-      rewards: 'Up to 200 HP + Chance for 5x Boost'
+      rewards: 'Up to 300 HP + Chance for 5x Boost'
     }
   ]
 
@@ -207,8 +207,8 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             🎁
           </div>
           <div>
-            <div style={{ fontSize: 18, color: '#fff', lineHeight: 1.35, fontWeight: 800 }}>
-              Open a box to win more HP and a chance to win boosts!
+            <div style={{ fontSize: 15, color: '#fff', lineHeight: 1.4, fontWeight: 700 }}>
+              Open your happy box<br />to win more HP and boosts
             </div>
           </div>
         </div>
@@ -281,6 +281,39 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* How it works */}
+      <div style={{
+        background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20,
+        padding: '18px 16px', marginTop: 12,
+        boxShadow: '0 4px 12px rgba(10,11,13,0.03)'
+      }}>
+        <div style={{ fontSize: 15, fontWeight: 800, color: '#0A0B0D', marginBottom: 14 }}>
+          How it works
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {[
+            { icon: '📦', title: 'Choose your box', desc: 'Common (0.20 USDC), Epic (0.45 USDC), or Legendary (0.95 USDC) — each with bigger rewards and higher boost chances.' },
+            { icon: '💳', title: 'Pay with USDC', desc: 'Send USDC on Base network to open your box. Each payment is a separate transaction confirmed on-chain.' },
+            { icon: '🏆', title: 'Win HP instantly', desc: 'Common gives up to 45 HP, Epic up to 130 HP, and Legendary up to 300 HP — all boosted by your active multiplier.' },
+            { icon: '⭐', title: 'Chance for a boost', desc: 'Epic boxes have a 10% chance to win a 2x Boost. Legendary boxes have a 5% chance to win a 5x Boost. Boosts last 24 hours.' },
+            { icon: '🔥', title: 'Stack your multiplier', desc: "If you already have an active boost, opening a box won't downgrade it. You only upgrade to a better multiplier, never lose it." },
+          ].map((item, i) => (
+            <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+              <div style={{
+                width: 36, height: 36, borderRadius: 10,
+                background: '#F3F4F6', display: 'flex',
+                alignItems: 'center', justifyContent: 'center',
+                fontSize: 18, flexShrink: 0
+              }}>{item.icon}</div>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#0A0B0D', marginBottom: 2 }}>{item.title}</div>
+                <div style={{ fontSize: 12, color: '#6B7280', lineHeight: 1.5 }}>{item.desc}</div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {selectedBox && !isSuccess && !isOpening && (
