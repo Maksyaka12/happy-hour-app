@@ -18,6 +18,10 @@ CREATE TABLE IF NOT EXISTS post_submissions (
 CREATE INDEX IF NOT EXISTS idx_post_submissions_address ON post_submissions(address);
 CREATE INDEX IF NOT EXISTS idx_post_submissions_status  ON post_submissions(status);
 
+-- Safely add new columns if they don't exist yet (for re-runs on existing table)
+ALTER TABLE post_submissions ADD COLUMN IF NOT EXISTS hp_awarded INTEGER DEFAULT 10;
+ALTER TABLE post_submissions ADD COLUMN IF NOT EXISTS applied_multiplier NUMERIC DEFAULT 1.0;
+
 -- ============================================================
 -- STEP 2: submit_post — user submits a link (max 1 pending per day)
 -- ============================================================
