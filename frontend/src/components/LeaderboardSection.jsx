@@ -80,6 +80,55 @@ export function LeaderboardSection({ address }) {
 
   return (
     <div style={{ paddingBottom: 120, padding: '0 12px 120px' }}>
+      {/* Season 1 Banner */}
+      <div style={{
+        backgroundImage: 'url(/banner.jfif)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        borderRadius: 20,
+        padding: '24px 20px',
+        marginBottom: 14,
+        position: 'relative',
+        minHeight: 140,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+        overflow: 'hidden'
+      }}>
+        {/* Dark overlay to make text more readable if image is light */}
+        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.15)', zIndex: 0 }} />
+        
+        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
+          <div style={{ 
+            fontFamily: "'Barlow Condensed', sans-serif", 
+            fontSize: 48, 
+            fontWeight: 900, 
+            color: '#fff', 
+            lineHeight: 1,
+            textShadow: '0 2px 10px rgba(0,0,0,0.5)',
+            marginBottom: 8
+          }}>
+            SEASON 1
+          </div>
+          <div style={{ 
+            background: 'rgba(255,255,255,0.15)', 
+            backdropFilter: 'blur(10px)',
+            borderRadius: 50, 
+            padding: '4px 16px', 
+            fontSize: 12, 
+            fontWeight: 700, 
+            color: '#fff',
+            border: '1px solid rgba(255,255,255,0.25)',
+            display: 'inline-block',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px'
+          }}>
+            Top users will get rewards
+          </div>
+        </div>
+      </div>
       {displayRank > 0 && (
         <div
           style={{
