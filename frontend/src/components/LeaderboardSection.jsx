@@ -82,7 +82,8 @@ export function LeaderboardSection({ address }) {
     <div style={{ paddingBottom: 120, padding: '0 12px 120px' }}>
       {/* Season 1 Banner */}
       <div style={{
-        backgroundImage: 'url(/banner.jfif)',
+        backgroundImage: 'url(/banner.jpg)',
+        backgroundColor: '#0000FF', // Fallback
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         borderRadius: 20,
