@@ -572,7 +572,7 @@ export function ProfileSection({ address, basename }) {
             {/* Blue buy button */}
             <button
               onClick={() => {
-                setSelectedBoost({ type: '2x', multiplier: 2.0, price: 0.50 })
+                setSelectedBoost({ type: '2x', multiplier: 2.0, price: 0.45 })
                 setTxModal('multiplier')
               }}
               style={{
@@ -588,7 +588,7 @@ export function ProfileSection({ address, basename }) {
                 width: '100%',
               }}
             >
-              <span style={{ fontSize: 13, fontWeight: 700, color: '#A5B4FC' }}>0.50</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#A5B4FC' }}>0.45</span>
               <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14 }} />
             </button>
           </div>
@@ -614,7 +614,7 @@ export function ProfileSection({ address, basename }) {
             {/* Blue buy button */}
             <button
               onClick={() => {
-                setSelectedBoost({ type: '5x', multiplier: 5.0, price: 1.00 })
+                setSelectedBoost({ type: '5x', multiplier: 5.0, price: 0.95 })
                 setTxModal('multiplier')
               }}
               style={{
@@ -630,7 +630,7 @@ export function ProfileSection({ address, basename }) {
                 width: '100%',
               }}
             >
-              <span style={{ fontSize: 13, fontWeight: 700, color: '#A5B4FC' }}>1.00</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#A5B4FC' }}>0.95</span>
               <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14 }} />
             </button>
           </div>
