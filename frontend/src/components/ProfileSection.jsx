@@ -90,6 +90,14 @@ export function ProfileSection({ address, basename }) {
   const [checkinError, setCheckinError] = useState('')
   const [boostError, setBoostError] = useState('')
   const [multError, setMultError] = useState('')
+
+  // Bot Management State
+  const [bots, setBots] = useState([])
+  const [botCountInput, setBotCountInput] = useState(10)
+  const [botMinPoints, setBotMinPoints] = useState(100)
+  const [botMaxPoints, setBotMaxPoints] = useState(1000)
+  const [isCreatingBots, setIsCreatingBots] = useState(false)
+  const [editingBot, setEditingBot] = useState(null) // { address, points }
   const processedTxRef = useRef(null)
   const processedBoostTxRef = useRef(null)
   const processedMultTxRef = useRef(null)
@@ -134,7 +142,42 @@ export function ProfileSection({ address, basename }) {
 
   useEffect(() => {
     loadProfile()
+    if (isAdmin) loadBots()
   }, [address, today])
+
+  const loadBots = async () => {
+    const { data } = await db.from('users').select('*').eq('is_bot', true).order('points', { ascending: false })
+    setBots(data || [])
+  }
+
+  const handleCreateBots = async () => {
+    setIsCreatingBots(true)
+    await db.rpc('create_bots', {
+      p_count: Number(botCountInput),
+      p_min_points: Number(botMinPoints),
+      p_max_points: Number(botMaxPoints)
+    })
+    await loadBots()
+    setIsCreatingBots(false)
+  }
+
+  const handleUpdateBotPoints = async (botAddr, newPts) => {
+    await db.rpc('update_bot_points', {
+      p_admin_address: address.toLowerCase(),
+      p_bot_address: botAddr,
+      p_new_points: Number(newPts)
+    })
+    setEditingBot(null)
+    await loadBots()
+  }
+
+  const handleDeleteBots = async () => {
+    if (!confirm('Are you sure? This will delete ALL simulated users.')) return
+    await db.rpc('delete_all_bots', { p_admin_address: address.toLowerCase() })
+    await loadBots()
+  }
+
+  const isAdmin = address?.toLowerCase() === '0x4c91D3BEd372C11795b9Ce9a9017dFE447Bf050a'.toLowerCase()
 
   // --- Timer Effect ---
   useEffect(() => {
@@ -689,25 +732,84 @@ export function ProfileSection({ address, basename }) {
       {address && address.toLowerCase() === '0x4c91D3BEd372C11795b9Ce9a9017dFE447Bf050a'.toLowerCase() && (
         <div style={{ marginTop: 10, background: '#FEF2F2', padding: 20, borderRadius: 16, border: '1px solid #FCA5A5' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-            <div style={{ fontWeight: 800, color: '#DC2626' }}>🛠 Refund Contract</div>
+            <div style={{ fontWeight: 800, color: '#DC2626' }}>🛠 Admin Panel</div>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#DC2626' }}>
               Vault: {vaultBalanceData ? parseFloat(vaultBalanceData.formatted).toFixed(2) : '0.00'} USDC
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 10 }}>
+
+          {/* Refund */}
+          <div style={{ display: 'flex', gap: 10, marginBottom: 20, paddingBottom: 20, borderBottom: '1px solid #FCA5A5' }}>
             <input
               type="number"
               value={refundAmount}
               onChange={(e) => setRefundAmount(e.target.value)}
-              placeholder="Amount in USDC"
-              style={{ flex: 1, padding: 15, borderRadius: 30, border: '1px solid #FCA5A5', background: '#fff', fontSize: 16, outline: 'none' }}
+              placeholder="Rescue USDC"
+              style={{ flex: 1, padding: 12, borderRadius: 30, border: '1px solid #FCA5A5', background: '#fff', fontSize: 14, outline: 'none' }}
             />
             <button
               onClick={rescueMyFunds}
-              style={{ padding: '15px 30px', background: '#DC2626', color: '#fff', borderRadius: 30, fontWeight: 800, border: 'none', cursor: 'pointer' }}
+              style={{ padding: '10px 20px', background: '#DC2626', color: '#fff', borderRadius: 30, fontWeight: 800, border: 'none', cursor: 'pointer', fontSize: 13 }}
             >
               Refund
             </button>
+          </div>
+
+          {/* Bot Management */}
+          <div style={{ color: '#000' }}>
+            <div style={{ fontWeight: 800, fontSize: 14, marginBottom: 10, color: '#4B5563' }}>🤖 LEADERBOARD SIMULATION</div>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 10 }}>
+              <div>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', marginBottom: 4 }}>COUNT</div>
+                <input type="number" value={botCountInput} onChange={e => setBotCountInput(e.target.value)} style={{ width: '100%', padding: 8, borderRadius: 8, border: '1px solid #DEE1E7', fontSize: 12 }} />
+              </div>
+              <div>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', marginBottom: 4 }}>MIN HP</div>
+                <input type="number" value={botMinPoints} onChange={e => setBotMinPoints(e.target.value)} style={{ width: '100%', padding: 8, borderRadius: 8, border: '1px solid #DEE1E7', fontSize: 12 }} />
+              </div>
+              <div>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', marginBottom: 4 }}>MAX HP</div>
+                <input type="number" value={botMaxPoints} onChange={e => setBotMaxPoints(e.target.value)} style={{ width: '100%', padding: 8, borderRadius: 8, border: '1px solid #DEE1E7', fontSize: 12 }} />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: 8, marginBottom: 15 }}>
+              <button onClick={handleCreateBots} disabled={isCreatingBots} style={{ flex: 1, padding: 10, background: '#4F46E5', color: '#fff', borderRadius: 8, fontWeight: 700, border: 'none', cursor: 'pointer', fontSize: 12 }}>
+                {isCreatingBots ? 'Creating...' : `+ Add ${botCountInput} Bots`}
+              </button>
+              <button onClick={handleDeleteBots} style={{ padding: 10, background: 'none', border: '1px solid #DC2626', color: '#DC2626', borderRadius: 8, fontWeight: 700, cursor: 'pointer', fontSize: 12 }}>
+                Reset All
+              </button>
+            </div>
+
+            <div style={{ maxHeight: 200, overflowY: 'auto', background: '#fff', borderRadius: 12, border: '1px solid #DEE1E7', padding: 8 }}>
+              {bots.map(bot => (
+                <div key={bot.address} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: '1px solid #F3F4F6' }}>
+                  <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#6B7280' }}>{short(bot.address)}</div>
+                  {editingBot?.address === bot.address ? (
+                    <div style={{ display: 'flex', gap: 4 }}>
+                      <input 
+                        autoFocus
+                        type="number" 
+                        defaultValue={bot.points} 
+                        onBlur={e => handleUpdateBotPoints(bot.address, e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && handleUpdateBotPoints(bot.address, e.currentTarget.value)}
+                        style={{ width: 70, padding: '2px 6px', fontSize: 11, borderRadius: 4, border: '1px solid #4F46E5' }} 
+                      />
+                    </div>
+                  ) : (
+                    <div 
+                      onClick={() => setEditingBot(bot)}
+                      style={{ fontSize: 12, fontWeight: 800, color: '#111827', cursor: 'pointer', padding: '2px 8px', borderRadius: 4, background: '#F9FAFB' }}
+                    >
+                      {bot.points.toLocaleString()} HP ✏️
+                    </div>
+                  )}
+                </div>
+              ))}
+              {bots.length === 0 && <div style={{ textAlign: 'center', fontSize: 11, color: '#9CA3AF', padding: 10 }}>No bots created yet</div>}
+            </div>
           </div>
         </div>
       )}
