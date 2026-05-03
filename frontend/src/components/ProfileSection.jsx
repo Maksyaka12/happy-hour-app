@@ -368,26 +368,27 @@ export function ProfileSection({ address, basename }) {
   }
 
   return (
-    <div style={{ paddingBottom: 120, padding: '0 12px 120px' }}>
-      {/* Top Row: Title + Disconnect */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14, padding: '0 4px' }}>
-        <div style={{ fontSize: 24, fontWeight: 900, color: '#0A0B0D', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: '0.5px' }}>PROFILE</div>
-        <button
-          onClick={() => disconnect()}
-          style={{
-            background: '#fff',
-            border: '1px solid #DEE1E7',
-            color: '#717886',
-            borderRadius: 50,
-            padding: '6px 14px',
-            fontSize: 12,
-            fontWeight: 700,
-            cursor: 'pointer',
-          }}
-        >
-          Disconnect
-        </button>
-      </div>
+    <div style={{ paddingBottom: 120, padding: '0 12px 120px', position: 'relative' }}>
+      {/* Disconnect button positioned to align with the main Profile title in App.jsx */}
+      <button
+        onClick={() => disconnect()}
+        style={{
+          position: 'absolute',
+          top: -44, // Align with App.jsx title
+          right: 16,
+          background: '#EEF0F3',
+          border: '1px solid #DEE1E7',
+          color: '#717886',
+          borderRadius: 50,
+          padding: '6px 14px',
+          fontSize: 12,
+          fontWeight: 700,
+          cursor: 'pointer',
+          zIndex: 100,
+        }}
+      >
+        Disconnect
+      </button>
 
       {/* Compact Profile Badge */}
       <div
@@ -402,6 +403,7 @@ export function ProfileSection({ address, basename }) {
           display: 'flex',
           alignItems: 'center',
           gap: 12,
+          marginTop: 6, // Small gap after the title row
         }}
       >
         <div
