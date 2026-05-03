@@ -159,22 +159,21 @@ export function LeaderboardSection({ address }) {
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'center', 
-        gap: 10, 
-        marginTop: 10, 
-        marginBottom: 15,
+        gap: 6, 
+        marginTop: 14, 
+        marginBottom: 10,
         textAlign: 'center' 
       }}>
-        <span style={{ fontSize: 22 }}>🏆</span>
+        <span style={{ fontSize: 18 }}>🏆</span>
         <div style={{ 
           fontFamily: "'Barlow Condensed', sans-serif", 
-          fontSize: 22, 
+          fontSize: 18, 
           fontWeight: 900, 
           color: '#D97706', // Gold color
           letterSpacing: '0.5px'
         }}>
-          TOP-50 LEADERBOARD
+          TOP-50
         </div>
-        <span style={{ fontSize: 22 }}>🏆</span>
       </div>
 
       {leaders.length === 0 ? (
