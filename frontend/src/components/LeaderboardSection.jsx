@@ -21,7 +21,7 @@ export function LeaderboardSection({ address }) {
         .from('users')
         .select('address, basename, points, wins, entries')
         .order('points', { ascending: false })
-        .limit(100)
+        .limit(50)
 
       if (error) {
         console.error('loadLeaders:', error)
@@ -33,7 +33,7 @@ export function LeaderboardSection({ address }) {
 
         const inTopIndex = (data ?? []).findIndex(u => u.address?.toLowerCase() === address?.toLowerCase())
         if (inTopIndex === -1) {
-          // User not in top 100 — fetch their exact rank
+          // User not in top 50 — fetch their exact rank
           const { data: myData } = await db
             .from('users')
             .select('points, basename')
@@ -153,6 +153,29 @@ export function LeaderboardSection({ address }) {
           </div>
         </div>
       )}
+
+      {/* TOP-50 Header */}
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        gap: 10, 
+        marginTop: 10, 
+        marginBottom: 15,
+        textAlign: 'center' 
+      }}>
+        <span style={{ fontSize: 22 }}>🏆</span>
+        <div style={{ 
+          fontFamily: "'Barlow Condensed', sans-serif", 
+          fontSize: 22, 
+          fontWeight: 900, 
+          color: '#D97706', // Gold color
+          letterSpacing: '0.5px'
+        }}>
+          TOP-50 LEADERBOARD
+        </div>
+        <span style={{ fontSize: 22 }}>🏆</span>
+      </div>
 
       {leaders.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '60px 20px', background: '#EEF0F3', borderRadius: 20 }}>
