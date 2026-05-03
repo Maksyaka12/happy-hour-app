@@ -101,7 +101,30 @@ BEGIN
 END;
 $$;
 
+-- 6. Function to delete a single bot
+CREATE OR REPLACE FUNCTION delete_bot(
+  p_admin_address TEXT,
+  p_bot_address   TEXT
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  ADMIN_WALLET TEXT := '0x4c91d3bed372c11795b9ce9a9017dfe447bf050a';
+BEGIN
+  IF lower(p_admin_address) <> ADMIN_WALLET THEN
+    RETURN jsonb_build_object('ok', false, 'error', 'Unauthorized');
+  END IF;
+
+  DELETE FROM users WHERE address = p_bot_address AND is_bot = true;
+  RETURN jsonb_build_object('ok', true);
+END;
+$$;
+
 -- Grant permissions
 GRANT EXECUTE ON FUNCTION create_bots(INTEGER, INTEGER, INTEGER) TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION update_bot_points(TEXT, TEXT, INTEGER) TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION delete_all_bots(TEXT) TO anon, authenticated;
+GRANT EXECUTE ON FUNCTION delete_bot(TEXT, TEXT) TO anon, authenticated;

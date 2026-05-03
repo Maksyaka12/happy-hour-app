@@ -173,6 +173,14 @@ export function ProfileSection({ address, basename }) {
     await loadBots()
   }
 
+  const handleDeleteBot = async (botAddr) => {
+    await db.rpc('delete_bot', {
+      p_admin_address: address.toLowerCase(),
+      p_bot_address: botAddr
+    })
+    await loadBots()
+  }
+
   const handleDeleteBots = async () => {
     console.log('Resetting bots...')
     const { data, error } = await db.rpc('delete_all_bots', { p_admin_address: address.toLowerCase() })
@@ -801,8 +809,25 @@ export function ProfileSection({ address, basename }) {
 
             <div style={{ maxHeight: 200, overflowY: 'auto', background: '#fff', borderRadius: 12, border: '1px solid #DEE1E7', padding: 8 }}>
               {bots.map(bot => (
-                <div key={bot.address} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: '1px solid #F3F4F6' }}>
-                  <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#6B7280' }}>{short(bot.address)}</div>
+                <div key={bot.address} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid #F3F4F6' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <button 
+                      onClick={() => handleDeleteBot(bot.address)}
+                      style={{ 
+                        background: 'none', 
+                        border: 'none', 
+                        cursor: 'pointer', 
+                        fontSize: 14, 
+                        padding: '4px 8px',
+                        borderRadius: 6,
+                        opacity: 0.6
+                      }}
+                    >
+                      🗑️
+                    </button>
+                    <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#6B7280' }}>{short(bot.address)}</div>
+                  </div>
+
                   {editingBot?.address === bot.address ? (
                     <div style={{ display: 'flex', gap: 4 }}>
                       <input 
