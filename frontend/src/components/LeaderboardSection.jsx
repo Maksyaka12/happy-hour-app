@@ -194,9 +194,6 @@ export function LeaderboardSection({ address }) {
                   >
                     {u.basename || short(u.address)}
                   </div>
-                  <div style={{ fontSize: 11, color: '#717886', marginTop: 1 }}>
-                    {u.wins} win{u.wins !== 1 ? 's' : ''} · {u.entries} entries
-                  </div>
                 </div>
                 <div
                   style={{
