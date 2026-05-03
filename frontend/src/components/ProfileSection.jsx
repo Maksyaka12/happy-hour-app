@@ -770,7 +770,10 @@ export function ProfileSection({ address, basename }) {
 
           {/* Bot Management */}
           <div style={{ color: '#000' }}>
-            <div style={{ fontWeight: 800, fontSize: 14, marginBottom: 10, color: '#4B5563' }}>🤖 LEADERBOARD SIMULATION</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+              <div style={{ fontWeight: 800, fontSize: 14, color: '#4B5563' }}>🤖 LEADERBOARD SIMULATION</div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#9CA3AF' }}>Total Bots: <span style={{ color: '#4F46E5' }}>{bots.length}</span></div>
+            </div>
             
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 10 }}>
               <div>
