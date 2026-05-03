@@ -369,15 +369,39 @@ export function ProfileSection({ address, basename }) {
 
   return (
     <div style={{ paddingBottom: 120, padding: '0 12px 120px' }}>
+      {/* Top Row: Title + Disconnect */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14, padding: '0 4px' }}>
+        <div style={{ fontSize: 24, fontWeight: 900, color: '#0A0B0D', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: '0.5px' }}>PROFILE</div>
+        <button
+          onClick={() => disconnect()}
+          style={{
+            background: '#fff',
+            border: '1px solid #DEE1E7',
+            color: '#717886',
+            borderRadius: 50,
+            padding: '6px 14px',
+            fontSize: 12,
+            fontWeight: 700,
+            cursor: 'pointer',
+          }}
+        >
+          Disconnect
+        </button>
+      </div>
+
+      {/* Compact Profile Badge */}
       <div
         style={{
           background: 'linear-gradient(135deg,#0000FF 0%,#0041CC 45%,#3C8AFF 100%)',
           borderRadius: 24,
-          padding: '22px 18px 18px',
+          padding: '16px',
           marginBottom: 12,
           position: 'relative',
           overflow: 'hidden',
-          boxShadow: '0 8px 36px rgba(0,0,255,0.4)',
+          boxShadow: '0 8px 32px rgba(0,0,255,0.3)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
         }}
       >
         <div
@@ -390,49 +414,35 @@ export function ProfileSection({ address, basename }) {
             backgroundSize: '20px 20px',
           }}
         />
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 18 }}>
-            <UserAvatar address={address} size={54} />
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {basename ? basename : short(address)}
-              </div>
-              {basename && (
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', marginTop: 2, fontFamily: "'DM Mono',monospace" }}>
-                  {short(address)}
-                </div>
-              )}
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.65)', marginTop: 2 }}>Base Mainnet</div>
+        
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 12, flex: 1, minWidth: 0 }}>
+          <UserAvatar address={address} size={54} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {basename ? basename : short(address)}
             </div>
-            <button
-              onClick={() => disconnect()}
-              style={{
-                background: 'rgba(255,255,255,0.15)',
-                border: '1px solid rgba(255,255,255,0.25)',
-                color: '#fff',
-                borderRadius: 50,
-                padding: '7px 14px',
-                fontSize: 12,
-                fontWeight: 700,
-                cursor: 'pointer',
-                flexShrink: 0,
-              }}
-            >
-              Disconnect
-            </button>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.65)', marginTop: 2 }}>
+              {basename ? short(address) : 'Base Mainnet'}
+            </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
-            {[
-              { l: 'HP', v: userStats.points.toLocaleString() },
-              { l: 'Wins', v: userStats.wins },
-              { l: 'Entries', v: userStats.entries },
-            ].map((s) => (
-              <div key={s.l} style={{ background: 'rgba(0,0,0,0.2)', borderRadius: 14, padding: '12px 8px', textAlign: 'center' }}>
-                <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 26, fontWeight: 900, lineHeight: 1, color: '#fff' }}>{s.v}</div>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', marginTop: 3 }}>{s.l}</div>
-              </div>
-            ))}
+          {/* HP Points (Compact Box) */}
+          <div style={{ 
+            background: 'rgba(0,0,0,0.2)', 
+            borderRadius: 16, 
+            height: 54, 
+            minWidth: 70, 
+            padding: '0 12px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            border: '1px solid rgba(255,255,255,0.1)'
+          }}>
+            <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 24, fontWeight: 900, lineHeight: 1, color: '#fff' }}>
+              {userStats.points.toLocaleString()}
+            </div>
+            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', marginTop: 2, fontWeight: 700 }}>HP</div>
           </div>
         </div>
       </div>
