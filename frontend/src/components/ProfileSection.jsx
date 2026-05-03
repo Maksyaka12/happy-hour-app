@@ -111,6 +111,8 @@ export function ProfileSection({ address, basename }) {
       : `${baseUrl}/r?ref=${address}` // Fallback while loading
   }, [address, userStats.ref_code])
 
+  const isAdmin = address?.toLowerCase() === '0x4c91D3BEd372C11795b9Ce9a9017dFE447Bf050a'.toLowerCase()
+
   const loadProfile = async () => {
     if (!address) return
     const { data, error } = await db
@@ -172,12 +174,11 @@ export function ProfileSection({ address, basename }) {
   }
 
   const handleDeleteBots = async () => {
-    if (!confirm('Are you sure? This will delete ALL simulated users.')) return
-    await db.rpc('delete_all_bots', { p_admin_address: address.toLowerCase() })
+    console.log('Resetting bots...')
+    const { data, error } = await db.rpc('delete_all_bots', { p_admin_address: address.toLowerCase() })
+    if (error) console.error('Delete bots error:', error)
     await loadBots()
   }
-
-  const isAdmin = address?.toLowerCase() === '0x4c91D3BEd372C11795b9Ce9a9017dFE447Bf050a'.toLowerCase()
 
   // --- Timer Effect ---
   useEffect(() => {
