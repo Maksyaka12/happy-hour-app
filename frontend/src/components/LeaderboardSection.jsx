@@ -169,8 +169,7 @@ export function LeaderboardSection({ address }) {
           fontFamily: "'Barlow Condensed', sans-serif", 
           fontSize: 18, 
           fontWeight: 900, 
-          color: '#FAD541', // Brighter Gold requested
-          textShadow: '0.5px 0.5px 0px rgba(0,0,0,0.1)',
+          color: '#0000FF', // Signature Blue
           letterSpacing: '0.5px'
         }}>
           TOP-50
@@ -223,7 +222,7 @@ export function LeaderboardSection({ address }) {
                     fontFamily: "'Barlow Condensed',sans-serif",
                     fontSize: 18,
                     fontWeight: 900,
-                    color: i === 0 ? '#FAD541' : i === 1 ? '#717886' : i === 2 ? '#B45309' : '#0A0B0D',
+                    color: i === 0 ? '#F4C81B' : i === 1 ? '#717886' : i === 2 ? '#B45309' : '#0A0B0D',
                     textShadow: i === 0 ? '0.5px 0.5px 0px rgba(0,0,0,0.1)' : 'none'
                   }}
                 >
