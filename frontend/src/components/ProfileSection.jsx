@@ -80,7 +80,8 @@ export function ProfileSection({ address, basename }) {
     entries: 0,
     referral_count: 0,
     referral_points: 0,
-    ref_code: null
+    ref_code: null,
+    referrer: null
   })
   const [checkedToday, setCheckedToday] = useState(false)
   const [boostedToday, setBoostedToday] = useState(false)
@@ -117,7 +118,7 @@ export function ProfileSection({ address, basename }) {
     if (!address) return
     const { data, error } = await db
       .from('users')
-      .select('streak, streak_last, boost_last, points, wins, entries, referral_count, referral_points, ref_code, active_multiplier, multiplier_expires_at')
+      .select('streak, streak_last, boost_last, points, wins, entries, referral_count, referral_points, ref_code, active_multiplier, multiplier_expires_at, referrer')
       .eq('address', address.toLowerCase())
       .maybeSingle()
 
@@ -138,7 +139,8 @@ export function ProfileSection({ address, basename }) {
       entries: user.entries,
       referral_count: user.referral_count,
       referral_points: user.referral_points,
-      ref_code: user.ref_code
+      ref_code: user.ref_code,
+      referrer: data?.referrer || null
     })
   }
 
@@ -373,6 +375,28 @@ export function ProfileSection({ address, basename }) {
     } catch {
       setCopied(false)
     }
+  const [refInput, setRefInput] = useState('')
+  const [refLoading, setRefLoading] = useState(false)
+  const [refError, setRefError] = useState('')
+
+  const handleApplyRef = async () => {
+    if (!refInput.trim()) return
+    setRefLoading(true)
+    setRefError('')
+    
+    const { data, error } = await db.rpc('apply_referral_code', {
+      p_address: address.toLowerCase(),
+      p_code: refInput.trim()
+    })
+
+    if (error) {
+      setRefError('Database error. Try again.')
+    } else if (!data.ok) {
+      setRefError(data.error)
+    } else {
+      await loadProfile()
+    }
+    setRefLoading(false)
   }
 
   return (
@@ -742,6 +766,66 @@ export function ProfileSection({ address, basename }) {
             <div style={{ fontSize: 16, fontWeight: 900, color: '#0000FF', lineHeight: 1 }}>{userStats.referral_points} <span style={{ fontSize: 9 }}>HP</span></div>
             <div style={{ fontSize: 9, color: '#717886', marginTop: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>Earned</div>
           </div>
+        </div>
+
+        {/* Manual Referral Entry */}
+        <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid rgba(0,0,0,0.05)' }}>
+          {userStats.referrer ? (
+            <div style={{ 
+              background: 'rgba(5, 150, 105, 0.05)', 
+              borderRadius: 12, 
+              padding: '10px 14px', 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: 8,
+              border: '1px solid rgba(5, 150, 105, 0.15)'
+            }}>
+              <span style={{ fontSize: 14 }}>✅</span>
+              <span style={{ fontSize: 13, color: '#059669', fontWeight: 600 }}>
+                Successfully referred by <span style={{ fontFamily: 'monospace' }}>{short(userStats.referrer)}</span>
+              </span>
+            </div>
+          ) : (
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#717886', marginBottom: 8, textTransform: 'uppercase' }}>Redeem Referral Code</div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <input
+                  type="text"
+                  value={refInput}
+                  onChange={(e) => setRefInput(e.target.value)}
+                  placeholder="Enter 8-digit code"
+                  style={{
+                    flex: 1,
+                    background: '#EEF0F3',
+                    border: '1px solid #DEE1E7',
+                    borderRadius: 12,
+                    padding: '10px 14px',
+                    fontSize: 13,
+                    outline: 'none',
+                    fontFamily: "'DM Mono', monospace"
+                  }}
+                />
+                <button
+                  onClick={handleApplyRef}
+                  disabled={refLoading || !refInput.trim()}
+                  style={{
+                    background: '#0000FF',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: 12,
+                    padding: '0 16px',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    opacity: (refLoading || !refInput.trim()) ? 0.6 : 1
+                  }}
+                >
+                  {refLoading ? '...' : 'Submit'}
+                </button>
+              </div>
+              {refError && <div style={{ color: '#DC2626', fontSize: 11, marginTop: 6, fontWeight: 600 }}>⚠️ {refError}</div>}
+            </div>
+          )}
         </div>
       </div>
 
