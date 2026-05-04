@@ -375,6 +375,8 @@ export function ProfileSection({ address, basename }) {
     } catch {
       setCopied(false)
     }
+  }
+
   const [refInput, setRefInput] = useState('')
   const [refLoading, setRefLoading] = useState(false)
   const [refError, setRefError] = useState('')
