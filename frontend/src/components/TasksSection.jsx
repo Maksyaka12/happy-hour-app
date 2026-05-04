@@ -91,16 +91,22 @@ function TaskCard({ task, taskState, onVisit, onCheck, onClaim, isClaiming }) {
               background: '#059669',
               color: '#fff',
               borderRadius: 50,
-              padding: '10px 18px',
-              fontSize: 13,
+              padding: '10px 16px',
+              fontSize: 12,
               fontWeight: 800,
               border: 'none',
               cursor: isClaiming ? 'wait' : 'pointer',
               opacity: isClaiming ? 0.7 : 1,
               boxShadow: '0 4px 16px rgba(5,150,105,0.35)',
+              minWidth: 100,
+              whiteSpace: 'nowrap',
             }}
           >
-            {isClaiming ? 'Claiming…' : 'Claim'}
+            {isClaiming ? 'Claiming…' : (
+              <span>
+                Claim <span style={{ fontSize: 9, opacity: 0.9, fontWeight: 700, marginLeft: 2 }}>FREE</span>
+              </span>
+            )}
           </button>
         ) : isCounting ? (
           <div
