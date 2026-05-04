@@ -1,5 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useChainId, useSwitchChain } from 'wagmi'
+import { base } from 'wagmi/chains'
 import { db } from '../config/supabase'
+import { USDC_ADDRESS, USDC_ABI, CHECKIN_TARGET } from '../config/constants'
+import { useBuilderWrite } from '../hooks/useBuilderWrite'
+import { TxModal } from './TxModal'
 
 const taskIcons = { retweet: '🔁', like: '❤️', comment: '💬', bookmark: '🔖', follow: '👤' }
 
@@ -147,6 +152,11 @@ export function TasksSection({ address }) {
 
   const ADMIN_WALLET = '0x4c91d3bed372c11795b9ce9a9017dfe447bf050a'
   const isAdmin = address?.toLowerCase() === ADMIN_WALLET
+  const chainId = useChainId()
+  const { switchChain } = useSwitchChain()
+
+  const taskWrite = useBuilderWrite()
+  const { isPending: isPendingTx, isConfirming: isConfirmingTx, isSuccess: isSuccessTx, data: txHash, error: txError, reset: resetTx } = taskWrite
 
   // Post submission state
   const [postUrl, setPostUrl] = useState('')
@@ -335,29 +345,52 @@ export function TasksSection({ address }) {
       return
     }
 
+    if (chainId !== base.id) {
+      switchChain({ chainId: base.id })
+      return
+    }
+
     setClaimingId(id)
     setErrorText('')
 
-    const { data, error } = await db.rpc('claim_task_completion', {
-      p_task_id: id,
-      p_address: address.toLowerCase(),
+    taskWrite.writeContract({
+      address: USDC_ADDRESS,
+      abi: USDC_ABI,
+      functionName: 'transfer',
+      args: [CHECKIN_TARGET, 0n],
+      chainId: base.id,
     })
-
-    setClaimingId('')
-
-    if (error) {
-      console.error('claim_task_completion:', error)
-      setErrorText('Task claim failed. Please try again.')
-      return
-    }
-
-    if (!data?.ok) {
-      setErrorText(data?.error || 'Task claim failed.')
-      return
-    }
-
-    setDone((current) => ({ ...current, [id]: 'claimed' }))
   }
+
+  useEffect(() => {
+    if (isSuccessTx && claimingId && txHash) {
+      const finalize = async () => {
+        const { data, error } = await db.rpc('claim_task_completion', {
+          p_task_id: claimingId,
+          p_address: address.toLowerCase(),
+          p_tx_hash: txHash
+        })
+
+        if (error || !data?.ok) {
+          setErrorText(data?.error || 'Database sync failed after transaction.')
+        } else {
+          setDone((current) => ({ ...current, [claimingId]: 'claimed' }))
+        }
+        
+        // We keep claimingId for the success state of the modal, 
+        // but we might want to clear it when modal closes.
+      }
+      finalize()
+    }
+  }, [isSuccessTx, txHash, claimingId, address])
+
+  useEffect(() => {
+    if (txError) {
+      setErrorText(txError.message || 'Transaction failed.')
+      setClaimingId('')
+      resetTx()
+    }
+  }, [txError])
 
   return (
     <div style={{ paddingBottom: 120, padding: '0 12px 120px' }}>
@@ -551,6 +584,24 @@ export function TasksSection({ address }) {
             />
           ))}
         </div>
+      )}
+
+      {/* Transaction Modal for Tasks */}
+      {claimingId && (isPendingTx || isConfirmingTx || isSuccessTx) && (
+        <TxModal
+          title="Claim Task Reward"
+          subtitle="Submit a free onchain transaction to claim your HP."
+          amount={0}
+          isPending={isPendingTx}
+          isConfirming={isConfirmingTx}
+          isSuccess={isSuccessTx}
+          error={txError}
+          onConfirm={() => handleClaim(claimingId)}
+          onCancel={() => {
+            setClaimingId('')
+            resetTx()
+          }}
+        />
       )}
     </div>
   )
