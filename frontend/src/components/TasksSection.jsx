@@ -373,12 +373,12 @@ export function TasksSection({ address }) {
 
         if (error || !data?.ok) {
           setErrorText(data?.error || 'Database sync failed after transaction.')
+          setClaimingId('')
         } else {
           setDone((current) => ({ ...current, [claimingId]: 'claimed' }))
+          setClaimingId('')
         }
-        
-        // We keep claimingId for the success state of the modal, 
-        // but we might want to clear it when modal closes.
+        resetTx()
       }
       finalize()
     }
@@ -580,29 +580,12 @@ export function TasksSection({ address }) {
               onVisit={handleVisit}
               onCheck={handleCheck}
               onClaim={handleClaim}
-              isClaiming={claimingId === task.id}
+              isClaiming={claimingId === task.id && (isPendingTx || isConfirmingTx || isSuccessTx)}
             />
           ))}
         </div>
       )}
 
-      {/* Transaction Modal for Tasks */}
-      {claimingId && (isPendingTx || isConfirmingTx || isSuccessTx) && (
-        <TxModal
-          title="Claim Task Reward"
-          subtitle="Submit a free onchain transaction to claim your HP."
-          amount={0}
-          isPending={isPendingTx}
-          isConfirming={isConfirmingTx}
-          isSuccess={isSuccessTx}
-          error={txError}
-          onConfirm={() => handleClaim(claimingId)}
-          onCancel={() => {
-            setClaimingId('')
-            resetTx()
-          }}
-        />
-      )}
     </div>
   )
 }
