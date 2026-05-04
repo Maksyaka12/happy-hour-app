@@ -65,6 +65,7 @@ export function ProfileSection({ address, basename }) {
   const { switchChain } = useSwitchChain()
   const [txModal, setTxModal] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [copiedCode, setCopiedCode] = useState(false)
 
   const { data: vaultBalanceData } = useBalance({
     address: FOUNDATION,
@@ -399,6 +400,16 @@ export function ProfileSection({ address, basename }) {
       await loadProfile()
     }
     setRefLoading(false)
+  }
+
+  const copyCode = async () => {
+    try {
+      await navigator.clipboard?.writeText(userStats.ref_code)
+      setCopiedCode(true)
+      setTimeout(() => setCopiedCode(false), 2000)
+    } catch {
+      setCopiedCode(false)
+    }
   }
 
   return (
@@ -736,26 +747,45 @@ export function ProfileSection({ address, basename }) {
         <div style={{ fontSize: 12, color: '#717886', marginBottom: 14, lineHeight: 1.6 }}>
           Invite friends and earn <span style={{ color: '#D97706', fontWeight: 700 }}>50% of their points</span> forever.
         </div>
-        <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-          <div style={{ flex: 1, background: '#EEF0F3', border: '1px solid #DEE1E7', borderRadius: 12, padding: '12px 14px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center' }}>
-            <span style={{ fontFamily: "'DM Mono',monospace", fontSize: 11, color: '#717886', overflow: 'hidden', textOverflow: 'ellipsis' }}>{referralLink}</span>
+        <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
+          <div style={{ flex: 1, background: '#EEF0F3', border: '1px solid #DEE1E7', borderRadius: 12, padding: '10px 12px', overflow: 'hidden', display: 'flex', alignItems: 'center', minWidth: 0 }}>
+            <span style={{ fontFamily: "'DM Mono',monospace", fontSize: 11, color: '#717886', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{referralLink}</span>
           </div>
           <button
             onClick={copyRef}
             style={{
-              background: copied ? 'rgba(5,150,105,0.1)' : 'rgba(217,119,6,0.1)',
-              border: `1px solid ${copied ? '#059669' : '#D97706'}`,
-              color: copied ? '#059669' : '#D97706',
+              background: copied ? 'rgba(5,150,105,0.1)' : 'rgba(0,0,255,0.05)',
+              border: `1px solid ${copied ? '#059669' : '#0000FF'}`,
+              color: copied ? '#059669' : '#0000FF',
               borderRadius: 12,
-              padding: '0 16px',
-              fontSize: 13,
+              padding: '0 12px',
+              fontSize: 12,
               fontWeight: 700,
               cursor: 'pointer',
               whiteSpace: 'nowrap',
-              transition: 'all 0.2s'
+              transition: 'all 0.2s',
+              minWidth: 80
             }}
           >
-            {copied ? '✓ Copied!' : 'Copy'}
+            {copied ? '✓ Link' : 'Copy Link'}
+          </button>
+          <button
+            onClick={copyCode}
+            style={{
+              background: copiedCode ? 'rgba(5,150,105,0.1)' : 'rgba(217,119,6,0.05)',
+              border: `1px solid ${copiedCode ? '#059669' : '#D97706'}`,
+              color: copiedCode ? '#059669' : '#D97706',
+              borderRadius: 12,
+              padding: '0 12px',
+              fontSize: 12,
+              fontWeight: 700,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              transition: 'all 0.2s',
+              minWidth: 80
+            }}
+          >
+            {copiedCode ? '✓ Code' : 'Copy Code'}
           </button>
         </div>
 
