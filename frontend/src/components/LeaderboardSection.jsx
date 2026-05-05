@@ -415,7 +415,7 @@ export function LeaderboardSection({ address }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <span style={{ fontSize: 18, animation: 'pulse 2s infinite' }}>🕒</span>
               <div style={{ fontSize: 13, fontWeight: 800, color: '#fff', letterSpacing: '0.3px' }}>
-                REWARDS DISTRIBUTED IN
+                REWARDS DISTRIBUTE IN
               </div>
             </div>
             <div style={{ 
