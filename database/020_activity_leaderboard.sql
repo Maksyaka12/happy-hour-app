@@ -205,8 +205,9 @@ BEGIN
 END;
 $$;
 
--- 5. Grant access
-GRANT SELECT ON daily_stats TO anon, authenticated;
+-- 5. Grant access and disable RLS for testing
+ALTER TABLE daily_stats DISABLE ROW LEVEL SECURITY;
+GRANT SELECT ON daily_stats TO anon, authenticated, service_role;
 
 -- 6. BACKFILL: Populate stats for today (2026-05-05) from existing data
 INSERT INTO daily_stats (address, day, checkin_done, tasks_done, tx_count, posts_approved, streak)

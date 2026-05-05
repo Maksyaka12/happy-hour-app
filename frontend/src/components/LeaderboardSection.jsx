@@ -60,14 +60,19 @@ export function LeaderboardSection({ address }) {
 
     const loadDailyLeaders = async () => {
       const today = new Date().toISOString().slice(0, 10)
+      console.log('Fetching daily leaders for:', today)
+      
       const { data, error } = await db
         .from('daily_stats')
-        .select('address, score, users(basename)')
+        .select('address, score, users!inner(basename)') // Explicit join
         .eq('day', today)
         .order('score', { ascending: false })
         .limit(20)
 
-      if (!error && alive) {
+      if (error) {
+        console.error('loadDailyLeaders error:', error)
+      } else if (alive) {
+        console.log('Daily leaders data:', data)
         setDailyLeaders(data?.map(d => ({
           address: d.address,
           score: d.score,
