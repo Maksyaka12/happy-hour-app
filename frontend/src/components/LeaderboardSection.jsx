@@ -323,25 +323,7 @@ export function LeaderboardSection({ address }) {
 
       {activeTab === 'main' ? (
         <>
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            gap: 6, 
-            marginTop: 10, 
-            marginBottom: 10,
-            textAlign: 'center' 
-          }}>
-            <div style={{ 
-              fontFamily: "'Barlow Condensed', sans-serif", 
-              fontSize: 18, 
-              fontWeight: 900, 
-              color: '#0000FF',
-              letterSpacing: '0.5px'
-            }}>
-              TOP-50
-            </div>
-          </div>
+          <div style={{ marginTop: 10 }} />
 
           {leaders.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '60px 20px', background: '#EEF0F3', borderRadius: 20 }}>
