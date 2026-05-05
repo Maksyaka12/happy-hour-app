@@ -62,7 +62,7 @@ export function LeaderboardSection({ address }) {
     const loadDailyLeaders = async () => {
       const today = new Date().toISOString().slice(0, 10)
       console.log('Fetching daily leaders for:', today)
-      
+
       const { data, error } = await db
         .from('daily_stats')
         .select('address, score, users!inner(basename)') // Explicit join
@@ -125,11 +125,11 @@ export function LeaderboardSection({ address }) {
       const now = new Date()
       const nextDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1))
       const diff = nextDay - now
-      
+
       const h = Math.floor(diff / 3600000)
       const m = Math.floor((diff % 3600000) / 60000)
       const s = Math.floor((diff % 60000) / 1000)
-      
+
       setTimeLeft(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`)
     }, 1000)
     return () => clearInterval(timer)
@@ -186,26 +186,26 @@ export function LeaderboardSection({ address }) {
       }}>
         {/* Dark overlay to make text more readable if image is light */}
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.15)', zIndex: 0 }} />
-        
+
         <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
-          <div style={{ 
-            fontFamily: "'Barlow Condensed', sans-serif", 
-            fontSize: 48, 
-            fontWeight: 900, 
-            color: '#fff', 
+          <div style={{
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontSize: 48,
+            fontWeight: 900,
+            color: '#fff',
             lineHeight: 1,
             textShadow: '0 2px 10px rgba(0,0,0,0.5)',
             marginBottom: 8
           }}>
             SEASON 1
           </div>
-          <div style={{ 
-            background: 'rgba(255,255,255,0.15)', 
+          <div style={{
+            background: 'rgba(255,255,255,0.15)',
             backdropFilter: 'blur(10px)',
-            borderRadius: 50, 
-            padding: '4px 16px', 
-            fontSize: 12, 
-            fontWeight: 700, 
+            borderRadius: 50,
+            padding: '4px 16px',
+            fontSize: 12,
+            fontWeight: 700,
             color: '#fff',
             border: '1px solid rgba(255,255,255,0.25)',
             display: 'inline-block',
@@ -385,10 +385,10 @@ export function LeaderboardSection({ address }) {
         </>
       ) : (
         <>
-          <div style={{ 
-            display: 'flex', 
+          <div style={{
+            display: 'flex',
             justifyContent: 'space-between',
-            alignItems: 'center', 
+            alignItems: 'center',
             background: '#0A0B0D',
             borderRadius: 16,
             padding: '14px 18px',
@@ -400,17 +400,17 @@ export function LeaderboardSection({ address }) {
           }}>
             {/* Subtle glow effect */}
             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(5,150,105,0.4), transparent)' }} />
-            
+
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <span style={{ fontSize: 18, animation: 'pulse 2s infinite' }}>🕒</span>
               <div style={{ fontSize: 13, fontWeight: 800, color: '#fff', letterSpacing: '0.3px' }}>
                 REWARDS DISTRIBUTE IN
               </div>
             </div>
-            <div style={{ 
-              fontFamily: "'DM Mono', monospace", 
-              fontSize: 18, 
-              fontWeight: 900, 
+            <div style={{
+              fontFamily: "'DM Mono', monospace",
+              fontSize: 18,
+              fontWeight: 900,
               color: '#10B981', // Neon Green for the timer
               textShadow: '0 0 10px rgba(16,185,129,0.3)'
             }}>
@@ -457,10 +457,10 @@ export function LeaderboardSection({ address }) {
                     </div>
                     <div style={{ textAlign: 'right' }}>
                       <div style={{ fontSize: 10, fontWeight: 800, color: rColor, textTransform: 'uppercase', opacity: 0.8 }}>Reward</div>
-                      <div style={{ 
-                        fontFamily: "'Barlow Condensed',sans-serif", 
-                        fontSize: 18, 
-                        fontWeight: 900, 
+                      <div style={{
+                        fontFamily: "'Barlow Condensed',sans-serif",
+                        fontSize: 18,
+                        fontWeight: 900,
                         color: rColor,
                         textShadow: rank === 1 ? '0.5px 0.5px 0px rgba(0,0,0,0.05)' : 'none'
                       }}>
@@ -481,7 +481,7 @@ export function LeaderboardSection({ address }) {
             {[
               ['What are Activity Points?', 'All your in-app activity converts into activity points. Formula: daily check-in + tasks + in-app transactions + post approval + your streak.'],
               ['When are rewards distributed?', 'Top 20 most active users automatically receive HP daily when the timer hits 0 (00:00 UTC).'],
-              ['What happens when the timer hits 0?', 'The leaderboard resets along with your activity points. New day - new chance for everyone.'],
+              ['What happens when the timer hits 00:00?', 'The leaderboard resets along with your activity points. New day - new chance for everyone.'],
             ].map(([q, a], i, arr) => (
               <div key={i} style={{ marginBottom: i < arr.length - 1 ? 12 : 0 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: '#32353D', marginBottom: 3 }}>{q}</div>
