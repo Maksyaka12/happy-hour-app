@@ -9,8 +9,11 @@ const medals = ['🥇', '🥈', '🥉']
 
 export function LeaderboardSection({ address }) {
   const [leaders, setLeaders] = useState([])
+  const [dailyLeaders, setDailyLeaders] = useState([])
+  const [activeTab, setActiveTab] = useState('main') // 'main' | 'daily'
   const [loading, setLoading] = useState(true)
   const [outsideRank, setOutsideRank] = useState(null)
+  const [timeLeft, setTimeLeft] = useState('')
   useEffect(() => {
     if (!address) return
     let alive = true
@@ -55,11 +58,31 @@ export function LeaderboardSection({ address }) {
       }
     }
 
+    const loadDailyLeaders = async () => {
+      const today = new Date().toISOString().slice(0, 10)
+      const { data, error } = await db
+        .from('daily_stats')
+        .select('address, score, users(basename)')
+        .eq('day', today)
+        .order('score', { ascending: false })
+        .limit(20)
+
+      if (!error && alive) {
+        setDailyLeaders(data?.map(d => ({
+          address: d.address,
+          score: d.score,
+          basename: d.users?.basename
+        })) || [])
+      }
+    }
+
     loadLeaders()
+    loadDailyLeaders()
 
     const channel = db
       .channel('leaderboard-users')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, loadLeaders)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_stats' }, loadDailyLeaders)
       .subscribe()
 
     return () => {
@@ -67,6 +90,21 @@ export function LeaderboardSection({ address }) {
       db.removeChannel(channel)
     }
   }, [address])
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const now = new Date()
+      const nextDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1))
+      const diff = nextDay - now
+      
+      const h = Math.floor(diff / 3600000)
+      const m = Math.floor((diff % 3600000) / 60000)
+      const s = Math.floor((diff % 60000) / 1000)
+      
+      setTimeLeft(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`)
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [])
 
   const myRank = leaders.findIndex((u) => u.address?.toLowerCase() === address?.toLowerCase()) + 1
   const myEntry = leaders.find((u) => u.address?.toLowerCase() === address?.toLowerCase())
@@ -154,84 +192,203 @@ export function LeaderboardSection({ address }) {
         </div>
       )}
 
-      {/* TOP-50 Header */}
-      <div style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        gap: 6, 
-        marginTop: 14, 
-        marginBottom: 10,
-        textAlign: 'center' 
+      {/* Tab Switcher */}
+      <div style={{
+        display: 'flex',
+        background: '#EEF0F3',
+        borderRadius: 14,
+        padding: 4,
+        marginBottom: 16,
+        gap: 4
       }}>
-        <span style={{ fontSize: 18 }}>🏆</span>
-        <div style={{ 
-          fontFamily: "'Barlow Condensed', sans-serif", 
-          fontSize: 18, 
-          fontWeight: 900, 
-          color: '#0000FF', // Signature Blue
-          letterSpacing: '0.5px'
-        }}>
-          TOP-50
-        </div>
+        <button
+          onClick={() => setActiveTab('main')}
+          style={{
+            flex: 1,
+            padding: '10px',
+            borderRadius: 10,
+            border: 'none',
+            fontSize: 12,
+            fontWeight: 800,
+            cursor: 'pointer',
+            background: activeTab === 'main' ? '#fff' : 'transparent',
+            color: activeTab === 'main' ? '#0000FF' : '#717886',
+            boxShadow: activeTab === 'main' ? '0 2px 8px rgba(0,0,0,0.05)' : 'none',
+            transition: 'all 0.2s'
+          }}
+        >
+          🏆 SEASON 1
+        </button>
+        <button
+          onClick={() => setActiveTab('daily')}
+          style={{
+            flex: 1,
+            padding: '10px',
+            borderRadius: 10,
+            border: 'none',
+            fontSize: 12,
+            fontWeight: 800,
+            cursor: 'pointer',
+            background: activeTab === 'daily' ? '#fff' : 'transparent',
+            color: activeTab === 'daily' ? '#0000FF' : '#717886',
+            boxShadow: activeTab === 'daily' ? '0 2px 8px rgba(0,0,0,0.05)' : 'none',
+            transition: 'all 0.2s',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 6
+          }}
+        >
+          ⚡ DAILY ACTIVITY
+        </button>
       </div>
 
-      {leaders.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '60px 20px', background: '#EEF0F3', borderRadius: 20 }}>
-          <div style={{ fontSize: 36, marginBottom: 12 }}>🏆</div>
-          <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 22, fontWeight: 900, color: '#0A0B0D', marginBottom: 6 }}>No players yet</div>
-          <div style={{ fontSize: 13, color: '#717886' }}>Be the first to play!</div>
-        </div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          {leaders.map((u, i) => {
-            const isMe = u.address?.toLowerCase() === address?.toLowerCase()
-            return (
-              <div
-                key={u.address}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
-                  background: isMe ? '#EEF0F3' : '#fff',
-                  border: `1px solid ${isMe ? 'rgba(0,0,255,0.2)' : '#DEE1E7'}`,
-                  borderRadius: 14,
-                  padding: '12px 14px',
-                }}
-              >
-                <div style={{ width: 30, textAlign: 'center', fontSize: i < 3 ? 20 : 13, fontWeight: 700, color: '#717886' }}>
-                  {i < 3 ? medals[i] : i + 1}
-                </div>
-                <UserAvatar address={u.address} size={34} />
-                <div style={{ flex: 1, minWidth: 0 }}>
+      {activeTab === 'main' ? (
+        <>
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            gap: 6, 
+            marginTop: 10, 
+            marginBottom: 10,
+            textAlign: 'center' 
+          }}>
+            <div style={{ 
+              fontFamily: "'Barlow Condensed', sans-serif", 
+              fontSize: 18, 
+              fontWeight: 900, 
+              color: '#0000FF',
+              letterSpacing: '0.5px'
+            }}>
+              TOP-50
+            </div>
+          </div>
+
+          {leaders.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '60px 20px', background: '#EEF0F3', borderRadius: 20 }}>
+              <div style={{ fontSize: 36, marginBottom: 12 }}>🏆</div>
+              <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 22, fontWeight: 900, color: '#0A0B0D', marginBottom: 6 }}>No players yet</div>
+              <div style={{ fontSize: 13, color: '#717886' }}>Be the first to play!</div>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {leaders.map((u, i) => {
+                const isMe = u.address?.toLowerCase() === address?.toLowerCase()
+                return (
                   <div
+                    key={u.address}
                     style={{
-                      fontSize: 14,
-                      fontWeight: isMe ? 700 : 500,
-                      color: isMe ? '#0000FF' : '#0A0B0D',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 12,
+                      background: isMe ? '#EEF0F3' : '#fff',
+                      border: `1px solid ${isMe ? 'rgba(0,0,255,0.2)' : '#DEE1E7'}`,
+                      borderRadius: 14,
+                      padding: '12px 14px',
                     }}
                   >
-                    {u.basename || short(u.address)}
+                    <div style={{ width: 30, textAlign: 'center', fontSize: i < 3 ? 20 : 13, fontWeight: 700, color: '#717886' }}>
+                      {i < 3 ? medals[i] : i + 1}
+                    </div>
+                    <UserAvatar address={u.address} size={34} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div
+                        style={{
+                          fontSize: 14,
+                          fontWeight: isMe ? 700 : 500,
+                          color: isMe ? '#0000FF' : '#0A0B0D',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {u.basename || short(u.address)}
+                      </div>
+                    </div>
+                    <div
+                      style={{
+                        fontFamily: "'Barlow Condensed',sans-serif",
+                        fontSize: 18,
+                        fontWeight: 900,
+                        color: i === 0 ? '#F4C81B' : i === 1 ? '#717886' : i === 2 ? '#B45309' : '#0A0B0D',
+                        textShadow: i === 0 ? '0.5px 0.5px 0px rgba(0,0,0,0.1)' : 'none'
+                      }}
+                    >
+                      {u.points.toLocaleString()}
+                    </div>
                   </div>
-                </div>
-                <div
-                  style={{
-                    fontFamily: "'Barlow Condensed',sans-serif",
-                    fontSize: 18,
-                    fontWeight: 900,
-                    color: i === 0 ? '#F4C81B' : i === 1 ? '#717886' : i === 2 ? '#B45309' : '#0A0B0D',
-                    textShadow: i === 0 ? '0.5px 0.5px 0px rgba(0,0,0,0.1)' : 'none'
-                  }}
-                >
-                  {u.points.toLocaleString()}
-                </div>
+                )
+              })}
+            </div>
+          )}
+        </>
+      ) : (
+        <>
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between',
+            alignItems: 'center', 
+            background: 'rgba(244, 200, 27, 0.1)',
+            borderRadius: 12,
+            padding: '10px 14px',
+            marginBottom: 14,
+            border: '1px solid rgba(244, 200, 27, 0.2)'
+          }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#B45309' }}>⏱ Resetting in</div>
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 16, fontWeight: 900, color: '#B45309' }}>{timeLeft}</div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {dailyLeaders.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '40px 20px', background: '#EEF0F3', borderRadius: 20 }}>
+                <div style={{ fontSize: 30, marginBottom: 8 }}>⚡</div>
+                <div style={{ fontWeight: 700, color: '#0A0B0D' }}>Activity starts now!</div>
+                <div style={{ fontSize: 12, color: '#717886' }}>Be the most active user today</div>
               </div>
-            )
-          })}
-        </div>
+            ) : (
+              dailyLeaders.map((u, i) => {
+                const isMe = u.address?.toLowerCase() === address?.toLowerCase()
+                let reward = 100
+                if (i === 0) reward = 1000
+                else if (i < 3) reward = 500
+                else if (i < 10) reward = 200
+
+                return (
+                  <div
+                    key={u.address}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 12,
+                      background: isMe ? '#EEF0F3' : '#fff',
+                      border: `1px solid ${isMe ? 'rgba(0,0,255,0.2)' : '#DEE1E7'}`,
+                      borderRadius: 14,
+                      padding: '12px 14px',
+                    }}
+                  >
+                    <div style={{ width: 30, textAlign: 'center', fontSize: 13, fontWeight: 700, color: '#717886' }}>
+                      {i + 1}
+                    </div>
+                    <UserAvatar address={u.address} size={34} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: '#0A0B0D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {u.basename || short(u.address)}
+                      </div>
+                      <div style={{ fontSize: 11, color: '#717886', fontWeight: 600 }}>Score: {u.score}</div>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <div style={{ fontSize: 10, fontWeight: 800, color: '#059669', textTransform: 'uppercase' }}>Reward</div>
+                      <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 18, fontWeight: 900, color: '#059669' }}>
+                        +{reward} <span style={{ fontSize: 11 }}>HP</span>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })
+            )}
+          </div>
+        </>
       )}
     </div>
   )
