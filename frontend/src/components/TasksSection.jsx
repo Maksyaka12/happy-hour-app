@@ -168,6 +168,8 @@ export function TasksSection({ address }) {
   const [postUrl, setPostUrl] = useState('')
   const [postStatus, setPostStatus] = useState('') // '' | 'submitting' | 'success' | 'error'
   const [postMsg, setPostMsg] = useState('')
+  const [hasSubmittedToday, setHasSubmittedToday] = useState(false)
+  const [isCheckingPost, setIsCheckingPost] = useState(true)
   const [pendingPosts, setPendingPosts] = useState([])
   const [showPendingPosts, setShowPendingPosts] = useState(false)
   const [reviewingId, setReviewingId] = useState(null)
@@ -263,6 +265,38 @@ export function TasksSection({ address }) {
     if (isAdmin) loadPendingPosts()
   }, [isAdmin])
 
+  const checkTodaySubmission = async () => {
+    if (!address) return
+    setIsCheckingPost(true)
+    const today = new Date().toISOString().slice(0, 10)
+    
+    const { data, error } = await db
+      .from('post_submissions')
+      .select('id, submitted_at')
+      .eq('address', address.toLowerCase())
+      .gte('submitted_at', today + 'T00:00:00Z')
+      .order('submitted_at', { ascending: false })
+      .limit(1)
+    
+    if (data && data.length > 0) {
+      setHasSubmittedToday(true)
+    } else {
+      setHasSubmittedToday(false)
+    }
+    setIsCheckingPost(false)
+  }
+
+  useEffect(() => {
+    if (address) checkTodaySubmission()
+  }, [address])
+
+  const getWaitTime = () => {
+    const now = new Date()
+    const hoursLeft = 24 - now.getUTCHours()
+    if (hoursLeft === 24) return 0
+    return hoursLeft
+  }
+
   const handleSubmitPost = async () => {
     if (!address) return
     if (!postUrl.startsWith('http://') && !postUrl.startsWith('https://')) {
@@ -279,6 +313,9 @@ export function TasksSection({ address }) {
     if (error || !data?.ok) {
       setPostMsg(data?.error || 'Failed to submit. Try again.')
       setPostStatus('error')
+      if (data?.error?.includes('once per day')) {
+        setHasSubmittedToday(true)
+      }
     } else {
       setPostMsg('Submitted! We\'ll review your post soon.')
       setPostStatus('success')
@@ -420,7 +457,26 @@ export function TasksSection({ address }) {
           <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)', marginBottom: 12, lineHeight: 1.5 }}>
             We value creators on Base. Post about our app or share useful content about Base and submit your link below.
           </div>
-          {postStatus === 'success' ? (
+          {isCheckingPost ? (
+            <div style={{ height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: 20, height: 20, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+            </div>
+          ) : hasSubmittedToday ? (
+            <div style={{ 
+              background: 'rgba(255,255,255,0.1)', 
+              borderRadius: 12, 
+              padding: '12px 16px', 
+              fontSize: 13, 
+              color: 'rgba(255,255,255,0.9)', 
+              fontWeight: 600,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              border: '1px solid rgba(255,255,255,0.1)'
+            }}>
+              Submitted today, next submit will be available in {getWaitTime()}h
+            </div>
+          ) : postStatus === 'success' ? (
             <div style={{ background: 'rgba(5,150,105,0.25)', borderRadius: 12, padding: '10px 14px', fontSize: 13, color: '#6EE7B7', fontWeight: 600 }}>
               ✓ {postMsg}
             </div>
