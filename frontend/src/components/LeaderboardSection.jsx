@@ -317,7 +317,7 @@ export function LeaderboardSection({ address }) {
             gap: 6
           }}
         >
-          ⚡ DAILY ACTIVITY
+          ⚡ DAILY REWARDS
         </button>
       </div>
 
