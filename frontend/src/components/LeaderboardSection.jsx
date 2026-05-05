@@ -497,9 +497,9 @@ export function LeaderboardSection({ address }) {
               How it works
             </div>
             {[
-              ['Що таке актівіті поінтс?', 'All your in-app activity converts into activity points. Formula: daily check-in + tasks + in-app transactions + post approval + your streak.'],
-              ['Коли відбувається ревард дістрібюшн?', 'Top 20 most active users automatically receive HP daily when the timer hits 0 (00:00 UTC).'],
-              ['Що відбувається коли таймер доходить до 0?', 'The leaderboard resets along with your activity points. New day - new chance for everyone.'],
+              ['What are Activity Points?', 'All your in-app activity converts into activity points. Formula: daily check-in + tasks + in-app transactions + post approval + your streak.'],
+              ['When are rewards distributed?', 'Top 20 most active users automatically receive HP daily when the timer hits 0 (00:00 UTC).'],
+              ['What happens when the timer hits 0?', 'The leaderboard resets along with your activity points. New day - new chance for everyone.'],
             ].map(([q, a], i, arr) => (
               <div key={i} style={{ marginBottom: i < arr.length - 1 ? 12 : 0 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: '#32353D', marginBottom: 3 }}>{q}</div>
