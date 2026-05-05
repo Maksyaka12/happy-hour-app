@@ -27,7 +27,8 @@ BEGIN
   VALUES (lower(p_address), CURRENT_DATE)
   ON CONFLICT (address, day) DO UPDATE
   SET 
-    score = (daily_stats.streak * 5) + 
+    score = (daily_stats.checkin_done::int * 50) + 
+            daily_stats.streak + 
             (daily_stats.tasks_done * 20) + 
             (daily_stats.tx_count * 10) + 
             (daily_stats.posts_approved * 100),
