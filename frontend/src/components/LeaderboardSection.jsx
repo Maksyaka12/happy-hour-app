@@ -13,6 +13,7 @@ export function LeaderboardSection({ address }) {
   const [activeTab, setActiveTab] = useState('main') // 'main' | 'daily'
   const [loading, setLoading] = useState(true)
   const [outsideRank, setOutsideRank] = useState(null)
+  const [outsideDailyRank, setOutsideDailyRank] = useState(null)
   const [timeLeft, setTimeLeft] = useState('')
   useEffect(() => {
     if (!address) return
@@ -71,13 +72,36 @@ export function LeaderboardSection({ address }) {
 
       if (error) {
         console.error('loadDailyLeaders error:', error)
-      } else if (alive) {
-        console.log('Daily leaders data:', data)
+      } else if (!error && alive) {
         setDailyLeaders(data?.map(d => ({
           address: d.address,
           score: d.score,
           basename: d.users?.basename
         })) || [])
+
+        const inTopIndex = (data ?? []).findIndex(u => u.address?.toLowerCase() === address?.toLowerCase())
+        if (inTopIndex === -1 && alive) {
+          // User not in top 20 daily — fetch their rank
+          const { data: myData } = await db
+            .from('daily_stats')
+            .select('score')
+            .eq('address', address.toLowerCase())
+            .eq('day', today)
+            .maybeSingle()
+
+          if (myData) {
+            const { count } = await db
+              .from('daily_stats')
+              .select('*', { count: 'exact', head: true })
+              .eq('day', today)
+              .gt('score', myData.score)
+            setOutsideDailyRank({ rank: (count || 0) + 1, score: myData.score })
+          } else {
+            setOutsideDailyRank(null)
+          }
+        } else {
+          setOutsideDailyRank(null)
+        }
       }
     }
 
@@ -113,9 +137,21 @@ export function LeaderboardSection({ address }) {
 
   const myRank = leaders.findIndex((u) => u.address?.toLowerCase() === address?.toLowerCase()) + 1
   const myEntry = leaders.find((u) => u.address?.toLowerCase() === address?.toLowerCase())
-
   const displayRank = myRank > 0 ? myRank : outsideRank?.rank
   const displayEntry = myRank > 0 ? myEntry : outsideRank
+
+  const myDailyRank = dailyLeaders.findIndex((u) => u.address?.toLowerCase() === address?.toLowerCase()) + 1
+  const myDailyEntry = dailyLeaders.find((u) => u.address?.toLowerCase() === address?.toLowerCase())
+  const displayDailyRank = myDailyRank > 0 ? myDailyRank : outsideDailyRank?.rank
+  const displayDailyScore = myDailyRank > 0 ? myDailyEntry?.score : outsideDailyRank?.score
+
+  const getReward = (rank) => {
+    if (!rank || rank > 20) return 0
+    if (rank === 1) return 1000
+    if (rank <= 3) return 500
+    if (rank <= 10) return 200
+    return 100
+  }
 
   if (loading) {
     return <div style={{ textAlign: 'center', padding: '60px 20px', color: '#717886' }}>Loading…</div>
@@ -173,28 +209,58 @@ export function LeaderboardSection({ address }) {
           </div>
         </div>
       </div>
-      {displayRank > 0 && (
-        <div
-          style={{
-            background: 'linear-gradient(135deg,#0000FF,#3C8AFF)',
-            borderRadius: 18,
-            padding: '14px 18px',
-            marginBottom: 14,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-            boxShadow: '0 6px 24px rgba(0,0,255,0.35)',
-          }}
-        >
-          <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 30, fontWeight: 900, color: '#fff', minWidth: 44 }}>#{displayRank}</div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.65)', fontWeight: 600, marginBottom: 2 }}>YOUR POSITION</div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>{displayEntry?.basename || short(address)}</div>
+
+      {activeTab === 'main' ? (
+        displayRank > 0 && (
+          <div
+            style={{
+              background: 'linear-gradient(135deg,#0000FF,#3C8AFF)',
+              borderRadius: 18,
+              padding: '14px 18px',
+              marginBottom: 14,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              boxShadow: '0 6px 24px rgba(0,0,255,0.35)',
+            }}
+          >
+            <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 30, fontWeight: 900, color: '#fff', minWidth: 44 }}>#{displayRank}</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.65)', fontWeight: 600, marginBottom: 2 }}>YOUR POSITION</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>{displayEntry?.basename || short(address)}</div>
+            </div>
+            <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 26, fontWeight: 900, color: '#fff' }}>
+              {(displayEntry?.points ?? 0).toLocaleString()} HP
+            </div>
           </div>
-          <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 26, fontWeight: 900, color: '#fff' }}>
-            {(displayEntry?.points ?? 0).toLocaleString()} HP
+        )
+      ) : (
+        displayDailyRank > 0 && (
+          <div
+            style={{
+              background: 'linear-gradient(135deg, #059669, #10B981)',
+              borderRadius: 18,
+              padding: '14px 18px',
+              marginBottom: 14,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              boxShadow: '0 6px 24px rgba(5,150,105,0.35)',
+            }}
+          >
+            <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 30, fontWeight: 900, color: '#fff', minWidth: 44 }}>#{displayDailyRank}</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', fontWeight: 600, marginBottom: 2 }}>YOUR DAILY ACTIVITY</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Score: {displayDailyScore}</div>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase' }}>Est. Reward</div>
+              <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 24, fontWeight: 900, color: '#fff' }}>
+                +{getReward(displayDailyRank)} <span style={{ fontSize: 12 }}>HP</span>
+              </div>
+            </div>
           </div>
-        </div>
+        )
       )}
 
       {/* Tab Switcher */}
@@ -354,10 +420,7 @@ export function LeaderboardSection({ address }) {
             ) : (
               dailyLeaders.map((u, i) => {
                 const isMe = u.address?.toLowerCase() === address?.toLowerCase()
-                let reward = 100
-                if (i === 0) reward = 1000
-                else if (i < 3) reward = 500
-                else if (i < 10) reward = 200
+                const reward = getReward(i + 1)
 
                 return (
                   <div
