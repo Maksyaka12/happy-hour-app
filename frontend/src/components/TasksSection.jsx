@@ -266,20 +266,30 @@ export function TasksSection({ address }) {
   }, [isAdmin])
 
   const checkTodaySubmission = async () => {
-    if (!address) return
+    if (!address) {
+      setIsCheckingPost(false)
+      return
+    }
     setIsCheckingPost(true)
-    const today = new Date().toISOString().slice(0, 10)
     
     const { data, error } = await db
       .from('post_submissions')
       .select('id, submitted_at')
       .eq('address', address.toLowerCase())
-      .gte('submitted_at', today + 'T00:00:00Z')
       .order('submitted_at', { ascending: false })
       .limit(1)
     
     if (data && data.length > 0) {
-      setHasSubmittedToday(true)
+      const lastSubmitTime = new Date(data[0].submitted_at).getTime()
+      const now = new Date()
+      // Calculate 00:00 UTC of today
+      const startOfTodayUTC = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+      
+      if (lastSubmitTime >= startOfTodayUTC) {
+        setHasSubmittedToday(true)
+      } else {
+        setHasSubmittedToday(false)
+      }
     } else {
       setHasSubmittedToday(false)
     }
