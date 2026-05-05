@@ -272,28 +272,21 @@ export function TasksSection({ address }) {
     }
     setIsCheckingPost(true)
     
-    const { data, error } = await db
-      .from('post_submissions')
-      .select('id, submitted_at')
-      .eq('address', address.toLowerCase())
-      .order('submitted_at', { ascending: false })
-      .limit(1)
-    
-    if (data && data.length > 0) {
-      const lastSubmitTime = new Date(data[0].submitted_at).getTime()
-      const now = new Date()
-      // Calculate 00:00 UTC of today
-      const startOfTodayUTC = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+    try {
+      const { data, error } = await db.rpc('has_submitted_post_today', { 
+        p_address: address.toLowerCase() 
+      })
       
-      if (lastSubmitTime >= startOfTodayUTC) {
+      if (!error && data === true) {
         setHasSubmittedToday(true)
       } else {
         setHasSubmittedToday(false)
       }
-    } else {
-      setHasSubmittedToday(false)
+    } catch (e) {
+      console.error('Check post error:', e)
+    } finally {
+      setIsCheckingPost(false)
     }
-    setIsCheckingPost(false)
   }
 
   useEffect(() => {
