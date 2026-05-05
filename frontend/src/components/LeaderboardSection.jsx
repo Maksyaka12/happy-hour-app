@@ -497,11 +497,9 @@ export function LeaderboardSection({ address }) {
               How it works
             </div>
             {[
-              ['What is the Daily Rewards leaderboard?', 'A high-speed daily competition where the most active users win HP prizes every single day.'],
-              ['How do I earn Activity Score?', 'By staying active: daily check-ins, completing tasks, making transactions, and getting your social posts approved.'],
-              ['When does the reset happen?', 'Every day at 00:00 UTC. The leaderboard clears, and the Top 20 active users receive their HP rewards automatically.'],
-              ['Will my points carry over?', 'No. Activity Score is strictly daily. This gives everyone a fresh and equal chance to win every new day!'],
-              ['What are the rewards?', '1st: 1500 HP | 2-5: 1000 HP | 6-10: 500 HP | 11-20: 200 HP.'],
+              ['Що таке актівіті поінтс?', 'All your in-app activity converts into activity points. Formula: daily check-in + tasks + in-app transactions + post approval + your streak.'],
+              ['Коли відбувається ревард дістрібюшн?', 'Top 20 most active users automatically receive HP daily when the timer hits 0 (00:00 UTC).'],
+              ['Що відбувається коли таймер доходить до 0?', 'The leaderboard resets along with your activity points. New day - new chance for everyone.'],
             ].map(([q, a], i, arr) => (
               <div key={i} style={{ marginBottom: i < arr.length - 1 ? 12 : 0 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: '#32353D', marginBottom: 3 }}>{q}</div>
