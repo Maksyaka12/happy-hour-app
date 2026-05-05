@@ -477,7 +477,7 @@ export function TasksSection({ address }) {
               alignItems: 'center',
               border: '1px solid rgba(255,255,255,0.1)'
             }}>
-              Submitted today, next submit will be available in {getWaitTime()}h
+              Next submit will be available in {getWaitTime()}h
             </div>
           ) : postStatus === 'success' ? (
             <div style={{ background: 'rgba(5,150,105,0.25)', borderRadius: 12, padding: '10px 14px', fontSize: 13, color: '#6EE7B7', fontWeight: 600 }}>
