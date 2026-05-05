@@ -400,14 +400,33 @@ export function LeaderboardSection({ address }) {
             display: 'flex', 
             justifyContent: 'space-between',
             alignItems: 'center', 
-            background: 'rgba(244, 200, 27, 0.1)',
-            borderRadius: 12,
-            padding: '10px 14px',
-            marginBottom: 14,
-            border: '1px solid rgba(244, 200, 27, 0.2)'
+            background: '#0A0B0D',
+            borderRadius: 16,
+            padding: '14px 18px',
+            marginBottom: 16,
+            boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+            border: '1px solid rgba(255,255,255,0.05)',
+            position: 'relative',
+            overflow: 'hidden'
           }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#B45309' }}>⏱ Resetting in</div>
-            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 16, fontWeight: 900, color: '#B45309' }}>{timeLeft}</div>
+            {/* Subtle glow effect */}
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(5,150,105,0.4), transparent)' }} />
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ fontSize: 18, animation: 'pulse 2s infinite' }}>🕒</span>
+              <div style={{ fontSize: 13, fontWeight: 800, color: '#fff', letterSpacing: '0.3px' }}>
+                REWARDS DISTRIBUTED IN
+              </div>
+            </div>
+            <div style={{ 
+              fontFamily: "'DM Mono', monospace", 
+              fontSize: 18, 
+              fontWeight: 900, 
+              color: '#10B981', // Neon Green for the timer
+              textShadow: '0 0 10px rgba(16,185,129,0.3)'
+            }}>
+              {timeLeft}
+            </div>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
