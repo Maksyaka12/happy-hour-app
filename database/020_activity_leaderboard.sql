@@ -222,27 +222,27 @@ BEGIN
 END;
 $$;
 
--- 5. Update user_activity view to include rewards
+-- 5. Update user_activity view to include rewards (MATCHING 016 LOGIC EXACTLY)
 DROP VIEW IF EXISTS user_activity;
 CREATE OR REPLACE VIEW user_activity AS
-SELECT id::text, lower(address) AS address, 'Deposit' AS action, 'Round ' || round_id AS badge, '+' || ceil(tickets * multiplier) || ' HP' AS value, 'deposit' AS type, multiplier AS boost_mult, created_at FROM bets
+SELECT 'bet-' || id AS id, lower(address) AS address, 'Deposit' AS action, 'Round ' || round_id AS badge, '+' || ceil(tickets * multiplier) || ' HP' AS value, 'deposit' AS type, multiplier AS boost_mult, created_at FROM bets
 UNION ALL
-SELECT id::text, lower(address) AS address, 'Daily Claim' AS action, 'Streak' AS badge, '+' || ceil(points * multiplier) || ' HP' AS value, 'checkin' AS type, multiplier AS boost_mult, created_at FROM checkins
+SELECT 'checkin-' || id AS id, lower(address) AS address, 'Daily Claim' AS action, 'Streak' AS badge, '+' || ceil(points * multiplier) || ' HP' AS value, 'checkin' AS type, multiplier AS boost_mult, created_at FROM checkins
 UNION ALL
-SELECT id::text, lower(winner) AS address, 'Reward' AS action, 'Win Round ' || id AS badge, '+' || ceil(30 * COALESCE(winner_multiplier, 1.0)) || ' HP' AS value, 'win' AS type, COALESCE(winner_multiplier, 1.0) AS boost_mult, ends_at AS created_at FROM rounds WHERE winner IS NOT NULL AND status = 'done'
+SELECT 'win-' || id AS id, lower(winner) AS address, 'Reward' AS action, 'Win Round ' || id AS badge, '+' || ceil(30 * COALESCE(winner_multiplier, 1.0)) || ' HP' AS value, 'win' AS type, COALESCE(winner_multiplier, 1.0) AS boost_mult, ends_at AS created_at FROM rounds WHERE winner IS NOT NULL AND status = 'done'
 UNION ALL
-SELECT tc.id::text, lower(tc.address) AS address, 'Quest' AS action, t.type AS badge, '+' || ceil(t.points * COALESCE(tc.multiplier, 1.0)) || ' HP' AS value, 'quest' AS type, COALESCE(tc.multiplier, 1.0) AS boost_mult, tc.completed_at AS created_at FROM task_completions tc JOIN tasks t ON tc.task_id = t.id
+SELECT 'tc-' || tc.id AS id, lower(tc.address) AS address, 'Quest' AS action, t.type AS badge, '+' || ceil(t.points * COALESCE(tc.multiplier, 1.0)) || ' HP' AS value, 'quest' AS type, COALESCE(tc.multiplier, 1.0) AS boost_mult, tc.completed_at AS created_at FROM task_completions tc JOIN tasks t ON tc.task_id = t.id
 UNION ALL
-SELECT id::text, lower(address) AS address, 'Daily' AS action, 'Boost' AS badge, '+' || ceil(points * multiplier) || ' HP' AS value, 'boost' AS type, multiplier AS boost_mult, created_at FROM hp_boosts
+SELECT 'boost-' || id AS id, lower(address) AS address, 'Daily' AS action, 'Boost' AS badge, '+' || ceil(points * multiplier) || ' HP' AS value, 'boost' AS type, multiplier AS boost_mult, created_at FROM hp_boosts
 UNION ALL
-SELECT id::text, lower(address) AS address, 'Multiplier' AS action, multiplier || 'x Boost' AS badge, '24 Hours' AS value, 'boost' AS type, 1.0 AS boost_mult, created_at FROM purchased_multipliers
+SELECT 'mult-' || id AS id, lower(address) AS address, 'Multiplier' AS action, multiplier || 'x Boost' AS badge, '24 Hours' AS value, 'boost' AS type, 1.0 AS boost_mult, created_at FROM purchased_multipliers
 UNION ALL
-SELECT id::text, lower(address) AS address, 'Reward' AS action, initcap(box_type) || ' Box' AS badge, '+' || ceil(hp_won * applied_multiplier) || ' HP' AS value, 'box' AS type, applied_multiplier AS boost_mult, created_at FROM opened_boxes
+SELECT 'box-' || id AS id, lower(address) AS address, 'Reward' AS action, initcap(box_type) || ' Box' AS badge, '+' || ceil(hp_won * applied_multiplier) || ' HP' AS value, 'box' AS type, applied_multiplier AS boost_mult, created_at FROM opened_boxes
 UNION ALL
-SELECT id::text, lower(address) AS address, 'Task' AS action, 'Approved' AS badge, '+' || COALESCE(hp_awarded, 10) || ' HP' AS value, 'quest' AS type, COALESCE(applied_multiplier, 1.0) AS boost_mult, reviewed_at AS created_at FROM post_submissions WHERE status = 'approved'
+SELECT 'post-' || id AS id, lower(address) AS address, 'Task' AS action, 'Approved' AS badge, '+' || COALESCE(hp_awarded, 10) || ' HP' AS value, 'quest' AS type, COALESCE(applied_multiplier, 1.0) AS boost_mult, reviewed_at AS created_at FROM post_submissions WHERE status = 'approved'
 UNION ALL
 -- NEW: Activity Rewards
-SELECT 'act-' || id AS id, lower(address) AS address, 'Activity' AS action, 'TOP-20' AS badge, '+' || points || ' HP' AS value, 'win' AS type, 1.0 AS boost_mult, created_at FROM activity_rewards;
+SELECT 'act-' || id AS id, lower(address) AS address, 'Activity Reward' AS action, 'TOP-20' AS badge, '+' || points || ' HP' AS value, 'win' AS type, 1.0 AS boost_mult, created_at FROM activity_rewards;
 
 -- 6. Grant access and disable RLS for testing
 ALTER TABLE daily_stats DISABLE ROW LEVEL SECURITY;
