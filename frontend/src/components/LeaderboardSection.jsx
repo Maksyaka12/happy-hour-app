@@ -436,59 +436,26 @@ export function LeaderboardSection({ address }) {
             </div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            {dailyLeaders.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '40px 20px', background: '#EEF0F3', borderRadius: 20 }}>
-                <div style={{ fontSize: 30, marginBottom: 8 }}>⚡</div>
-                <div style={{ fontWeight: 700, color: '#0A0B0D' }}>Activity starts now!</div>
-                <div style={{ fontSize: 12, color: '#717886' }}>Be the most active user today</div>
-              </div>
-            ) : (
-              dailyLeaders.map((u, i) => {
-                const isMe = u.address?.toLowerCase() === address?.toLowerCase()
-                const rank = i + 1
-                const reward = getReward(rank)
-                const rColor = getRewardColor(rank)
-
-                return (
-                  <div
-                    key={u.address}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 12,
-                      background: isMe ? '#EEF0F3' : '#fff',
-                      border: `1px solid ${isMe ? 'rgba(0,0,255,0.2)' : '#DEE1E7'}`,
-                      borderRadius: 14,
-                      padding: '12px 14px',
-                    }}
-                  >
-                    <div style={{ width: 30, textAlign: 'center', fontSize: 13, fontWeight: 700, color: '#717886' }}>
-                      {rank}
-                    </div>
-                    <UserAvatar address={u.address} size={34} />
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: '#0A0B0D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {u.basename || short(u.address)}
-                      </div>
-                      <div style={{ fontSize: 11, color: '#717886', fontWeight: 600 }}>Activity Score: {u.score}</div>
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontSize: 10, fontWeight: 800, color: rColor, textTransform: 'uppercase', opacity: 0.8 }}>Reward</div>
-                      <div style={{ 
-                        fontFamily: "'Barlow Condensed',sans-serif", 
-                        fontSize: 18, 
-                        fontWeight: 900, 
-                        color: rColor,
-                        textShadow: rank === 1 ? '0.5px 0.5px 0px rgba(0,0,0,0.05)' : 'none'
-                      }}>
-                        +{reward} <span style={{ fontSize: 11 }}>HP</span>
-                      </div>
-                    </div>
-                  </div>
-                )
-              })
             )}
+          </div>
+
+          {/* How it works */}
+          <div style={{ background: '#EEF0F3', border: '1px solid #DEE1E7', borderRadius: 16, padding: '18px 16px', marginTop: 24 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#717886', letterSpacing: 1, marginBottom: 12, textTransform: 'uppercase' }}>
+              How it works
+            </div>
+            {[
+              ['What is the Daily Rewards leaderboard?', 'A high-speed daily competition where the most active users win HP prizes every single day.'],
+              ['How do I earn Activity Score?', 'By staying active: daily check-ins, completing tasks, making transactions, and getting your social posts approved.'],
+              ['When does the reset happen?', 'Every day at 00:00 UTC. The leaderboard clears, and the Top 20 active users receive their HP rewards automatically.'],
+              ['Will my points carry over?', 'No. Activity Score is strictly daily. This gives everyone a fresh and equal chance to win every new day!'],
+              ['What are the rewards?', '1st: 1500 HP | 2-5: 1000 HP | 6-10: 500 HP | 11-20: 200 HP.'],
+            ].map(([q, a], i, arr) => (
+              <div key={i} style={{ marginBottom: i < arr.length - 1 ? 12 : 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#32353D', marginBottom: 3 }}>{q}</div>
+                <div style={{ fontSize: 12, color: '#717886', lineHeight: 1.65 }}>{a}</div>
+              </div>
+            ))}
           </div>
         </>
       )}
