@@ -207,3 +207,34 @@ $$;
 
 -- 5. Grant access
 GRANT SELECT ON daily_stats TO anon, authenticated;
+
+-- 6. BACKFILL: Populate stats for today (2026-05-05) from existing data
+INSERT INTO daily_stats (address, day, checkin_done, tasks_done, tx_count, posts_approved, streak)
+SELECT 
+  u.address,
+  CURRENT_DATE,
+  EXISTS(SELECT 1 FROM checkins c WHERE c.address = u.address AND c.checked_date = CURRENT_DATE),
+  (SELECT count(*)::int FROM task_completions tc WHERE tc.address = u.address AND tc.completed_at::date = CURRENT_DATE),
+  (
+    (SELECT count(*)::int FROM checkins c WHERE c.address = u.address AND c.checked_date = CURRENT_DATE) +
+    (SELECT count(*)::int FROM task_completions tc WHERE tc.address = u.address AND tc.completed_at::date = CURRENT_DATE) +
+    (SELECT count(*)::int FROM bets b WHERE b.address = u.address AND b.created_at::date = CURRENT_DATE)
+  ),
+  (SELECT count(*)::int FROM post_submissions ps WHERE ps.address = u.address AND ps.status = 'approved' AND ps.reviewed_at::date = CURRENT_DATE),
+  u.streak
+FROM users u
+WHERE 
+  EXISTS(SELECT 1 FROM checkins c WHERE c.address = u.address AND c.checked_date = CURRENT_DATE) OR
+  EXISTS(SELECT 1 FROM task_completions tc WHERE tc.address = u.address AND tc.completed_at::date = CURRENT_DATE) OR
+  EXISTS(SELECT 1 FROM bets b WHERE b.address = u.address AND b.created_at::date = CURRENT_DATE)
+ON CONFLICT (address, day) DO UPDATE SET
+  checkin_done = EXCLUDED.checkin_done,
+  tasks_done = EXCLUDED.tasks_done,
+  tx_count = EXCLUDED.tx_count,
+  posts_approved = EXCLUDED.posts_approved,
+  streak = EXCLUDED.streak;
+
+-- Update scores for backfilled data
+UPDATE daily_stats 
+SET score = (checkin_done::int * 50) + streak + (tasks_done * 20) + (tx_count * 10) + (posts_approved * 100)
+WHERE day = CURRENT_DATE;
