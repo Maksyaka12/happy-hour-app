@@ -147,10 +147,17 @@ export function LeaderboardSection({ address }) {
 
   const getReward = (rank) => {
     if (!rank || rank > 20) return 0
-    if (rank === 1) return 1000
-    if (rank <= 3) return 500
-    if (rank <= 10) return 200
-    return 100
+    if (rank === 1) return 1500
+    if (rank <= 5) return 1000
+    if (rank <= 10) return 500
+    return 200
+  }
+
+  const getRewardColor = (rank) => {
+    if (rank === 1) return '#F4C81B' // Gold
+    if (rank <= 5) return '#717886' // Silver
+    if (rank <= 10) return '#B45309' // Bronze
+    return '#0A0B0D' // Black
   }
 
   if (loading) {
@@ -251,7 +258,7 @@ export function LeaderboardSection({ address }) {
             <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 30, fontWeight: 900, color: '#fff', minWidth: 44 }}>#{displayDailyRank}</div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', fontWeight: 600, marginBottom: 2 }}>YOUR DAILY ACTIVITY</div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Score: {displayDailyScore}</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Activity Score: {displayDailyScore}</div>
             </div>
             <div style={{ textAlign: 'right' }}>
               <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase' }}>Est. Reward</div>
@@ -439,7 +446,9 @@ export function LeaderboardSection({ address }) {
             ) : (
               dailyLeaders.map((u, i) => {
                 const isMe = u.address?.toLowerCase() === address?.toLowerCase()
-                const reward = getReward(i + 1)
+                const rank = i + 1
+                const reward = getReward(rank)
+                const rColor = getRewardColor(rank)
 
                 return (
                   <div
@@ -455,18 +464,24 @@ export function LeaderboardSection({ address }) {
                     }}
                   >
                     <div style={{ width: 30, textAlign: 'center', fontSize: 13, fontWeight: 700, color: '#717886' }}>
-                      {i + 1}
+                      {rank}
                     </div>
                     <UserAvatar address={u.address} size={34} />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 14, fontWeight: 700, color: '#0A0B0D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {u.basename || short(u.address)}
                       </div>
-                      <div style={{ fontSize: 11, color: '#717886', fontWeight: 600 }}>Score: {u.score}</div>
+                      <div style={{ fontSize: 11, color: '#717886', fontWeight: 600 }}>Activity Score: {u.score}</div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontSize: 10, fontWeight: 800, color: '#059669', textTransform: 'uppercase' }}>Reward</div>
-                      <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 18, fontWeight: 900, color: '#059669' }}>
+                      <div style={{ fontSize: 10, fontWeight: 800, color: rColor, textTransform: 'uppercase', opacity: 0.8 }}>Reward</div>
+                      <div style={{ 
+                        fontFamily: "'Barlow Condensed',sans-serif", 
+                        fontSize: 18, 
+                        fontWeight: 900, 
+                        color: rColor,
+                        textShadow: rank === 1 ? '0.5px 0.5px 0px rgba(0,0,0,0.05)' : 'none'
+                      }}>
                         +{reward} <span style={{ fontSize: 11 }}>HP</span>
                       </div>
                     </div>

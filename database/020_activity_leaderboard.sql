@@ -194,10 +194,10 @@ BEGIN
     v_rank := v_rank + 1;
     
     CASE 
-      WHEN v_rank = 1 THEN v_reward := 1000;
-      WHEN v_rank <= 3 THEN v_reward := 500;
-      WHEN v_rank <= 10 THEN v_reward := 200;
-      ELSE v_reward := 100;
+      WHEN v_rank = 1 THEN v_reward := 1500;
+      WHEN v_rank <= 5 THEN v_reward := 1000;
+      WHEN v_rank <= 10 THEN v_reward := 500;
+      ELSE v_reward := 200;
     END CASE;
 
     PERFORM add_points(r.address, v_reward, 'daily_activity_rank_' || v_rank);
