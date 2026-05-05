@@ -212,7 +212,8 @@ BEGIN
       ELSE v_reward := 200;
     END CASE;
 
-    PERFORM add_points(r.address, v_reward, 'daily_activity_rank_' || v_rank);
+    -- Direct points update (bypassing multipliers)
+    UPDATE users SET points = points + v_reward WHERE address = r.address;
     
     -- Log for history
     INSERT INTO activity_rewards (address, day, rank, points)
