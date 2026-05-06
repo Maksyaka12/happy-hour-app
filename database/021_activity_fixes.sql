@@ -253,9 +253,12 @@ BEGIN
   PERFORM sync_user_profile(v_address, NULL, NULL);
   v_rand_num := random();
   
-  IF p_box_type = 'common' THEN v_price := 0.20; v_hp_won := floor(random() * (300 - 101 + 1)) + 101;
-  ELSIF p_box_type = 'epic' THEN v_price := 0.45; v_hp_won := floor(random() * (1000 - 301 + 1)) + 301; IF v_rand_num < 0.10 THEN v_mult_won := 2.0; END IF;
-  ELSIF p_box_type = 'legendary' THEN v_price := 0.95; v_hp_won := floor(random() * (2300 - 1001 + 1)) + 1001; IF v_rand_num < 0.05 THEN v_mult_won := 5.0; END IF;
+  IF p_box_type = 'common' THEN 
+    v_price := 0.20; v_hp_won := floor(random() * (45 - 10 + 1)) + 10;
+  ELSIF p_box_type = 'epic' THEN 
+    v_price := 0.45; v_hp_won := floor(random() * (130 - 46 + 1)) + 46; IF v_rand_num < 0.10 THEN v_mult_won := 2.0; END IF;
+  ELSIF p_box_type = 'legendary' THEN 
+    v_price := 0.95; v_hp_won := floor(random() * (300 - 131 + 1)) + 131; IF v_rand_num < 0.05 THEN v_mult_won := 5.0; END IF;
   ELSE RETURN jsonb_build_object('ok', false, 'error', 'Invalid box type');
   END IF;
 
