@@ -194,7 +194,7 @@ DECLARE
   v_address TEXT := lower(trim(p_address));
   v_tx_hash TEXT := lower(trim(p_tx_hash));
   v_today DATE := CURRENT_DATE;
-  v_pts_earned INTEGER := 100;
+  v_pts_earned INTEGER := 11;
 BEGIN
   IF v_address IS NULL OR v_address = '' OR v_tx_hash IS NULL OR v_tx_hash = '' THEN
     RETURN jsonb_build_object('ok', false, 'error', 'Missing address or tx hash');
