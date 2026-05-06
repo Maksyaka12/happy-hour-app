@@ -28,25 +28,7 @@ CREATE INDEX IF NOT EXISTS idx_activity_rewards_address ON activity_rewards(addr
 
 -- 2. Function to update daily score based on weights
 -- Weights: Checkin=50, Task=20, Tx=10, Post=100
-CREATE OR REPLACE FUNCTION update_daily_score(p_address TEXT)
-RETURNS void
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public
-AS $$
-BEGIN
-  INSERT INTO daily_stats (address, day)
-  VALUES (lower(p_address), CURRENT_DATE)
-  ON CONFLICT (address, day) DO UPDATE
-  SET 
-    score = (daily_stats.checkin_done::int * 50) + 
-            daily_stats.streak + 
-            (daily_stats.tasks_done * 20) + 
-            (daily_stats.tx_count * 10) + 
-            (daily_stats.posts_approved * 100),
-    updated_at = NOW();
-END;
-$$;
+-- (update_daily_score function was removed here as it was rewritten in 021_activity_fixes.sql)
 
 -- 3. Update existing functions to track activity
 
@@ -185,64 +167,7 @@ $$;
 
 -- 4. Reward Distribution Function (TOP 20)
 -- Rewards: 1st=1000, 2-3rd=500, 4-10th=200, 11-20th=100 HP
-CREATE OR REPLACE FUNCTION distribute_daily_rewards()
-RETURNS void
-LANGUAGE plpgsql
-SECURITY DEFINER
-AS $$
-DECLARE
-  r RECORD;
-  v_rank INTEGER := 0;
-  v_reward INTEGER;
-  v_day DATE := (CURRENT_DATE - INTERVAL '1 day')::DATE;
-BEGIN
-  FOR r IN (
-    SELECT address, score 
-    FROM daily_stats 
-    WHERE day = v_day 
-    ORDER BY score DESC, updated_at ASC 
-    LIMIT 20
-  ) LOOP
-    v_rank := v_rank + 1;
-    
-    CASE 
-      WHEN v_rank = 1 THEN v_reward := 1500;
-      WHEN v_rank <= 5 THEN v_reward := 1000;
-      WHEN v_rank <= 10 THEN v_reward := 500;
-      ELSE v_reward := 200;
-    END CASE;
-
-    -- Direct points update (bypassing multipliers)
-    UPDATE users SET points = points + v_reward WHERE address = r.address;
-    
-    -- Log for history
-    INSERT INTO activity_rewards (address, day, rank, points)
-    VALUES (r.address, v_day, v_rank, v_reward);
-  END LOOP;
-END;
-$$;
-
--- 5. Update user_activity view to include rewards (MATCHING 016 LOGIC EXACTLY)
-DROP VIEW IF EXISTS user_activity;
-CREATE OR REPLACE VIEW user_activity AS
-SELECT 'bet-' || id AS id, lower(address) AS address, 'Deposit' AS action, 'Round ' || round_id AS badge, '+' || ceil(tickets * multiplier) || ' HP' AS value, 'deposit' AS type, multiplier AS boost_mult, created_at FROM bets
-UNION ALL
-SELECT 'checkin-' || id AS id, lower(address) AS address, 'Daily Claim' AS action, 'Streak' AS badge, '+' || ceil(points * multiplier) || ' HP' AS value, 'checkin' AS type, multiplier AS boost_mult, created_at FROM checkins
-UNION ALL
-SELECT 'win-' || id AS id, lower(winner) AS address, 'Reward' AS action, 'Win Round ' || id AS badge, '+' || ceil(30 * COALESCE(winner_multiplier, 1.0)) || ' HP' AS value, 'win' AS type, COALESCE(winner_multiplier, 1.0) AS boost_mult, ends_at AS created_at FROM rounds WHERE winner IS NOT NULL AND status = 'done'
-UNION ALL
-SELECT 'tc-' || tc.id AS id, lower(tc.address) AS address, 'Quest' AS action, t.type AS badge, '+' || ceil(t.points * COALESCE(tc.multiplier, 1.0)) || ' HP' AS value, 'quest' AS type, COALESCE(tc.multiplier, 1.0) AS boost_mult, tc.completed_at AS created_at FROM task_completions tc JOIN tasks t ON tc.task_id = t.id
-UNION ALL
-SELECT 'boost-' || id AS id, lower(address) AS address, 'Daily' AS action, 'Boost' AS badge, '+' || ceil(points * multiplier) || ' HP' AS value, 'boost' AS type, multiplier AS boost_mult, created_at FROM hp_boosts
-UNION ALL
-SELECT 'mult-' || id AS id, lower(address) AS address, 'Multiplier' AS action, multiplier || 'x Boost' AS badge, '24 Hours' AS value, 'boost' AS type, 1.0 AS boost_mult, created_at FROM purchased_multipliers
-UNION ALL
-SELECT 'box-' || id AS id, lower(address) AS address, 'Reward' AS action, initcap(box_type) || ' Box' AS badge, '+' || ceil(hp_won * applied_multiplier) || ' HP' AS value, 'box' AS type, applied_multiplier AS boost_mult, created_at FROM opened_boxes
-UNION ALL
-SELECT 'post-' || id AS id, lower(address) AS address, 'Task' AS action, 'Approved' AS badge, '+' || COALESCE(hp_awarded, 10) || ' HP' AS value, 'quest' AS type, COALESCE(applied_multiplier, 1.0) AS boost_mult, reviewed_at AS created_at FROM post_submissions WHERE status = 'approved'
-UNION ALL
--- NEW: Activity Rewards
-SELECT 'act-' || id AS id, lower(address) AS address, 'Activity' AS action, 'TOP-20' AS badge, '+' || points || ' HP' AS value, 'win' AS type, 1.0 AS boost_mult, created_at FROM activity_rewards;
+-- (distribute_daily_rewards and user_activity view were removed here as they were rewritten in 021_activity_fixes.sql)
 
 -- 6. Grant access and disable RLS for testing
 ALTER TABLE daily_stats DISABLE ROW LEVEL SECURITY;
