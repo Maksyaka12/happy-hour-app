@@ -194,7 +194,7 @@ DECLARE
   r RECORD;
   v_rank INTEGER := 0;
   v_reward INTEGER;
-  v_day DATE := CURRENT_DATE;
+  v_day DATE := (CURRENT_DATE - INTERVAL '1 day')::DATE;
 BEGIN
   FOR r IN (
     SELECT address, score 
