@@ -242,7 +242,7 @@ UNION ALL
 SELECT 'post-' || id AS id, lower(address) AS address, 'Task' AS action, 'Approved' AS badge, '+' || COALESCE(hp_awarded, 10) || ' HP' AS value, 'quest' AS type, COALESCE(applied_multiplier, 1.0) AS boost_mult, reviewed_at AS created_at FROM post_submissions WHERE status = 'approved'
 UNION ALL
 -- NEW: Activity Rewards
-SELECT 'act-' || id AS id, lower(address) AS address, 'Activity Reward' AS action, 'TOP-20' AS badge, '+' || points || ' HP' AS value, 'win' AS type, 1.0 AS boost_mult, created_at FROM activity_rewards;
+SELECT 'act-' || id AS id, lower(address) AS address, 'Activity' AS action, 'TOP-20' AS badge, '+' || points || ' HP' AS value, 'win' AS type, 1.0 AS boost_mult, created_at FROM activity_rewards;
 
 -- 6. Grant access and disable RLS for testing
 ALTER TABLE daily_stats DISABLE ROW LEVEL SECURITY;
