@@ -379,16 +379,12 @@ serve(async (req) => {
 
       // ── Оновлюємо статистику переможця ──
       if (!payoutError) {
-        const { data: appliedMult } = await supabase.rpc("add_points", {
+        await supabase.rpc("add_points", {
           p_address: winner,
           p_points:  30,
           p_reason:  `Won round ${round.id}`,
         });
         await supabase.rpc("increment_wins", { p_address: winner });
-        
-        if (appliedMult) {
-          await supabase.from("rounds").update({ winner_multiplier: appliedMult }).eq("id", round.id);
-        }
 
         console.log(`[draw-round] ✅ Round ${round.id} complete. Winner: ${winner}, Prize: ${prize} USDC`);
       }
