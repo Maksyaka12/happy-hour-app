@@ -28,7 +28,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       color: '#8B5A2B',
       bg: '#FAF4ED',
       icon: '📦',
-      rewards: 'Up to 45 HP'
+      rewards: '4 - 8 HP'
     },
     {
       id: 'epic',
@@ -37,7 +37,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       color: '#9333EA',
       bg: '#F3E8FF',
       icon: '🎁',
-      rewards: 'Up to 130 HP + Chance for 2x Boost'
+      rewards: '10 - 20 HP + Chance for 2x Boost'
     },
     {
       id: 'legendary',
@@ -46,7 +46,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       color: '#D97706',
       bg: '#FEF3C7',
       icon: '💰',
-      rewards: 'Up to 300 HP + Chance for 5x Boost'
+      rewards: '21 - 40 HP + Chance for 5x Boost'
     }
   ]
 

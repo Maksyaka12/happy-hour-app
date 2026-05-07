@@ -147,10 +147,11 @@ export function LeaderboardSection({ address }) {
 
   const getReward = (rank) => {
     if (!rank || rank > 20) return 0
-    if (rank === 1) return 1500
-    if (rank <= 5) return 1000
-    if (rank <= 10) return 500
-    return 200
+    if (rank === 1) return 50
+    if (rank <= 5) return 30
+    if (rank <= 10) return 15
+    if (rank <= 15) return 10
+    return 5
   }
 
   const getRewardColor = (rank) => {

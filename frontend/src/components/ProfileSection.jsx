@@ -25,10 +25,20 @@ function normalizeUserRow(data) {
     referral_points: data?.referral_points ?? 0,
     ref_code: data?.ref_code ?? null,
     boost_last: data?.boost_last ?? null,
+    boost_last: data?.boost_last ?? null,
     active_multiplier: data?.active_multiplier ?? 1.0,
     multiplier_expires_at: data?.multiplier_expires_at ?? null,
+    account_level: data?.account_level ?? 1,
   }
 }
+
+const LEVELS = [
+  { level: 1, name: 'Bronze', mult: 1.0, price: 0.00 },
+  { level: 2, name: 'Silver', mult: 1.2, price: 0.95 },
+  { level: 3, name: 'Gold', mult: 1.5, price: 1.75 },
+  { level: 4, name: 'Platinum', mult: 1.7, price: 3.00 },
+  { level: 5, name: 'Diamond', mult: 2.0, price: 5.00 },
+]
 
 export function ProfileSection({ address, basename }) {
   const { disconnect } = useDisconnect()
@@ -88,10 +98,11 @@ export function ProfileSection({ address, basename }) {
   const [boostedToday, setBoostedToday] = useState(false)
   const [activeMultiplier, setActiveMultiplier] = useState(1.0)
   const [multiplierExpiresAt, setMultiplierExpiresAt] = useState(null)
+  const [accountLevel, setAccountLevel] = useState(1)
   const [timeLeft, setTimeLeft] = useState('')
   const [checkinError, setCheckinError] = useState('')
   const [boostError, setBoostError] = useState('')
-  const [multError, setMultError] = useState('')
+  const [upgradeError, setUpgradeError] = useState('')
 
   // Bot Management State
   const [bots, setBots] = useState([])
@@ -119,7 +130,7 @@ export function ProfileSection({ address, basename }) {
     if (!address) return
     const { data, error } = await db
       .from('users')
-      .select('streak, streak_last, boost_last, points, wins, entries, referral_count, referral_points, ref_code, active_multiplier, multiplier_expires_at, referrer')
+      .select('streak, streak_last, boost_last, points, wins, entries, referral_count, referral_points, ref_code, active_multiplier, multiplier_expires_at, referrer, account_level')
       .eq('address', address.toLowerCase())
       .maybeSingle()
 
@@ -134,6 +145,7 @@ export function ProfileSection({ address, basename }) {
     setBoostedToday(user.boost_last === today)
     setActiveMultiplier(user.active_multiplier)
     setMultiplierExpiresAt(user.multiplier_expires_at)
+    setAccountLevel(user.account_level)
     setUserStats({
       points: user.points,
       wins: user.wins,
@@ -218,9 +230,9 @@ export function ProfileSection({ address, basename }) {
 
   const { data: txHash, writeContract, isPending, isConfirming, isSuccess, error: writeError, reset } = useBuilderWrite()
   const { data: boostTxHash, writeContract: writeBoost, isPending: isPendingBoost, isConfirming: isConfirmingBoost, isSuccess: isSuccessBoost, error: boostWriteError, reset: resetBoost } = useBuilderWrite()
-  const { data: multTxHash, writeContract: writeMult, isPending: isPendingMult, isConfirming: isConfirmingMult, isSuccess: isSuccessMult, error: multWriteError, reset: resetMult } = useBuilderWrite()
+  const { data: upgradeTxHash, writeContract: writeUpgrade, isPending: isPendingUpgrade, isConfirming: isConfirmingUpgrade, isSuccess: isSuccessUpgrade, error: upgradeWriteError, reset: resetUpgrade } = useBuilderWrite()
 
-  const [selectedBoost, setSelectedBoost] = useState(null)
+  const [selectedLevel, setSelectedLevel] = useState(null)
 
   useEffect(() => {
     if (!isSuccess || !txHash || processedTxRef.current === txHash || !address) return
@@ -286,38 +298,38 @@ export function ProfileSection({ address, basename }) {
     })
   }, [address, isSuccessBoost, boostTxHash, today, resetBoost])
 
-  // --- Multiplier Effect ---
+  // --- Account Upgrade Effect ---
   useEffect(() => {
-    if (!isSuccessMult || !multTxHash || processedMultTxRef.current === multTxHash || !address || !selectedBoost) return
+    if (!isSuccessUpgrade || !upgradeTxHash || processedMultTxRef.current === upgradeTxHash || !address || !selectedLevel) return
 
-    processedMultTxRef.current = multTxHash
-    setMultError('')
+    processedMultTxRef.current = upgradeTxHash
+    setUpgradeError('')
 
-    db.rpc('buy_multiplier', {
+    db.rpc('buy_account_level', {
       p_address: address.toLowerCase(),
-      p_tx_hash: multTxHash,
-      p_multiplier: selectedBoost.multiplier,
+      p_tx_hash: upgradeTxHash,
+      p_target_level: selectedLevel.level,
     }).then(async ({ data, error }) => {
       if (error) {
-        console.error('buy_multiplier:', error)
-        setMultError('Transaction saved onchain, but database sync failed.')
+        console.error('buy_account_level:', error)
+        setUpgradeError('Transaction saved onchain, but database sync failed.')
         await loadProfile()
         return
       }
 
       if (!data?.ok) {
-        setMultError(data?.error || 'Multiplier purchase was not accepted.')
+        setUpgradeError(data?.error || 'Upgrade was not accepted.')
         await loadProfile()
         return
       }
 
-      await loadProfile() // Reload to get new expiry time and multiplier
+      await loadProfile()
       setTxModal(false)
-      setSelectedBoost(null)
+      setSelectedLevel(null)
     }).finally(() => {
-      resetMult()
+      resetUpgrade()
     })
-  }, [address, isSuccessMult, multTxHash, selectedBoost, resetMult])
+  }, [address, isSuccessUpgrade, upgradeTxHash, selectedLevel, resetUpgrade])
 
   const sendCheckin = () => {
     setCheckinError('')
@@ -351,19 +363,19 @@ export function ProfileSection({ address, basename }) {
     })
   }
 
-  const sendMultiplier = () => {
-    if (!selectedBoost) return
-    setMultError('')
+  const sendUpgrade = () => {
+    if (!selectedLevel) return
+    setUpgradeError('')
     if (chainId !== base.id) {
       switchChain({ chainId: base.id })
       return
     }
 
-    writeMult({
+    writeUpgrade({
       address: USDC_ADDRESS,
       abi: USDC_ABI,
       functionName: 'transfer',
-      args: [CHECKIN_TARGET, parseUnits(selectedBoost.price.toFixed(6), 6)],
+      args: [CHECKIN_TARGET, parseUnits(selectedLevel.price.toFixed(6), 6)],
       chainId: base.id,
     })
   }
@@ -468,8 +480,27 @@ export function ProfileSection({ address, basename }) {
             <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {basename ? basename : short(address)}
             </div>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.65)', marginTop: 2 }}>
-              {basename ? short(address) : 'Base Mainnet'}
+            
+            {/* Multipliers Display */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+              {/* Permanent Level Badge */}
+              <div style={{ background: 'rgba(255,255,255,0.2)', padding: '2px 6px', borderRadius: 4, fontSize: 10, fontWeight: 800, color: '#fff' }}>
+                {LEVELS.find(l => l.level === accountLevel)?.name} ({LEVELS.find(l => l.level === accountLevel)?.mult}x)
+              </div>
+              
+              {/* Temporary Boost Badge */}
+              {activeMultiplier > 1 && (
+                <div style={{ 
+                  background: activeMultiplier > (LEVELS.find(l => l.level === accountLevel)?.mult || 1) ? '#F4C81B' : 'rgba(255,255,255,0.1)', 
+                  color: activeMultiplier > (LEVELS.find(l => l.level === accountLevel)?.mult || 1) ? '#000' : 'rgba(255,255,255,0.6)', 
+                  padding: '2px 6px', 
+                  borderRadius: 4, 
+                  fontSize: 10, 
+                  fontWeight: 800 
+                }}>
+                  🔥 {activeMultiplier}x {timeLeft ? `(${timeLeft})` : ''}
+                </div>
+              )}
             </div>
           </div>
 
@@ -603,7 +634,7 @@ export function ProfileSection({ address, basename }) {
       <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 18, marginBottom: 12 }}>
         <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4, color: '#0A0B0D' }}>Daily HP Boost</div>
         <div style={{ fontSize: 12, color: '#717886', marginBottom: 14, lineHeight: 1.6 }}>
-          Get an extra <span style={{ color: '#0000FF', fontWeight: 700 }}>+11 HP</span> per day · Boost your rank
+          Get an extra <span style={{ color: '#0000FF', fontWeight: 700 }}>+2 HP</span> per day · Boost your rank
         </div>
         {canBoost ? (
           <button
@@ -639,106 +670,53 @@ export function ProfileSection({ address, basename }) {
 
       <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 18, marginBottom: 12 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: '#0A0B0D' }}>Happy Bar (Boosts)</div>
-          {activeMultiplier > 1 && timeLeft && (
-            <div style={{ background: activeMultiplier >= 5 ? 'rgba(147, 51, 234, 0.1)' : 'rgba(5, 150, 105, 0.1)', color: activeMultiplier >= 5 ? '#9333EA' : '#059669', padding: '4px 8px', borderRadius: 50, fontSize: 11, fontWeight: 800, display: 'flex', gap: 6, alignItems: 'center' }}>
-              <span>{activeMultiplier}x Active</span>
-              <span style={{ opacity: 0.7 }}>{timeLeft}</span>
-            </div>
-          )}
+          <div style={{ fontSize: 14, fontWeight: 700, color: '#0A0B0D' }}>Account Level</div>
+          <div style={{ background: 'rgba(0,0,255,0.1)', color: '#0000FF', padding: '4px 8px', borderRadius: 50, fontSize: 11, fontWeight: 800 }}>
+            {LEVELS.find(l => l.level === accountLevel)?.name || 'Bronze'} Tier
+          </div>
         </div>
         <div style={{ fontSize: 12, color: '#717886', marginBottom: 14, lineHeight: 1.6 }}>
-          Multiply <span style={{ fontWeight: 700, color: '#0000FF' }}>all HP earned</span> for 24h · Except referrals HP
+          Permanent multiplier for all earned HP. <br/>
+          Current Multiplier: <span style={{ fontWeight: 700, color: '#0A0B0D' }}>{LEVELS.find(l => l.level === accountLevel)?.mult}x</span>
         </div>
 
-        <div style={{ display: 'flex', gap: 10 }}>
-          {/* 2x Boost Card */}
-          <div
+        {/* Upgrade Next Level */}
+        {accountLevel < 5 && (
+          <button
+            onClick={() => {
+              const next = LEVELS.find(l => l.level === accountLevel + 1)
+              setSelectedLevel(next)
+              setTxModal('upgrade')
+            }}
             style={{
-              flex: 1,
-              background: 'rgba(5, 150, 105, 0.08)',
-              border: '1px solid rgba(5, 150, 105, 0.2)',
-              borderRadius: 16,
-              padding: '12px 10px',
+              width: '100%',
+              background: '#0000FF',
+              color: '#fff',
+              borderRadius: 50,
+              padding: '14px',
+              fontSize: 15,
+              fontWeight: 700,
+              border: 'none',
+              cursor: 'pointer',
               display: 'flex',
-              flexDirection: 'column',
-              gap: 10,
+              alignItems: 'center',
+              justifyContent: 'center'
             }}
           >
-            {/* Top row: icon + label */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-              <div style={{ fontSize: 24, lineHeight: 1, flexShrink: 0 }}>🍷</div>
-              <div style={{ fontSize: 18, fontWeight: 800, color: '#059669', lineHeight: 1 }}>2x Boost</div>
-            </div>
-            {/* Blue buy button */}
-            <button
-              onClick={() => {
-                setSelectedBoost({ type: '2x', multiplier: 2.0, price: 0.45 })
-                setTxModal('multiplier')
-              }}
-              style={{
-                background: '#0000FF',
-                border: 'none',
-                borderRadius: 50,
-                padding: '8px 10px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 5,
-                cursor: 'pointer',
-                width: '100%',
-              }}
-            >
-              <span style={{ fontSize: 13, fontWeight: 700, color: '#A5B4FC' }}>0.45</span>
-              <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14 }} />
-            </button>
+            Upgrade to {LEVELS.find(l => l.level === accountLevel + 1)?.name} ({LEVELS.find(l => l.level === accountLevel + 1)?.mult}x)
+            <span style={{ color: '#A5B4FC', marginLeft: 8, display: 'flex', alignItems: 'center' }}>
+              {LEVELS.find(l => l.level === accountLevel + 1)?.price.toFixed(2)}
+              <img src="/usdc-logo.png" alt="USDC" style={{ width: 18, height: 18, marginLeft: 3 }} />
+            </span>
+          </button>
+        )}
+        {accountLevel === 5 && (
+          <div style={{ textAlign: 'center', padding: 13, background: '#EEF0F3', borderRadius: 50, border: '1px solid #DEE1E7', fontSize: 13, color: '#717886', fontWeight: 700 }}>
+            🎉 MAX LEVEL REACHED 🎉
           </div>
-
-          {/* 5x Boost Card */}
-          <div
-            style={{
-              flex: 1,
-              background: 'rgba(147, 51, 234, 0.08)',
-              border: '1px solid rgba(147, 51, 234, 0.2)',
-              borderRadius: 16,
-              padding: '12px 10px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 10,
-            }}
-          >
-            {/* Top row: icon + label */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-              <div style={{ fontSize: 24, lineHeight: 1, flexShrink: 0 }}>🍾</div>
-              <div style={{ fontSize: 18, fontWeight: 800, color: '#9333EA', lineHeight: 1 }}>5x Boost</div>
-            </div>
-            {/* Blue buy button */}
-            <button
-              onClick={() => {
-                setSelectedBoost({ type: '5x', multiplier: 5.0, price: 0.95 })
-                setTxModal('multiplier')
-              }}
-              style={{
-                background: '#0000FF',
-                border: 'none',
-                borderRadius: 50,
-                padding: '8px 10px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 5,
-                cursor: 'pointer',
-                width: '100%',
-              }}
-            >
-              <span style={{ fontSize: 13, fontWeight: 700, color: '#A5B4FC' }}>0.95</span>
-              <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14 }} />
-            </button>
-          </div>
-        </div>
-
-        {multError && (
-          <div style={{ color: '#DC2626', fontSize: 12, marginTop: 10, textAlign: 'center' }}>{multError}</div>
+        )}
+        {upgradeError && (
+          <div style={{ color: '#DC2626', fontSize: 12, marginTop: 10, textAlign: 'center' }}>{upgradeError}</div>
         )}
       </div>
 
@@ -991,7 +969,7 @@ export function ProfileSection({ address, basename }) {
       {txModal === 'boost' && (
         <TxModal
           title="Daily HP Boost"
-          subtitle="Get +100 HP instantly"
+          subtitle="Get +2 HP instantly"
           amount={BOOST_AMOUNT}
           isPending={isPendingBoost}
           isConfirming={isConfirmingBoost}
@@ -1005,20 +983,20 @@ export function ProfileSection({ address, basename }) {
         />
       )}
 
-      {txModal === 'multiplier' && selectedBoost && (
+      {txModal === 'upgrade' && selectedLevel && (
         <TxModal
-          title={`${selectedBoost.type} Point Multiplier`}
-          subtitle={`Multiply all earned HP by ${selectedBoost.multiplier}x for 24 hours.`}
-          amount={selectedBoost.price}
-          isPending={isPendingMult}
-          isConfirming={isConfirmingMult}
-          isSuccess={isSuccessMult}
-          error={multWriteError}
-          onConfirm={sendMultiplier}
+          title={`Upgrade to ${selectedLevel.name}`}
+          subtitle={`Permanent ${selectedLevel.mult}x multiplier for all HP you earn.`}
+          amount={selectedLevel.price}
+          isPending={isPendingUpgrade}
+          isConfirming={isConfirmingUpgrade}
+          isSuccess={isSuccessUpgrade}
+          error={upgradeWriteError}
+          onConfirm={sendUpgrade}
           onCancel={() => {
             setTxModal(false)
-            setSelectedBoost(null)
-            resetMult()
+            setSelectedLevel(null)
+            resetUpgrade()
           }}
         />
       )}
