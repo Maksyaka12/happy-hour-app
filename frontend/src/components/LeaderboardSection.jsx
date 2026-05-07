@@ -218,6 +218,31 @@ export function LeaderboardSection({ address }) {
         </div>
       </div>
 
+      {/* Season Ends In Status */}
+      <div style={{
+        background: '#fff',
+        border: '1px solid #DEE1E7',
+        borderRadius: 18,
+        padding: '14px 18px',
+        marginBottom: 14,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        boxShadow: '0 4px 12px rgba(10,11,13,0.03)'
+      }}>
+        <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Season ends in</div>
+        <div style={{ 
+          background: '#EEF0F3', 
+          color: '#717886', 
+          padding: '4px 12px', 
+          borderRadius: 50, 
+          fontSize: 12, 
+          fontWeight: 700 
+        }}>
+          Coming soon
+        </div>
+      </div>
+
       {activeTab === 'main' ? (
         displayRank > 0 && (
           <div
