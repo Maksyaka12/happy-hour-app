@@ -226,18 +226,21 @@ export function LeaderboardSection({ address }) {
         padding: '14px 18px',
         marginBottom: 14,
         display: 'flex',
-        justifyContent: 'space-between',
+        flexDirection: 'column',
         alignItems: 'center',
+        justifyContent: 'center',
+        gap: 6,
         boxShadow: '0 4px 12px rgba(10,11,13,0.03)'
       }}>
         <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Season ends in</div>
         <div style={{ 
-          background: '#EEF0F3', 
-          color: '#717886', 
-          padding: '4px 12px', 
+          background: '#0000FF', 
+          color: '#fff', 
+          padding: '4px 16px', 
           borderRadius: 50, 
           fontSize: 12, 
-          fontWeight: 700 
+          fontWeight: 800,
+          boxShadow: '0 4px 10px rgba(0,0,255,0.2)'
         }}>
           Coming soon
         </div>
