@@ -673,7 +673,9 @@ export function ProfileSection({ address, basename }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <div>
             <div style={{ fontSize: 14, fontWeight: 800, color: '#0A0B0D' }}>Account Multiplier</div>
-            <div style={{ fontSize: 12, color: '#717886', marginTop: 2 }}>Permanent earnings multiplier</div>
+            <div style={{ fontSize: 12, color: '#717886', marginTop: 2 }}>
+              <span style={{ color: '#0000FF', fontWeight: 700 }}>Permanent</span> earnings HP multiplier
+            </div>
           </div>
           <div style={{ 
             background: 'linear-gradient(135deg, #0000FF, #3C8AFF)', 
@@ -735,7 +737,7 @@ export function ProfileSection({ address, basename }) {
               transition: 'all 0.2s'
             }}
           >
-            Upgrade to {LEVELS.find(l => l.level === accountLevel + 1)?.name} ({LEVELS.find(l => l.level === accountLevel + 1)?.mult}x)
+            Upgrade to {LEVELS.find(l => l.level === accountLevel + 1)?.name} {accountLevel === 4 ? '(MAX)' : ''} ({LEVELS.find(l => l.level === accountLevel + 1)?.mult}x)
             <span style={{ color: '#A5B4FC', marginLeft: 10, display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: 20 }}>
               {LEVELS.find(l => l.level === accountLevel + 1)?.price.toFixed(2)}
               <img src="/usdc-logo.png" alt="USDC" style={{ width: 18, height: 18, marginLeft: 4 }} />
@@ -747,15 +749,14 @@ export function ProfileSection({ address, basename }) {
           <div style={{ 
             textAlign: 'center', 
             padding: '14px', 
-            background: 'linear-gradient(90deg, rgba(0,0,255,0.05), rgba(60,138,255,0.05))', 
+            background: '#EEF0F3', 
             borderRadius: 50, 
-            border: '1px solid rgba(0,0,255,0.1)', 
-            fontSize: 14, 
-            color: '#0000FF', 
-            fontWeight: 800,
-            letterSpacing: 0.5
+            border: '1px solid #DEE1E7', 
+            fontSize: 13, 
+            color: '#717886', 
+            fontWeight: 700,
           }}>
-            🌟 MAXIMUM MULTIPLIER ACTIVE 🌟
+            You reached MAX multiplier
           </div>
         )}
         {upgradeError && (
