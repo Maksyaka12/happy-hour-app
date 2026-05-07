@@ -146,6 +146,27 @@ export default function App() {
 
   const displayName = basename || short(address)
 
+  // Maintenance Mode Toggle
+  const IS_MAINTENANCE_MODE = true;
+
+  if (IS_MAINTENANCE_MODE && !isAdmin) {
+    return (
+      <>
+        <style dangerouslySetInnerHTML={{ __html: CSS }} />
+        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#F8F9FC', padding: 24 }}>
+          <HappyHourLogo size={64} />
+          <h1 style={{ marginTop: 24, fontSize: 28, fontWeight: 900, color: '#0A0B0D', textAlign: 'center', letterSpacing: '-0.5px' }}>
+            Scheduled Maintenance
+          </h1>
+          <p style={{ marginTop: 16, fontSize: 16, color: '#717886', textAlign: 'center', maxWidth: 400, lineHeight: 1.6 }}>
+            We are currently upgrading the Happy Hour App!<br /><br />
+            The app will be back shortly with exciting new features. Thank you for your patience! 🛠️✨
+          </p>
+        </div>
+      </>
+    )
+  }
+
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
@@ -221,24 +242,24 @@ export default function App() {
           </div>
         </div>
 
-        <div style={{ 
-          padding: '14px 16px 8px', 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'space-between' 
+        <div style={{
+          padding: '14px 16px 8px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between'
         }}>
           <span style={{ fontSize: 24, fontWeight: 800, color: 'var(--text)', letterSpacing: -0.5 }}>
             {tabLabels[tab]}
           </span>
           {tab === 'leaderboard' && isAdmin && (
-            <div style={{ 
-              background: 'var(--blue-bg)', 
-              border: '1px solid rgba(0,0,255,0.15)', 
-              borderRadius: 50, 
-              padding: '4px 12px', 
-              fontSize: 12, 
-              fontWeight: 700, 
-              color: '#717886' 
+            <div style={{
+              background: 'var(--blue-bg)',
+              border: '1px solid rgba(0,0,255,0.15)',
+              borderRadius: 50,
+              padding: '4px 12px',
+              fontSize: 12,
+              fontWeight: 700,
+              color: '#717886'
             }}>
               📊 Total Users: <span style={{ color: '#0000FF' }}>{totalUsers}</span>
             </div>
