@@ -208,7 +208,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           </div>
           <div>
             <div style={{ fontSize: 15, color: '#fff', lineHeight: 1.4, fontWeight: 700 }}>
-              Open your happy boxes<br />to win more HP and boosts
+              Open your Happy Boxes<br />to win more HP and boosts
             </div>
           </div>
         </div>
