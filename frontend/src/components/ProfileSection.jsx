@@ -505,7 +505,7 @@ export function ProfileSection({ address, basename }) {
                     alignItems: 'center',
                     gap: 3
                   }}>
-                    Boost: 🔥 {activeMultiplier}x {timeLeft ? <span style={{ opacity: 0.8, fontSize: 9 }}>({timeLeft})</span> : ''}
+                    🔥 {activeMultiplier}x Boost {timeLeft ? <span style={{ opacity: 0.8, fontSize: 9, marginLeft: 2 }}>({timeLeft})</span> : ''}
                   </div>
                 ) : (
                   <div style={{ background: 'rgba(255,255,255,0.1)', padding: '3px 10px', borderRadius: 8, fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.05)' }}>
