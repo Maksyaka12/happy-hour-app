@@ -709,19 +709,35 @@ export function ProfileSection({ address, basename }) {
           padding: '12px 14px', 
           marginBottom: 16,
           display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
+          alignItems: 'center',
+          justifyContent: 'space-between'
         }}>
-          <div>
-            <div style={{ fontSize: 10, fontWeight: 700, color: '#717886', textTransform: 'uppercase', letterSpacing: 0.5 }}>Current Status</div>
-            <div style={{ fontSize: 15, fontWeight: 800, color: '#0A0B0D', marginTop: 1 }}>
+          {/* Current */}
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 9, fontWeight: 700, color: '#717886', textTransform: 'uppercase', letterSpacing: 0.5 }}>Current Status</div>
+            <div style={{ fontSize: 14, fontWeight: 800, color: '#0A0B0D', marginTop: 1, display: 'flex', alignItems: 'center', gap: 4 }}>
               {LEVELS.find(l => l.level === accountLevel)?.name}
-              {accountLevel === 5 && <span style={{ color: '#0000FF', marginLeft: 6 }}>(MAX)</span>}
+              <span style={{ color: '#0000FF', fontSize: 12 }}>{LEVELS.find(l => l.level === accountLevel)?.mult}x</span>
             </div>
           </div>
-          <div style={{ fontSize: 24 }}>
-            {accountLevel === 1 ? '👤' : accountLevel === 2 ? '🥉' : accountLevel === 3 ? '🥈' : accountLevel === 4 ? '🥇' : '💎'}
-          </div>
+
+          {accountLevel < 5 ? (
+            <>
+              {/* Arrow */}
+              <div style={{ padding: '0 10px', fontSize: 18, color: '#DEE1E7' }}>→</div>
+
+              {/* Next */}
+              <div style={{ flex: 1, textAlign: 'right' }}>
+                <div style={{ fontSize: 9, fontWeight: 700, color: '#717886', textTransform: 'uppercase', letterSpacing: 0.5 }}>Next Status</div>
+                <div style={{ fontSize: 14, fontWeight: 800, color: '#0A0B0D', marginTop: 1, display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'flex-end' }}>
+                  {LEVELS.find(l => l.level === accountLevel + 1)?.name}
+                  <span style={{ color: '#0000FF', fontSize: 12 }}>{LEVELS.find(l => l.level === accountLevel + 1)?.mult}x</span>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div style={{ fontSize: 24 }}>💎</div>
+          )}
         </div>
 
         {/* Upgrade Next Level */}
