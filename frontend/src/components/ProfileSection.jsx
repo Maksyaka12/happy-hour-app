@@ -484,22 +484,20 @@ export function ProfileSection({ address, basename }) {
             {/* Multipliers & Boosts Display */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {/* Permanent Multiplier Row */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase' }}>Multiplier:</span>
-                <div style={{ background: 'rgba(255,255,255,0.2)', padding: '2px 8px', borderRadius: 6, fontSize: 10, fontWeight: 800, color: '#fff', border: '1px solid rgba(255,255,255,0.1)' }}>
-                  {LEVELS.find(l => l.level === accountLevel)?.name} ({LEVELS.find(l => l.level === accountLevel)?.mult}x)
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div style={{ background: 'rgba(255,255,255,0.2)', padding: '3px 10px', borderRadius: 8, fontSize: 10, fontWeight: 800, color: '#fff', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  Multiplier: {LEVELS.find(l => l.level === accountLevel)?.name} ({LEVELS.find(l => l.level === accountLevel)?.mult}x)
                 </div>
               </div>
               
               {/* Temporary Boost Row */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase' }}>Boost:</span>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
                 {activeMultiplier > 1 && activeMultiplier > (LEVELS.find(l => l.level === accountLevel)?.mult || 1) ? (
                   <div style={{ 
                     background: '#F4C81B', 
                     color: '#000', 
-                    padding: '2px 8px', 
-                    borderRadius: 6, 
+                    padding: '3px 10px', 
+                    borderRadius: 8, 
                     fontSize: 10, 
                     fontWeight: 900,
                     boxShadow: '0 4px 10px rgba(244, 200, 27, 0.3)',
@@ -507,10 +505,12 @@ export function ProfileSection({ address, basename }) {
                     alignItems: 'center',
                     gap: 3
                   }}>
-                    🔥 {activeMultiplier}x {timeLeft ? <span style={{ opacity: 0.8, fontSize: 9 }}>({timeLeft})</span> : ''}
+                    Boost: 🔥 {activeMultiplier}x {timeLeft ? <span style={{ opacity: 0.8, fontSize: 9 }}>({timeLeft})</span> : ''}
                   </div>
                 ) : (
-                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontWeight: 800, marginLeft: 4 }}>—</span>
+                  <div style={{ background: 'rgba(255,255,255,0.1)', padding: '3px 10px', borderRadius: 8, fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    Boost: —
+                  </div>
                 )}
               </div>
             </div>
