@@ -674,7 +674,7 @@ export function ProfileSection({ address, basename }) {
           <div>
             <div style={{ fontSize: 14, fontWeight: 800, color: '#0A0B0D' }}>Account Multiplier</div>
             <div style={{ fontSize: 12, color: '#717886', marginTop: 2 }}>
-              <span style={{ color: '#0000FF', fontWeight: 700 }}>Permanent</span> earnings HP multiplier
+              <span style={{ color: '#0000FF', fontWeight: 700 }}>Permanent</span> multiplier for all earned HP
             </div>
           </div>
           <div style={{ 
