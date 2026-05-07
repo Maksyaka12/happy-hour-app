@@ -291,7 +291,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           ['How do Happy Boxes work?', 'Choose a box to try your luck and win HP instantly. Each box has a different range of possible rewards.'],
           ['What can I win?', 'Every box contains HP. Epic and Legendary boxes also give you a chance to win a 2x or 5x boost.'],
           ['Are rewards guaranteed?', 'Yes, every box contains at least the minimum amount of HP shown in the description.'],
-          ['How does the multiplier work?', 'If you have an active multiplier, it will be applied to your boxes. If you win a higher boost from a box, it will be applied instantly and last for 24h for all earned HP. Once it expires, your permanent multiplier becomes active again.'],
+          ['How does the multiplier work?', 'If you have an active multiplier, it will be applied to your boxes. If you win a higher boost from a box, it will be applied instantly and last for 24h for all earned HP. Once it expires, your permanent multiplier resumes.'],
         ].map(([q, a], i, arr) => (
           <div key={i} style={{ marginBottom: i < arr.length - 1 ? 12 : 0 }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: '#32353D', marginBottom: 3 }}>{q}</div>
