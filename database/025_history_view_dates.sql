@@ -34,7 +34,7 @@ SELECT
   lower(winner) AS address,
   'Reward' AS action,
   'Win Round ' || id AS badge,
-  '+' || ROUND(30.0 * COALESCE(winner_multiplier, 1.0), 2) || ' HP' AS value,
+  '+' || CASE WHEN ends_at < '2026-05-07 12:00:00+00' THEN ROUND(5.0 * COALESCE(winner_multiplier, 1.0) * 100, 2) ELSE ROUND(5.0 * COALESCE(winner_multiplier, 1.0), 2) END || ' HP' AS value,
   'win' AS type,
   COALESCE(winner_multiplier, 1.0) AS boost_mult,
   ends_at AS created_at
