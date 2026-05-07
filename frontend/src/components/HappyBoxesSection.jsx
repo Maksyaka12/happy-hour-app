@@ -283,37 +283,21 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         ))}
       </div>
 
-      {/* How it works */}
-      <div style={{
-        background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20,
-        padding: '18px 16px', marginTop: 12,
-        boxShadow: '0 4px 12px rgba(10,11,13,0.03)'
-      }}>
-        <div style={{ fontSize: 15, fontWeight: 800, color: '#0A0B0D', marginBottom: 14 }}>
+      <div style={{ background: '#EEF0F3', border: '1px solid #DEE1E7', borderRadius: 16, padding: '18px 16px', marginTop: 24 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: '#717886', letterSpacing: 1, marginBottom: 12, textTransform: 'uppercase' }}>
           How it works
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {[
-            { icon: '📦', title: 'Choose your box', desc: 'Each box contains a different amount of HP. MAX possible HP reward is shown on each box.' },
-            { icon: '🏆', title: 'Win HP instantly', desc: 'After opening a box, your HP reward is instantly added to your HP balance.' },
-            { icon: '⭐', title: 'Chance for a boost', desc: 'Epic and Legendary boxes give you a chance to win 2x or 5x boosts, in addition to HP.' },
-            { icon: '⚡', title: 'Instant boost application', desc: 'If you win a boost, it is immediately applied to the HP reward you won in the same box.' },
-            { icon: '🔥', title: 'Smart multiplier stack', desc: 'Active boosts are never lowered, only upgraded. For example, if you have a 2x boost and win a 5x boost, the better one is automatically applied.' },
-          ].map((item, i) => (
-            <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-              <div style={{
-                width: 36, height: 36, borderRadius: 10,
-                background: '#F3F4F6', display: 'flex',
-                alignItems: 'center', justifyContent: 'center',
-                fontSize: 18, flexShrink: 0
-              }}>{item.icon}</div>
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#0A0B0D', marginBottom: 2 }}>{item.title}</div>
-                <div style={{ fontSize: 12, color: '#6B7280', lineHeight: 1.5 }}>{item.desc}</div>
-              </div>
-            </div>
-          ))}
-        </div>
+        {[
+          ['How do Happy Boxes work?', 'Choose a box to try your luck and win HP instantly. Each box has a different range of possible rewards.'],
+          ['What can I win?', 'Every box contains HP. Epic and Legendary boxes also give you a chance to win a 2x or 5x boost.'],
+          ['Are rewards guaranteed?', 'Yes, every box contains at least the minimum amount of HP shown in the description.'],
+          ['How does the multiplier work?', 'If you have an active multiplier, it will be applied to your boxes. If you win a higher boost from a box, it will be applied instantly and last for 24h for all earned HP. After it expires, your permanent multiplier becomes active again.'],
+        ].map(([q, a], i, arr) => (
+          <div key={i} style={{ marginBottom: i < arr.length - 1 ? 12 : 0 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: '#32353D', marginBottom: 3 }}>{q}</div>
+            <div style={{ fontSize: 12, color: '#717886', lineHeight: 1.65 }}>{a}</div>
+          </div>
+        ))}
       </div>
 
       {selectedBox && !isSuccess && !isOpening && (
