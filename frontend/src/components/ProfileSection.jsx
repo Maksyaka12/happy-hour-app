@@ -702,43 +702,42 @@ export function ProfileSection({ address, basename }) {
           </div>
         </div>
 
-        <div style={{ 
-          background: '#F9FAFB', 
-          border: '1px solid #EEF0F3', 
-          borderRadius: 16, 
-          padding: '12px 14px', 
-          marginBottom: 16,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}>
-          {/* Current */}
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 9, fontWeight: 700, color: '#717886', textTransform: 'uppercase', letterSpacing: 0.5 }}>Current Status</div>
-            <div style={{ fontSize: 14, fontWeight: 800, color: '#0A0B0D', marginTop: 1, display: 'flex', alignItems: 'center', gap: 4 }}>
-              {LEVELS.find(l => l.level === accountLevel)?.name}
-              <span style={{ color: '#0000FF', fontSize: 12 }}>{LEVELS.find(l => l.level === accountLevel)?.mult}x</span>
+        {accountLevel < 5 && (
+          <div style={{ 
+            background: '#F9FAFB', 
+            border: '1px solid #EEF0F3', 
+            borderRadius: 16, 
+            padding: '12px 14px', 
+            marginBottom: 16,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}>
+            {/* Current */}
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 9, fontWeight: 700, color: '#717886', textTransform: 'uppercase', letterSpacing: 0.5 }}>Current Status</div>
+              <div style={{ fontSize: 14, fontWeight: 800, color: '#0A0B0D', marginTop: 1, display: 'flex', alignItems: 'center', gap: 4 }}>
+                {LEVELS.find(l => l.level === accountLevel)?.name}
+                <span style={{ color: '#0000FF', fontSize: 12 }}>{LEVELS.find(l => l.level === accountLevel)?.mult}x</span>
+              </div>
+            </div>
+
+            {/* Arrow */}
+            <div style={{ padding: '0 10px', fontSize: 18, color: '#DEE1E7' }}>→</div>
+
+            {/* Next */}
+            <div style={{ flex: 1, textAlign: 'right' }}>
+              <div style={{ fontSize: 9, fontWeight: 700, color: '#717886', textTransform: 'uppercase', letterSpacing: 0.5 }}>Next Status</div>
+              <div style={{ fontSize: 14, fontWeight: 800, color: '#0A0B0D', marginTop: 1, display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'flex-end' }}>
+                {LEVELS.find(l => l.level === accountLevel + 1)?.name}
+                <span style={{ color: '#0000FF', fontSize: 12 }}>
+                  {LEVELS.find(l => l.level === accountLevel + 1)?.mult}x 
+                  {accountLevel + 1 === 5 ? ' MAX' : ''}
+                </span>
+              </div>
             </div>
           </div>
-
-          {accountLevel < 5 ? (
-            <>
-              {/* Arrow */}
-              <div style={{ padding: '0 10px', fontSize: 18, color: '#DEE1E7' }}>→</div>
-
-              {/* Next */}
-              <div style={{ flex: 1, textAlign: 'right' }}>
-                <div style={{ fontSize: 9, fontWeight: 700, color: '#717886', textTransform: 'uppercase', letterSpacing: 0.5 }}>Next Status</div>
-                <div style={{ fontSize: 14, fontWeight: 800, color: '#0A0B0D', marginTop: 1, display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'flex-end' }}>
-                  {LEVELS.find(l => l.level === accountLevel + 1)?.name}
-                  <span style={{ color: '#0000FF', fontSize: 12 }}>{LEVELS.find(l => l.level === accountLevel + 1)?.mult}x</span>
-                </div>
-              </div>
-            </>
-          ) : (
-            <div style={{ fontSize: 24 }}>💎</div>
-          )}
-        </div>
+        )}
 
         {/* Upgrade Next Level */}
         {accountLevel < 5 && (
