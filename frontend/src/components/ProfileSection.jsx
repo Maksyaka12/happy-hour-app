@@ -33,11 +33,11 @@ function normalizeUserRow(data) {
 }
 
 const LEVELS = [
-  { level: 1, name: 'Bronze', mult: 1.0, price: 0.00 },
-  { level: 2, name: 'Silver', mult: 1.2, price: 0.95 },
-  { level: 3, name: 'Gold', mult: 1.5, price: 1.75 },
-  { level: 4, name: 'Platinum', mult: 1.7, price: 3.00 },
-  { level: 5, name: 'Diamond', mult: 2.0, price: 5.00 },
+  { level: 1, name: 'Standard', mult: 1.0, price: 0.00 },
+  { level: 2, name: 'Bronze',   mult: 1.2, price: 0.95 },
+  { level: 3, name: 'Silver',   mult: 1.5, price: 1.75 },
+  { level: 4, name: 'Gold',     mult: 1.7, price: 3.00 },
+  { level: 5, name: 'Elite',    mult: 2.0, price: 5.00 },
 ]
 
 export function ProfileSection({ address, basename }) {
@@ -483,22 +483,23 @@ export function ProfileSection({ address, basename }) {
             
             {/* Multipliers Display */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
-              {/* Permanent Level Badge */}
-              <div style={{ background: 'rgba(255,255,255,0.2)', padding: '2px 6px', borderRadius: 4, fontSize: 10, fontWeight: 800, color: '#fff' }}>
+              {/* Permanent Multiplier Badge */}
+              <div style={{ background: 'rgba(255,255,255,0.2)', padding: '3px 8px', borderRadius: 6, fontSize: 10, fontWeight: 800, color: '#fff' }}>
                 {LEVELS.find(l => l.level === accountLevel)?.name} ({LEVELS.find(l => l.level === accountLevel)?.mult}x)
               </div>
               
               {/* Temporary Boost Badge */}
-              {activeMultiplier > 1 && (
+              {activeMultiplier > 1 && activeMultiplier > (LEVELS.find(l => l.level === accountLevel)?.mult || 1) && (
                 <div style={{ 
-                  background: activeMultiplier > (LEVELS.find(l => l.level === accountLevel)?.mult || 1) ? '#F4C81B' : 'rgba(255,255,255,0.1)', 
-                  color: activeMultiplier > (LEVELS.find(l => l.level === accountLevel)?.mult || 1) ? '#000' : 'rgba(255,255,255,0.6)', 
-                  padding: '2px 6px', 
-                  borderRadius: 4, 
+                  background: '#F4C81B', 
+                  color: '#000', 
+                  padding: '3px 8px', 
+                  borderRadius: 6, 
                   fontSize: 10, 
-                  fontWeight: 800 
+                  fontWeight: 800,
+                  boxShadow: '0 4px 10px rgba(244, 200, 27, 0.3)'
                 }}>
-                  🔥 {activeMultiplier}x {timeLeft ? `(${timeLeft})` : ''}
+                  🔥 {activeMultiplier}x Boost {timeLeft ? `(${timeLeft})` : ''}
                 </div>
               )}
             </div>
@@ -668,16 +669,45 @@ export function ProfileSection({ address, basename }) {
         )}
       </div>
 
-      <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 18, marginBottom: 12 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: '#0A0B0D' }}>Account Level</div>
-          <div style={{ background: 'rgba(0,0,255,0.1)', color: '#0000FF', padding: '4px 8px', borderRadius: 50, fontSize: 11, fontWeight: 800 }}>
-            {LEVELS.find(l => l.level === accountLevel)?.name || 'Bronze'} Tier
+      <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 20, marginBottom: 12, position: 'relative', overflow: 'hidden' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 800, color: '#0A0B0D' }}>Account Multiplier</div>
+            <div style={{ fontSize: 12, color: '#717886', marginTop: 2 }}>Permanent earnings multiplier</div>
+          </div>
+          <div style={{ 
+            background: 'linear-gradient(135deg, #0000FF, #3C8AFF)', 
+            color: '#fff', 
+            padding: '6px 14px', 
+            borderRadius: 12, 
+            fontSize: 13, 
+            fontWeight: 900,
+            boxShadow: '0 4px 12px rgba(0,0,255,0.2)'
+          }}>
+            {LEVELS.find(l => l.level === accountLevel)?.mult}x
           </div>
         </div>
-        <div style={{ fontSize: 12, color: '#717886', marginBottom: 14, lineHeight: 1.6 }}>
-          Permanent multiplier for all earned HP. <br/>
-          Current Multiplier: <span style={{ fontWeight: 700, color: '#0A0B0D' }}>{LEVELS.find(l => l.level === accountLevel)?.mult}x</span>
+
+        <div style={{ 
+          background: '#F9FAFB', 
+          border: '1px solid #EEF0F3', 
+          borderRadius: 16, 
+          padding: '12px 14px', 
+          marginBottom: 16,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#717886', textTransform: 'uppercase', letterSpacing: 0.5 }}>Current Status</div>
+            <div style={{ fontSize: 15, fontWeight: 800, color: '#0A0B0D', marginTop: 1 }}>
+              {LEVELS.find(l => l.level === accountLevel)?.name}
+              {accountLevel === 5 && <span style={{ color: '#0000FF', marginLeft: 6 }}>(MAX)</span>}
+            </div>
+          </div>
+          <div style={{ fontSize: 24 }}>
+            {accountLevel === 1 ? '👤' : accountLevel === 2 ? '🥉' : accountLevel === 3 ? '🥈' : accountLevel === 4 ? '🥇' : '💎'}
+          </div>
         </div>
 
         {/* Upgrade Next Level */}
@@ -693,30 +723,43 @@ export function ProfileSection({ address, basename }) {
               background: '#0000FF',
               color: '#fff',
               borderRadius: 50,
-              padding: '14px',
+              padding: '16px',
               fontSize: 15,
               fontWeight: 700,
               border: 'none',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              boxShadow: '0 8px 20px rgba(0,0,255,0.2)',
+              transition: 'all 0.2s'
             }}
           >
             Upgrade to {LEVELS.find(l => l.level === accountLevel + 1)?.name} ({LEVELS.find(l => l.level === accountLevel + 1)?.mult}x)
-            <span style={{ color: '#A5B4FC', marginLeft: 8, display: 'flex', alignItems: 'center' }}>
+            <span style={{ color: '#A5B4FC', marginLeft: 10, display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: 20 }}>
               {LEVELS.find(l => l.level === accountLevel + 1)?.price.toFixed(2)}
-              <img src="/usdc-logo.png" alt="USDC" style={{ width: 18, height: 18, marginLeft: 3 }} />
+              <img src="/usdc-logo.png" alt="USDC" style={{ width: 18, height: 18, marginLeft: 4 }} />
             </span>
           </button>
         )}
+
         {accountLevel === 5 && (
-          <div style={{ textAlign: 'center', padding: 13, background: '#EEF0F3', borderRadius: 50, border: '1px solid #DEE1E7', fontSize: 13, color: '#717886', fontWeight: 700 }}>
-            🎉 MAX LEVEL REACHED 🎉
+          <div style={{ 
+            textAlign: 'center', 
+            padding: '14px', 
+            background: 'linear-gradient(90deg, rgba(0,0,255,0.05), rgba(60,138,255,0.05))', 
+            borderRadius: 50, 
+            border: '1px solid rgba(0,0,255,0.1)', 
+            fontSize: 14, 
+            color: '#0000FF', 
+            fontWeight: 800,
+            letterSpacing: 0.5
+          }}>
+            🌟 MAXIMUM MULTIPLIER ACTIVE 🌟
           </div>
         )}
         {upgradeError && (
-          <div style={{ color: '#DC2626', fontSize: 12, marginTop: 10, textAlign: 'center' }}>{upgradeError}</div>
+          <div style={{ color: '#DC2626', fontSize: 12, marginTop: 12, textAlign: 'center', fontWeight: 600 }}>⚠️ {upgradeError}</div>
         )}
       </div>
 
