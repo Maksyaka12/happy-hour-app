@@ -14,8 +14,8 @@ export function EventBanner({ onClick }) {
         boxShadow: '0 12px 40px rgba(0,0,0,0.3)',
         display: 'flex',
         alignItems: 'center',
-        padding: '0 30px',
-        border: '1px solid rgba(255,255,255,0.15)',
+        padding: '0', // Full width handling
+        border: '1px solid rgba(255,255,255,0.12)',
         cursor: 'pointer',
         transition: 'all 0.3s ease',
         userSelect: 'none',
@@ -29,85 +29,108 @@ export function EventBanner({ onClick }) {
         backgroundImage: 'url(/event-boxes.jfif)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        opacity: 0.7,
+        opacity: 0.6,
         zIndex: 0,
-        transition: 'transform 0.5s ease'
+        transition: 'transform 0.6s ease'
       }} className="banner-bg" />
       
-      {/* Subtle overlay */}
+      {/* Sophisticated Dark Overlay */}
       <div style={{
         position: 'absolute',
         top: 0, left: 0, right: 0, bottom: 0,
-        background: 'linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 60%, transparent 100%)',
+        background: 'linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 65%, rgba(0,0,0,0.2) 100%)',
         zIndex: 1
       }} />
 
-      {/* Main Content Layout: Left (Large Prize) | Right (Text + CTA) */}
+      {/* 35/65 Layout */}
       <div style={{ 
         position: 'relative', 
         zIndex: 2, 
         display: 'flex', 
-        alignItems: 'center', 
         width: '100%',
-        gap: '24px'
+        height: '100%',
+        alignItems: 'center'
       }}>
         
-        {/* Left Side: Big 50 USDC */}
+        {/* LEFT 35%: Large Prize */}
         <div style={{
+          width: '35%',
+          height: '100%',
           display: 'flex',
           alignItems: 'center',
-          gap: 12,
-          fontFamily: "'Barlow Condensed', sans-serif",
-          fontSize: '72px',
-          fontWeight: 900,
-          color: '#fff',
-          lineHeight: 1,
-          letterSpacing: '-2px',
-          textShadow: '0 0 30px rgba(255,255,255,0.2)'
+          justifyContent: 'center',
+          gap: 8,
+          borderRight: '1px solid rgba(255,255,255,0.05)',
+          background: 'rgba(255,255,255,0.02)'
         }}>
-          <span>50</span>
-          <img src="/usdc-logo.png" alt="USDC" style={{ width: 56, height: 56, filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.5))' }} />
+          <span style={{
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontSize: '84px',
+            fontWeight: 800,
+            color: '#fff',
+            lineHeight: 1,
+            letterSpacing: '-2px',
+          }}>50</span>
+          <img 
+            src="/usdc-logo.png" 
+            alt="USDC" 
+            style={{ width: 36, height: 36, marginTop: 4, filter: 'drop-shadow(0 0 15px rgba(39, 117, 202, 0.4))' }} 
+          />
         </div>
 
-        {/* Right Side: Description + CTA */}
+        {/* RIGHT 65%: Content Area */}
         <div style={{
+          width: '65%',
+          padding: '0 24px',
           display: 'flex',
           flexDirection: 'column',
-          gap: 10,
-          flex: 1
+          justifyContent: 'center',
+          gap: 6
         }}>
+          {/* Headline */}
           <div style={{
-            fontSize: '15px',
-            color: 'rgba(255,255,255,0.95)',
-            fontWeight: 400,
-            lineHeight: 1.3,
-            maxWidth: '180px',
-            textShadow: '0 2px 4px rgba(0,0,0,0.5)'
+            fontSize: '18px',
+            fontWeight: 800,
+            color: '#fff',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+            whiteSpace: 'nowrap'
           }}>
-            It can drop to anyone<br />from any box
+            Challenge is Live
           </div>
 
+          {/* Subtext */}
           <div style={{
+            fontSize: '13px',
+            fontWeight: 400,
+            color: 'rgba(255,255,255,0.7)',
+            letterSpacing: '0.2px',
+            whiteSpace: 'nowrap'
+          }}>
+            It can drop to anyone from any box
+          </div>
+
+          {/* CTA Badge */}
+          <div style={{
+            marginTop: 8,
             display: 'inline-flex',
             alignItems: 'center',
             gap: 6,
-            background: 'rgba(255,255,255,0.15)',
-            padding: '6px 14px',
+            background: 'rgba(255,255,255,0.1)',
+            padding: '5px 12px',
             borderRadius: '50px',
-            border: '1px solid rgba(255,255,255,0.25)',
-            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255,255,255,0.15)',
             width: 'fit-content',
             transition: 'all 0.2s ease',
-            boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
           }} className="banner-cta">
             <span style={{ 
-              fontSize: '11px', 
-              fontWeight: 900, 
+              fontSize: '10px', 
+              fontWeight: 800, 
               color: '#fff', 
               textTransform: 'uppercase',
-              letterSpacing: '0.8px'
+              letterSpacing: '0.5px'
             }}>Open Box</span>
-            <span style={{ fontSize: '14px', lineHeight: 1 }}>→</span>
+            <span style={{ fontSize: '13px', lineHeight: 1 }}>→</span>
           </div>
         </div>
       </div>
@@ -123,8 +146,8 @@ export function EventBanner({ onClick }) {
           transform: scale(1.05);
         }
         .event-banner-card:hover .banner-cta {
-          background: rgba(255,255,255,0.25);
-          transform: translateX(4px);
+          background: rgba(255,255,255,0.2);
+          transform: translateX(3px);
         }
         .event-banner-card:active {
           transform: scale(0.98);
@@ -136,9 +159,9 @@ export function EventBanner({ onClick }) {
         left: '-100%',
         width: '50%',
         height: '100%',
-        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)',
+        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent)',
         transform: 'skewX(-25deg)',
-        animation: 'shine 6s infinite',
+        animation: 'shine 8s infinite',
         zIndex: 1
       }} />
     </div>
