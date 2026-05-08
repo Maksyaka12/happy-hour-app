@@ -237,35 +237,39 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
               <div style={{ fontSize: 16, fontWeight: 800, color: '#0A0B0D' }}>{box.name}</div>
 
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                <span style={{
-                  background: box.bg, color: box.color,
-                  padding: '3px 8px', borderRadius: 8,
-                  fontSize: 10, fontWeight: 800,
-                  border: `1px solid ${box.color}20`,
-                  whiteSpace: 'nowrap',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 3
-                }}>
-                  🏆 {box.rewards}
-                </span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <div style={{ display: 'flex' }}>
+                  <span style={{
+                    background: box.bg, color: box.color,
+                    padding: '3px 8px', borderRadius: 8,
+                    fontSize: 10, fontWeight: 800,
+                    border: `1px solid ${box.color}20`,
+                    whiteSpace: 'nowrap',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 3
+                  }}>
+                    🏆 {box.rewards}
+                  </span>
+                </div>
 
-                <span style={{
-                  background: 'rgba(39, 117, 202, 0.08)',
-                  color: '#2775CA',
-                  padding: '3px 8px',
-                  borderRadius: 8,
-                  fontSize: 10,
-                  fontWeight: 800,
-                  border: '1px solid rgba(39, 117, 202, 0.2)',
-                  whiteSpace: 'nowrap',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 3
-                }}>
-                  🔥 Chance for 50 <img src="/usdc-logo.png" alt="USDC" style={{ width: 11, height: 11 }} />
-                </span>
+                <div style={{ display: 'flex' }}>
+                  <span style={{
+                    background: 'rgba(39, 117, 202, 0.08)',
+                    color: '#2775CA',
+                    padding: '3px 8px',
+                    borderRadius: 8,
+                    fontSize: 10,
+                    fontWeight: 800,
+                    border: '1px solid rgba(39, 117, 202, 0.2)',
+                    whiteSpace: 'nowrap',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 3
+                  }}>
+                    🔥 Chance for 50 <img src="/usdc-logo.png" alt="USDC" style={{ width: 11, height: 11 }} />
+                  </span>
+                </div>
               </div>
 
               <button
