@@ -179,11 +179,26 @@ export function ProfileSection({ address, basename }) {
   }
 
   const handleUpdateBotPoints = async (botAddr, newPts) => {
-    await db.rpc('update_bot_points', {
+    // Handle both dot and comma as decimal separators
+    const val = String(newPts).replace(',', '.');
+    const points = parseFloat(val);
+    
+    if (isNaN(points)) {
+      setEditingBot(null);
+      return;
+    }
+
+    const { error } = await db.rpc('update_bot_points', {
       p_admin_address: address.toLowerCase(),
       p_bot_address: botAddr,
-      p_new_points: Number(newPts)
+      p_new_points: points
     })
+
+    if (error) {
+      console.error('Update bot points error:', error);
+      alert('Error updating points: ' + error.message);
+    }
+
     setEditingBot(null)
     await loadBots()
   }
@@ -1012,7 +1027,7 @@ export function ProfileSection({ address, basename }) {
                       onClick={() => setEditingBot(bot)}
                       style={{ fontSize: 12, fontWeight: 800, color: '#111827', cursor: 'pointer', padding: '2px 8px', borderRadius: 4, background: '#F9FAFB' }}
                     >
-                      {bot.points.toLocaleString()} HP ✏️
+                      {bot.points.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })} HP ✏️
                     </div>
                   )}
                 </div>
