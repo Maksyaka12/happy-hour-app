@@ -957,11 +957,11 @@ export function ProfileSection({ address, basename }) {
               </div>
               <div>
                 <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', marginBottom: 4 }}>MIN HP</div>
-                <input type="number" value={botMinPoints} onChange={e => setBotMinPoints(e.target.value)} style={{ width: '100%', padding: 8, borderRadius: 8, border: '1px solid #DEE1E7', fontSize: 12 }} />
+                <input type="number" step="any" value={botMinPoints} onChange={e => setBotMinPoints(e.target.value)} style={{ width: '100%', padding: 8, borderRadius: 8, border: '1px solid #DEE1E7', fontSize: 12 }} />
               </div>
               <div>
                 <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', marginBottom: 4 }}>MAX HP</div>
-                <input type="number" value={botMaxPoints} onChange={e => setBotMaxPoints(e.target.value)} style={{ width: '100%', padding: 8, borderRadius: 8, border: '1px solid #DEE1E7', fontSize: 12 }} />
+                <input type="number" step="any" value={botMaxPoints} onChange={e => setBotMaxPoints(e.target.value)} style={{ width: '100%', padding: 8, borderRadius: 8, border: '1px solid #DEE1E7', fontSize: 12 }} />
               </div>
             </div>
 
@@ -1000,6 +1000,7 @@ export function ProfileSection({ address, basename }) {
                       <input 
                         autoFocus
                         type="number" 
+                        step="any"
                         defaultValue={bot.points} 
                         onBlur={e => handleUpdateBotPoints(bot.address, e.target.value)}
                         onKeyDown={e => e.key === 'Enter' && handleUpdateBotPoints(bot.address, e.currentTarget.value)}
