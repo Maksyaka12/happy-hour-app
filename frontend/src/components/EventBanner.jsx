@@ -5,13 +5,13 @@ export function EventBanner({ onClick }) {
     <div 
       onClick={onClick}
       style={{
-        margin: '0 16px 16px',
-        height: '140px',
-        borderRadius: '24px',
+        margin: '0 16px 12px',
+        height: '100px',
+        borderRadius: '20px',
         overflow: 'hidden',
         position: 'relative',
         background: '#000',
-        boxShadow: '0 12px 40px rgba(0,0,0,0.3)',
+        boxShadow: '0 8px 30px rgba(0,0,0,0.2)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -39,15 +39,15 @@ export function EventBanner({ onClick }) {
       <div style={{
         position: 'absolute',
         top: 0, left: 0, right: 0, bottom: 0,
-        background: 'linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7))',
+        background: 'linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 100%)',
         zIndex: 1
       }} />
 
       {/* Content Area */}
       <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', width: '100%' }}>
-        {/* Headline - Left Aligned */}
+        {/* Headline */}
         <div style={{
-          fontSize: '18px',
+          fontSize: '16px',
           fontWeight: 800,
           color: '#fff',
           textTransform: 'uppercase',
@@ -55,60 +55,47 @@ export function EventBanner({ onClick }) {
           display: 'flex',
           alignItems: 'center',
           gap: 6,
-          marginBottom: '6px'
+          marginBottom: '4px'
         }}>
           <span>🔥</span> Challenge is Live
         </div>
 
-        {/* Subtext - Left Aligned */}
+        {/* Subtext with Arrow */}
         <div style={{
-          fontSize: '13px',
-          fontWeight: 400,
-          color: 'rgba(255,255,255,0.9)',
-          letterSpacing: '0.2px',
           display: 'flex',
           alignItems: 'center',
-          gap: 5,
-          whiteSpace: 'nowrap'
-        }}>
-          <span style={{ fontWeight: 900, color: '#fff', display: 'flex', alignItems: 'center', gap: 4 }}>
-            50 <img src="/usdc-logo.png" alt="USDC" style={{ width: 16, height: 16 }} />
-          </span>
-          <span>can drop to anyone from any box</span>
-        </div>
-
-        {/* CTA Badge - Centered at the bottom */}
-        <div style={{
-          marginTop: '16px',
-          display: 'flex',
-          justifyContent: 'center',
+          justifyContent: 'space-between',
           width: '100%'
         }}>
           <div style={{
-            display: 'inline-flex',
+            fontSize: '13px',
+            fontWeight: 400,
+            color: 'rgba(255,255,255,0.95)',
+            letterSpacing: '0.2px',
+            display: 'flex',
             alignItems: 'center',
             gap: 6,
-            background: 'rgba(255,255,255,0.15)',
-            padding: '5px 14px',
-            borderRadius: '50px',
-            border: '1px solid rgba(255,255,255,0.25)',
-            backdropFilter: 'blur(10px)',
-            transition: 'all 0.2s ease',
-            boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
-          }} className="banner-cta">
-            <span style={{ 
-              fontSize: '10px', 
-              fontWeight: 800, 
-              color: '#fff', 
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px'
-            }}>Open Box</span>
-            <span style={{ fontSize: '13px', lineHeight: 1 }}>→</span>
+            whiteSpace: 'nowrap'
+          }}>
+            <span style={{ fontWeight: 900, color: '#fff', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <span style={{ fontSize: '20px', lineHeight: 1 }}>50</span>
+              <img src="/usdc-logo.png" alt="USDC" style={{ width: 20, height: 20 }} />
+            </span>
+            <span>can drop to anyone from any box</span>
+          </div>
+
+          <div style={{
+            fontSize: '24px',
+            color: '#fff',
+            opacity: 0.8,
+            transition: 'transform 0.2s ease'
+          }} className="banner-arrow">
+            →
           </div>
         </div>
       </div>
       
-      {/* Shine Effect */}
+      {/* Shine & Hover Effects */}
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes shine {
           0% { left: -100%; }
@@ -116,14 +103,14 @@ export function EventBanner({ onClick }) {
           100% { left: 100%; }
         }
         .event-banner-card:hover .banner-bg {
-          transform: scale(1.05);
+          transform: scale(1.03);
         }
-        .event-banner-card:hover .banner-cta {
-          background: rgba(255,255,255,0.25);
-          transform: translateY(-2px);
+        .event-banner-card:hover .banner-arrow {
+          transform: translateX(5px);
+          opacity: 1;
         }
         .event-banner-card:active {
-          transform: scale(0.98);
+          transform: scale(0.99);
         }
       ` }} />
       <div style={{
@@ -132,9 +119,9 @@ export function EventBanner({ onClick }) {
         left: '-100%',
         width: '50%',
         height: '100%',
-        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)',
+        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent)',
         transform: 'skewX(-25deg)',
-        animation: 'shine 6s infinite',
+        animation: 'shine 8s infinite',
         zIndex: 1
       }} />
     </div>
