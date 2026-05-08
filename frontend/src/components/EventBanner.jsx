@@ -14,7 +14,7 @@ export function EventBanner({ onClick }) {
         boxShadow: '0 12px 40px rgba(0,0,0,0.3)',
         display: 'flex',
         alignItems: 'center',
-        padding: '0', // Full width handling
+        padding: '0',
         border: '1px solid rgba(255,255,255,0.12)',
         cursor: 'pointer',
         transition: 'all 0.3s ease',
@@ -42,7 +42,7 @@ export function EventBanner({ onClick }) {
         zIndex: 1
       }} />
 
-      {/* 35/65 Layout */}
+      {/* 28/72 Layout (Shifted left for more space) */}
       <div style={{ 
         position: 'relative', 
         zIndex: 2, 
@@ -52,48 +52,48 @@ export function EventBanner({ onClick }) {
         alignItems: 'center'
       }}>
         
-        {/* LEFT 35%: Large Prize */}
+        {/* LEFT 28%: Prize Area */}
         <div style={{
-          width: '35%',
+          width: '28%',
           height: '100%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: 8,
+          gap: 6,
           borderRight: '1px solid rgba(255,255,255,0.05)',
-          background: 'rgba(255,255,255,0.02)'
+          background: 'rgba(255,255,255,0.01)'
         }}>
           <span style={{
             fontFamily: "'Barlow Condensed', sans-serif",
-            fontSize: '84px',
-            fontWeight: 800,
+            fontSize: '70px',
+            fontWeight: 700,
             color: '#fff',
             lineHeight: 1,
-            letterSpacing: '-2px',
+            letterSpacing: '-1.5px',
           }}>50</span>
           <img 
             src="/usdc-logo.png" 
             alt="USDC" 
-            style={{ width: 36, height: 36, marginTop: 4, filter: 'drop-shadow(0 0 15px rgba(39, 117, 202, 0.4))' }} 
+            style={{ width: 30, height: 30, marginTop: 2, filter: 'drop-shadow(0 0 10px rgba(39, 117, 202, 0.4))' }} 
           />
         </div>
 
-        {/* RIGHT 65%: Content Area */}
+        {/* RIGHT 72%: Content Area */}
         <div style={{
-          width: '65%',
-          padding: '0 24px',
+          width: '72%',
+          padding: '0 20px',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
-          gap: 6
+          gap: 5
         }}>
           {/* Headline */}
           <div style={{
-            fontSize: '18px',
+            fontSize: '17px',
             fontWeight: 800,
             color: '#fff',
             textTransform: 'uppercase',
-            letterSpacing: '0.5px',
+            letterSpacing: '0.4px',
             whiteSpace: 'nowrap'
           }}>
             Challenge is Live
@@ -104,7 +104,7 @@ export function EventBanner({ onClick }) {
             fontSize: '13px',
             fontWeight: 400,
             color: 'rgba(255,255,255,0.7)',
-            letterSpacing: '0.2px',
+            letterSpacing: '0.1px',
             whiteSpace: 'nowrap'
           }}>
             It can drop to anyone from any box
@@ -112,7 +112,7 @@ export function EventBanner({ onClick }) {
 
           {/* CTA Badge */}
           <div style={{
-            marginTop: 8,
+            marginTop: 7,
             display: 'inline-flex',
             alignItems: 'center',
             gap: 6,
