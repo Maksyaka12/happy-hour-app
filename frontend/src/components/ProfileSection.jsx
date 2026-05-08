@@ -427,6 +427,7 @@ export function ProfileSection({ address, basename }) {
   return (
     <div style={{ paddingBottom: 120, padding: '0 12px 120px', position: 'relative' }}>
       {/* Disconnect button positioned to align with the main Profile title in App.jsx */}
+      {/* Disconnect button - Hidden during event
       <button
         onClick={() => disconnect()}
         style={{
@@ -446,6 +447,7 @@ export function ProfileSection({ address, basename }) {
       >
         Disconnect
       </button>
+      */}
 
       {/* Compact Profile Badge */}
       <div

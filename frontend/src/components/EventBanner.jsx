@@ -103,8 +103,8 @@ export function EventBanner({ onClick }) {
           fontWeight: 400,
           lineHeight: 1.4
         }}>
-          * The event is live as long as this banner is visible. Once someone<br />
-          finds the 50 USDC, the banner will be automatically removed.
+          * The event is live as long as this banner is visible.<br />
+          * Once someone finds the 50 USDC, the banner will be automatically removed.
         </div>
       </div>
       
