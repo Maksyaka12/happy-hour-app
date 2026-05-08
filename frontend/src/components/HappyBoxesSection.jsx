@@ -256,13 +256,13 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
 
                 <div style={{ display: 'flex' }}>
                   <span style={{
-                    background: 'rgba(10, 11, 13, 0.06)',
-                    color: '#0A0B0D',
+                    background: '#0A0B0D',
+                    color: '#fff',
                     padding: '3px 8px',
                     borderRadius: 8,
                     fontSize: 10,
                     fontWeight: 800,
-                    border: '1px solid rgba(10, 11, 13, 0.1)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
                     whiteSpace: 'nowrap',
                     display: 'flex',
                     alignItems: 'center',
