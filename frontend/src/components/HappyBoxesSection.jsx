@@ -185,7 +185,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         </div>
       )}
 
-      {/* Header Banner - Matching Raffle Layout */}
+      {/* Header Banner - Hidden during promotion
       <div style={{
         background: 'linear-gradient(135deg, #0000FF 0%, #4F46E5 100%)', borderRadius: 20, padding: '22px 20px 18px',
         marginBottom: 12, position: 'relative', overflow: 'hidden',
@@ -213,6 +213,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           </div>
         </div>
       </div>
+      */}
 
       {/* Box List */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
