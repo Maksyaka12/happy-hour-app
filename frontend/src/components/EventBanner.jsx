@@ -93,6 +93,18 @@ export function EventBanner({ onClick }) {
             →
           </div>
         </div>
+
+        {/* Disclaimer */}
+        <div style={{
+          fontSize: '7px',
+          color: 'rgba(255,255,255,0.5)',
+          marginTop: '6px',
+          letterSpacing: '0.1px',
+          fontWeight: 400,
+          textTransform: 'uppercase'
+        }}>
+          * The event is live as long as this banner is visible. Once someone finds the 50 USDC, the banner will be automatically removed.
+        </div>
       </div>
       
       {/* Shine & Hover Effects */}
