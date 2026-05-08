@@ -10,38 +10,38 @@ export function EventBanner({ onClick }) {
         borderRadius: '24px',
         overflow: 'hidden',
         position: 'relative',
-        background: '#0A0B0D',
-        boxShadow: '0 12px 40px rgba(0,0,0,0.25)',
+        background: '#000',
+        boxShadow: '0 12px 40px rgba(0,0,0,0.3)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         padding: '0 24px',
-        border: '1px solid rgba(255,255,255,0.1)',
+        border: '1px solid rgba(255,255,255,0.15)',
         cursor: 'pointer',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        transition: 'all 0.3s ease',
         userSelect: 'none',
         textAlign: 'center'
       }}
       className="event-banner-card"
     >
-      {/* Background Image with sophisticated overlay */}
+      {/* Background Image - Higher Opacity to be visible */}
       <div style={{
         position: 'absolute',
         top: 0, left: 0, right: 0, bottom: 0,
         backgroundImage: 'url(/event-boxes.jfif)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        opacity: 0.5,
+        opacity: 0.8,
         zIndex: 0,
         transition: 'transform 0.5s ease'
       }} className="banner-bg" />
       
-      {/* Dark overlay for text focus */}
+      {/* Subtle overlay to help text contrast without turning it black */}
       <div style={{
         position: 'absolute',
         top: 0, left: 0, right: 0, bottom: 0,
-        background: 'radial-gradient(circle, rgba(10,11,13,0.7) 0%, rgba(10,11,13,0.9) 100%)',
+        background: 'linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.6))',
         zIndex: 1
       }} />
 
@@ -53,10 +53,12 @@ export function EventBanner({ onClick }) {
           alignItems: 'center',
           gap: 4,
           background: '#fff',
-          padding: '3px 10px',
+          padding: '4px 14px',
           borderRadius: '50px',
-          marginBottom: '12px',
-          boxShadow: '0 4px 10px rgba(0,0,0,0.2)'
+          marginBottom: '10px',
+          boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
+          minWidth: '120px',
+          justifyContent: 'center'
         }}>
           <span style={{ fontSize: '10px' }}>🔥</span>
           <span style={{ 
@@ -64,66 +66,72 @@ export function EventBanner({ onClick }) {
             fontWeight: 900, 
             color: '#000', 
             textTransform: 'uppercase',
-            letterSpacing: '0.5px'
+            letterSpacing: '0.8px'
           }}>Challenge is live</span>
         </div>
 
-        {/* Main Title Area - Centered */}
+        {/* Main Title Area */}
         <div style={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 2,
-          marginBottom: '12px'
+          gap: 0,
+          marginBottom: '10px'
         }}>
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center',
-            gap: 8,
+            gap: 10,
             fontFamily: "'Barlow Condensed', sans-serif",
-            fontSize: '30px',
+            fontSize: '34px',
             fontWeight: 900,
             color: '#fff',
             letterSpacing: '-0.5px',
-            lineHeight: 1
+            lineHeight: 1,
+            textShadow: '0 2px 10px rgba(0,0,0,0.8)'
           }}>
             <span>50</span>
-            <img src="/usdc-logo.png" alt="USDC" style={{ width: 26, height: 26, filter: 'drop-shadow(0 0 8px rgba(39, 117, 202, 0.6))' }} />
+            <img src="/usdc-logo.png" alt="USDC" style={{ width: 32, height: 32, filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.5))' }} />
             <span>CAN DROP</span>
           </div>
           <div style={{ 
             fontFamily: "'Barlow Condensed', sans-serif",
-            fontSize: '16px', 
-            fontWeight: 700, 
-            color: 'rgba(255,255,255,0.9)',
+            fontSize: '18px', 
+            fontWeight: 800, 
+            color: '#fff',
             textTransform: 'uppercase',
-            letterSpacing: '1px'
+            letterSpacing: '0.5px',
+            textShadow: '0 2px 6px rgba(0,0,0,0.8)',
+            opacity: 0.95
           }}>
             to anyone from any box
           </div>
         </div>
 
-        {/* CTA Button - Centered below text */}
+        {/* CTA Button - SAME SIZE as top badge */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: 6,
-          background: 'rgba(255,255,255,0.15)',
-          padding: '6px 16px',
+          gap: 4,
+          background: 'rgba(255,255,255,0.2)',
+          padding: '4px 14px',
           borderRadius: '50px',
-          border: '1px solid rgba(255,255,255,0.2)',
-          backdropFilter: 'blur(5px)',
-          transition: 'all 0.2s ease'
+          border: '1px solid rgba(255,255,255,0.4)',
+          backdropFilter: 'blur(8px)',
+          minWidth: '120px',
+          justifyContent: 'center',
+          transition: 'all 0.2s ease',
+          boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
         }} className="banner-cta">
           <span style={{ 
-            fontSize: '11px', 
+            fontSize: '9px', 
             fontWeight: 900, 
             color: '#fff', 
             textTransform: 'uppercase',
-            letterSpacing: '0.5px'
+            letterSpacing: '0.8px'
           }}>Try your luck</span>
-          <span style={{ fontSize: '14px', lineHeight: 1 }}>→</span>
+          <span style={{ fontSize: '12px', lineHeight: 1 }}>→</span>
         </div>
       </div>
       
@@ -135,14 +143,13 @@ export function EventBanner({ onClick }) {
           100% { left: 100%; }
         }
         .event-banner-card:hover .banner-bg {
-          transform: scale(1.08);
+          transform: scale(1.05);
         }
         .event-banner-card:hover .banner-cta {
-          background: rgba(255,255,255,0.25);
-          transform: translateY(-2px);
+          background: rgba(255,255,255,0.35);
         }
         .event-banner-card:active {
-          transform: scale(0.97);
+          transform: scale(0.98);
         }
       ` }} />
       <div style={{
@@ -151,7 +158,7 @@ export function EventBanner({ onClick }) {
         left: '-100%',
         width: '50%',
         height: '100%',
-        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)',
+        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent)',
         transform: 'skewX(-25deg)',
         animation: 'shine 6s infinite',
         zIndex: 1
