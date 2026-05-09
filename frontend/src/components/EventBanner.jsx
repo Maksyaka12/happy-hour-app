@@ -62,17 +62,19 @@ export function EventBanner({ onClick }) {
           <div style={{
             background: 'rgba(244, 200, 27, 0.2)',
             color: '#F4C81B',
-            padding: '2px 10px',
+            padding: '1px 6px',
             borderRadius: '50px',
-            fontSize: '9px',
+            fontSize: '8px',
             fontWeight: 900,
-            marginLeft: '4px',
+            marginLeft: '6px',
             border: '1px solid rgba(244, 200, 27, 0.4)',
             textTransform: 'uppercase',
             display: 'inline-flex',
             alignItems: 'center',
-            boxShadow: '0 0 10px rgba(244, 200, 27, 0.2)',
-            animation: 'pulse-glow 2s infinite'
+            boxShadow: '0 0 10px rgba(244, 200, 27, 0.1)',
+            animation: 'pulse-glow 2s infinite',
+            whiteSpace: 'nowrap',
+            flexShrink: 0
           }}>
             x2 chance now
           </div>
