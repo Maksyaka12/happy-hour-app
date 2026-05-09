@@ -57,7 +57,25 @@ export function EventBanner({ onClick }) {
           gap: 6,
           marginBottom: '4px'
         }}>
-          <span>🔥</span> Challenge is Live
+          <span>🔥</span> 
+          <span>Challenge is Live</span>
+          <div style={{
+            background: 'rgba(244, 200, 27, 0.2)',
+            color: '#F4C81B',
+            padding: '2px 10px',
+            borderRadius: '50px',
+            fontSize: '9px',
+            fontWeight: 900,
+            marginLeft: '4px',
+            border: '1px solid rgba(244, 200, 27, 0.4)',
+            textTransform: 'uppercase',
+            display: 'inline-flex',
+            alignItems: 'center',
+            boxShadow: '0 0 10px rgba(244, 200, 27, 0.2)',
+            animation: 'pulse-glow 2s infinite'
+          }}>
+            x2 chance now
+          </div>
         </div>
 
         {/* Subtext with Arrow */}
@@ -114,6 +132,11 @@ export function EventBanner({ onClick }) {
           0% { left: -100%; }
           20% { left: 100%; }
           100% { left: 100%; }
+        }
+        @keyframes pulse-glow {
+          0% { opacity: 0.8; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.05); }
+          100% { opacity: 0.8; transform: scale(1); }
         }
         .event-banner-card:hover .banner-bg {
           transform: scale(1.03);
