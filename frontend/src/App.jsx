@@ -27,6 +27,25 @@ export default function App() {
   const [tab, setTab] = useState(() => {
     try { return localStorage.getItem('happy_tab') || 'raffle' } catch { return 'raffle' }
   })
+  const [isJackpotClaimed, setIsJackpotClaimed] = useState(false);
+
+  useEffect(() => {
+    const fetchJackpotStatus = async () => {
+      const { data } = await db.from('event_raffle_config').select('jackpot_claimed').eq('id', 1).maybeSingle();
+      if (data) setIsJackpotClaimed(data.jackpot_claimed);
+    };
+
+    fetchJackpotStatus();
+
+    const sub = db.channel('raffle-config')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'event_raffle_config' }, (payload) => {
+        setIsJackpotClaimed(payload.new.jackpot_claimed);
+      })
+      .subscribe();
+
+    return () => { db.removeChannel(sub); };
+  }, []);
+
   useEffect(() => {
     try { localStorage.setItem('happy_tab', tab) } catch { }
   }, [tab])
@@ -267,11 +286,11 @@ export default function App() {
           )}
         </div>
 
-        <EventBanner onClick={() => setTab('boxes')} />
+        {!isJackpotClaimed && <EventBanner onClick={() => setTab('boxes')} />}
 
         <div style={{ position: 'relative', zIndex: 1, maxWidth: 640, margin: '0 auto' }}>
           {tab === 'raffle' && <RaffleSection address={address} basename={basename} />}
-          {tab === 'boxes' && <HappyBoxesSection address={address} />}
+          {tab === 'boxes' && <HappyBoxesSection address={address} isJackpotClaimed={isJackpotClaimed} />}
           {tab === 'tasks' && <TasksSection address={address} />}
           {tab === 'leaderboard' && <LeaderboardSection address={address} />}
           {tab === 'profile' && <ProfileSection address={address} basename={basename} />}
