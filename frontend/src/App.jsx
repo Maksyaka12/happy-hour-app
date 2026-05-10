@@ -31,8 +31,6 @@ export default function App() {
   useEffect(() => {
     try { localStorage.setItem('happy_tab', tab) } catch { }
   }, [tab])
-    try { localStorage.setItem('happy_tab', tab) } catch { }
-  }, [tab])
   // useAccount().chainId returns the REAL wallet chain (even if unsupported)
   // useChainId() returns base.id by default when chain is not in wagmi config — can't use it here
   const { address, isConnected, isConnecting, isReconnecting, chainId: accountChainId } = useAccount()
