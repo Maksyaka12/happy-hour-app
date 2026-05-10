@@ -7,11 +7,10 @@ import { db } from '../config/supabase'
 import { useBuilderWrite } from '../hooks/useBuilderWrite'
 import { TxModal } from './TxModal'
 
-export function HappyBoxesSection({ address, profile, onUpdate, isJackpotClaimed }) {
+export function HappyBoxesSection({ address, profile, onUpdate }) {
   const [selectedBox, setSelectedBox] = useState(null)
   const [isOpening, setIsOpening] = useState(false)
   const [openResult, setOpenResult] = useState(null)
-  const [showJackpot, setShowJackpot] = useState(false)
   const [animPhase, setAnimPhase] = useState(0) // 0: init, 1: show base hp, 2: show mult, 3: count up, 4: done
   const [displayHp, setDisplayHp] = useState(0)
 
@@ -73,9 +72,6 @@ export function HappyBoxesSection({ address, profile, onUpdate, isJackpotClaimed
               wonNewMult: data.multiplier_won > 1,
               baseHp: baseHp
             })
-            if (data.is_jackpot) {
-              setShowJackpot(true)
-            }
             if (onUpdate) onUpdate()
           } else {
             console.error(data?.error)
@@ -189,7 +185,7 @@ export function HappyBoxesSection({ address, profile, onUpdate, isJackpotClaimed
         </div>
       )}
 
-      {/* Header Banner - Hidden during promotion
+      {/* Header Banner */}
       <div style={{
         background: 'linear-gradient(135deg, #0000FF 0%, #4F46E5 100%)', borderRadius: 20, padding: '22px 20px 18px',
         marginBottom: 12, position: 'relative', overflow: 'hidden',
@@ -217,7 +213,6 @@ export function HappyBoxesSection({ address, profile, onUpdate, isJackpotClaimed
           </div>
         </div>
       </div>
-      */}
 
       {/* Box List */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
@@ -258,25 +253,7 @@ export function HappyBoxesSection({ address, profile, onUpdate, isJackpotClaimed
                   </span>
                 </div>
 
-                {!isJackpotClaimed && (
-                  <div style={{ display: 'flex' }}>
-                    <span style={{
-                      background: '#0A0B0D',
-                      color: '#fff',
-                      padding: '3px 8px',
-                      borderRadius: 8,
-                      fontSize: 10,
-                      fontWeight: 800,
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      whiteSpace: 'nowrap',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 3
-                    }}>
-                      🔥 Chance for 50 <img src="/usdc-logo.png" alt="USDC" style={{ width: 11, height: 11 }} />
-                    </span>
-                  </div>
-                )}
+                {/* Promotional badge removed after challenge */}
               </div>
 
               <button
@@ -351,7 +328,7 @@ export function HappyBoxesSection({ address, profile, onUpdate, isJackpotClaimed
         </div>
       )}
 
-      {openResult && !showJackpot && (
+      {openResult && (
         <div style={{
           position: 'fixed', inset: 0, background: 'rgba(10,11,13,0.7)', zIndex: 2000,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -395,54 +372,6 @@ export function HappyBoxesSection({ address, profile, onUpdate, isJackpotClaimed
                 borderRadius: 50, padding: '14px', fontSize: 15, fontWeight: 700,
                 border: 'none', cursor: animPhase < 4 ? 'default' : 'pointer', marginTop: 10,
                 boxShadow: animPhase < 4 ? 'none' : '0 4px 14px rgba(0,0,255,0.3)',
-                transition: 'all 0.3s'
-              }}
-            >
-              Awesome
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* JACKPOT MODAL */}
-      {showJackpot && (
-        <div style={{
-          position: 'fixed', inset: 0, background: 'rgba(10,11,13,0.85)', zIndex: 3000,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          backdropFilter: 'blur(12px)',
-          animation: 'fadeIn 0.4s ease'
-        }}>
-          <div style={{
-            background: '#fff', borderRadius: 32, padding: '40px 24px', width: '92%', maxWidth: 380,
-            textAlign: 'center', position: 'relative',
-            boxShadow: '0 30px 60px rgba(0,0,0,0.4)',
-            border: '2px solid #F4C81B'
-          }}>
-            <div style={{ fontSize: 80, marginBottom: 20, animation: 'bounce 1s infinite' }}>🥳</div>
-            <h2 style={{ fontSize: 28, fontWeight: 900, color: '#0A0B0D', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '-0.5px' }}>
-              JACKPOT WIN!
-            </h2>
-            
-            <div style={{ 
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
-              fontSize: 48, fontWeight: 900, color: '#059669', marginBottom: 24
-            }}>
-              +50 
-              <img src="/usdc-logo.png" alt="USDC" style={{ width: 48, height: 48 }} />
-            </div>
-
-            <p style={{ fontSize: 15, color: '#717886', lineHeight: 1.6, marginBottom: 30, padding: '0 10px' }}>
-              Congratulations! You hit the secret drop.<br />
-              <strong>50 USDC</strong> will be sent to your wallet soon.
-            </p>
-
-            <button
-              onClick={() => { setShowJackpot(false); closeResultModal(); }}
-              style={{
-                width: '100%', background: '#0000FF', color: '#fff',
-                borderRadius: 50, padding: '16px', fontSize: 16, fontWeight: 800,
-                border: 'none', cursor: 'pointer',
-                boxShadow: '0 8px 24px rgba(0,0,255,0.3)',
                 transition: 'all 0.3s'
               }}
             >
