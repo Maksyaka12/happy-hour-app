@@ -207,8 +207,11 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             🎁
           </div>
           <div>
-            <div style={{ fontSize: 15, color: '#fff', lineHeight: 1.4, fontWeight: 700 }}>
-              Open your Happy Boxes<br />to win more HP and boosts
+            <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.7)', letterSpacing: 1, marginBottom: 4, textTransform: 'uppercase' }}>
+              Happy Boxes
+            </div>
+            <div style={{ fontSize: 13, color: '#fff', lineHeight: 1.4, fontWeight: 700 }}>
+              Open your boxes to win<br />more HP and multipliers
             </div>
           </div>
         </div>
@@ -233,16 +236,15 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
               {box.icon}
             </div>
 
-            {/* Right side — 3 rows stack */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <div style={{ fontSize: 16, fontWeight: 800, color: '#0A0B0D' }}>{box.name}</div>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <div style={{ fontSize: 14, fontWeight: 800, color: '#0A0B0D' }}>{box.name}</div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 <div style={{ display: 'flex' }}>
                   <span style={{
                     background: box.bg, color: box.color,
-                    padding: '3px 8px', borderRadius: 8,
-                    fontSize: 10, fontWeight: 800,
+                    padding: '2px 8px', borderRadius: 8,
+                    fontSize: 9, fontWeight: 800,
                     border: `1px solid ${box.color}20`,
                     whiteSpace: 'nowrap',
                     display: 'flex',
@@ -263,9 +265,9 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                   background: '#0000FF',
                   color: '#fff',
                   borderRadius: 50,
-                  padding: '10px 14px',
-                  fontSize: 14,
-                  fontWeight: 700,
+                  padding: '8px 12px',
+                  fontSize: 12,
+                  fontWeight: 800,
                   border: 'none',
                   cursor: 'pointer',
                   fontFamily: 'inherit',
@@ -274,12 +276,13 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                   justifyContent: 'center',
                   boxShadow: box.id === 'legendary' ? '0 4px 16px rgba(0,0,255,0.3)' : 'none',
                   opacity: (isPending || isConfirming || isOpening) ? 0.6 : 1,
-                  width: '100%'
+                  width: '100%',
+                  marginTop: 2
                 }}
               >
                 Open for <span style={{ color: '#A5B4FC', marginLeft: 6, display: 'flex', alignItems: 'center' }}>
                   {box.price.toFixed(2)}
-                  <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14, marginLeft: 4, display: 'inline-block', verticalAlign: 'middle' }} />
+                  <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, marginLeft: 4, display: 'inline-block', verticalAlign: 'middle' }} />
                 </span>
               </button>
             </div>
@@ -287,19 +290,19 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         ))}
       </div>
 
-      <div style={{ background: '#EEF0F3', border: '1px solid #DEE1E7', borderRadius: 16, padding: '18px 16px', marginTop: 24 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: '#717886', letterSpacing: 1, marginBottom: 12, textTransform: 'uppercase' }}>
+      <div style={{ background: '#EEF0F3', border: '1px solid #DEE1E7', borderRadius: 16, padding: '16px', marginTop: 24 }}>
+        <div style={{ fontSize: 9, fontWeight: 800, color: '#717886', letterSpacing: 0.5, marginBottom: 14, textTransform: 'uppercase' }}>
           How it works
         </div>
         {[
           ['How do Happy Boxes work?', 'Choose a box to try your luck and win HP instantly. Each box has a different range of possible rewards.'],
           ['What can I win?', 'Every box contains HP. Epic and Legendary boxes also give you a chance to win a 2x or 5x boost.'],
           ['Are rewards guaranteed?', 'Yes, every box contains at least the minimum amount of HP shown in the description.'],
-          ['How does the multiplier work?', 'If you have an active multiplier, it will be applied to your boxes. If you win a higher boost from a box, it will be applied instantly and last for 24h for all earned HP. Once it expires, your permanent multiplier resumes.'],
+          ['How does the multiplier work?', 'If you have an active multiplier, it will be applied to your boxes. If you win a higher boost from a box, it will be applied instantly and last for 24h.'],
         ].map(([q, a], i, arr) => (
-          <div key={i} style={{ marginBottom: i < arr.length - 1 ? 12 : 0 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#32353D', marginBottom: 3 }}>{q}</div>
-            <div style={{ fontSize: 12, color: '#717886', lineHeight: 1.65 }}>{a}</div>
+          <div key={i} style={{ marginBottom: i < arr.length - 1 ? 14 : 0 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#0A0B0D', marginBottom: 3 }}>{q}</div>
+            <div style={{ fontSize: 10, color: '#717886', lineHeight: 1.6, fontWeight: 500 }}>{a}</div>
           </div>
         ))}
       </div>
