@@ -33,11 +33,11 @@ function normalizeUserRow(data) {
 }
 
 const LEVELS = [
-  { level: 1, name: 'Basic',    mult: 1.0, price: 0.00 },
-  { level: 2, name: 'Bronze',   mult: 1.2, price: 0.95 },
-  { level: 3, name: 'Silver',   mult: 1.5, price: 1.75 },
-  { level: 4, name: 'Gold',     mult: 1.7, price: 3.00 },
-  { level: 5, name: 'MAX',      mult: 2.0, price: 5.00 },
+  { level: 1, name: 'Basic', mult: 1.0, price: 0.00 },
+  { level: 2, name: 'Bronze', mult: 1.2, price: 0.95 },
+  { level: 3, name: 'Silver', mult: 1.5, price: 1.75 },
+  { level: 4, name: 'Gold', mult: 1.7, price: 3.00 },
+  { level: 5, name: 'MAX', mult: 2.0, price: 5.00 },
 ]
 
 export function ProfileSection({ address, basename }) {
@@ -183,7 +183,7 @@ export function ProfileSection({ address, basename }) {
     // Handle both dot and comma as decimal separators
     const val = String(newPts).replace(',', '.');
     const points = parseFloat(val);
-    
+
     if (isNaN(points)) {
       setEditingBot(null);
       return;
@@ -414,7 +414,7 @@ export function ProfileSection({ address, basename }) {
     if (!refInput.trim()) return
     setRefLoading(true)
     setRefError('')
-    
+
     const { data, error } = await db.rpc('apply_referral_code', {
       p_address: address.toLowerCase(),
       p_code: refInput.trim()
@@ -484,27 +484,27 @@ export function ProfileSection({ address, basename }) {
         {/* Subtler Dark Glass Overlay for Clarity */}
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(0, 0, 80, 0.35)', zIndex: 0 }} />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,0,255,0.1) 100%)', zIndex: 0 }} />
-        
+
         {/* Top Bar: Player Identity Passport */}
         <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
-          
+
           {/* Left: Upscaled Avatar & HP Balance Hub */}
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            background: 'rgba(255, 255, 255, 0.08)', 
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            background: 'rgba(255, 255, 255, 0.08)',
             backdropFilter: 'blur(10px)',
-            padding: '6px 20px 6px 6px', 
-            borderRadius: 60, 
+            padding: '6px 20px 6px 6px',
+            borderRadius: 60,
             border: '1px solid rgba(255,255,255,0.12)',
             gap: 16,
             boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
           }}>
-            <div style={{ 
-              width: 48, 
-              height: 48, 
-              borderRadius: '50%', 
-              overflow: 'hidden', 
+            <div style={{
+              width: 48,
+              height: 48,
+              borderRadius: '50%',
+              overflow: 'hidden',
               border: '2px solid rgba(255,255,255,0.2)',
               background: 'rgba(255,255,255,0.1)',
               display: 'flex',
@@ -514,20 +514,20 @@ export function ProfileSection({ address, basename }) {
               <UserAvatar address={address} size={48} />
             </div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-              <div style={{ 
-                fontFamily: "'Barlow Condensed',sans-serif", 
-                fontSize: 32, 
-                fontWeight: 900, 
-                color: '#fff', 
-                lineHeight: 1, 
-                textShadow: '0 2px 15px rgba(0,0,0,0.5)' 
+              <div style={{
+                fontFamily: "'Barlow Condensed',sans-serif",
+                fontSize: 32,
+                fontWeight: 900,
+                color: '#fff',
+                lineHeight: 1,
+                textShadow: '0 2px 15px rgba(0,0,0,0.5)'
               }}>
                 {userStats.points.toLocaleString()}
               </div>
-              <div style={{ 
-                fontSize: 12, 
-                fontWeight: 900, 
-                color: '#A5B4FC', 
+              <div style={{
+                fontSize: 12,
+                fontWeight: 900,
+                color: '#A5B4FC',
                 opacity: 0.9,
                 letterSpacing: 0.5
               }}>
@@ -555,11 +555,11 @@ export function ProfileSection({ address, basename }) {
             >
               DISCONNECT
             </button>
-            <div style={{ 
-              fontSize: 9, 
-              fontWeight: 800, 
-              color: '#fff', 
-              opacity: 0.4, 
+            <div style={{
+              fontSize: 9,
+              fontWeight: 800,
+              color: '#fff',
+              opacity: 0.4,
               letterSpacing: 0.8,
               padding: '0 4px'
             }}>
@@ -570,18 +570,18 @@ export function ProfileSection({ address, basename }) {
 
         {/* Progression Status Area */}
         <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          
+
           {/* Left: Multiplier Status */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>Multiplier</div>
-            <div style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: 6, 
-              background: 'rgba(255, 255, 255, 0.08)', 
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              background: 'rgba(255, 255, 255, 0.08)',
               backdropFilter: 'blur(12px)',
-              padding: '8px 12px', 
-              borderRadius: 14, 
+              padding: '8px 12px',
+              borderRadius: 14,
               border: '1px solid rgba(255,255,255,0.1)',
               minWidth: 95,
               height: 38,
@@ -589,16 +589,16 @@ export function ProfileSection({ address, basename }) {
               boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
             }}>
               <div style={{ fontSize: 16, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>{LEVELS.find(l => l.level === accountLevel)?.name}</div>
-              <div style={{ 
-                background: (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 1.0 
-                  ? 'linear-gradient(135deg, #94A3B8, #64748B)' 
+              <div style={{
+                background: (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 1.0
+                  ? 'linear-gradient(135deg, #94A3B8, #64748B)'
                   : (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 5.0 || (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 2.0
                     ? 'linear-gradient(135deg, #34D399, #059669)'
                     : 'linear-gradient(135deg, #F4C81B, #F97316)',
-                color: '#000', 
-                padding: '1px 5px', 
-                borderRadius: 4, 
-                fontSize: 9, 
+                color: '#000',
+                padding: '1px 5px',
+                borderRadius: 4,
+                fontSize: 9,
                 fontWeight: 900
               }}>
                 {LEVELS.find(l => l.level === accountLevel)?.mult}x
@@ -609,14 +609,14 @@ export function ProfileSection({ address, basename }) {
           {/* Center: Active Boost */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
             <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>Boost</div>
-            
-            <div style={{ 
-              background: 'rgba(255, 255, 255, 0.08)', 
+
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.08)',
               backdropFilter: 'blur(12px)',
-              padding: '8px 12px', 
-              borderRadius: 14, 
-              border: '1px solid rgba(255,255,255,0.1)', 
-              minWidth: 95, 
+              padding: '8px 12px',
+              borderRadius: 14,
+              border: '1px solid rgba(255,255,255,0.1)',
+              minWidth: 95,
               height: 38,
               textAlign: 'center',
               position: 'relative',
@@ -627,16 +627,16 @@ export function ProfileSection({ address, basename }) {
             }}>
               {activeMultiplier > (LEVELS.find(l => l.level === accountLevel)?.mult || 1) ? (
                 <>
-                  <div style={{ 
-                    position: 'absolute', 
-                    top: -6, 
-                    right: -8, 
-                    background: '#0000FF', 
-                    border: '1px solid rgba(255,255,255,0.3)', 
-                    padding: '1px 6px', 
-                    borderRadius: 5, 
-                    fontSize: 7, 
-                    fontWeight: 900, 
+                  <div style={{
+                    position: 'absolute',
+                    top: -6,
+                    right: -8,
+                    background: '#0000FF',
+                    border: '1px solid rgba(255,255,255,0.3)',
+                    padding: '1px 6px',
+                    borderRadius: 5,
+                    fontSize: 7,
+                    fontWeight: 900,
                     color: '#fff',
                     boxShadow: '0 4px 10px rgba(0,0,0,0.4)',
                     whiteSpace: 'nowrap',
@@ -657,14 +657,14 @@ export function ProfileSection({ address, basename }) {
           {/* Right: Streak Status */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>Streak</div>
-            <div style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: 5, 
-              background: 'rgba(255, 255, 255, 0.08)', 
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 5,
+              background: 'rgba(255, 255, 255, 0.08)',
               backdropFilter: 'blur(12px)',
-              padding: '8px 12px', 
-              borderRadius: 14, 
+              padding: '8px 12px',
+              borderRadius: 14,
               border: '1px solid rgba(255,255,255,0.1)',
               minWidth: 95,
               height: 38,
@@ -686,16 +686,16 @@ export function ProfileSection({ address, basename }) {
             <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Profile Multiplier</div>
             <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>Permanent multiplier for all earned HP.</div>
           </div>
-          <div style={{ 
-            background: (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 1.0 
-              ? '#94A3B8' 
+          <div style={{
+            background: (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 1.0
+              ? '#94A3B8'
               : (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 2.0
                 ? '#059669'
                 : '#F97316',
-            color: '#fff', 
-            padding: '2px 10px', 
-            borderRadius: 50, 
-            fontSize: 9, 
+            color: '#fff',
+            padding: '2px 10px',
+            borderRadius: 50,
+            fontSize: 9,
             fontWeight: 900,
             marginTop: 1
           }}>
@@ -705,22 +705,22 @@ export function ProfileSection({ address, basename }) {
 
         {/* Level Roadmap */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, position: 'relative', padding: '0 10px' }}>
-          <div style={{ position: 'absolute', top: 32, left: 20, right: 20, height: 2, background: '#F1F5F9', zIndex: 0 }} />
+          <div style={{ position: 'absolute', top: 27, left: 20, right: 20, height: 2, background: '#F1F5F9', zIndex: 0 }} />
           {LEVELS.map(l => {
             const isActive = l.level <= accountLevel
             const isCurrent = l.level === accountLevel
             const nameColor = isActive ? '#059669' : '#94A3B8'
-            
+
             return (
               <div key={l.level} style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
                 <div style={{ fontSize: 7, fontWeight: 900, color: nameColor, textTransform: 'uppercase' }}>{l.name}</div>
-                <div style={{ 
-                  width: 26, 
-                  height: 26, 
-                  borderRadius: '50%', 
-                  background: isCurrent || isActive 
+                <div style={{
+                  width: 26,
+                  height: 26,
+                  borderRadius: '50%',
+                  background: isCurrent || isActive
                     ? (l.mult === 1.0 ? '#94A3B8' : l.mult === 2.0 ? '#34D399' : '#F97316')
-                    : '#fff', 
+                    : '#fff',
                   border: isCurrent ? '4px solid #DBEAFE' : '2px solid #E2E8F0',
                   display: 'flex',
                   alignItems: 'center',
@@ -743,21 +743,21 @@ export function ProfileSection({ address, basename }) {
             }}
             style={{ width: '100%', background: '#0000FF', color: '#fff', borderRadius: 50, padding: '10px 12px', fontSize: 11, fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, boxShadow: '0 4px 12px rgba(0,0,255,0.2)' }}
           >
-            Upgrade to {LEVELS.find(l => l.level === accountLevel + 1)?.name.toUpperCase()}
+            {LEVELS.find(l => l.level === accountLevel)?.name.toUpperCase()} → {LEVELS.find(l => l.level === accountLevel + 1)?.name.toUpperCase()}
             <span style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: 20, fontSize: 11, display: 'flex', alignItems: 'center', gap: 4, color: '#A5B4FC' }}>
               {LEVELS.find(l => l.level === accountLevel + 1)?.price.toFixed(2)}<img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14 }} />
             </span>
           </button>
         )}
         {accountLevel === 5 && (
-          <div style={{ 
-            textAlign: 'center', 
-            padding: '12px', 
-            background: '#ECFDF5', 
-            borderRadius: 50, 
-            border: '1px solid #D1FAE5', 
-            fontSize: 10, 
-            color: '#059669', 
+          <div style={{
+            textAlign: 'center',
+            padding: '12px',
+            background: '#ECFDF5',
+            borderRadius: 50,
+            border: '1px solid #D1FAE5',
+            fontSize: 10,
+            color: '#059669',
             fontWeight: 800,
             textTransform: 'uppercase',
             letterSpacing: 0.5
@@ -837,18 +837,18 @@ export function ProfileSection({ address, basename }) {
         <div style={{ position: 'relative', height: 50, padding: '0 10px' }}>
           {/* Background Line: Perfectly centered between circles */}
           <div style={{ position: 'absolute', top: 26, left: 22, right: 22, height: 2, background: '#F1F5F9', borderRadius: 1 }} />
-          
+
           {/* Progress Line: Pixel-perfect segmented logic */}
           {(() => {
             const milestones = [1, 3, 7, 14, 30];
             let progressFactor = 0; // 0 to 100
-            
+
             if (streak.count >= milestones[milestones.length - 1]) {
               progressFactor = 100;
             } else if (streak.count > milestones[0]) {
               for (let i = 0; i < milestones.length - 1; i++) {
                 const start = milestones[i];
-                const end = milestones[i+1];
+                const end = milestones[i + 1];
                 if (streak.count >= start && streak.count < end) {
                   const segmentBase = i * 25; // 4 segments = 25% each
                   const segmentRatio = (streak.count - start) / (end - start);
@@ -859,15 +859,15 @@ export function ProfileSection({ address, basename }) {
             }
 
             return (
-              <div style={{ 
-                position: 'absolute', 
-                top: 26, 
-                left: 22, 
-                height: 2, 
-                background: '#0000FF', 
-                borderRadius: 1, 
+              <div style={{
+                position: 'absolute',
+                top: 26,
+                left: 22,
+                height: 2,
+                background: '#0000FF',
+                borderRadius: 1,
                 width: `calc(${progressFactor}% - ${(progressFactor / 100) * 44}px)`,
-                transition: 'width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)' 
+                transition: 'width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)'
               }} />
             );
           })()}
@@ -1019,7 +1019,7 @@ export function ProfileSection({ address, basename }) {
               <div style={{ fontWeight: 800, fontSize: 14, color: '#4B5563' }}>🤖 LEADERBOARD SIMULATION</div>
               <div style={{ fontSize: 11, fontWeight: 700, color: '#9CA3AF' }}>Total Bots: <span style={{ color: '#4F46E5' }}>{bots.length}</span></div>
             </div>
-            
+
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 10 }}>
               <div>
                 <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', marginBottom: 4 }}>COUNT</div>
@@ -1048,13 +1048,13 @@ export function ProfileSection({ address, basename }) {
               {bots.map(bot => (
                 <div key={bot.address} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid #F3F4F6' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <button 
+                    <button
                       onClick={() => handleDeleteBot(bot.address)}
-                      style={{ 
-                        background: 'none', 
-                        border: 'none', 
-                        cursor: 'pointer', 
-                        fontSize: 14, 
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: 14,
                         padding: '4px 8px',
                         borderRadius: 6,
                         opacity: 0.6
@@ -1067,18 +1067,18 @@ export function ProfileSection({ address, basename }) {
 
                   {editingBot?.address === bot.address ? (
                     <div style={{ display: 'flex', gap: 4 }}>
-                      <input 
+                      <input
                         autoFocus
-                        type="number" 
+                        type="number"
                         step="any"
-                        defaultValue={bot.points} 
+                        defaultValue={bot.points}
                         onBlur={e => handleUpdateBotPoints(bot.address, e.target.value)}
                         onKeyDown={e => e.key === 'Enter' && handleUpdateBotPoints(bot.address, e.currentTarget.value)}
-                        style={{ width: 70, padding: '2px 6px', fontSize: 11, borderRadius: 4, border: '1px solid #4F46E5' }} 
+                        style={{ width: 70, padding: '2px 6px', fontSize: 11, borderRadius: 4, border: '1px solid #4F46E5' }}
                       />
                     </div>
                   ) : (
-                    <div 
+                    <div
                       onClick={() => setEditingBot(bot)}
                       style={{ fontSize: 12, fontWeight: 800, color: '#111827', cursor: 'pointer', padding: '2px 8px', borderRadius: 4, background: '#F9FAFB' }}
                     >
