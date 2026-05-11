@@ -37,7 +37,7 @@ const LEVELS = [
   { level: 2, name: 'Bronze',   mult: 1.2, price: 0.95 },
   { level: 3, name: 'Silver',   mult: 1.5, price: 1.75 },
   { level: 4, name: 'Gold',     mult: 1.7, price: 3.00 },
-  { level: 5, name: 'Elite',    mult: 2.0, price: 5.00 },
+  { level: 5, name: 'MAX',      mult: 2.0, price: 5.00 },
 ]
 
 export function ProfileSection({ address, basename }) {
@@ -490,20 +490,28 @@ export function ProfileSection({ address, basename }) {
             </div>
           </div>
           
-          {/* High-Contrast Balance Pill */}
-          <div style={{ 
-            background: '#fff', 
-            padding: '6px 16px', 
-            borderRadius: 50, 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: 12,
-            boxShadow: '0 8px 20px rgba(0,0,0,0.2)',
-            border: '1px solid rgba(255,255,255,0.2)'
-          }}>
-            <div style={{ fontSize: 8, fontWeight: 900, color: '#000', opacity: 0.5, letterSpacing: 0.5, textTransform: 'uppercase' }}>HP Balance</div>
-            <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 20, fontWeight: 900, color: '#000', lineHeight: 1 }}>
+          {/* Redesigned HP Balance readout */}
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+            <div style={{ 
+              fontFamily: "'Barlow Condensed',sans-serif", 
+              fontSize: 28, 
+              fontWeight: 900, 
+              color: '#fff', 
+              lineHeight: 1,
+              textShadow: '0 0 20px rgba(255,255,255,0.2)' 
+            }}>
               {userStats.points.toLocaleString()}
+            </div>
+            <div style={{ 
+              fontSize: 10, 
+              fontWeight: 900, 
+              color: '#A5B4FC', 
+              background: 'rgba(165, 180, 252, 0.1)', 
+              padding: '2px 6px', 
+              borderRadius: 4,
+              border: '1px solid rgba(165, 180, 252, 0.2)' 
+            }}>
+              HP
             </div>
           </div>
         </div>
