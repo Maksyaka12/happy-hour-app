@@ -567,6 +567,8 @@ export function ProfileSection({ address, basename }) {
                 BOOSTED
               </div>
             )}
+          </div>
+        </div>
       </div>
 
       {/* Streak Milestone Row (Compact) */}
