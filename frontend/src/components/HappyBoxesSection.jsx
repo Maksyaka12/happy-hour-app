@@ -271,8 +271,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                   width: '100%', 
                   height: '100%', 
                   objectFit: 'contain',
-                  mixBlendMode: 'multiply',
-                  filter: 'drop-shadow(0 8px 12px rgba(0,0,0,0.1))' 
+                  mixBlendMode: 'multiply'
                 }} 
               />
             </div>
