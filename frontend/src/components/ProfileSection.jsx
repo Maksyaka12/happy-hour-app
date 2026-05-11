@@ -512,13 +512,25 @@ export function ProfileSection({ address, basename }) {
             }}>
               <UserAvatar address={address} size={48} />
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <div style={{ fontSize: 8, fontWeight: 900, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase' }}>HP Balance</div>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 28, fontWeight: 900, color: '#fff', lineHeight: 1, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
-                  {userStats.points.toLocaleString()}
-                </div>
-                <div style={{ fontSize: 10, fontWeight: 900, color: '#A5B4FC', opacity: 0.8 }}>HP</div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+              <div style={{ 
+                fontFamily: "'Barlow Condensed',sans-serif", 
+                fontSize: 32, 
+                fontWeight: 900, 
+                color: '#fff', 
+                lineHeight: 1, 
+                textShadow: '0 2px 15px rgba(0,0,0,0.5)' 
+              }}>
+                {userStats.points.toLocaleString()}
+              </div>
+              <div style={{ 
+                fontSize: 12, 
+                fontWeight: 900, 
+                color: '#A5B4FC', 
+                opacity: 0.9,
+                letterSpacing: 0.5
+              }}>
+                HP
               </div>
             </div>
           </div>
