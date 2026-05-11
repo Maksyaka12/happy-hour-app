@@ -913,7 +913,9 @@ export function ProfileSection({ address, basename }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
           <div>
             <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Referral Hub</div>
-            <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>Earn 50% commission from friends.</div>
+            <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>
+              Invite friends and <span style={{ color: '#EA580C', fontWeight: 700 }}>earn 50% of their points</span> forever.
+            </div>
           </div>
         </div>
 
