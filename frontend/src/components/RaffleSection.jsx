@@ -149,19 +149,19 @@ export function RaffleSection({ address }) {
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
             <div>
-              <div style={{ fontFamily: "'DM Mono',monospace", fontSize: 10, color: 'rgba(255,255,255,0.65)', letterSpacing: 1.5, marginBottom: 4 }}>
+              <div style={{ fontFamily: "'DM Mono',monospace", fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.65)', letterSpacing: 1.2, marginBottom: 4 }}>
                 ROUND #{round?.id ?? '—'} · PRIZE POOL
               </div>
-              <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 48, fontWeight: 900, lineHeight: 0.95, color: '#fff' }}>
-                {totalPot.toFixed(2)}<span style={{ fontSize: 20, marginLeft: 6, opacity: 0.75 }}>USDC</span>
+              <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 44, fontWeight: 900, lineHeight: 0.95, color: '#fff' }}>
+                {totalPot.toFixed(2)}<span style={{ fontSize: 18, marginLeft: 6, opacity: 0.75 }}>USDC</span>
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <div style={{ fontFamily: "'DM Mono',monospace", fontSize: 10, color: 'rgba(255,255,255,0.65)', letterSpacing: 1, marginBottom: 4 }}>
+              <div style={{ fontFamily: "'DM Mono',monospace", fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.65)', letterSpacing: 1, marginBottom: 4 }}>
                 {isClosed ? 'DRAWS IN' : 'TIME LEFT'}
               </div>
               <div style={{
-                fontFamily: "'Barlow Condensed',sans-serif", fontSize: 34, fontWeight: 900,
+                fontFamily: "'Barlow Condensed',sans-serif", fontSize: 30, fontWeight: 900,
                 background: '#fff', borderRadius: 8, padding: '4px 10px',
                 color: timerColor, display: 'inline-block', fontVariantNumeric: 'tabular-nums',
               }}>
@@ -171,10 +171,10 @@ export function RaffleSection({ address }) {
           </div>
           <PBar participants={participants} totalPot={totalPot} />
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, flexWrap: 'wrap', gap: 4 }}>
-            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>
+            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>
               👥 {participants.length} players · {participants.reduce((s, p) => s + (p.tickets || 0), 0)} tickets
             </span>
-            {myEntry && <span style={{ fontSize: 12, color: '#fff', fontWeight: 700 }}>Your chance: {myChance}%</span>}
+            {myEntry && <span style={{ fontSize: 11, color: '#fff', fontWeight: 800 }}>Your chance: {myChance}%</span>}
           </div>
         </div>
       </div>
@@ -187,7 +187,7 @@ export function RaffleSection({ address }) {
           display: 'flex', alignItems: 'center', gap: 8,
         }}>
           <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#FC401F', animation: 'blinkDot 1s infinite' }} />
-          <span style={{ fontSize: 13, color: '#FC401F', fontWeight: 600 }}>
+          <span style={{ fontSize: 12, color: '#FC401F', fontWeight: 700 }}>
             Deposits closed · Draw in {fmt(msLeft)}
           </span>
         </div>
@@ -200,10 +200,10 @@ export function RaffleSection({ address }) {
           borderRadius: 12, padding: '10px 16px', marginBottom: 12,
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8,
         }}>
-          <span style={{ fontSize: 13, color: '#D97706', fontWeight: 600 }}>Switch to Base Mainnet</span>
+          <span style={{ fontSize: 12, color: '#D97706', fontWeight: 700 }}>Switch to Base Mainnet</span>
           <button
             onClick={() => switchChain({ chainId: base.id })}
-            style={{ background: '#D97706', color: '#fff', borderRadius: 50, padding: '6px 14px', fontSize: 12, fontWeight: 700, border: 'none', cursor: 'pointer' }}
+            style={{ background: '#D97706', color: '#fff', borderRadius: 50, padding: '5px 12px', fontSize: 10, fontWeight: 800, border: 'none', cursor: 'pointer' }}
           >
             {isSwitching ? 'Switching…' : 'Switch'}
           </button>
@@ -218,16 +218,16 @@ export function RaffleSection({ address }) {
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
           <div>
-            <div style={{ fontSize: 11, color: '#717886', fontWeight: 600, marginBottom: 2 }}>YOUR POSITION</div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: '#0A0B0D' }}>{myTickets} tickets · {myAmount.toFixed(2)} USDC</div>
+            <div style={{ fontSize: 9, color: '#717886', fontWeight: 800, marginBottom: 2, letterSpacing: '0.3px' }}>YOUR POSITION</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#0A0B0D' }}>{myTickets} tickets · {myAmount.toFixed(2)} USDC</div>
           </div>
-          <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 30, fontWeight: 900, color: '#0000FF' }}>{myChance}%</div>
+          <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 26, fontWeight: 900, color: '#0000FF' }}>{myChance}%</div>
         </div>
       )}
 
       {/* Bet buttons */}
       <div style={{ marginBottom: 12 }}>
-        <div style={{ fontSize: 11, color: '#717886', fontWeight: 600, letterSpacing: 1, marginBottom: 10, textTransform: 'uppercase' }}>
+        <div style={{ fontSize: 9, color: '#717886', fontWeight: 800, letterSpacing: 0.5, marginBottom: 10, textTransform: 'uppercase' }}>
           Place Your Bet
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
@@ -237,17 +237,17 @@ export function RaffleSection({ address }) {
               onClick={() => onBetClick(a)}
               disabled={isClosed || isPending || isConfirming}
               style={{
-                background: '#0000FF', border: 'none', borderRadius: 10, padding: '14px 8px',
-                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
+                background: '#0000FF', border: 'none', borderRadius: 10, padding: '10px 6px',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1,
                 boxShadow: '0 2px 8px rgba(0,0,255,0.25)', cursor: 'pointer',
                 opacity: isClosed ? 0.4 : 1, transition: 'all 0.15s',
               }}
             >
-              <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 20, fontWeight: 900, color: '#fff' }}>
+              <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 16, fontWeight: 900, color: '#fff' }}>
                 {a} USDC
               </div>
-              <div style={{ fontSize: 9, color: '#3C8AFF', marginTop: 1 }}>
-                {Math.round(a / TICKET_UNIT)} ticket{Math.round(a / TICKET_UNIT) > 1 ? 's' : ''}
+              <div style={{ fontSize: 8, color: '#3C8AFF', fontWeight: 700 }}>
+                {Math.round(a / TICKET_UNIT)} TICKET{Math.round(a / TICKET_UNIT) > 1 ? 'S' : ''}
               </div>
             </button>
           ))}
@@ -257,26 +257,26 @@ export function RaffleSection({ address }) {
       {/* Participants */}
       {participants.length > 0 && (
         <div style={{ marginBottom: 12 }}>
-          <div style={{ fontSize: 11, color: '#717886', fontWeight: 600, letterSpacing: 1, marginBottom: 8, textTransform: 'uppercase' }}>
+          <div style={{ fontSize: 9, color: '#717886', fontWeight: 800, letterSpacing: 0.5, marginBottom: 8, textTransform: 'uppercase' }}>
             Participants
           </div>
           <div style={{ background: '#EEF0F3', border: '1px solid #DEE1E7', borderTop: '3px solid #0000FF', borderRadius: 12, overflow: 'hidden' }}>
             {participants.map((p, i) => (
               <div key={i} style={{
-                display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px',
+                display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
                 background: '#fff', borderBottom: i < participants.length - 1 ? '1px solid #DEE1E7' : 'none',
                 borderLeft: `3px solid ${pColor(p.address)}`,
               }}>
-                <UserAvatar address={p.address} size={30} />
+                <UserAvatar address={p.address} size={28} />
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#0A0B0D' }}>{p.name || short(p.address)}</div>
-                  <div style={{ fontSize: 10, color: '#717886', marginTop: 1 }}>{p.tickets || Math.round(p.amount / TICKET_UNIT)} tickets</div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#0A0B0D' }}>{p.name || short(p.address)}</div>
+                  <div style={{ fontSize: 9, color: '#717886', fontWeight: 600 }}>{p.tickets || Math.round(p.amount / TICKET_UNIT)} tickets</div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 16, fontWeight: 900, color: '#0000FF' }}>
+                  <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 14, fontWeight: 900, color: '#0000FF' }}>
                     {p.amount.toFixed(2)} USDC
                   </div>
-                  <div style={{ fontSize: 10, color: '#3C8AFF' }}>
+                  <div style={{ fontSize: 9, color: '#3C8AFF', fontWeight: 700 }}>
                     {totalPot > 0 ? (p.amount / totalPot * 100).toFixed(1) : 0}%
                   </div>
                 </div>
@@ -298,22 +298,22 @@ export function RaffleSection({ address }) {
             display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0,
           }}>🏆</div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 11, color: '#3C8AFF', fontWeight: 600, marginBottom: 2 }}>LAST WINNER</div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#0A0B0D' }}>{lastWinner.name}</div>
-            <div style={{ fontSize: 10, color: '#3C8AFF', marginTop: 1 }}>Win chance: {lastWinner.chance}%</div>
+            <div style={{ fontSize: 9, color: '#3C8AFF', fontWeight: 800, marginBottom: 2, letterSpacing: '0.3px' }}>LAST WINNER</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#0A0B0D' }}>{lastWinner.name}</div>
+            <div style={{ fontSize: 9, color: '#3C8AFF', fontWeight: 700 }}>Win chance: {lastWinner.chance}%</div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 22, fontWeight: 900, color: '#0000FF' }}>
+            <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 18, fontWeight: 900, color: '#0000FF' }}>
               +{lastWinner.amount}
             </div>
-            <div style={{ fontSize: 10, color: '#717886' }}>of {lastWinner.pot} USDC</div>
+            <div style={{ fontSize: 9, color: '#717886', fontWeight: 600 }}>of {lastWinner.pot} USDC</div>
           </div>
         </div>
       )}
 
       {/* How it works */}
-      <div style={{ background: '#EEF0F3', border: '1px solid #DEE1E7', borderRadius: 16, padding: '18px 16px' }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: '#717886', letterSpacing: 1, marginBottom: 12, textTransform: 'uppercase' }}>
+      <div style={{ background: '#EEF0F3', border: '1px solid #DEE1E7', borderRadius: 16, padding: '16px' }}>
+        <div style={{ fontSize: 9, fontWeight: 800, color: '#717886', letterSpacing: 0.5, marginBottom: 14, textTransform: 'uppercase' }}>
           How it works
         </div>
         {[
@@ -326,9 +326,9 @@ export function RaffleSection({ address }) {
           ['When are winnings paid?',           'Automatically after the draw, directly to the winner\'s wallet via the smart contract.'],
           ['Can I deposit multiple times?',     'Yes! Multiple deposits per round are allowed and all contribute to your ticket count.'],
         ].map(([q, a], i, arr) => (
-          <div key={i} style={{ marginBottom: i < arr.length - 1 ? 12 : 0 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#32353D', marginBottom: 3 }}>{q}</div>
-            <div style={{ fontSize: 12, color: '#717886', lineHeight: 1.65 }}>{a}</div>
+          <div key={i} style={{ marginBottom: i < arr.length - 1 ? 14 : 0 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#0A0B0D', marginBottom: 3 }}>{q}</div>
+            <div style={{ fontSize: 10, color: '#717886', lineHeight: 1.6, fontWeight: 500 }}>{a}</div>
           </div>
         ))}
       </div>
