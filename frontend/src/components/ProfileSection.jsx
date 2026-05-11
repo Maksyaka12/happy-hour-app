@@ -683,7 +683,7 @@ export function ProfileSection({ address, basename }) {
       <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, marginBottom: 12 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Account Multiplier</div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Profile Multiplayer</div>
             <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>Permanent multiplier for all earned HP.</div>
           </div>
           <div style={{ 
@@ -743,7 +743,7 @@ export function ProfileSection({ address, basename }) {
             }}
             style={{ width: '100%', background: '#0000FF', color: '#fff', borderRadius: 50, padding: '10px 12px', fontSize: 11, fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, boxShadow: '0 4px 12px rgba(0,0,255,0.2)' }}
           >
-            UPGRADE TO {LEVELS.find(l => l.level === accountLevel + 1)?.name.toUpperCase()}
+            Upgrade to {LEVELS.find(l => l.level === accountLevel + 1)?.name.toUpperCase()}
             <span style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: 20, fontSize: 11, display: 'flex', alignItems: 'center', gap: 4, color: '#A5B4FC' }}>
               {LEVELS.find(l => l.level === accountLevel + 1)?.price.toFixed(2)}<img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14 }} />
             </span>
@@ -976,7 +976,7 @@ export function ProfileSection({ address, basename }) {
               disabled={refLoading || !refInput.trim()}
               style={{ background: '#0000FF', color: '#fff', border: 'none', borderRadius: 10, padding: '0 16px', fontSize: 11, fontWeight: 800, cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,255,0.1)' }}
             >
-              APPLY
+              Apply
             </button>
           </div>
         )}
