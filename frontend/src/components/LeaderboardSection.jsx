@@ -406,22 +406,18 @@ export function LeaderboardSection({ address }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {leaders.map((entry, idx) => {
                 const isTop3 = idx < 3
-                // Row backgrounds for Top 3
-                const rowBg = idx === 0 ? 'rgba(252, 211, 77, 0.12)' 
-                            : idx === 1 ? 'rgba(226, 232, 240, 0.5)' 
-                            : idx === 2 ? 'rgba(253, 186, 116, 0.15)' 
-                            : '#fff'
-                const rowBorder = idx === 0 ? 'rgba(252, 211, 77, 0.4)'
-                               : idx === 1 ? 'rgba(226, 232, 240, 0.8)'
-                               : idx === 2 ? 'rgba(253, 186, 116, 0.4)'
+                // Transparent row backgrounds removed, using borders instead
+                const rowBorder = idx === 0 ? 'rgba(252, 211, 77, 1)' // Gold
+                               : idx === 1 ? 'rgba(148, 163, 184, 0.8)' // Silver
+                               : idx === 2 ? 'rgba(253, 186, 116, 1)' // Bronze
                                : '#DEE1E7'
 
                 return (
                   <div
                     key={entry.address}
                     style={{
-                      background: rowBg,
-                      border: `1px solid ${rowBorder}`,
+                      background: '#fff',
+                      border: `1.5px solid ${rowBorder}`,
                       borderRadius: 14,
                       padding: '8px 12px',
                       display: 'flex',
@@ -451,7 +447,7 @@ export function LeaderboardSection({ address }) {
                           fontSize: 12,
                           filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'
                         }}>
-                          {idx === 0 ? '👑' : idx === 1 ? '🥈' : '🥉'}
+                          {idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉'}
                         </div>
                       )}
                     </div>
