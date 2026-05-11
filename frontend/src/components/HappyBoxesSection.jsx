@@ -27,7 +27,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       price: 0.20,
       color: '#8B5A2B',
       bg: '#FAF4ED',
-      icon: '📦',
+      img: '/common_box.png',
       rewards: '4 - 8 HP'
     },
     {
@@ -36,8 +36,8 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       price: 0.45,
       color: '#9333EA',
       bg: '#F3E8FF',
-      icon: '🎁',
-      rewards: '10 - 20 HP + Chance for 2x Boost'
+      img: '/epic_box.png',
+      rewards: '10 - 20 HP + Boost'
     },
     {
       id: 'legendary',
@@ -45,8 +45,8 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       price: 0.95,
       color: '#D97706',
       bg: '#FEF3C7',
-      icon: '💰',
-      rewards: '21 - 40 HP + Chance for 5x Boost'
+      img: '/legendary_box.png',
+      rewards: '21 - 40 HP + Boost'
     }
   ]
 
@@ -169,6 +169,11 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             50% { box-shadow: inset 0 0 25px rgba(217,119,6,0.2), 0 0 15px rgba(217,119,6,0.3); }
             100% { box-shadow: inset 0 0 15px rgba(217,119,6,0.1), 0 0 0px rgba(217,119,6,0); }
           }
+
+          @keyframes bobbing {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+          }
           
           .box-card { transition: all 0.2s ease; }
           .box-card:active { transform: scale(0.98); }
@@ -253,7 +258,6 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
               {box.id === 'legendary' ? '🔥 Jackpot' : box.id === 'epic' ? '✨ Hot' : 'Common'}
             </div>
 
-            {/* Box Icon Container — Tiered Gradients */}
             <div style={{
               width: 84, height: 84,
               background: box.id === 'legendary' 
@@ -263,12 +267,21 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                 : 'linear-gradient(135deg, #FAF4ED 0%, #F3E6D8 100%)',
               borderRadius: 16,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 38, flexShrink: 0,
+              flexShrink: 0,
               border: `1px solid ${box.color}20`,
               boxShadow: box.id === 'legendary' ? 'inset 0 0 15px rgba(217,119,6,0.1)' : 'none',
-              animation: box.id === 'legendary' ? 'pulseGold 2s infinite' : 'none'
+              animation: `${box.id === 'legendary' ? 'pulseGold 2s infinite, ' : ''}bobbing ${box.id === 'legendary' ? '2s' : box.id === 'epic' ? '2.5s' : '3s'} ease-in-out infinite`
             }}>
-              <span style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))' }}>{box.icon}</span>
+              <img 
+                src={box.img} 
+                alt={box.name} 
+                style={{ 
+                  width: '80%', 
+                  height: '80%', 
+                  objectFit: 'contain',
+                  filter: 'drop-shadow(0 8px 12px rgba(0,0,0,0.15))' 
+                }} 
+              />
             </div>
 
             {/* Right side — Info & Button */}
@@ -362,7 +375,9 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           backdropFilter: 'blur(8px)'
         }}>
-          <div style={{ fontSize: 80, animation: 'magicBox 0.5s infinite' }}>{selectedBox?.icon ?? '🎁'}</div>
+          <div style={{ fontSize: 100, animation: 'magicBox 0.5s infinite, bobbing 1.5s ease-in-out infinite' }}>
+            <img src={selectedBox?.img} style={{ width: 120, height: 120, objectFit: 'contain' }} />
+          </div>
         </div>
       )}
 
