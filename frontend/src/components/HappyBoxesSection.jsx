@@ -210,11 +210,20 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         justifyContent: 'center',
         minHeight: 110
       }}>
-        {/* Falling Boxes Background Decoration */}
-        <img src="/common_box.png" style={{ position: 'absolute', top: -10, right: '15%', width: 50, opacity: 0.4, transform: 'rotate(-20deg)', filter: 'blur(1px)' }} alt="" />
-        <img src="/epic_box.png" style={{ position: 'absolute', top: 20, right: '5%', width: 40, opacity: 0.3, transform: 'rotate(15deg)', filter: 'blur(0.5px)' }} alt="" />
-        <img src="/legendary_box.png" style={{ position: 'absolute', bottom: -10, right: '25%', width: 60, opacity: 0.2, transform: 'rotate(-10deg)', filter: 'blur(2px)' }} alt="" />
-        <img src="/common_box.png" style={{ position: 'absolute', top: -15, left: '40%', width: 35, opacity: 0.2, transform: 'rotate(10deg)', filter: 'blur(1.5px)' }} alt="" />
+        {/* Falling Boxes Background Asset */}
+        <img 
+          src="/background_box.png" 
+          style={{ 
+            position: 'absolute', 
+            inset: 0, 
+            width: '100%', 
+            height: '100%', 
+            objectFit: 'cover', 
+            opacity: 0.6,
+            mixBlendMode: 'overlay'
+          }} 
+          alt="" 
+        />
 
         <div style={{ position: 'relative', zIndex: 2 }}>
           <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.7)', letterSpacing: 1.5, marginBottom: 8, textTransform: 'uppercase' }}>
