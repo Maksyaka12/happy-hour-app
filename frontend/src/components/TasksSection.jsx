@@ -33,6 +33,7 @@ function TaskCard({ task, taskState, onVisit, onCheck, onClaim, isClaiming }) {
       }}
     >
       <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+        {/* Icon */}
         <div
           style={{
             width: 32,
@@ -49,8 +50,12 @@ function TaskCard({ task, taskState, onVisit, onCheck, onClaim, isClaiming }) {
         >
           {taskIcons[task.type] || '⭐'}
         </div>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 12, fontWeight: 800, color: '#0A0B0D', lineHeight: 1.3 }}>{task.text}</div>
+
+        {/* Content */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 12, fontWeight: 800, color: '#0A0B0D', lineHeight: 1.3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {task.text}
+          </div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 2 }}>
             <span style={{ fontSize: 9, color: '#D97706', fontWeight: 800, background: 'rgba(217,119,6,0.1)', borderRadius: 6, padding: '1px 6px', textTransform: 'uppercase' }}>
               +{task.points} HP
@@ -58,86 +63,89 @@ function TaskCard({ task, taskState, onVisit, onCheck, onClaim, isClaiming }) {
             <span style={{ fontSize: 9, color: '#64748B', fontWeight: 600 }}>⏰ {fmt(left)} left</span>
           </div>
         </div>
-      </div>
 
-      <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-        <a
-          href={task.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => !taskState && onVisit(task.id)}
-          style={{
-            flex: 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'rgba(29,161,242,0.06)',
-            border: '1px solid rgba(29,161,242,0.15)',
-            color: '#1DA1F2',
-            borderRadius: 50,
-            padding: '8px 10px',
-            fontSize: 12,
-            fontWeight: 800,
-            textDecoration: 'none',
-          }}
-        >
-          {task.type === 'retweet' ? 'Retweet' : task.type === 'like' ? 'Like' : task.type === 'follow' ? 'Follow' : task.type === 'comment' ? 'Comment' : task.type === 'bookmark' ? 'Bookmark' : 'Visit'}
-        </a>
-
-        {canClaim ? (
-          <button
-            onClick={() => onClaim(task.id)}
-            disabled={isClaiming}
-            style={{
-              background: '#059669',
-              color: '#fff',
-              borderRadius: 50,
-              padding: '8px 14px',
-              fontSize: 11,
-              fontWeight: 800,
-              border: 'none',
-              cursor: isClaiming ? 'wait' : 'pointer',
-              opacity: isClaiming ? 0.7 : 1,
-              boxShadow: '0 4px 12px rgba(5,150,105,0.2)',
-              minWidth: 90,
-            }}
-          >
-            {isClaiming ? '...' : 'Claim FREE'}
-          </button>
-        ) : isCounting ? (
-          <div
-            style={{
-              borderRadius: 50,
-              padding: '8px 14px',
-              background: '#EEF0F3',
-              border: '1px solid #DEE1E7',
-              fontSize: 11,
-              fontWeight: 800,
-              color: '#0000FF',
-              minWidth: 80,
-              textAlign: 'center',
-            }}
-          >
-            Check…
-          </div>
-        ) : (
-          <button
-            onClick={() => onCheck(task.id)}
-            disabled={!canCheck}
-            style={{
-              background: canCheck ? '#EEF0F3' : '#F8F9FC',
-              border: `1px solid ${canCheck ? '#0000FF' : '#DEE1E7'}`,
-              color: canCheck ? '#0000FF' : '#B1B7C3',
-              borderRadius: 50,
-              padding: '8px 14px',
-              fontSize: 11,
-              fontWeight: 800,
-              cursor: canCheck ? 'pointer' : 'not-allowed',
-            }}
-          >
-            Check
-          </button>
-        )}
+        {/* Action Button */}
+        <div style={{ flexShrink: 0 }}>
+          {canClaim ? (
+            <button
+              onClick={() => onClaim(task.id)}
+              disabled={isClaiming}
+              style={{
+                background: '#059669',
+                color: '#fff',
+                borderRadius: 50,
+                padding: '7px 0',
+                width: 90,
+                fontSize: 10,
+                fontWeight: 900,
+                border: 'none',
+                cursor: isClaiming ? 'wait' : 'pointer',
+                opacity: isClaiming ? 0.7 : 1,
+                boxShadow: '0 4px 12px rgba(5,150,105,0.2)',
+                textTransform: 'uppercase'
+              }}
+            >
+              {isClaiming ? '...' : 'CLAIM FREE'}
+            </button>
+          ) : isCounting ? (
+            <div
+              style={{
+                borderRadius: 50,
+                padding: '7px 0',
+                width: 90,
+                background: '#EEF0F3',
+                border: '1px solid #DEE1E7',
+                fontSize: 10,
+                fontWeight: 900,
+                color: '#0000FF',
+                textAlign: 'center',
+                textTransform: 'uppercase'
+              }}
+            >
+              CHECKING...
+            </div>
+          ) : canCheck ? (
+            <button
+              onClick={() => onCheck(task.id)}
+              style={{
+                background: '#EEF0F3',
+                border: '1px solid #0000FF',
+                color: '#0000FF',
+                borderRadius: 50,
+                padding: '7px 0',
+                width: 90,
+                fontSize: 10,
+                fontWeight: 900,
+                cursor: 'pointer',
+                textTransform: 'uppercase'
+              }}
+            >
+              CHECK
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                window.open(task.url, '_blank')
+                onVisit(task.id)
+              }}
+              style={{
+                background: '#0000FF',
+                color: '#fff',
+                borderRadius: 50,
+                padding: '7px 0',
+                width: 90,
+                fontSize: 10,
+                fontWeight: 900,
+                border: 'none',
+                cursor: 'pointer',
+                boxShadow: '0 4px 10px rgba(0,0,255,0.2)',
+                textTransform: 'uppercase'
+              }}
+            >
+              START
+            </button>
+          )}
+        </div>
       </div>
     </div>
   )
