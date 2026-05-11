@@ -173,76 +173,67 @@ export function LeaderboardSection({ address }) {
         backgroundColor: '#0000FF', // Fallback
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        borderRadius: 20,
-        padding: '24px 20px',
+        borderRadius: 24,
+        padding: '32px 20px',
         marginBottom: 14,
         position: 'relative',
-        minHeight: 140,
+        minHeight: 160,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
-        overflow: 'hidden'
+        boxShadow: '0 12px 40px rgba(0,0,0,0.25)',
+        overflow: 'hidden',
+        border: '1px solid rgba(255,255,255,0.1)'
       }}>
         {/* Dark overlay to make text more readable if image is light */}
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.15)', zIndex: 0 }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.25)', zIndex: 0 }} />
+
+        {/* Floating Season Status */}
+        <div style={{
+          position: 'absolute',
+          top: 14,
+          right: 14,
+          background: 'rgba(0,0,0,0.5)',
+          backdropFilter: 'blur(8px)',
+          padding: '6px 14px',
+          borderRadius: 14,
+          border: '1px solid rgba(255,255,255,0.15)',
+          textAlign: 'right',
+          zIndex: 2
+        }}>
+          <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 2 }}>Ends in</div>
+          <div style={{ fontSize: 13, fontWeight: 900, color: '#fff' }}>Coming soon</div>
+        </div>
 
         <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
           <div style={{
             fontFamily: "'Barlow Condensed', sans-serif",
-            fontSize: 48,
+            fontSize: 56,
             fontWeight: 900,
             color: '#fff',
             lineHeight: 1,
-            textShadow: '0 2px 10px rgba(0,0,0,0.5)',
-            marginBottom: 8
+            textShadow: '0 4px 15px rgba(0,0,0,0.6)',
+            marginBottom: 10,
+            letterSpacing: '-1px'
           }}>
             SEASON 1
           </div>
           <div style={{
-            background: 'rgba(255,255,255,0.15)',
+            background: 'rgba(255,255,255,0.2)',
             backdropFilter: 'blur(10px)',
             borderRadius: 50,
-            padding: '4px 16px',
-            fontSize: 12,
-            fontWeight: 700,
+            padding: '6px 20px',
+            fontSize: 13,
+            fontWeight: 800,
             color: '#fff',
-            border: '1px solid rgba(255,255,255,0.25)',
+            border: '1px solid rgba(255,255,255,0.3)',
             display: 'inline-block',
             textTransform: 'uppercase',
-            letterSpacing: '0.5px'
+            letterSpacing: '0.6px'
           }}>
-            Top users will get rewards
+            🏆 Top users win USDC
           </div>
-        </div>
-      </div>
-
-      {/* Season Ends In Status */}
-      <div style={{
-        background: '#fff',
-        border: '1px solid #DEE1E7',
-        borderRadius: 18,
-        padding: '14px 18px',
-        marginBottom: 14,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 6,
-        boxShadow: '0 4px 12px rgba(10,11,13,0.03)'
-      }}>
-        <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Season ends in</div>
-        <div style={{ 
-          background: '#0000FF', 
-          color: '#fff', 
-          padding: '4px 16px', 
-          borderRadius: 50, 
-          fontSize: 12, 
-          fontWeight: 800,
-          boxShadow: '0 4px 10px rgba(0,0,255,0.2)'
-        }}>
-          Coming soon
         </div>
       </div>
 
