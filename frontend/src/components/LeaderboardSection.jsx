@@ -617,18 +617,31 @@ export function LeaderboardSection({ address }) {
           </div>
 
           {/* How it works */}
-          <div style={{ background: '#EEF0F3', border: '1px solid #DEE1E7', borderRadius: 16, padding: '18px 16px', marginTop: 24 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#717886', letterSpacing: 1, marginBottom: 12, textTransform: 'uppercase' }}>
+          <div style={{ 
+            background: '#F8F9FC', 
+            border: '1px solid #DEE1E7', 
+            borderRadius: 16, 
+            padding: '16px', 
+            marginTop: 24 
+          }}>
+            <div style={{ 
+              fontSize: 10, 
+              fontWeight: 800, 
+              color: '#717886', 
+              letterSpacing: '0.5px', 
+              marginBottom: 14, 
+              textTransform: 'uppercase' 
+            }}>
               How it works
             </div>
             {[
-              ['What are Activity Points?', 'All your in-app activity converts into activity points. Formula: daily check-in + tasks + in-app transactions + post approval + your streak (different values).'],
+              ['What are Activity Points?', 'All your in-app activity converts into activity points. Formula: daily check-in + tasks + in-app transactions + post approval + your streak.'],
               ['When are rewards distributed?', 'Top 20 most active users automatically receive HP daily when the timer hits 0 (00:00 UTC).'],
               ['What happens when the timer hits 00:00?', 'The leaderboard resets along with your activity points. New day - new chance for everyone.'],
             ].map(([q, a], i, arr) => (
-              <div key={i} style={{ marginBottom: i < arr.length - 1 ? 12 : 0 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#32353D', marginBottom: 3 }}>{q}</div>
-                <div style={{ fontSize: 12, color: '#717886', lineHeight: 1.65 }}>{a}</div>
+              <div key={i} style={{ marginBottom: i < arr.length - 1 ? 14 : 0 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#0A0B0D', marginBottom: 4 }}>{q}</div>
+                <div style={{ fontSize: 11, color: '#717886', lineHeight: 1.6, fontWeight: 500 }}>{a}</div>
               </div>
             ))}
           </div>
