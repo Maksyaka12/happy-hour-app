@@ -480,59 +480,62 @@ export function ProfileSection({ address, basename }) {
         <div style={{ position: 'absolute', inset: 0, opacity: 0.08, backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
         
         {/* Top Bar: Player Identity Passport */}
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
           
-          {/* Left: Avatar & HP Balance Hub */}
+          {/* Left: Upscaled Avatar & HP Balance Hub */}
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
             background: 'rgba(0,0,0,0.3)', 
-            padding: '4px 16px 4px 4px', 
-            borderRadius: 50, 
+            padding: '6px 20px 6px 6px', 
+            borderRadius: 60, 
             border: '1px solid rgba(255,255,255,0.08)',
-            gap: 12,
-            boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
+            gap: 16,
+            boxShadow: '0 6px 20px rgba(0,0,0,0.25)'
           }}>
             <div style={{ 
-              width: 36, 
-              height: 36, 
+              width: 48, 
+              height: 48, 
               borderRadius: '50%', 
               overflow: 'hidden', 
-              border: '1px solid rgba(255,255,255,0.2)',
+              border: '2px solid rgba(255,255,255,0.15)',
               background: 'rgba(255,255,255,0.05)',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              boxShadow: '0 0 15px rgba(255,255,255,0.05)'
             }}>
-              <UserAvatar address={address} size={36} />
+              <UserAvatar address={address} size={48} />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <div style={{ fontSize: 7, fontWeight: 900, color: 'rgba(255,255,255,0.4)', letterSpacing: 0.5, textTransform: 'uppercase' }}>HP Balance</div>
-              <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 22, fontWeight: 900, color: '#fff', lineHeight: 1 }}>
+              <div style={{ fontSize: 8, fontWeight: 900, color: 'rgba(255,255,255,0.4)', letterSpacing: 0.8, textTransform: 'uppercase' }}>HP Balance</div>
+              <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 26, fontWeight: 900, color: '#fff', lineHeight: 1 }}>
                 {userStats.points.toLocaleString()}
               </div>
             </div>
           </div>
 
           {/* Right: Account Utilities (Disconnect & Address) */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, minWidth: 80 }}>
             <button
               onClick={() => disconnect()}
               style={{
                 background: 'rgba(255,255,255,0.1)',
                 border: '1px solid rgba(255,255,255,0.05)',
-                color: 'rgba(255,255,255,0.8)',
+                color: 'rgba(255,255,255,0.7)',
                 borderRadius: 50,
-                padding: '4px 10px',
-                fontSize: 9,
-                fontWeight: 800,
+                padding: '4px 12px',
+                fontSize: 8,
+                fontWeight: 900,
                 cursor: 'pointer',
-                transition: 'all 0.2s ease'
+                transition: 'all 0.2s ease',
+                width: '100%',
+                textAlign: 'center'
               }}
             >
               DISCONNECT
             </button>
-            <div style={{ fontSize: 10, fontWeight: 700, color: '#fff', opacity: 0.4, letterSpacing: 0.5 }}>
+            <div style={{ fontSize: 9, fontWeight: 800, color: '#fff', opacity: 0.35, letterSpacing: 0.5, width: '100%', textAlign: 'center' }}>
               {basename ? basename : short(address)}
             </div>
           </div>
