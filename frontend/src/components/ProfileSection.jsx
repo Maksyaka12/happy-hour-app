@@ -774,7 +774,7 @@ export function ProfileSection({ address, basename }) {
         {/* Check-in Tile */}
         <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div style={{ fontSize: 12, fontWeight: 800, color: '#0A0B0D' }}>DAILY CHECK-IN</div>
               <div style={{ background: '#0000FF', color: '#fff', padding: '1px 6px', borderRadius: 50, fontSize: 8, fontWeight: 900 }}>+1 HP</div>
             </div>
@@ -799,7 +799,7 @@ export function ProfileSection({ address, basename }) {
         {/* Boost Tile */}
         <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div style={{ fontSize: 12, fontWeight: 800, color: '#0A0B0D' }}>DAILY CLAIM</div>
               <div style={{ background: '#0000FF', color: '#fff', padding: '1px 6px', borderRadius: 50, fontSize: 8, fontWeight: 900 }}>+2 HP</div>
             </div>
@@ -927,20 +927,44 @@ export function ProfileSection({ address, basename }) {
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
-          <div style={{ flex: 1, background: '#F1F5F9', borderRadius: 10, padding: '10px 12px', overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
-            <span style={{ fontFamily: "'DM Mono',monospace", fontSize: 10, color: '#64748B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{referralLink}</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
+          <div style={{ display: 'flex', gap: 6 }}>
+            <div style={{ flex: 1, background: '#F1F5F9', borderRadius: 10, padding: '10px 12px', overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
+              <span style={{ fontFamily: "'DM Mono',monospace", fontSize: 10, color: '#64748B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{referralLink}</span>
+            </div>
+            <button
+              onClick={copyRef}
+              style={{ background: '#0000FF', color: '#fff', border: 'none', borderRadius: 10, padding: '0 12px', fontSize: 10, fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap' }}
+            >
+              {copied ? '✓' : 'COPY LINK'}
+            </button>
           </div>
-          <button
-            onClick={copyRef}
-            style={{ background: '#0000FF', color: '#fff', border: 'none', borderRadius: 10, padding: '0 12px', fontSize: 11, fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap' }}
-          >
-            {copied ? '✓' : 'COPY'}
-          </button>
+          <div style={{ display: 'flex', gap: 6 }}>
+            <div style={{ flex: 1, background: '#F1F5F9', borderRadius: 10, padding: '10px 12px', overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
+              <span style={{ fontFamily: "'DM Mono',monospace", fontSize: 10, color: '#64748B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{address}</span>
+            </div>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(address)
+                setCopied(true)
+                setTimeout(() => setCopied(false), 2000)
+              }}
+              style={{ background: '#0000FF', color: '#fff', border: 'none', borderRadius: 10, padding: '0 12px', fontSize: 10, fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap' }}
+            >
+              {copied ? '✓' : 'COPY CODE'}
+            </button>
+          </div>
         </div>
 
-        {/* Manual Referral Entry */}
-        {!userStats.referrer && (
+        {/* Manual Referral Entry / Referred By Status */}
+        {userStats.referrer ? (
+          <div style={{ paddingTop: 14, borderTop: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#059669' }} />
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#059669' }}>
+              Successfully referred by <span style={{ fontFamily: "'DM Mono', monospace", fontWeight: 500, opacity: 0.8 }}>{userStats.referrer.slice(0, 6)}...{userStats.referrer.slice(-4)}</span>
+            </div>
+          </div>
+        ) : (
           <div style={{ display: 'flex', gap: 6, paddingTop: 14, borderTop: '1px solid #F1F5F9' }}>
             <input
               type="text"
