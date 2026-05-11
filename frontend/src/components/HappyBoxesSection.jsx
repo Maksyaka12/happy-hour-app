@@ -164,6 +164,12 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             75% { transform: rotate(-8deg) scale(1.1); filter: drop-shadow(0 0 25px rgba(255,255,255,0.7)); }
           }
           
+          @keyframes pulseGold {
+            0% { box-shadow: inset 0 0 15px rgba(217,119,6,0.1), 0 0 0px rgba(217,119,6,0); }
+            50% { box-shadow: inset 0 0 25px rgba(217,119,6,0.2), 0 0 15px rgba(217,119,6,0.3); }
+            100% { box-shadow: inset 0 0 15px rgba(217,119,6,0.1), 0 0 0px rgba(217,119,6,0); }
+          }
+          
           .box-card { transition: all 0.2s ease; }
           .box-card:active { transform: scale(0.98); }
         `}
@@ -215,24 +221,57 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       </div>
 
       {/* Box List */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12 }}>
         {boxes.map((box) => (
           <div key={box.id} className="box-card" style={{
-            background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20,
-            padding: 10, boxShadow: '0 4px 12px rgba(10,11,13,0.03)',
-            display: 'flex', alignItems: 'center', gap: 12
+            background: '#fff', 
+            border: `1.5px solid ${box.id === 'legendary' ? '#D97706' : '#DEE1E7'}`, 
+            borderRadius: 20,
+            padding: 10, 
+            boxShadow: box.id === 'legendary' ? '0 8px 20px rgba(217,119,6,0.15)' : '0 4px 12px rgba(10,11,13,0.03)',
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 14,
+            position: 'relative',
+            overflow: 'hidden'
           }}>
-            {/* Box Icon — Fixed Square */}
+            {/* Tier Badge */}
             <div style={{
-              width: 90, height: 90,
-              background: box.bg, borderRadius: 16,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 40, flexShrink: 0,
-              border: `1px solid ${box.color}15`,
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              background: box.id === 'legendary' ? '#D97706' : box.id === 'epic' ? '#9333EA' : '#8B5A2B',
+              color: '#fff',
+              fontSize: 8,
+              fontWeight: 900,
+              padding: '3px 10px',
+              borderBottomLeftRadius: 12,
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
+              zIndex: 2
             }}>
-              {box.icon}
+              {box.id === 'legendary' ? '🔥 Jackpot' : box.id === 'epic' ? '✨ Hot' : 'Common'}
             </div>
 
+            {/* Box Icon Container — Tiered Gradients */}
+            <div style={{
+              width: 84, height: 84,
+              background: box.id === 'legendary' 
+                ? 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)' 
+                : box.id === 'epic'
+                ? 'linear-gradient(135deg, #F3E8FF 0%, #E9D5FF 100%)'
+                : 'linear-gradient(135deg, #FAF4ED 0%, #F3E6D8 100%)',
+              borderRadius: 16,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 38, flexShrink: 0,
+              border: `1px solid ${box.color}20`,
+              boxShadow: box.id === 'legendary' ? 'inset 0 0 15px rgba(217,119,6,0.1)' : 'none',
+              animation: box.id === 'legendary' ? 'pulseGold 2s infinite' : 'none'
+            }}>
+              <span style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))' }}>{box.icon}</span>
+            </div>
+
+            {/* Right side — Info & Button */}
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
               <div style={{ fontSize: 14, fontWeight: 800, color: '#0A0B0D' }}>{box.name}</div>
 
@@ -246,20 +285,18 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                     whiteSpace: 'nowrap',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 3
+                    gap: 4
                   }}>
-                    🏆 {box.rewards}
+                    ⚡ {box.rewards}
                   </span>
                 </div>
-
-                {/* Promotional badge removed after challenge */}
               </div>
 
               <button
                 onClick={() => handleOpenClick(box)}
                 disabled={isPending || isConfirming || isOpening}
                 style={{
-                  background: '#0000FF',
+                  background: box.id === 'legendary' ? '#D97706' : '#0000FF',
                   color: '#fff',
                   borderRadius: 50,
                   padding: '8px 12px',
@@ -271,15 +308,16 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  boxShadow: box.id === 'legendary' ? '0 4px 16px rgba(0,0,255,0.3)' : 'none',
+                  boxShadow: box.id === 'legendary' ? '0 4px 14px rgba(217,119,6,0.3)' : '0 4px 12px rgba(0,0,255,0.2)',
                   opacity: (isPending || isConfirming || isOpening) ? 0.6 : 1,
                   width: '100%',
-                  marginTop: 2
+                  marginTop: 4,
+                  transition: 'transform 0.1s active'
                 }}
               >
-                Open for <span style={{ color: '#A5B4FC', marginLeft: 6, display: 'flex', alignItems: 'center' }}>
+                OPEN BOX <span style={{ color: box.id === 'legendary' ? '#FFFBEB' : '#A5B4FC', marginLeft: 6, display: 'flex', alignItems: 'center', opacity: 0.9 }}>
                   {box.price.toFixed(2)}
-                  <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, marginLeft: 4, display: 'inline-block', verticalAlign: 'middle' }} />
+                  <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, marginLeft: 4 }} />
                 </span>
               </button>
             </div>
