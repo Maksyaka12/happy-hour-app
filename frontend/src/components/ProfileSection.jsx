@@ -743,39 +743,44 @@ export function ProfileSection({ address, basename }) {
           </div>
         </div>
         <div style={{ position: 'relative', height: 50, padding: '0 10px' }}>
-          <div style={{ position: 'absolute', top: 26, left: 20, right: 20, height: 2, background: '#F1F5F9', borderRadius: 1 }} />
-          {/* Advanced Progress Calculation: Segmented Logic */}
+          {/* Background Line: Perfectly centered between circles */}
+          <div style={{ position: 'absolute', top: 26, left: 22, right: 22, height: 2, background: '#F1F5F9', borderRadius: 1 }} />
+          
+          {/* Progress Line: Pixel-perfect segmented logic */}
           {(() => {
             const milestones = [1, 3, 7, 14, 30];
-            let width = 0;
+            let progressFactor = 0; // 0 to 100
+            
             if (streak.count >= milestones[milestones.length - 1]) {
-              width = 100;
+              progressFactor = 100;
             } else if (streak.count > milestones[0]) {
               for (let i = 0; i < milestones.length - 1; i++) {
                 const start = milestones[i];
                 const end = milestones[i+1];
                 if (streak.count >= start && streak.count < end) {
-                  const segmentBase = i * 25; // 25% per segment (4 segments)
-                  const segmentProgress = (streak.count - start) / (end - start);
-                  width = segmentBase + (segmentProgress * 25);
+                  const segmentBase = i * 25; // 4 segments = 25% each
+                  const segmentRatio = (streak.count - start) / (end - start);
+                  progressFactor = segmentBase + (segmentRatio * 25);
                   break;
                 }
               }
             }
+
             return (
               <div style={{ 
                 position: 'absolute', 
                 top: 26, 
-                left: 20, 
+                left: 22, 
                 height: 2, 
                 background: '#0000FF', 
                 borderRadius: 1, 
-                width: `calc(${width}% - ${width > 0 ? (width/100)*10 : 0}px)`, // Adjust for circle width padding
-                maxWidth: 'calc(100% - 40px)',
-                transition: 'width 0.5s ease' 
+                // Formula: (Factor% of container) - (Adjusted offset for 1st circle and scaling)
+                width: `calc(${progressFactor}% - ${(progressFactor / 100) * 44}px)`,
+                transition: 'width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)' 
               }} />
             );
           })()}
+
           <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', zIndex: 1 }}>
             {[
               { days: 1, pts: 0 },
