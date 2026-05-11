@@ -910,14 +910,14 @@ export function ProfileSection({ address, basename }) {
 
       {/* Referral Program: Senior Hub */}
       <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, marginBottom: 12 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
           <div>
             <div style={{ fontSize: 12, fontWeight: 800, color: '#0A0B0D' }}>REFERRAL HUB</div>
             <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>Earn 50% commission from friends.</div>
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
+        <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
           <div style={{ flex: 1.5, background: '#F1F5F9', borderRadius: 12, padding: '10px 12px', border: '1px solid #E2E8F0', overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
             <span style={{ fontFamily: "'DM Mono',monospace", fontSize: 9, color: '#64748B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{referralLink}</span>
           </div>
@@ -943,27 +943,27 @@ export function ProfileSection({ address, basename }) {
           </button>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
-          <div style={{ background: '#F8FAFC', borderRadius: 16, padding: '14px 12px', border: '1px solid #F1F5F9', textAlign: 'center' }}>
-            <div style={{ fontSize: 18, fontWeight: 900, color: '#0A0B0D', lineHeight: 1 }}>{userStats.referral_count}</div>
-            <div style={{ fontSize: 8, color: '#64748B', marginTop: 6, fontWeight: 800, textTransform: 'uppercase' }}>FRIENDS</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 14 }}>
+          <div style={{ background: '#F8FAFC', borderRadius: 12, padding: '10px 8px', border: '1px solid #F1F5F9', textAlign: 'center' }}>
+            <div style={{ fontSize: 15, fontWeight: 900, color: '#0A0B0D', lineHeight: 1 }}>{userStats.referral_count}</div>
+            <div style={{ fontSize: 8, color: '#64748B', marginTop: 4, fontWeight: 800, textTransform: 'uppercase' }}>FRIENDS</div>
           </div>
-          <div style={{ background: '#F8FAFC', borderRadius: 16, padding: '14px 12px', border: '1px solid #F1F5F9', textAlign: 'center' }}>
-            <div style={{ fontSize: 18, fontWeight: 900, color: '#0000FF', lineHeight: 1 }}>{userStats.referral_points} <span style={{ fontSize: 9 }}>HP</span></div>
-            <div style={{ fontSize: 8, color: '#64748B', marginTop: 6, fontWeight: 800, textTransform: 'uppercase' }}>EARNED</div>
+          <div style={{ background: '#F8FAFC', borderRadius: 12, padding: '10px 8px', border: '1px solid #F1F5F9', textAlign: 'center' }}>
+            <div style={{ fontSize: 15, fontWeight: 900, color: '#0000FF', lineHeight: 1 }}>{userStats.referral_points} <span style={{ fontSize: 9 }}>HP</span></div>
+            <div style={{ fontSize: 8, color: '#64748B', marginTop: 4, fontWeight: 800, textTransform: 'uppercase' }}>EARNED</div>
           </div>
         </div>
 
         {/* Manual Referral Entry / Referred By Status */}
         {userStats.referrer ? (
-          <div style={{ paddingTop: 14, borderTop: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ paddingTop: 12, borderTop: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#059669' }} />
             <div style={{ fontSize: 10, fontWeight: 700, color: '#059669' }}>
               Successfully referred by <span style={{ fontFamily: "'DM Mono', monospace", fontWeight: 500, opacity: 0.8 }}>{userStats.referrer.slice(0, 6)}...{userStats.referrer.slice(-4)}</span>
             </div>
           </div>
         ) : (
-          <div style={{ display: 'flex', gap: 6, paddingTop: 14, borderTop: '1px solid #F1F5F9' }}>
+          <div style={{ display: 'flex', gap: 6, paddingTop: 12, borderTop: '1px solid #F1F5F9' }}>
             <input
               type="text"
               value={refInput}
@@ -974,12 +974,13 @@ export function ProfileSection({ address, basename }) {
             <button
               onClick={handleApplyRef}
               disabled={refLoading || !refInput.trim()}
-              style={{ background: '#EEF0F3', color: '#000', border: '1px solid #DEE1E7', borderRadius: 10, padding: '0 14px', fontSize: 11, fontWeight: 800, cursor: 'pointer' }}
+              style={{ background: '#0000FF', color: '#fff', border: 'none', borderRadius: 10, padding: '0 16px', fontSize: 11, fontWeight: 800, cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,255,0.1)' }}
             >
               APPLY
             </button>
           </div>
         )}
+      </div>
       </div>
 
 
