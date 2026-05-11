@@ -744,7 +744,38 @@ export function ProfileSection({ address, basename }) {
         </div>
         <div style={{ position: 'relative', height: 50, padding: '0 10px' }}>
           <div style={{ position: 'absolute', top: 26, left: 20, right: 20, height: 2, background: '#F1F5F9', borderRadius: 1 }} />
-          <div style={{ position: 'absolute', top: 26, left: 20, height: 2, background: '#0000FF', borderRadius: 1, width: `${Math.min(100, (streak.count / 30) * 100)}%`, transition: 'width 0.5s ease' }} />
+          {/* Advanced Progress Calculation: Segmented Logic */}
+          {(() => {
+            const milestones = [1, 3, 7, 14, 30];
+            let width = 0;
+            if (streak.count >= milestones[milestones.length - 1]) {
+              width = 100;
+            } else if (streak.count > milestones[0]) {
+              for (let i = 0; i < milestones.length - 1; i++) {
+                const start = milestones[i];
+                const end = milestones[i+1];
+                if (streak.count >= start && streak.count < end) {
+                  const segmentBase = i * 25; // 25% per segment (4 segments)
+                  const segmentProgress = (streak.count - start) / (end - start);
+                  width = segmentBase + (segmentProgress * 25);
+                  break;
+                }
+              }
+            }
+            return (
+              <div style={{ 
+                position: 'absolute', 
+                top: 26, 
+                left: 20, 
+                height: 2, 
+                background: '#0000FF', 
+                borderRadius: 1, 
+                width: `calc(${width}% - ${width > 0 ? (width/100)*10 : 0}px)`, // Adjust for circle width padding
+                maxWidth: 'calc(100% - 40px)',
+                transition: 'width 0.5s ease' 
+              }} />
+            );
+          })()}
           <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', zIndex: 1 }}>
             {[
               { days: 1, pts: 0 },
