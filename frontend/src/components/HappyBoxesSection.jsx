@@ -356,6 +356,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       <div style={{
         marginTop: 24,
         background: '#EEF0F3',
+        border: '1px solid #DEE1E7',
         borderRadius: 20,
         padding: '16px 20px',
         display: 'flex',
