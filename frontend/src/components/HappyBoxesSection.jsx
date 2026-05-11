@@ -196,7 +196,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         </div>
       )}
 
-      {/* Header Banner - Airdrop Style */}
+      {/* Header Banner - Dynamic Airdrop Style */}
       <div style={{
         background: 'linear-gradient(135deg, #0000FF 0%, #4F46E5 100%)',
         borderRadius: 24,
@@ -208,29 +208,21 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        minHeight: 110
+        minHeight: 120
       }}>
-        {/* Falling Boxes Background Asset */}
-        <img 
-          src="/background_box.png" 
-          style={{ 
-            position: 'absolute', 
-            inset: 0, 
-            width: '100%', 
-            height: '100%', 
-            objectFit: 'cover', 
-            opacity: 0.6,
-            mixBlendMode: 'overlay'
-          }} 
-          alt="" 
-        />
+        {/* Scattered Airdrop Assets */}
+        <img src="/background_box.png" style={{ position: 'absolute', top: -10, right: '10%', width: 70, opacity: 0.6, transform: 'rotate(-15deg)', filter: 'blur(1.5px)' }} alt="" />
+        <img src="/background_box.png" style={{ position: 'absolute', top: 40, right: '25%', width: 50, opacity: 0.4, transform: 'rotate(10deg)', filter: 'blur(0.5px)' }} alt="" />
+        <img src="/background_box.png" style={{ position: 'absolute', bottom: -15, right: '40%', width: 90, opacity: 0.3, transform: 'rotate(-25deg)', filter: 'blur(3px)' }} alt="" />
+        <img src="/background_box.png" style={{ position: 'absolute', top: -20, left: '50%', width: 45, opacity: 0.5, transform: 'rotate(20deg)', filter: 'blur(1px)' }} alt="" />
+        <img src="/background_box.png" style={{ position: 'absolute', bottom: 10, right: '5%', width: 55, opacity: 0.4, transform: 'rotate(5deg)', filter: 'blur(1px)' }} alt="" />
 
         <div style={{ position: 'relative', zIndex: 2 }}>
-          <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.7)', letterSpacing: 1.5, marginBottom: 8, textTransform: 'uppercase' }}>
-            Airdrop Rewards
+          <div style={{ fontSize: 18, color: '#fff', lineHeight: 1.2, fontWeight: 800 }}>
+            Open your Happy Boxes
           </div>
-          <div style={{ fontSize: 16, color: '#fff', lineHeight: 1.3, fontWeight: 800, maxWidth: '70%' }}>
-            Open your Happy Boxes<br />to win more HP and boosts
+          <div style={{ fontSize: 18, color: 'rgba(255,255,255,0.9)', lineHeight: 1.2, fontWeight: 800 }}>
+            to win HP and Boosts
           </div>
         </div>
 
