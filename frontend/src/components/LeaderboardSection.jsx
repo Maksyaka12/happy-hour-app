@@ -336,50 +336,59 @@ export function LeaderboardSection({ address }) {
       <div style={{
         display: 'flex',
         background: '#EEF0F3',
-        borderRadius: 14,
-        padding: 4,
+        borderRadius: 16,
+        padding: 3,
         marginBottom: 16,
-        gap: 4
+        gap: 3,
+        border: '1px solid #DEE1E7',
+        maxWidth: 400,
+        margin: '0 auto 16px'
       }}>
         <button
           onClick={() => setActiveTab('main')}
           style={{
             flex: 1,
-            padding: '10px',
-            borderRadius: 10,
+            padding: '8px',
+            borderRadius: 13,
             border: 'none',
-            fontSize: 12,
+            fontSize: 10,
             fontWeight: 800,
             cursor: 'pointer',
             background: activeTab === 'main' ? '#fff' : 'transparent',
             color: activeTab === 'main' ? '#0000FF' : '#717886',
-            boxShadow: activeTab === 'main' ? '0 2px 8px rgba(0,0,0,0.05)' : 'none',
-            transition: 'all 0.2s'
-          }}
-        >
-          🏆 SEASON 1
-        </button>
-        <button
-          onClick={() => setActiveTab('daily')}
-          style={{
-            flex: 1,
-            padding: '10px',
-            borderRadius: 10,
-            border: 'none',
-            fontSize: 12,
-            fontWeight: 800,
-            cursor: 'pointer',
-            background: activeTab === 'daily' ? '#fff' : 'transparent',
-            color: activeTab === 'daily' ? '#0000FF' : '#717886',
-            boxShadow: activeTab === 'daily' ? '0 2px 8px rgba(0,0,0,0.05)' : 'none',
-            transition: 'all 0.2s',
+            boxShadow: activeTab === 'main' ? '0 4px 12px rgba(0,0,0,0.08)' : 'none',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             gap: 6
           }}
         >
-          ⚡ DAILY REWARDS
+          <span style={{ opacity: activeTab === 'main' ? 1 : 0.6 }}>🏆</span>
+          SEASON 1
+        </button>
+        <button
+          onClick={() => setActiveTab('daily')}
+          style={{
+            flex: 1,
+            padding: '8px',
+            borderRadius: 13,
+            border: 'none',
+            fontSize: 10,
+            fontWeight: 800,
+            cursor: 'pointer',
+            background: activeTab === 'daily' ? '#fff' : 'transparent',
+            color: activeTab === 'daily' ? '#0000FF' : '#717886',
+            boxShadow: activeTab === 'daily' ? '0 4px 12px rgba(0,0,0,0.08)' : 'none',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 6
+          }}
+        >
+          <span style={{ opacity: activeTab === 'daily' ? 1 : 0.6 }}>⚡</span>
+          DAILY REWARDS
         </button>
       </div>
 
