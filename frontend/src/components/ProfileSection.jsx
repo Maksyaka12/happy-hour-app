@@ -684,7 +684,7 @@ export function ProfileSection({ address, basename }) {
         <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-              <div style={{ fontSize: 11, fontWeight: 900, color: '#0A0B0D', letterSpacing: 0.5 }}>DAILY CHECKIN</div>
+              <div style={{ fontSize: 11, fontWeight: 900, color: '#0A0B0D', letterSpacing: 0.5 }}>DAILY CHECK-IN</div>
               <div style={{ background: '#0000FF', color: '#fff', padding: '1px 6px', borderRadius: 50, fontSize: 8, fontWeight: 900 }}>+1 HP</div>
             </div>
             <div style={{ fontSize: 9, color: '#717886', lineHeight: 1.4, fontWeight: 500 }}>Build your streak.</div>
@@ -698,8 +698,8 @@ export function ProfileSection({ address, basename }) {
                 ✓ Claim <span style={{ color: '#A5B4FC', textTransform: 'lowercase' }}>free</span>
               </button>
             ) : (
-              <div style={{ textAlign: 'center', padding: 10, background: '#EEF0F3', borderRadius: 50, border: '1px solid #DEE1E7', fontSize: 10, color: '#059669', fontWeight: 800 }}>
-                DONE TODAY
+              <div style={{ textAlign: 'center', padding: '10px 4px', background: '#EEF0F3', borderRadius: 50, border: '1px solid #DEE1E7', fontSize: 8, color: '#64748B', fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                RESETS AT 00:00 UTC
               </div>
             )}
           </div>
@@ -723,8 +723,8 @@ export function ProfileSection({ address, basename }) {
                 ✓ Claim <span style={{ color: '#A5B4FC' }}>0.10</span><img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14 }} />
               </button>
             ) : (
-              <div style={{ textAlign: 'center', padding: 10, background: '#EEF0F3', borderRadius: 50, border: '1px solid #DEE1E7', fontSize: 10, color: '#059669', fontWeight: 800 }}>
-                CLAIMED
+              <div style={{ textAlign: 'center', padding: '10px 4px', background: '#EEF0F3', borderRadius: 50, border: '1px solid #DEE1E7', fontSize: 8, color: '#64748B', fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                RESETS AT 00:00 UTC
               </div>
             )}
           </div>
@@ -735,13 +735,13 @@ export function ProfileSection({ address, basename }) {
       <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: '14px 16px', marginBottom: 12 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <div style={{ fontSize: 11, fontWeight: 900, color: '#0A0B0D', letterSpacing: 0.5 }}>DAILY STREAK PROGRESS</div>
-          <div style={{ background: '#0000FF', color: '#fff', padding: '4px 12px', borderRadius: 50, fontSize: 10, fontWeight: 900, display: 'flex', alignItems: 'center', gap: 4 }}>
+          <div style={{ background: '#0000FF', color: '#fff', padding: '2px 8px', borderRadius: 50, fontSize: 8, fontWeight: 900, display: 'flex', alignItems: 'center', gap: 4 }}>
             🔥 {streak.count} DAYS
           </div>
         </div>
         <div style={{ position: 'relative', height: 60, padding: '0 10px' }}>
-          <div style={{ position: 'absolute', top: 32, left: 20, right: 20, height: 2, background: '#F1F5F9', borderRadius: 1 }} />
-          <div style={{ position: 'absolute', top: 32, left: 20, height: 2, background: '#0000FF', borderRadius: 1, width: `${Math.min(100, (streak.count / 30) * 100)}%`, transition: 'width 0.5s ease' }} />
+          <div style={{ position: 'absolute', top: 29, left: 20, right: 20, height: 2, background: '#F1F5F9', borderRadius: 1 }} />
+          <div style={{ position: 'absolute', top: 29, left: 20, height: 2, background: '#0000FF', borderRadius: 1, width: `${Math.min(100, (streak.count / 30) * 100)}%`, transition: 'width 0.5s ease' }} />
           <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', zIndex: 1 }}>
             {STREAK_REWARDS.map(reward => {
               const reached = streak.count >= reward.days
