@@ -259,27 +259,20 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             </div>
 
             <div style={{
-              width: 84, height: 84,
-              background: box.id === 'legendary' 
-                ? 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)' 
-                : box.id === 'epic'
-                ? 'linear-gradient(135deg, #F3E8FF 0%, #E9D5FF 100%)'
-                : 'linear-gradient(135deg, #FAF4ED 0%, #F3E6D8 100%)',
-              borderRadius: 16,
+              width: 90, height: 90,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               flexShrink: 0,
-              border: `1px solid ${box.color}20`,
-              boxShadow: box.id === 'legendary' ? 'inset 0 0 15px rgba(217,119,6,0.1)' : 'none',
               animation: `${box.id === 'legendary' ? 'pulseGold 2s infinite, ' : ''}bobbing ${box.id === 'legendary' ? '2s' : box.id === 'epic' ? '2.5s' : '3s'} ease-in-out infinite`
             }}>
               <img 
                 src={box.img} 
                 alt={box.name} 
                 style={{ 
-                  width: '80%', 
-                  height: '80%', 
+                  width: '100%', 
+                  height: '100%', 
                   objectFit: 'contain',
-                  filter: 'drop-shadow(0 8px 12px rgba(0,0,0,0.15))' 
+                  mixBlendMode: 'multiply',
+                  filter: 'drop-shadow(0 8px 12px rgba(0,0,0,0.1))' 
                 }} 
               />
             </div>
