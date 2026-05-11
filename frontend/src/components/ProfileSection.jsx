@@ -981,9 +981,6 @@ export function ProfileSection({ address, basename }) {
           </div>
         )}
       </div>
-      </div>
-
-
 
       <HistorySection address={address} />
 
