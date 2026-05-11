@@ -518,13 +518,15 @@ export function ProfileSection({ address, basename }) {
               display: 'flex', 
               alignItems: 'center', 
               gap: 8, 
-              background: 'rgba(255,255,255,0.06)', 
+              background: 'rgba(255,255,255,0.1)', 
               padding: '8px 16px', 
               borderRadius: 16, 
-              border: '1px solid rgba(255,255,255,0.03)',
-              minWidth: 100
+              border: '1px solid rgba(255,255,255,0.05)',
+              minWidth: 105,
+              height: 42,
+              justifyContent: 'center'
             }}>
-              <div style={{ fontSize: 18, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>{LEVELS.find(l => l.level === accountLevel)?.name}</div>
+              <div style={{ fontSize: 20, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>{LEVELS.find(l => l.level === accountLevel)?.name}</div>
               <div style={{ 
                 background: (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 1.0 
                   ? 'linear-gradient(135deg, #94A3B8, #64748B)' 
@@ -548,17 +550,20 @@ export function ProfileSection({ address, basename }) {
             <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 8 }}>Boost</div>
             
             <div style={{ 
-              background: 'rgba(255,255,255,0.06)', 
+              background: 'rgba(255,255,255,0.1)', 
               padding: '8px 16px', 
               borderRadius: 16, 
-              border: '1px solid rgba(255,255,255,0.03)', 
-              minWidth: 85, 
+              border: '1px solid rgba(255,255,255,0.05)', 
+              minWidth: 105, 
+              height: 42,
               textAlign: 'center',
-              position: 'relative'
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
             }}>
               {activeMultiplier > (LEVELS.find(l => l.level === accountLevel)?.mult || 1) ? (
                 <>
-                  {/* Floating Timer Badge (SALE style) */}
                   <div style={{ 
                     position: 'absolute', 
                     top: -6, 
@@ -576,12 +581,12 @@ export function ProfileSection({ address, basename }) {
                   }}>
                     {timeLeft}
                   </div>
-                  <div style={{ fontSize: 16, fontWeight: 900, color: '#F4C81B', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+                  <div style={{ fontSize: 20, fontWeight: 900, color: '#F4C81B', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
                     ⚡ {activeMultiplier}x
                   </div>
                 </>
               ) : (
-                <div style={{ fontSize: 16, fontWeight: 900, color: 'rgba(255,255,255,0.1)', padding: '2px 0' }}>—</div>
+                <div style={{ fontSize: 20, fontWeight: 900, color: 'rgba(255,255,255,0.1)' }}>—</div>
               )}
             </div>
           </div>
@@ -589,7 +594,18 @@ export function ProfileSection({ address, basename }) {
           {/* Right: Streak Status */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 8 }}>Streak</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.1)', padding: '8px 16px', borderRadius: 16, border: '1px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: 6, 
+              background: 'rgba(255,255,255,0.1)', 
+              padding: '8px 16px', 
+              borderRadius: 16, 
+              border: '1px solid rgba(255,255,255,0.05)',
+              minWidth: 105,
+              height: 42,
+              justifyContent: 'center'
+            }}>
               <span style={{ fontSize: 18 }}>🔥</span>
               <div style={{ fontSize: 20, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>{streak.count}<span style={{ fontSize: 14, marginLeft: 2, opacity: 0.6 }}>d</span></div>
             </div>
