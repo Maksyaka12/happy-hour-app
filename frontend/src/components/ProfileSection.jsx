@@ -916,43 +916,36 @@ export function ProfileSection({ address, basename }) {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
-          <div style={{ background: '#F8FAFC', borderRadius: 12, padding: 12, border: '1px solid #F1F5F9', textAlign: 'center' }}>
-            <div style={{ fontSize: 16, fontWeight: 900, color: '#0000FF', lineHeight: 1 }}>{userStats.referral_count}</div>
-            <div style={{ fontSize: 8, color: '#64748B', marginTop: 4, fontWeight: 800 }}>FRIENDS</div>
+        <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
+          <div style={{ flex: 1.5, background: '#F1F5F9', borderRadius: 12, padding: '10px 12px', border: '1px solid #E2E8F0', overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
+            <span style={{ fontFamily: "'DM Mono',monospace", fontSize: 9, color: '#64748B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{referralLink}</span>
           </div>
-          <div style={{ background: '#F8FAFC', borderRadius: 12, padding: 12, border: '1px solid #F1F5F9', textAlign: 'center' }}>
-            <div style={{ fontSize: 16, fontWeight: 900, color: '#059669', lineHeight: 1 }}>{userStats.referral_points} <span style={{ fontSize: 9 }}>HP</span></div>
-            <div style={{ fontSize: 8, color: '#64748B', marginTop: 4, fontWeight: 800 }}>TOTAL EARNED</div>
-          </div>
+          <button
+            onClick={copyRef}
+            style={{ flex: 1, background: '#F0F3FF', color: '#0000FF', border: '1px solid #0000FF', borderRadius: 12, fontSize: 10, fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap' }}
+          >
+            {copied ? '✓' : 'Copy Link'}
+          </button>
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(address)
+              setCopied(true)
+              setTimeout(() => setCopied(false), 2000)
+            }}
+            style={{ flex: 1, background: '#FFF7ED', color: '#EA580C', border: '1px solid #EA580C', borderRadius: 12, fontSize: 10, fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap' }}
+          >
+            {copied ? '✓' : 'Copy Code'}
+          </button>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
-          <div style={{ display: 'flex', gap: 6 }}>
-            <div style={{ flex: 1, background: '#F1F5F9', borderRadius: 10, padding: '10px 12px', overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
-              <span style={{ fontFamily: "'DM Mono',monospace", fontSize: 10, color: '#64748B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{referralLink}</span>
-            </div>
-            <button
-              onClick={copyRef}
-              style={{ background: '#0000FF', color: '#fff', border: 'none', borderRadius: 10, padding: '0 12px', fontSize: 10, fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap' }}
-            >
-              {copied ? '✓' : 'COPY LINK'}
-            </button>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
+          <div style={{ background: '#F8FAFC', borderRadius: 16, padding: '14px 12px', border: '1px solid #F1F5F9', textAlign: 'center' }}>
+            <div style={{ fontSize: 18, fontWeight: 900, color: '#0A0B0D', lineHeight: 1 }}>{userStats.referral_count}</div>
+            <div style={{ fontSize: 8, color: '#64748B', marginTop: 6, fontWeight: 800, textTransform: 'uppercase' }}>FRIENDS</div>
           </div>
-          <div style={{ display: 'flex', gap: 6 }}>
-            <div style={{ flex: 1, background: '#F1F5F9', borderRadius: 10, padding: '10px 12px', overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
-              <span style={{ fontFamily: "'DM Mono',monospace", fontSize: 10, color: '#64748B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{address}</span>
-            </div>
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText(address)
-                setCopied(true)
-                setTimeout(() => setCopied(false), 2000)
-              }}
-              style={{ background: '#0000FF', color: '#fff', border: 'none', borderRadius: 10, padding: '0 12px', fontSize: 10, fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap' }}
-            >
-              {copied ? '✓' : 'COPY CODE'}
-            </button>
+          <div style={{ background: '#F8FAFC', borderRadius: 16, padding: '14px 12px', border: '1px solid #F1F5F9', textAlign: 'center' }}>
+            <div style={{ fontSize: 18, fontWeight: 900, color: '#0000FF', lineHeight: 1 }}>{userStats.referral_points} <span style={{ fontSize: 9 }}>HP</span></div>
+            <div style={{ fontSize: 8, color: '#64748B', marginTop: 6, fontWeight: 800, textTransform: 'uppercase' }}>EARNED</div>
           </div>
         </div>
 
