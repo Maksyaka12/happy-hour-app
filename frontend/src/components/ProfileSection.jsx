@@ -683,7 +683,7 @@ export function ProfileSection({ address, basename }) {
       <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, marginBottom: 12 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
           <div>
-            <div style={{ fontSize: 12, fontWeight: 800, color: '#0A0B0D' }}>ACCOUNT MULTIPLIER</div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Account Multiplier</div>
             <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>Permanent multiplier for all earned HP.</div>
           </div>
           <div style={{ 
@@ -776,7 +776,7 @@ export function ProfileSection({ address, basename }) {
         <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ fontSize: 12, fontWeight: 800, color: '#0A0B0D' }}>DAILY CHECK-IN</div>
+              <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Daily Check-in</div>
               <div style={{ background: '#0000FF', color: '#fff', padding: '1px 6px', borderRadius: 50, fontSize: 8, fontWeight: 900 }}>+1 HP</div>
             </div>
             <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>Build your streak.</div>
@@ -801,7 +801,7 @@ export function ProfileSection({ address, basename }) {
         <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ fontSize: 12, fontWeight: 800, color: '#0A0B0D' }}>DAILY CLAIM</div>
+              <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Daily Claim</div>
               <div style={{ background: '#0000FF', color: '#fff', padding: '1px 6px', borderRadius: 50, fontSize: 8, fontWeight: 900 }}>+2 HP</div>
             </div>
             <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>Climb to the top.</div>
@@ -827,7 +827,7 @@ export function ProfileSection({ address, basename }) {
       <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: '14px 16px', marginBottom: 12 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
           <div>
-            <div style={{ fontSize: 12, fontWeight: 800, color: '#0A0B0D' }}>DAILY STREAK PROGRESS</div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Daily Streak Progress</div>
             <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>Don't miss a day.</div>
           </div>
           <div style={{ background: '#0000FF', color: '#fff', padding: '2px 8px', borderRadius: 50, fontSize: 8, fontWeight: 900, display: 'flex', alignItems: 'center', gap: 4, marginTop: 1 }}>
@@ -912,7 +912,7 @@ export function ProfileSection({ address, basename }) {
       <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, marginBottom: 12 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
           <div>
-            <div style={{ fontSize: 12, fontWeight: 800, color: '#0A0B0D' }}>REFERRAL HUB</div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Referral Hub</div>
             <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>Earn 50% commission from friends.</div>
           </div>
         </div>
