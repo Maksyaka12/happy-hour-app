@@ -491,19 +491,19 @@ export function ProfileSection({ address, basename }) {
           }}
         />
         
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 12, flex: 1, minWidth: 0 }}>
-          <UserAvatar address={address} size={54} />
-          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <div style={{ fontSize: 16, fontWeight: 800, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
+          <UserAvatar address={address} size={48} />
+          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <div style={{ fontSize: 14, fontWeight: 800, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {basename ? basename : short(address)}
             </div>
             
             {/* Multipliers & Boosts Display */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               {/* Permanent Multiplier Row */}
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <div style={{ background: 'rgba(255,255,255,0.2)', padding: '3px 10px', borderRadius: 8, fontSize: 10, fontWeight: 800, color: '#fff', border: '1px solid rgba(255,255,255,0.1)' }}>
-                  Multiplier: {LEVELS.find(l => l.level === accountLevel)?.name} ({LEVELS.find(l => l.level === accountLevel)?.mult}x)
+                <div style={{ background: 'rgba(255,255,255,0.2)', padding: '2px 8px', borderRadius: 6, fontSize: 9, fontWeight: 800, color: '#fff', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  {LEVELS.find(l => l.level === accountLevel)?.name} ({LEVELS.find(l => l.level === accountLevel)?.mult}x)
                 </div>
               </div>
               
@@ -513,19 +513,19 @@ export function ProfileSection({ address, basename }) {
                   <div style={{ 
                     background: '#F4C81B', 
                     color: '#000', 
-                    padding: '3px 10px', 
-                    borderRadius: 8, 
-                    fontSize: 10, 
+                    padding: '2px 8px', 
+                    borderRadius: 6, 
+                    fontSize: 9, 
                     fontWeight: 900,
                     boxShadow: '0 4px 10px rgba(244, 200, 27, 0.3)',
                     display: 'flex',
                     alignItems: 'center',
                     gap: 3
                   }}>
-                    🔥 {activeMultiplier}x Boost {timeLeft ? <span style={{ opacity: 0.8, fontSize: 9, marginLeft: 2 }}>({timeLeft})</span> : ''}
+                    🔥 {activeMultiplier}x Boost {timeLeft ? <span style={{ opacity: 0.8, fontSize: 8, marginLeft: 2 }}>({timeLeft})</span> : ''}
                   </div>
                 ) : (
-                  <div style={{ background: 'rgba(255,255,255,0.1)', padding: '3px 10px', borderRadius: 8, fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: 6, fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.05)' }}>
                     Boost: —
                   </div>
                 )}
@@ -536,10 +536,10 @@ export function ProfileSection({ address, basename }) {
           {/* HP Points (Compact Box) */}
           <div style={{ 
             background: 'rgba(0,0,0,0.2)', 
-            borderRadius: 18, 
-            height: 76, 
-            minWidth: 80, 
-            padding: '0 14px',
+            borderRadius: 16, 
+            height: 64, 
+            minWidth: 70, 
+            padding: '0 12px',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -547,23 +547,23 @@ export function ProfileSection({ address, basename }) {
             border: '1px solid rgba(255,255,255,0.1)',
             boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.1)'
           }}>
-            <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 28, fontWeight: 900, lineHeight: 1, color: '#fff' }}>
+            <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 24, fontWeight: 900, lineHeight: 1, color: '#fff' }}>
               {userStats.points.toLocaleString()}
             </div>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', marginTop: 4, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5 }}>HP</div>
+            <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.6)', marginTop: 3, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5 }}>HP</div>
           </div>
         </div>
       </div>
 
-      <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 18, marginBottom: 12 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+      <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, marginBottom: 12 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
           <div>
-            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 3, color: '#0A0B0D' }}>Daily Check-in</div>
-            <div style={{ fontSize: 12, color: '#717886' }}>Earn <span style={{ color: '#0000FF', fontWeight: 700 }}>+1 HP</span> per day · Build your streak</div>
+            <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 2, color: '#0A0B0D' }}>Daily Check-in</div>
+            <div style={{ fontSize: 10, color: '#717886', fontWeight: 500 }}>Earn <span style={{ color: '#0000FF', fontWeight: 700 }}>+1 HP</span> per day · Build your streak</div>
           </div>
-          <div style={{ background: '#0000FF', borderRadius: 50, padding: '5px 12px', display: 'flex', alignItems: 'center', gap: 5 }}>
-            <span style={{ fontSize: 13 }}>🔥</span>
-            <span style={{ fontSize: 13, fontWeight: 800, color: '#fff' }}>{streak.count} day{streak.count !== 1 ? 's' : ''}</span>
+          <div style={{ background: '#0000FF', borderRadius: 50, padding: '4px 10px', display: 'flex', alignItems: 'center', gap: 4 }}>
+            <span style={{ fontSize: 11 }}>🔥</span>
+            <span style={{ fontSize: 11, fontWeight: 800, color: '#fff' }}>{streak.count} day{streak.count !== 1 ? 's' : ''}</span>
           </div>
         </div>
 
@@ -627,8 +627,6 @@ export function ProfileSection({ address, basename }) {
           </div>
         </div>
 
-
-
         {checkinError && (
           <div style={{ background: '#FEF3C7', border: '1px solid #D97706', borderRadius: 12, padding: '10px 12px', marginBottom: 12, fontSize: 12, color: '#B45309' }}>
             {checkinError}
@@ -643,27 +641,31 @@ export function ProfileSection({ address, basename }) {
               background: '#0000FF',
               color: '#fff',
               borderRadius: 50,
-              padding: '14px',
-              fontSize: 15,
-              fontWeight: 700,
+              padding: '12px',
+              fontSize: 13,
+              fontWeight: 800,
               border: 'none',
-              boxShadow: '0 4px 16px rgba(0,0,255,0.3)',
+              boxShadow: '0 4px 16px rgba(0,0,255,0.2)',
               cursor: 'pointer',
-              fontFamily: 'inherit'
+              fontFamily: 'inherit',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 4
             }}
           >
-            ✓ Check-in Today <span style={{ color: '#A5B4FC', marginLeft: 4 }}>free</span>
+            ✓ Check-in Today <span style={{ color: '#A5B4FC', fontWeight: 700, opacity: 0.9 }}>free</span>
           </button>
         ) : (
-          <div style={{ textAlign: 'center', padding: 13, background: '#EEF0F3', borderRadius: 50, border: '1px solid #DEE1E7', fontSize: 13, color: '#717886' }}>
+          <div style={{ textAlign: 'center', padding: 12, background: '#EEF0F3', borderRadius: 50, border: '1px solid #DEE1E7', fontSize: 11, color: '#717886', fontWeight: 600 }}>
             Next check-in at 00:00 UTC
           </div>
         )}
       </div>
 
-      <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 18, marginBottom: 12 }}>
-        <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4, color: '#0A0B0D' }}>Daily HP Boost</div>
-        <div style={{ fontSize: 12, color: '#717886', marginBottom: 14, lineHeight: 1.6 }}>
+      <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, marginBottom: 12 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 3, color: '#0A0B0D' }}>Daily HP Boost</div>
+        <div style={{ fontSize: 10, color: '#717886', marginBottom: 12, lineHeight: 1.5, fontWeight: 500 }}>
           Get an extra <span style={{ color: '#0000FF', fontWeight: 700 }}>+2 HP</span> per day · Boost your rank
         </div>
         {canBoost ? (
@@ -674,22 +676,23 @@ export function ProfileSection({ address, basename }) {
               background: '#0000FF',
               color: '#fff',
               borderRadius: 50,
-              padding: '14px',
-              fontSize: 15,
-              fontWeight: 700,
+              padding: '12px',
+              fontSize: 13,
+              fontWeight: 800,
               border: 'none',
-              boxShadow: '0 4px 16px rgba(0,0,255,0.3)',
+              boxShadow: '0 4px 16px rgba(0,0,255,0.2)',
               cursor: 'pointer',
               fontFamily: 'inherit',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              gap: 8
             }}
           >
-            ✓ Daily HP Boost <span style={{ color: '#A5B4FC', marginLeft: 8, display: 'flex', alignItems: 'center' }}>0.10<img src="/usdc-logo.png" alt="USDC" style={{ width: 18, height: 18, marginLeft: 3, display: 'inline-block', verticalAlign: 'middle' }} /></span>
+            ✓ Daily HP Boost <span style={{ color: '#A5B4FC', display: 'flex', alignItems: 'center', fontWeight: 700, opacity: 0.9 }}>0.10<img src="/usdc-logo.png" alt="USDC" style={{ width: 16, height: 16, marginLeft: 3 }} /></span>
           </button>
         ) : (
-          <div style={{ textAlign: 'center', padding: 13, background: '#EEF0F3', borderRadius: 50, border: '1px solid #DEE1E7', fontSize: 13, color: '#717886' }}>
+          <div style={{ textAlign: 'center', padding: 12, background: '#EEF0F3', borderRadius: 50, border: '1px solid #DEE1E7', fontSize: 11, color: '#717886', fontWeight: 600 }}>
             Next boost at 00:00 UTC
           </div>
         )}
@@ -698,20 +701,20 @@ export function ProfileSection({ address, basename }) {
         )}
       </div>
 
-      <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 20, marginBottom: 12, position: 'relative', overflow: 'hidden' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+      <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, marginBottom: 12, position: 'relative', overflow: 'hidden' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
           <div>
-            <div style={{ fontSize: 14, fontWeight: 800, color: '#0A0B0D' }}>Account Multiplier</div>
-            <div style={{ fontSize: 12, color: '#717886', marginTop: 2 }}>
+            <div style={{ fontSize: 12, fontWeight: 800, color: '#0A0B0D' }}>Account Multiplier</div>
+            <div style={{ fontSize: 10, color: '#717886', marginTop: 1, fontWeight: 500 }}>
               <span style={{ color: '#0000FF', fontWeight: 700 }}>Permanent</span> multiplier for all earned HP
             </div>
           </div>
           <div style={{ 
             background: 'linear-gradient(135deg, #0000FF, #3C8AFF)', 
             color: '#fff', 
-            padding: '6px 14px', 
-            borderRadius: 12, 
-            fontSize: 13, 
+            padding: '4px 12px', 
+            borderRadius: 10, 
+            fontSize: 11, 
             fontWeight: 900,
             boxShadow: '0 4px 12px rgba(0,0,255,0.2)'
           }}>
@@ -769,22 +772,22 @@ export function ProfileSection({ address, basename }) {
               background: '#0000FF',
               color: '#fff',
               borderRadius: 50,
-              padding: '16px',
-              fontSize: 15,
-              fontWeight: 700,
+              padding: '12px',
+              fontSize: 13,
+              fontWeight: 800,
               border: 'none',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 8px 20px rgba(0,0,255,0.2)',
+              boxShadow: '0 8px 20px rgba(0,0,255,0.15)',
               transition: 'all 0.2s'
             }}
           >
-            Upgrade to {LEVELS.find(l => l.level === accountLevel + 1)?.name} {accountLevel === 4 ? '(MAX)' : ''} ({LEVELS.find(l => l.level === accountLevel + 1)?.mult}x)
-            <span style={{ color: '#A5B4FC', marginLeft: 10, display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: 20 }}>
+            Upgrade to {LEVELS.find(l => l.level === accountLevel + 1)?.name} {accountLevel === 4 ? '(MAX)' : ''}
+            <span style={{ color: '#A5B4FC', marginLeft: 8, display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: 20, fontWeight: 700 }}>
               {LEVELS.find(l => l.level === accountLevel + 1)?.price.toFixed(2)}
-              <img src="/usdc-logo.png" alt="USDC" style={{ width: 18, height: 18, marginLeft: 4 }} />
+              <img src="/usdc-logo.png" alt="USDC" style={{ width: 16, height: 16, marginLeft: 4 }} />
             </span>
           </button>
         )}
@@ -808,9 +811,9 @@ export function ProfileSection({ address, basename }) {
         )}
       </div>
 
-      <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 18 }}>
-        <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4, color: '#0A0B0D' }}>Referral Program</div>
-        <div style={{ fontSize: 12, color: '#717886', marginBottom: 14, lineHeight: 1.6 }}>
+      <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 3, color: '#0A0B0D' }}>Referral Program</div>
+        <div style={{ fontSize: 10, color: '#717886', marginBottom: 12, lineHeight: 1.5, fontWeight: 500 }}>
           Invite friends and earn <span style={{ color: '#D97706', fontWeight: 700 }}>50% of their points</span> forever.
         </div>
         <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
@@ -857,12 +860,12 @@ export function ProfileSection({ address, basename }) {
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
           <div style={{ background: 'rgba(0,0,0,0.03)', borderRadius: 12, padding: '10px', textAlign: 'center', border: '1px solid rgba(0,0,0,0.05)' }}>
-            <div style={{ fontSize: 16, fontWeight: 900, color: '#0A0B0D', lineHeight: 1 }}>{userStats.referral_count}</div>
-            <div style={{ fontSize: 9, color: '#717886', marginTop: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>Friends</div>
+            <div style={{ fontSize: 14, fontWeight: 900, color: '#0A0B0D', lineHeight: 1 }}>{userStats.referral_count}</div>
+            <div style={{ fontSize: 8, color: '#717886', marginTop: 3, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5 }}>Friends</div>
           </div>
           <div style={{ background: 'rgba(0,0,0,0.03)', borderRadius: 12, padding: '10px', textAlign: 'center', border: '1px solid rgba(0,0,0,0.05)' }}>
-            <div style={{ fontSize: 16, fontWeight: 900, color: '#0000FF', lineHeight: 1 }}>{userStats.referral_points} <span style={{ fontSize: 9 }}>HP</span></div>
-            <div style={{ fontSize: 9, color: '#717886', marginTop: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>Earned</div>
+            <div style={{ fontSize: 14, fontWeight: 900, color: '#0000FF', lineHeight: 1 }}>{userStats.referral_points} <span style={{ fontSize: 8, opacity: 0.8 }}>HP</span></div>
+            <div style={{ fontSize: 8, color: '#717886', marginTop: 3, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5 }}>Earned</div>
           </div>
         </div>
 
