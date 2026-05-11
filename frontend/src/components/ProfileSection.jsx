@@ -513,20 +513,20 @@ export function ProfileSection({ address, basename }) {
           
           {/* Left: Multiplier Status */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 8 }}>Multiplier</div>
+            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>Multiplier</div>
             <div style={{ 
               display: 'flex', 
               alignItems: 'center', 
-              gap: 8, 
+              gap: 6, 
               background: 'rgba(255,255,255,0.1)', 
-              padding: '8px 16px', 
-              borderRadius: 16, 
+              padding: '8px 12px', 
+              borderRadius: 14, 
               border: '1px solid rgba(255,255,255,0.05)',
-              minWidth: 105,
-              height: 42,
+              minWidth: 95,
+              height: 38,
               justifyContent: 'center'
             }}>
-              <div style={{ fontSize: 20, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>{LEVELS.find(l => l.level === accountLevel)?.name}</div>
+              <div style={{ fontSize: 16, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>{LEVELS.find(l => l.level === accountLevel)?.name}</div>
               <div style={{ 
                 background: (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 1.0 
                   ? 'linear-gradient(135deg, #94A3B8, #64748B)' 
@@ -534,11 +534,10 @@ export function ProfileSection({ address, basename }) {
                     ? 'linear-gradient(135deg, #34D399, #059669)'
                     : 'linear-gradient(135deg, #F4C81B, #F97316)',
                 color: '#000', 
-                padding: '2px 6px', 
+                padding: '1px 5px', 
                 borderRadius: 4, 
-                fontSize: 10, 
-                fontWeight: 900, 
-                boxShadow: (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 1.0 ? 'none' : '0 4px 12px rgba(0,0,0,0.1)'
+                fontSize: 9, 
+                fontWeight: 900
               }}>
                 {LEVELS.find(l => l.level === accountLevel)?.mult}x
               </div>
@@ -547,15 +546,15 @@ export function ProfileSection({ address, basename }) {
 
           {/* Center: Active Boost */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
-            <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 8 }}>Boost</div>
+            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>Boost</div>
             
             <div style={{ 
               background: 'rgba(255,255,255,0.1)', 
-              padding: '8px 16px', 
-              borderRadius: 16, 
+              padding: '8px 12px', 
+              borderRadius: 14, 
               border: '1px solid rgba(255,255,255,0.05)', 
-              minWidth: 105, 
-              height: 42,
+              minWidth: 95, 
+              height: 38,
               textAlign: 'center',
               position: 'relative',
               display: 'flex',
@@ -567,12 +566,12 @@ export function ProfileSection({ address, basename }) {
                   <div style={{ 
                     position: 'absolute', 
                     top: -6, 
-                    right: -10, 
+                    right: -8, 
                     background: '#020617', 
                     border: '1px solid rgba(255,255,255,0.2)', 
-                    padding: '2px 6px', 
-                    borderRadius: 6, 
-                    fontSize: 8, 
+                    padding: '1px 5px', 
+                    borderRadius: 5, 
+                    fontSize: 7, 
                     fontWeight: 900, 
                     color: '#F4C81B',
                     boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
@@ -581,33 +580,33 @@ export function ProfileSection({ address, basename }) {
                   }}>
                     {timeLeft}
                   </div>
-                  <div style={{ fontSize: 20, fontWeight: 900, color: '#F4C81B', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+                  <div style={{ fontSize: 16, fontWeight: 900, color: '#F4C81B', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
                     ⚡ {activeMultiplier}x
                   </div>
                 </>
               ) : (
-                <div style={{ fontSize: 20, fontWeight: 900, color: 'rgba(255,255,255,0.1)' }}>—</div>
+                <div style={{ fontSize: 16, fontWeight: 900, color: 'rgba(255,255,255,0.1)' }}>—</div>
               )}
             </div>
           </div>
 
           {/* Right: Streak Status */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 8 }}>Streak</div>
+            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>Streak</div>
             <div style={{ 
               display: 'flex', 
               alignItems: 'center', 
-              gap: 6, 
+              gap: 5, 
               background: 'rgba(255,255,255,0.1)', 
-              padding: '8px 16px', 
-              borderRadius: 16, 
+              padding: '8px 12px', 
+              borderRadius: 14, 
               border: '1px solid rgba(255,255,255,0.05)',
-              minWidth: 105,
-              height: 42,
+              minWidth: 95,
+              height: 38,
               justifyContent: 'center'
             }}>
-              <span style={{ fontSize: 18 }}>🔥</span>
-              <div style={{ fontSize: 20, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>{streak.count}<span style={{ fontSize: 14, marginLeft: 2, opacity: 0.6 }}>d</span></div>
+              <span style={{ fontSize: 16 }}>🔥</span>
+              <div style={{ fontSize: 16, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>{streak.count}<span style={{ fontSize: 12, marginLeft: 1, opacity: 0.6 }}>d</span></div>
             </div>
           </div>
 
