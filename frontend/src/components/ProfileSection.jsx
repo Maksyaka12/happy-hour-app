@@ -514,8 +514,8 @@ export function ProfileSection({ address, basename }) {
                   alignItems: 'center',
                   gap: 6
                 }}>
-                  <span style={{ opacity: 0.7, letterSpacing: 0.3 }}>MULTIPLIER:</span>
-                  <span style={{ color: '#A5B4FC', fontWeight: 900, textTransform: 'uppercase' }}>
+                  <span style={{ opacity: 0.8 }}>Multiplier:</span>
+                  <span style={{ color: '#A5B4FC', fontWeight: 900 }}>
                     {LEVELS.find(l => l.level === accountLevel)?.name}
                   </span>
                   <span style={{ 
