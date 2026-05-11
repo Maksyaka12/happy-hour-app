@@ -683,7 +683,7 @@ export function ProfileSection({ address, basename }) {
       <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, marginBottom: 12 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Profile Multiplayer</div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Profile Multiplier</div>
             <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>Permanent multiplier for all earned HP.</div>
           </div>
           <div style={{ 
