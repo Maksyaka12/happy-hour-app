@@ -74,7 +74,8 @@ export function ProfileSection({ address, basename }) {
   const chainId = useChainId()
   const { switchChain } = useSwitchChain()
   const [txModal, setTxModal] = useState(false)
-  const [copied, setCopied] = useState(false)
+  const [linkCopied, setLinkCopied] = useState(false)
+  const [codeCopied, setCodeCopied] = useState(false)
   const [copiedCode, setCopiedCode] = useState(false)
 
   const { data: vaultBalanceData } = useBalance({
@@ -921,20 +922,24 @@ export function ProfileSection({ address, basename }) {
             <span style={{ fontFamily: "'DM Mono',monospace", fontSize: 9, color: '#64748B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{referralLink}</span>
           </div>
           <button
-            onClick={copyRef}
+            onClick={() => {
+              navigator.clipboard.writeText(referralLink)
+              setLinkCopied(true)
+              setTimeout(() => setLinkCopied(false), 2000)
+            }}
             style={{ flex: 1, background: '#F0F3FF', color: '#0000FF', border: '1px solid #0000FF', borderRadius: 12, fontSize: 10, fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap' }}
           >
-            {copied ? '✓' : 'Copy Link'}
+            {linkCopied ? '✓' : 'Copy Link'}
           </button>
           <button
             onClick={() => {
               navigator.clipboard.writeText(address)
-              setCopied(true)
-              setTimeout(() => setCopied(false), 2000)
+              setCodeCopied(true)
+              setTimeout(() => setCodeCopied(false), 2000)
             }}
             style={{ flex: 1, background: '#FFF7ED', color: '#EA580C', border: '1px solid #EA580C', borderRadius: 12, fontSize: 10, fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap' }}
           >
-            {copied ? '✓' : 'Copy Code'}
+            {codeCopied ? '✓' : 'Copy Code'}
           </button>
         </div>
 
