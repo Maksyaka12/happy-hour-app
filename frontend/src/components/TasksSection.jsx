@@ -19,7 +19,10 @@ function TaskCard({ task, taskState, onVisit, onCheck, onClaim, isClaiming }) {
   const left = Math.max(0, new Date(task.expires_at).getTime() - Date.now())
   const canCheck = taskState === 'visited'
   const isCounting = taskState === 'counting'
-  const canClaim = taskState === 'checked'    <div
+  const canClaim = taskState === 'checked'
+
+  return (
+    <div
       style={{
         background: '#fff',
         border: '1px solid #DEE1E7',
@@ -135,7 +138,6 @@ function TaskCard({ task, taskState, onVisit, onCheck, onClaim, isClaiming }) {
             CHECK
           </button>
         )}
-      </div>        )}
       </div>
     </div>
   )
