@@ -495,11 +495,11 @@ export function ProfileSection({ address, basename }) {
         </div>
 
         {/* Integrated Status Area */}
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           
           {/* Left: Multiplier Status */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase' }}>Multiplier</div>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 8 }}>Multiplier</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <div style={{ fontSize: 24, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>{LEVELS.find(l => l.level === accountLevel)?.name}</div>
               <div style={{ background: 'linear-gradient(135deg, #F4C81B, #F97316)', color: '#000', padding: '2px 8px', borderRadius: 6, fontSize: 11, fontWeight: 900, boxShadow: '0 4px 12px rgba(244, 200, 27, 0.3)' }}>
@@ -508,24 +508,26 @@ export function ProfileSection({ address, basename }) {
             </div>
           </div>
 
-          {/* Center: Active Boost (Accented) */}
-          <div style={{ textAlign: 'center', background: 'rgba(255,255,255,0.05)', padding: '8px 16px', borderRadius: 20, border: '1px solid rgba(255,255,255,0.03)', marginBottom: -4 }}>
-            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 2 }}>Boost</div>
-            {activeMultiplier > (LEVELS.find(l => l.level === accountLevel)?.mult || 1) ? (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <div style={{ fontSize: 16, fontWeight: 900, color: '#F4C81B', display: 'flex', alignItems: 'center', gap: 4 }}>
-                  ⚡ {activeMultiplier}x
+          {/* Center: Active Boost */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 8 }}>Boost</div>
+            <div style={{ background: 'rgba(255,255,255,0.06)', padding: '6px 16px', borderRadius: 16, border: '1px solid rgba(255,255,255,0.03)', minWidth: 80, textAlign: 'center' }}>
+              {activeMultiplier > (LEVELS.find(l => l.level === accountLevel)?.mult || 1) ? (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <div style={{ fontSize: 16, fontWeight: 900, color: '#F4C81B', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    ⚡ {activeMultiplier}x
+                  </div>
+                  <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.6)', fontWeight: 700 }}>{timeLeft}</div>
                 </div>
-                <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.6)', fontWeight: 700 }}>{timeLeft}</div>
-              </div>
-            ) : (
-              <div style={{ fontSize: 16, fontWeight: 900, color: 'rgba(255,255,255,0.1)' }}>—</div>
-            )}
+              ) : (
+                <div style={{ fontSize: 16, fontWeight: 900, color: 'rgba(255,255,255,0.1)', padding: '4px 0' }}>—</div>
+              )}
+            </div>
           </div>
 
           {/* Right: HP Balance */}
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 2 }}>HP Balance</div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+            <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 8 }}>HP Balance</div>
             <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 36, fontWeight: 900, color: '#fff', lineHeight: 1 }}>
               {userStats.points.toLocaleString()}
             </div>
