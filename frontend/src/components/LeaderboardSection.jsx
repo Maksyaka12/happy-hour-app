@@ -406,12 +406,22 @@ export function LeaderboardSection({ address }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {leaders.map((entry, idx) => {
                 const isTop3 = idx < 3
+                // Row backgrounds for Top 3
+                const rowBg = idx === 0 ? 'rgba(252, 211, 77, 0.12)' 
+                            : idx === 1 ? 'rgba(226, 232, 240, 0.5)' 
+                            : idx === 2 ? 'rgba(253, 186, 116, 0.15)' 
+                            : '#fff'
+                const rowBorder = idx === 0 ? 'rgba(252, 211, 77, 0.4)'
+                               : idx === 1 ? 'rgba(226, 232, 240, 0.8)'
+                               : idx === 2 ? 'rgba(253, 186, 116, 0.4)'
+                               : '#DEE1E7'
+
                 return (
                   <div
                     key={entry.address}
                     style={{
-                      background: '#fff',
-                      border: '1px solid #DEE1E7',
+                      background: rowBg,
+                      border: `1px solid ${rowBorder}`,
                       borderRadius: 14,
                       padding: '8px 12px',
                       display: 'flex',
@@ -424,7 +434,7 @@ export function LeaderboardSection({ address }) {
                       fontFamily: "'Barlow Condensed', sans-serif",
                       fontSize: 14,
                       fontWeight: 900,
-                      color: isTop3 ? '#0000FF' : '#717886',
+                      color: '#32353D',
                       minWidth: 24,
                       textAlign: 'center'
                     }}>
@@ -461,10 +471,10 @@ export function LeaderboardSection({ address }) {
 
                     {/* Points Badge - Fixed Width Plate */}
                     <div style={{
-                      background: isTop3 ? 'rgba(0,0,255,0.08)' : '#F8F9FC',
-                      border: `1px solid ${isTop3 ? 'rgba(0,0,255,0.15)' : '#DEE1E7'}`,
+                      background: '#F8F9FC',
+                      border: '1px solid #DEE1E7',
                       borderRadius: 10,
-                      width: 70, // Fixed width for alignment
+                      width: 70, 
                       height: 28,
                       display: 'flex',
                       alignItems: 'center',
@@ -475,7 +485,7 @@ export function LeaderboardSection({ address }) {
                         fontFamily: "'Barlow Condensed', sans-serif",
                         fontSize: 14,
                         fontWeight: 800,
-                        color: isTop3 ? '#0000FF' : '#32353D'
+                        color: '#32353D'
                       }}>
                         {entry.points.toLocaleString()}
                       </div>
@@ -501,7 +511,6 @@ export function LeaderboardSection({ address }) {
             position: 'relative',
             overflow: 'hidden'
           }}>
-            {/* Subtle glow effect */}
             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(5,150,105,0.4), transparent)' }} />
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -514,7 +523,7 @@ export function LeaderboardSection({ address }) {
               fontFamily: "'DM Mono', monospace",
               fontSize: 16,
               fontWeight: 900,
-              color: '#10B981', // Neon Green for the timer
+              color: '#10B981',
             }}>
               {timeLeft}
             </div>
@@ -530,7 +539,17 @@ export function LeaderboardSection({ address }) {
             ) : (
               dailyLeaders.map((u, i) => {
                 const rank = i + 1
-                const isTop3 = i < 3
+                // Tiered badge styling for ranks 1-10
+                const badgeBg = rank === 1 ? 'rgba(252, 211, 77, 0.2)' 
+                             : (rank >= 2 && rank <= 5) ? 'rgba(226, 232, 240, 0.6)' 
+                             : (rank >= 6 && rank <= 10) ? 'rgba(253, 186, 116, 0.2)' 
+                             : '#F8F9FC'
+                
+                const badgeBorder = rank === 1 ? 'rgba(252, 211, 77, 0.5)'
+                                 : (rank >= 2 && rank <= 5) ? 'rgba(226, 232, 240, 1)'
+                                 : (rank >= 6 && rank <= 10) ? 'rgba(253, 186, 116, 0.5)'
+                                 : '#DEE1E7'
+
                 return (
                   <div
                     key={u.address}
@@ -549,7 +568,7 @@ export function LeaderboardSection({ address }) {
                       fontFamily: "'Barlow Condensed', sans-serif",
                       fontSize: 14,
                       fontWeight: 900,
-                      color: isTop3 ? '#059669' : '#717886',
+                      color: '#32353D',
                       minWidth: 24,
                       textAlign: 'center'
                     }}>
@@ -558,17 +577,6 @@ export function LeaderboardSection({ address }) {
 
                     <div style={{ position: 'relative', flexShrink: 0 }}>
                       <UserAvatar address={u.address} size={28} />
-                      {isTop3 && (
-                        <div style={{
-                          position: 'absolute',
-                          top: -6,
-                          right: -6,
-                          fontSize: 12,
-                          filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'
-                        }}>
-                          {i === 0 ? '👑' : i === 1 ? '🥈' : '🥉'}
-                        </div>
-                      )}
                     </div>
 
                     <div style={{ flex: 1, minWidth: 0 }}>
@@ -585,12 +593,12 @@ export function LeaderboardSection({ address }) {
                       <div style={{ fontSize: 10, color: '#717886', fontWeight: 600 }}>Score: {u.score}</div>
                     </div>
 
-                    {/* Points Badge - Fixed Width Plate */}
+                    {/* Reward Badge - Tiered Colors */}
                     <div style={{
-                      background: isTop3 ? 'rgba(5,150,105,0.08)' : '#F8F9FC',
-                      border: `1px solid ${isTop3 ? 'rgba(5,150,105,0.15)' : '#DEE1E7'}`,
+                      background: badgeBg,
+                      border: `1px solid ${badgeBorder}`,
                       borderRadius: 10,
-                      width: 70, // Fixed width for alignment
+                      width: 78, 
                       height: 28,
                       display: 'flex',
                       alignItems: 'center',
@@ -599,11 +607,11 @@ export function LeaderboardSection({ address }) {
                     }}>
                       <div style={{
                         fontFamily: "'Barlow Condensed', sans-serif",
-                        fontSize: 14,
-                        fontWeight: 800,
-                        color: isTop3 ? '#059669' : '#32353D'
+                        fontSize: 13,
+                        fontWeight: 900,
+                        color: '#32353D'
                       }}>
-                        +{getReward(rank)}
+                        +{getReward(rank)} <span style={{ fontSize: 9, opacity: 0.8, fontWeight: 700 }}>HP</span>
                       </div>
                     </div>
                   </div>
