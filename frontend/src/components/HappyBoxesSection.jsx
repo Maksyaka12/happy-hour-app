@@ -230,7 +230,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12 }}>
         {boxes.map((box) => (
           <div key={box.id} className="box-card" style={{
-            background: box.id === 'legendary' ? '#FEF9EB' : '#fff', 
+            background: box.id === 'legendary' ? '#FEF9EB' : box.id === 'epic' ? '#F9F5FF' : '#fff', 
             border: `1.5px solid ${box.id === 'legendary' ? '#D97706' : box.id === 'epic' ? '#9333EA' : '#DEE1E7'}`, 
             borderRadius: 20,
             padding: 10, 
@@ -282,10 +282,10 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             </div>
 
             {/* Right side — Info & Button */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
               <div style={{ fontSize: 14, fontWeight: 800, color: '#0A0B0D' }}>{box.name}</div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
                 <div style={{ display: 'flex' }}>
                   <span style={{
                     background: box.bg, color: box.color,
@@ -297,9 +297,26 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                     alignItems: 'center',
                     gap: 4
                   }}>
-                    ⚡ {box.rewards}
+                    ⚡ {box.id === 'common' ? '4 - 8 HP' : box.id === 'epic' ? '10 - 20 HP' : '21 - 40 HP'}
                   </span>
                 </div>
+                {box.id !== 'common' && (
+                  <div style={{ display: 'flex' }}>
+                    <span style={{
+                      background: box.id === 'legendary' ? 'rgba(251, 191, 36, 0.15)' : 'rgba(147, 51, 234, 0.1)', 
+                      color: box.id === 'legendary' ? '#B45309' : '#9333EA',
+                      padding: '2px 8px', borderRadius: 8,
+                      fontSize: 9, fontWeight: 800,
+                      border: `1px solid ${box.id === 'legendary' ? 'rgba(251, 191, 36, 0.3)' : 'rgba(147, 51, 234, 0.3)'}`,
+                      whiteSpace: 'nowrap',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 4
+                    }}>
+                      🔥 {box.id === 'epic' ? 'Chance for 2x Boost' : 'Chance for 5x Boost'}
+                    </span>
+                  </div>
+                )}
               </div>
 
               <button
@@ -321,7 +338,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                   boxShadow: box.id === 'legendary' ? '0 4px 14px rgba(217,119,6,0.3)' : box.id === 'epic' ? '0 4px 14px rgba(147,51,234,0.3)' : '0 4px 12px rgba(0,0,255,0.2)',
                   opacity: (isPending || isConfirming || isOpening) ? 0.6 : 1,
                   width: '100%',
-                  marginTop: 4,
+                  marginTop: 2,
                   transition: 'transform 0.1s active'
                 }}
               >
