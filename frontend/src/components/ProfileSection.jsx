@@ -479,51 +479,61 @@ export function ProfileSection({ address, basename }) {
       >
         <div style={{ position: 'absolute', inset: 0, opacity: 0.08, backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
         
-        {/* Top Bar: Identity & High-Contrast HP Balance */}
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ border: '2px solid rgba(255,255,255,0.1)', borderRadius: '50%', padding: 2 }}>
-              <UserAvatar address={address} size={30} />
-            </div>
-            <div style={{ fontSize: 12, fontWeight: 800, color: '#fff', letterSpacing: 0.5 }}>
-              {basename ? basename : short(address)}
-            </div>
-          </div>
+        {/* Top Bar: Player Identity Passport */}
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
           
-          {/* High-Impact Cyber HP Wallet */}
+          {/* Left: Avatar & HP Balance Hub */}
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
-            background: 'rgba(0,0,0,0.25)', 
-            padding: '4px 4px 4px 12px', 
+            background: 'rgba(0,0,0,0.3)', 
+            padding: '4px 16px 4px 4px', 
             borderRadius: 50, 
-            border: '1px solid rgba(255,255,255,0.1)',
-            boxShadow: '0 4px 15px rgba(0,0,0,0.2), inset 0 0 10px rgba(255,255,255,0.02)',
-            gap: 10
+            border: '1px solid rgba(255,255,255,0.08)',
+            gap: 12,
+            boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
           }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+            <div style={{ 
+              width: 36, 
+              height: 36, 
+              borderRadius: '50%', 
+              overflow: 'hidden', 
+              border: '1px solid rgba(255,255,255,0.2)',
+              background: 'rgba(255,255,255,0.05)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <UserAvatar address={address} size={36} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
               <div style={{ fontSize: 7, fontWeight: 900, color: 'rgba(255,255,255,0.4)', letterSpacing: 0.5, textTransform: 'uppercase' }}>HP Balance</div>
               <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 22, fontWeight: 900, color: '#fff', lineHeight: 1 }}>
                 {userStats.points.toLocaleString()}
               </div>
             </div>
-            
-            {/* The "Token" Icon */}
-            <div style={{ 
-              width: 32, 
-              height: 32, 
-              borderRadius: '50%', 
-              background: 'linear-gradient(135deg, #4F46E5, #0000FF)', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              boxShadow: '0 0 12px rgba(0,0,FF,0.4)',
-              border: '1px solid rgba(255,255,255,0.2)',
-              fontSize: 10,
-              fontWeight: 900,
-              color: '#fff'
-            }}>
-              HP
+          </div>
+
+          {/* Right: Account Utilities (Disconnect & Address) */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+            <button
+              onClick={() => disconnect()}
+              style={{
+                background: 'rgba(255,255,255,0.1)',
+                border: '1px solid rgba(255,255,255,0.05)',
+                color: 'rgba(255,255,255,0.8)',
+                borderRadius: 50,
+                padding: '4px 10px',
+                fontSize: 9,
+                fontWeight: 800,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              DISCONNECT
+            </button>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#fff', opacity: 0.4, letterSpacing: 0.5 }}>
+              {basename ? basename : short(address)}
             </div>
           </div>
         </div>
