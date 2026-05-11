@@ -177,7 +177,7 @@ export function LeaderboardSection({ address }) {
         padding: '32px 20px',
         marginBottom: 14,
         position: 'relative',
-        minHeight: 160,
+        minHeight: 140, // Reduced height
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -187,17 +187,17 @@ export function LeaderboardSection({ address }) {
         border: '1px solid rgba(255,255,255,0.1)'
       }}>
         {/* Dark overlay to make text more readable if image is light */}
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.25)', zIndex: 0 }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 0 }} />
 
-        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
+        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', paddingTop: 0, paddingBottom: 20 }}>
           <div style={{
             fontFamily: "'Barlow Condensed', sans-serif",
-            fontSize: 56,
+            fontSize: 52,
             fontWeight: 900,
             color: '#fff',
             lineHeight: 1,
             textShadow: '0 4px 15px rgba(0,0,0,0.6)',
-            marginBottom: 10,
+            marginBottom: 12,
             letterSpacing: '-1px'
           }}>
             SEASON 1
@@ -214,19 +214,32 @@ export function LeaderboardSection({ address }) {
             display: 'inline-block',
             textTransform: 'uppercase',
             letterSpacing: '0.8px',
-            marginBottom: 8
           }}>
             🏆 TOP USERS WILL GET USDC REWARDS
           </div>
-          
+        </div>
+
+        {/* Distinct Footer for Season End Info */}
+        <div style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          background: 'rgba(0,0,0,0.45)',
+          backdropFilter: 'blur(12px)',
+          padding: '8px 0',
+          textAlign: 'center',
+          borderTop: '1px solid rgba(255,255,255,0.1)',
+          zIndex: 2
+        }}>
           <div style={{
-            fontSize: 12,
-            fontWeight: 700,
-            color: 'rgba(255,255,255,0.85)',
+            fontSize: 11,
+            fontWeight: 800,
+            color: 'rgba(255,255,255,0.7)',
             textTransform: 'uppercase',
-            letterSpacing: '0.5px'
+            letterSpacing: '1px'
           }}>
-            Ends in: <span style={{ color: '#fff' }}>Coming soon</span>
+            Ends in: <span style={{ color: '#F4C81B', fontWeight: 900 }}>Coming soon</span>
           </div>
         </div>
       </div>
