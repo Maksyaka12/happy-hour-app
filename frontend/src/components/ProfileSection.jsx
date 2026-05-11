@@ -490,26 +490,38 @@ export function ProfileSection({ address, basename }) {
             </div>
           </div>
           
-          {/* Redesigned HP Balance readout */}
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-            <div style={{ 
-              fontFamily: "'Barlow Condensed',sans-serif", 
-              fontSize: 28, 
-              fontWeight: 900, 
-              color: '#fff', 
-              lineHeight: 1,
-              textShadow: '0 0 20px rgba(255,255,255,0.2)' 
-            }}>
-              {userStats.points.toLocaleString()}
+          {/* High-Impact Cyber HP Wallet */}
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            background: 'rgba(0,0,0,0.25)', 
+            padding: '4px 4px 4px 12px', 
+            borderRadius: 50, 
+            border: '1px solid rgba(255,255,255,0.1)',
+            boxShadow: '0 4px 15px rgba(0,0,0,0.2), inset 0 0 10px rgba(255,255,255,0.02)',
+            gap: 10
+          }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+              <div style={{ fontSize: 7, fontWeight: 900, color: 'rgba(255,255,255,0.4)', letterSpacing: 0.5, textTransform: 'uppercase' }}>HP Balance</div>
+              <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 22, fontWeight: 900, color: '#fff', lineHeight: 1 }}>
+                {userStats.points.toLocaleString()}
+              </div>
             </div>
+            
+            {/* The "Token" Icon */}
             <div style={{ 
-              fontSize: 10, 
-              fontWeight: 900, 
-              color: '#A5B4FC', 
-              background: 'rgba(165, 180, 252, 0.1)', 
-              padding: '2px 6px', 
-              borderRadius: 4,
-              border: '1px solid rgba(165, 180, 252, 0.2)' 
+              width: 32, 
+              height: 32, 
+              borderRadius: '50%', 
+              background: 'linear-gradient(135deg, #4F46E5, #0000FF)', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              boxShadow: '0 0 12px rgba(0,0,FF,0.4)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              fontSize: 10,
+              fontWeight: 900,
+              color: '#fff'
             }}>
               HP
             </div>
