@@ -683,11 +683,11 @@ export function ProfileSection({ address, basename }) {
         {/* Check-in Tile */}
         <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-              <div style={{ fontSize: 11, fontWeight: 900, color: '#0A0B0D', letterSpacing: 0.5 }}>DAILY CHECK-IN</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ fontSize: 12, fontWeight: 800, color: '#0A0B0D' }}>DAILY CHECK-IN</div>
               <div style={{ background: '#0000FF', color: '#fff', padding: '1px 6px', borderRadius: 50, fontSize: 8, fontWeight: 900 }}>+1 HP</div>
             </div>
-            <div style={{ fontSize: 9, color: '#717886', lineHeight: 1.4, fontWeight: 500 }}>Build your streak.</div>
+            <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>Build your streak.</div>
           </div>
           <div style={{ marginTop: 14 }}>
             {canCheckin ? (
@@ -698,7 +698,7 @@ export function ProfileSection({ address, basename }) {
                 ✓ Claim <span style={{ color: '#A5B4FC', textTransform: 'lowercase' }}>free</span>
               </button>
             ) : (
-              <div style={{ textAlign: 'center', padding: '10px 4px', background: '#EEF0F3', borderRadius: 50, border: '1px solid #DEE1E7', fontSize: 8, color: '#64748B', fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+              <div style={{ textAlign: 'center', padding: '10px 4px', background: '#ECFDF5', borderRadius: 50, border: '1px solid #D1FAE5', fontSize: 8, color: '#059669', fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5 }}>
                 RESETS AT 00:00 UTC
               </div>
             )}
@@ -708,11 +708,11 @@ export function ProfileSection({ address, basename }) {
         {/* Boost Tile */}
         <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-              <div style={{ fontSize: 11, fontWeight: 900, color: '#0A0B0D', letterSpacing: 0.5 }}>DAILY CLAIM</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ fontSize: 12, fontWeight: 800, color: '#0A0B0D' }}>DAILY CLAIM</div>
               <div style={{ background: '#0000FF', color: '#fff', padding: '1px 6px', borderRadius: 50, fontSize: 8, fontWeight: 900 }}>+2 HP</div>
             </div>
-            <div style={{ fontSize: 9, color: '#717886', lineHeight: 1.4, fontWeight: 500 }}>Climb to the top.</div>
+            <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>Climb to the top.</div>
           </div>
           <div style={{ marginTop: 14 }}>
             {canBoost ? (
@@ -723,7 +723,7 @@ export function ProfileSection({ address, basename }) {
                 ✓ Claim <span style={{ color: '#A5B4FC' }}>0.10</span><img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14 }} />
               </button>
             ) : (
-              <div style={{ textAlign: 'center', padding: '10px 4px', background: '#EEF0F3', borderRadius: 50, border: '1px solid #DEE1E7', fontSize: 8, color: '#64748B', fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+              <div style={{ textAlign: 'center', padding: '10px 4px', background: '#ECFDF5', borderRadius: 50, border: '1px solid #D1FAE5', fontSize: 8, color: '#059669', fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5 }}>
                 RESETS AT 00:00 UTC
               </div>
             )}
@@ -734,7 +734,10 @@ export function ProfileSection({ address, basename }) {
       {/* Streak Milestone Row (Compact) */}
       <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: '14px 16px', marginBottom: 12 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-          <div style={{ fontSize: 11, fontWeight: 900, color: '#0A0B0D', letterSpacing: 0.5 }}>DAILY STREAK PROGRESS</div>
+          <div>
+            <div style={{ fontSize: 12, fontWeight: 800, color: '#0A0B0D' }}>DAILY STREAK PROGRESS</div>
+            <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>Don't miss a day.</div>
+          </div>
           <div style={{ background: '#0000FF', color: '#fff', padding: '2px 8px', borderRadius: 50, fontSize: 8, fontWeight: 900, display: 'flex', alignItems: 'center', gap: 4 }}>
             🔥 {streak.count} DAYS
           </div>
