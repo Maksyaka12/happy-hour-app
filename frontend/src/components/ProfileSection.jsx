@@ -479,29 +479,43 @@ export function ProfileSection({ address, basename }) {
       >
         <div style={{ position: 'absolute', inset: 0, opacity: 0.08, backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
         
-        {/* Top Bar: Identity & Streak */}
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+        {/* Top Bar: Identity & High-Contrast HP Balance */}
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{ border: '2px solid rgba(255,255,255,0.1)', borderRadius: '50%', padding: 2 }}>
-              <UserAvatar address={address} size={28} />
+              <UserAvatar address={address} size={30} />
             </div>
-            <div style={{ fontSize: 11, fontWeight: 800, color: '#fff', letterSpacing: 0.5, opacity: 0.8 }}>
+            <div style={{ fontSize: 12, fontWeight: 800, color: '#fff', letterSpacing: 0.5 }}>
               {basename ? basename : short(address)}
             </div>
           </div>
-          <div style={{ background: 'rgba(255,255,255,0.1)', padding: '5px 12px', borderRadius: 50, border: '1px solid rgba(255,255,255,0.05)', fontSize: 9, fontWeight: 900, color: '#fff', display: 'flex', alignItems: 'center', gap: 6 }}>
-            🔥 {streak.count} DAY STREAK
+          
+          {/* High-Contrast Balance Pill */}
+          <div style={{ 
+            background: '#fff', 
+            padding: '6px 16px', 
+            borderRadius: 50, 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 12,
+            boxShadow: '0 8px 20px rgba(0,0,0,0.2)',
+            border: '1px solid rgba(255,255,255,0.2)'
+          }}>
+            <div style={{ fontSize: 8, fontWeight: 900, color: '#000', opacity: 0.5, letterSpacing: 0.5, textTransform: 'uppercase' }}>HP Balance</div>
+            <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 20, fontWeight: 900, color: '#000', lineHeight: 1 }}>
+              {userStats.points.toLocaleString()}
+            </div>
           </div>
         </div>
 
-        {/* Integrated Status Area */}
+        {/* Progression Status Area */}
         <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           
           {/* Left: Multiplier Status */}
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 8 }}>Multiplier</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ fontSize: 24, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>{LEVELS.find(l => l.level === accountLevel)?.name}</div>
+              <div style={{ fontSize: 22, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>{LEVELS.find(l => l.level === accountLevel)?.name}</div>
               <div style={{ background: 'linear-gradient(135deg, #F4C81B, #F97316)', color: '#000', padding: '2px 8px', borderRadius: 6, fontSize: 11, fontWeight: 900, boxShadow: '0 4px 12px rgba(244, 200, 27, 0.3)' }}>
                 {LEVELS.find(l => l.level === accountLevel)?.mult}x
               </div>
@@ -525,15 +539,17 @@ export function ProfileSection({ address, basename }) {
             </div>
           </div>
 
-          {/* Right: HP Balance */}
+          {/* Right: Streak Status */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-            <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 8 }}>HP Balance</div>
-            <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 36, fontWeight: 900, color: '#fff', lineHeight: 1 }}>
-              {userStats.points.toLocaleString()}
+            <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 8 }}>Streak</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.1)', padding: '8px 16px', borderRadius: 16, border: '1px solid rgba(255,255,255,0.05)' }}>
+              <span style={{ fontSize: 18 }}>🔥</span>
+              <div style={{ fontSize: 20, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>{streak.count}<span style={{ fontSize: 14, marginLeft: 2, opacity: 0.6 }}>d</span></div>
             </div>
           </div>
 
         </div>
+      </div>
       </div>
 
       {/* 2-Column Action Grid: Daily Rewards */}
