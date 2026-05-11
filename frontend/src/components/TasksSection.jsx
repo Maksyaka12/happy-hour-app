@@ -82,10 +82,17 @@ function TaskCard({ task, taskState, onVisit, onCheck, onClaim, isClaiming }) {
                 cursor: isClaiming ? 'wait' : 'pointer',
                 opacity: isClaiming ? 0.7 : 1,
                 boxShadow: '0 4px 12px rgba(5,150,105,0.2)',
-                textTransform: 'uppercase'
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 4
               }}
             >
-              {isClaiming ? '...' : 'CLAIM FREE'}
+              {isClaiming ? '...' : (
+                <>
+                  CLAIM <span style={{ color: '#D1FAE5', textTransform: 'lowercase', fontWeight: 700, opacity: 0.9 }}>free</span>
+                </>
+              )}
             </button>
           ) : isCounting ? (
             <div
