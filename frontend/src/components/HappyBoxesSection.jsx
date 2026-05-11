@@ -207,11 +207,8 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             🎁
           </div>
           <div>
-            <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.7)', letterSpacing: 1, marginBottom: 4, textTransform: 'uppercase' }}>
-              Happy Boxes
-            </div>
-            <div style={{ fontSize: 13, color: '#fff', lineHeight: 1.4, fontWeight: 700 }}>
-              Open your boxes to win<br />more HP and multipliers
+            <div style={{ fontSize: 15, color: '#fff', lineHeight: 1.4, fontWeight: 700 }}>
+              Open your Happy Boxes<br />to win more HP and boosts
             </div>
           </div>
         </div>
