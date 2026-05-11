@@ -816,26 +816,41 @@ export function ProfileSection({ address, basename }) {
         </div>
       )}
 
-      {/* Account Progression: Roadmap */}
+      {/* Account Progression: Multiplier Roadmap */}
       <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, marginBottom: 12 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
           <div>
-            <div style={{ fontSize: 12, fontWeight: 800, color: '#0A0B0D' }}>ACCOUNT LEVEL</div>
-            <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>Unlock permanent multipliers.</div>
+            <div style={{ fontSize: 12, fontWeight: 800, color: '#0A0B0D' }}>ACCOUNT MULTIPLIER</div>
+            <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>Permanent multiplier for all earned HP.</div>
           </div>
-          <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '4px 10px', borderRadius: 8, fontSize: 10, fontWeight: 800, color: '#0000FF' }}>
-            RANK: {LEVELS.find(l => l.level === accountLevel)?.name}
+          <div style={{ 
+            background: (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 1.0 
+              ? '#94A3B8' 
+              : (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 2.0
+                ? '#059669'
+                : '#F97316',
+            color: '#fff', 
+            padding: '2px 10px', 
+            borderRadius: 50, 
+            fontSize: 9, 
+            fontWeight: 900,
+            marginTop: 1
+          }}>
+            {LEVELS.find(l => l.level === accountLevel)?.mult}x
           </div>
         </div>
 
         {/* Level Roadmap */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, position: 'relative', padding: '0 10px' }}>
-          <div style={{ position: 'absolute', top: 12, left: 20, right: 20, height: 2, background: '#F1F5F9', zIndex: 0 }} />
+          <div style={{ position: 'absolute', top: 32, left: 20, right: 20, height: 2, background: '#F1F5F9', zIndex: 0 }} />
           {LEVELS.map(l => {
             const isActive = l.level <= accountLevel
             const isCurrent = l.level === accountLevel
+            const nameColor = isActive ? '#059669' : '#94A3B8'
+            
             return (
               <div key={l.level} style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+                <div style={{ fontSize: 7, fontWeight: 900, color: nameColor, textTransform: 'uppercase' }}>{l.name}</div>
                 <div style={{ 
                   width: 26, 
                   height: 26, 
@@ -851,7 +866,6 @@ export function ProfileSection({ address, basename }) {
                 }}>
                   <span style={{ fontSize: 9, color: isCurrent || isActive ? '#fff' : '#94A3B8', fontWeight: 900 }}>{l.mult}x</span>
                 </div>
-                <div style={{ fontSize: 8, fontWeight: 800, color: isCurrent ? '#0000FF' : '#94A3B8', textTransform: 'uppercase' }}>LVL {l.level}</div>
               </div>
             )
           })}
@@ -875,15 +889,17 @@ export function ProfileSection({ address, basename }) {
         {accountLevel === 5 && (
           <div style={{ 
             textAlign: 'center', 
-            padding: '14px', 
-            background: '#EEF0F3', 
+            padding: '12px', 
+            background: '#ECFDF5', 
             borderRadius: 50, 
-            border: '1px solid #DEE1E7', 
-            fontSize: 13, 
-            color: '#717886', 
-            fontWeight: 700,
+            border: '1px solid #D1FAE5', 
+            fontSize: 10, 
+            color: '#059669', 
+            fontWeight: 800,
+            textTransform: 'uppercase',
+            letterSpacing: 0.5
           }}>
-            You reached MAX multiplier
+            YOU REACHED MAX MULTIPLIER
           </div>
         )}
         {upgradeError && (
