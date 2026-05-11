@@ -271,7 +271,6 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                   width: '100%', 
                   height: '100%', 
                   objectFit: 'contain',
-                  mixBlendMode: 'multiply',
                   filter: 'drop-shadow(0 8px 12px rgba(0,0,0,0.1))' 
                 }} 
               />
@@ -302,7 +301,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                 onClick={() => handleOpenClick(box)}
                 disabled={isPending || isConfirming || isOpening}
                 style={{
-                  background: box.id === 'legendary' ? '#D97706' : '#0000FF',
+                  background: box.id === 'legendary' ? '#D97706' : box.id === 'epic' ? '#9333EA' : '#0000FF',
                   color: '#fff',
                   borderRadius: 50,
                   padding: '8px 12px',
@@ -314,14 +313,14 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  boxShadow: box.id === 'legendary' ? '0 4px 14px rgba(217,119,6,0.3)' : '0 4px 12px rgba(0,0,255,0.2)',
+                  boxShadow: box.id === 'legendary' ? '0 4px 14px rgba(217,119,6,0.3)' : box.id === 'epic' ? '0 4px 14px rgba(147,51,234,0.3)' : '0 4px 12px rgba(0,0,255,0.2)',
                   opacity: (isPending || isConfirming || isOpening) ? 0.6 : 1,
                   width: '100%',
                   marginTop: 4,
                   transition: 'transform 0.1s active'
                 }}
               >
-                OPEN BOX <span style={{ color: box.id === 'legendary' ? '#FFFBEB' : '#A5B4FC', marginLeft: 6, display: 'flex', alignItems: 'center', opacity: 0.9 }}>
+                OPEN BOX <span style={{ color: box.id === 'legendary' ? '#FFFBEB' : box.id === 'epic' ? '#F3E8FF' : '#A5B4FC', marginLeft: 6, display: 'flex', alignItems: 'center', opacity: 0.9 }}>
                   {box.price.toFixed(2)}
                   <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, marginLeft: 4 }} />
                 </span>
