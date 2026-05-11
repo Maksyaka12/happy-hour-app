@@ -486,7 +486,7 @@ export function ProfileSection({ address, basename }) {
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,0,255,0.1) 100%)', zIndex: 0 }} />
         
         {/* Top Bar: Player Identity Passport */}
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
           
           {/* Left: Upscaled Avatar & HP Balance Hub */}
           <div style={{ 
