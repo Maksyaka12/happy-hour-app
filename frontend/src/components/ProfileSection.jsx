@@ -878,10 +878,10 @@ export function ProfileSection({ address, basename }) {
               setSelectedLevel(next)
               setTxModal('upgrade')
             }}
-            style={{ width: '100%', background: '#0000FF', color: '#fff', borderRadius: 50, padding: '12px', fontSize: 13, fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, boxShadow: '0 8px 20px rgba(0,0,255,0.15)' }}
+            style={{ width: '100%', background: '#0000FF', color: '#fff', borderRadius: 50, padding: '10px 12px', fontSize: 11, fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, boxShadow: '0 4px 12px rgba(0,0,255,0.2)' }}
           >
             Upgrade to {LEVELS.find(l => l.level === accountLevel + 1)?.name}
-            <span style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: 20, fontSize: 11, display: 'flex', alignItems: 'center', gap: 4 }}>
+            <span style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: 20, fontSize: 11, display: 'flex', alignItems: 'center', gap: 4, color: '#A5B4FC' }}>
               {LEVELS.find(l => l.level === accountLevel + 1)?.price.toFixed(2)}<img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14 }} />
             </span>
           </button>
