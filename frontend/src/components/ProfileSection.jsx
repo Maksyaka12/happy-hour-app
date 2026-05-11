@@ -495,38 +495,40 @@ export function ProfileSection({ address, basename }) {
         </div>
 
         {/* Main Status Grid (3-Column Layout) */}
-        <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: '1fr 1.2fr 1fr', gap: 12 }}>
+        <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: '1.2fr 0.9fr 1.1fr', gap: 10 }}>
           {/* Column 1: Rank */}
-          <div style={{ background: 'rgba(0,0,0,0.2)', padding: '12px', borderRadius: 16, border: '1px solid rgba(255,255,255,0.05)' }}>
-            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 4 }}>Account Tier</div>
-            <div style={{ fontSize: 18, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>{LEVELS.find(l => l.level === accountLevel)?.name}</div>
+          <div style={{ background: 'rgba(0,0,0,0.2)', padding: '12px 10px', borderRadius: 16, border: '1px solid rgba(255,255,255,0.05)', minWidth: 0 }}>
+            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 4, whiteSpace: 'nowrap' }}>Account Tier</div>
+            <div style={{ fontSize: 16, fontWeight: 900, color: '#fff', letterSpacing: -0.5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {LEVELS.find(l => l.level === accountLevel)?.name}
+            </div>
             <div style={{ display: 'inline-block', marginTop: 4, background: 'linear-gradient(135deg, #A5B4FC, #6366F1)', color: '#fff', padding: '1px 6px', borderRadius: 4, fontSize: 10, fontWeight: 900 }}>
               {LEVELS.find(l => l.level === accountLevel)?.mult}x
             </div>
           </div>
 
           {/* Column 2: Boost Status */}
-          <div style={{ background: 'rgba(0,0,0,0.2)', padding: '12px', borderRadius: 16, border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
-            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 4 }}>Applied Boost</div>
+          <div style={{ background: 'rgba(0,0,0,0.2)', padding: '12px 8px', borderRadius: 16, border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center', minWidth: 0 }}>
+            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 4, whiteSpace: 'nowrap' }}>Applied Boost</div>
             {activeMultiplier > (LEVELS.find(l => l.level === accountLevel)?.mult || 1) ? (
               <>
-                <div style={{ fontSize: 16, fontWeight: 900, color: '#F4C81B', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+                <div style={{ fontSize: 15, fontWeight: 900, color: '#F4C81B', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 3, whiteSpace: 'nowrap' }}>
                   ⚡ {activeMultiplier}x
                 </div>
-                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', fontWeight: 700, marginTop: 2 }}>{timeLeft}</div>
+                <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.6)', fontWeight: 700, marginTop: 2, whiteSpace: 'nowrap' }}>{timeLeft}</div>
               </>
             ) : (
-              <div style={{ fontSize: 18, fontWeight: 900, color: 'rgba(255,255,255,0.2)', marginTop: 2 }}>—</div>
+              <div style={{ fontSize: 16, fontWeight: 900, color: 'rgba(255,255,255,0.2)', marginTop: 2 }}>—</div>
             )}
           </div>
 
           {/* Column 3: HP Balance */}
-          <div style={{ background: 'rgba(255,255,255,0.1)', padding: '12px', borderRadius: 16, border: '1px solid rgba(255,255,255,0.1)', textAlign: 'right', boxShadow: 'inset 0 0 20px rgba(255,255,255,0.02)' }}>
-            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 2 }}>HP Balance</div>
-            <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 26, fontWeight: 900, color: '#fff', lineHeight: 1 }}>
+          <div style={{ background: 'rgba(255,255,255,0.1)', padding: '12px 10px', borderRadius: 16, border: '1px solid rgba(255,255,255,0.1)', textAlign: 'right', boxShadow: 'inset 0 0 20px rgba(255,255,255,0.02)', minWidth: 0 }}>
+            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 2, whiteSpace: 'nowrap' }}>HP Balance</div>
+            <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 24, fontWeight: 900, color: '#fff', lineHeight: 1, whiteSpace: 'nowrap' }}>
               {userStats.points.toLocaleString()}
             </div>
-            <div style={{ fontSize: 8, fontWeight: 900, color: '#A5B4FC', marginTop: 4 }}>POINTS</div>
+            <div style={{ fontSize: 8, fontWeight: 900, color: '#A5B4FC', marginTop: 4, whiteSpace: 'nowrap' }}>POINTS</div>
           </div>
         </div>
       </div>
