@@ -538,6 +538,16 @@ export function ProfileSection({ address, basename }) {
 
           {/* Right: Account Utilities (Disconnect & Address) */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+            <div style={{
+              fontSize: 9,
+              fontWeight: 800,
+              color: '#fff',
+              opacity: 0.4,
+              letterSpacing: 0.8,
+              padding: '0 4px'
+            }}>
+              {basename ? basename : short(address)}
+            </div>
             <button
               onClick={() => disconnect()}
               style={{
@@ -555,16 +565,6 @@ export function ProfileSection({ address, basename }) {
             >
               DISCONNECT
             </button>
-            <div style={{
-              fontSize: 9,
-              fontWeight: 800,
-              color: '#fff',
-              opacity: 0.4,
-              letterSpacing: 0.8,
-              padding: '0 4px'
-            }}>
-              {basename ? basename : short(address)}
-            </div>
           </div>
         </div>
 
@@ -914,7 +914,7 @@ export function ProfileSection({ address, basename }) {
           <div>
             <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Referral Hub</div>
             <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>
-              Invite friends and <span style={{ color: '#EA580C', fontWeight: 700 }}>earn 50% of their points</span> forever.
+              Invite friends and <span style={{ color: '#EA580C', fontWeight: 700 }}>earn 50% of their HP</span> forever.
             </div>
           </div>
         </div>
