@@ -733,28 +733,35 @@ export function ProfileSection({ address, basename }) {
 
       {/* Streak Milestone Row (Compact) */}
       <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: '14px 16px', marginBottom: 12 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
           <div>
             <div style={{ fontSize: 12, fontWeight: 800, color: '#0A0B0D' }}>DAILY STREAK PROGRESS</div>
             <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>Don't miss a day.</div>
           </div>
-          <div style={{ background: '#0000FF', color: '#fff', padding: '2px 8px', borderRadius: 50, fontSize: 8, fontWeight: 900, display: 'flex', alignItems: 'center', gap: 4 }}>
+          <div style={{ background: '#0000FF', color: '#fff', padding: '2px 8px', borderRadius: 50, fontSize: 8, fontWeight: 900, display: 'flex', alignItems: 'center', gap: 4, marginTop: 1 }}>
             🔥 {streak.count} DAYS
           </div>
         </div>
-        <div style={{ position: 'relative', height: 60, padding: '0 10px' }}>
-          <div style={{ position: 'absolute', top: 29, left: 20, right: 20, height: 2, background: '#F1F5F9', borderRadius: 1 }} />
-          <div style={{ position: 'absolute', top: 29, left: 20, height: 2, background: '#0000FF', borderRadius: 1, width: `${Math.min(100, (streak.count / 30) * 100)}%`, transition: 'width 0.5s ease' }} />
+        <div style={{ position: 'relative', height: 50, padding: '0 10px' }}>
+          <div style={{ position: 'absolute', top: 26, left: 20, right: 20, height: 2, background: '#F1F5F9', borderRadius: 1 }} />
+          <div style={{ position: 'absolute', top: 26, left: 20, height: 2, background: '#0000FF', borderRadius: 1, width: `${Math.min(100, (streak.count / 30) * 100)}%`, transition: 'width 0.5s ease' }} />
           <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', zIndex: 1 }}>
-            {STREAK_REWARDS.map(reward => {
+            {[
+              { days: 1, pts: 0 },
+              { days: 3, pts: 1 },
+              { days: 7, pts: 3 },
+              { days: 14, pts: 7 },
+              { days: 30, pts: 15 }
+            ].map(reward => {
               const reached = streak.count >= reward.days
               return (
                 <div key={reward.days} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-                  <div style={{ fontSize: 7, fontWeight: 900, color: reached ? '#0000FF' : '#94A3B8', textTransform: 'uppercase' }}>DAY {reward.days}</div>
-                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: reached ? '#0000FF' : '#fff', border: reached ? 'none' : '2px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: reached ? '0 4px 10px rgba(0,0,255,0.2)' : 'none' }}>
-                    {reached ? <span style={{ fontSize: 10, color: '#fff' }}>✓</span> : <span style={{ fontSize: 8, color: '#94A3B8', fontWeight: 800 }}>{reward.days}</span>}
+                  <div style={{ fontSize: 7, fontWeight: 900, color: reached ? '#059669' : '#94A3B8', textTransform: 'uppercase' }}>
+                    {reward.pts > 0 ? `+${reward.pts} HP` : '—'}
                   </div>
-                  <div style={{ fontSize: 8, fontWeight: 900, color: reached ? '#059669' : '#94A3B8' }}>+{reward.pts} HP</div>
+                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: reached ? '#0000FF' : '#fff', border: reached ? 'none' : '2px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: reached ? '0 4px 10px rgba(0,0,255,0.2)' : 'none' }}>
+                    {reached ? <span style={{ fontSize: 10, color: '#fff' }}>✓</span> : <span style={{ fontSize: 8, color: '#94A3B8', fontWeight: 800 }}>{reward.days}d</span>}
+                  </div>
                 </div>
               )
             })}
