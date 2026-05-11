@@ -404,49 +404,81 @@ export function LeaderboardSection({ address }) {
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {leaders.map((u, i) => {
-                const isMe = u.address?.toLowerCase() === address?.toLowerCase()
+              {leaders.map((entry, idx) => {
+                const isTop3 = idx < 3
                 return (
                   <div
-                    key={u.address}
+                    key={entry.address}
                     style={{
+                      background: '#fff',
+                      border: '1px solid #DEE1E7',
+                      borderRadius: 14,
+                      padding: '8px 12px',
                       display: 'flex',
                       alignItems: 'center',
                       gap: 12,
-                      background: isMe ? '#EEF0F3' : '#fff',
-                      border: `1px solid ${isMe ? 'rgba(0,0,255,0.2)' : '#DEE1E7'}`,
-                      borderRadius: 14,
-                      padding: '12px 14px',
+                      boxShadow: '0 2px 6px rgba(10,11,13,0.02)',
                     }}
                   >
-                    <div style={{ width: 30, textAlign: 'center', fontSize: i < 3 ? 20 : 13, fontWeight: 700, color: '#717886' }}>
-                      {i < 3 ? medals[i] : i + 1}
+                    <div style={{
+                      fontFamily: "'Barlow Condensed', sans-serif",
+                      fontSize: 14,
+                      fontWeight: 900,
+                      color: isTop3 ? '#0000FF' : '#717886',
+                      minWidth: 24,
+                      textAlign: 'center'
+                    }}>
+                      {idx + 1}
                     </div>
-                    <UserAvatar address={u.address} size={34} />
+
+                    <div style={{ position: 'relative', flexShrink: 0 }}>
+                      <UserAvatar address={entry.address} size={28} />
+                      {isTop3 && (
+                        <div style={{
+                          position: 'absolute',
+                          top: -6,
+                          right: -6,
+                          fontSize: 12,
+                          filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'
+                        }}>
+                          {idx === 0 ? '👑' : idx === 1 ? '🥈' : '🥉'}
+                        </div>
+                      )}
+                    </div>
+
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div
-                        style={{
-                          fontSize: 14,
-                          fontWeight: isMe ? 700 : 500,
-                          color: isMe ? '#0000FF' : '#0A0B0D',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        {u.basename || short(u.address)}
+                      <div style={{
+                        fontSize: 13,
+                        fontWeight: 700,
+                        color: '#0A0B0D',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        {entry.basename || short(entry.address)}
                       </div>
                     </div>
-                    <div
-                      style={{
-                        fontFamily: "'Barlow Condensed',sans-serif",
-                        fontSize: 18,
-                        fontWeight: 900,
-                        color: i === 0 ? '#F4C81B' : i === 1 ? '#717886' : i === 2 ? '#B45309' : '#0A0B0D',
-                        textShadow: i === 0 ? '0.5px 0.5px 0px rgba(0,0,0,0.1)' : 'none'
-                      }}
-                    >
-                      {u.points.toLocaleString()}
+
+                    {/* Points Badge - Fixed Width Plate */}
+                    <div style={{
+                      background: isTop3 ? 'rgba(0,0,255,0.08)' : '#F8F9FC',
+                      border: `1px solid ${isTop3 ? 'rgba(0,0,255,0.15)' : '#DEE1E7'}`,
+                      borderRadius: 10,
+                      width: 70, // Fixed width for alignment
+                      height: 28,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0
+                    }}>
+                      <div style={{
+                        fontFamily: "'Barlow Condensed', sans-serif",
+                        fontSize: 14,
+                        fontWeight: 800,
+                        color: isTop3 ? '#0000FF' : '#32353D'
+                      }}>
+                        {entry.points.toLocaleString()}
+                      </div>
                     </div>
                   </div>
                 )
@@ -462,7 +494,7 @@ export function LeaderboardSection({ address }) {
             alignItems: 'center',
             background: '#0A0B0D',
             borderRadius: 16,
-            padding: '14px 18px',
+            padding: '12px 16px',
             marginBottom: 16,
             boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
             border: '1px solid rgba(255,255,255,0.05)',
@@ -473,17 +505,16 @@ export function LeaderboardSection({ address }) {
             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(5,150,105,0.4), transparent)' }} />
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontSize: 18, animation: 'pulse 2s infinite' }}>🕒</span>
-              <div style={{ fontSize: 13, fontWeight: 800, color: '#fff', letterSpacing: '0.3px' }}>
+              <span style={{ fontSize: 16 }}>🕒</span>
+              <div style={{ fontSize: 11, fontWeight: 800, color: '#fff', letterSpacing: '0.3px' }}>
                 REWARDS DISTRIBUTE IN
               </div>
             </div>
             <div style={{
               fontFamily: "'DM Mono', monospace",
-              fontSize: 18,
+              fontSize: 16,
               fontWeight: 900,
               color: '#10B981', // Neon Green for the timer
-              textShadow: '0 0 10px rgba(16,185,129,0.3)'
             }}>
               {timeLeft}
             </div>
@@ -498,44 +529,81 @@ export function LeaderboardSection({ address }) {
               </div>
             ) : (
               dailyLeaders.map((u, i) => {
-                const isMe = u.address?.toLowerCase() === address?.toLowerCase()
                 const rank = i + 1
-                const reward = getReward(rank)
-                const rColor = getRewardColor(rank)
-
+                const isTop3 = i < 3
                 return (
                   <div
                     key={u.address}
                     style={{
+                      background: '#fff',
+                      border: '1px solid #DEE1E7',
+                      borderRadius: 14,
+                      padding: '8px 12px',
                       display: 'flex',
                       alignItems: 'center',
                       gap: 12,
-                      background: isMe ? '#EEF0F3' : '#fff',
-                      border: `1px solid ${isMe ? 'rgba(0,0,255,0.2)' : '#DEE1E7'}`,
-                      borderRadius: 14,
-                      padding: '12px 14px',
+                      boxShadow: '0 2px 6px rgba(10,11,13,0.02)',
                     }}
                   >
-                    <div style={{ width: 30, textAlign: 'center', fontSize: 13, fontWeight: 700, color: '#717886' }}>
+                    <div style={{
+                      fontFamily: "'Barlow Condensed', sans-serif",
+                      fontSize: 14,
+                      fontWeight: 900,
+                      color: isTop3 ? '#059669' : '#717886',
+                      minWidth: 24,
+                      textAlign: 'center'
+                    }}>
                       {rank}
                     </div>
-                    <UserAvatar address={u.address} size={34} />
+
+                    <div style={{ position: 'relative', flexShrink: 0 }}>
+                      <UserAvatar address={u.address} size={28} />
+                      {isTop3 && (
+                        <div style={{
+                          position: 'absolute',
+                          top: -6,
+                          right: -6,
+                          fontSize: 12,
+                          filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'
+                        }}>
+                          {i === 0 ? '👑' : i === 1 ? '🥈' : '🥉'}
+                        </div>
+                      )}
+                    </div>
+
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: '#0A0B0D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <div style={{
+                        fontSize: 13,
+                        fontWeight: 700,
+                        color: '#0A0B0D',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                      }}>
                         {u.basename || short(u.address)}
                       </div>
-                      <div style={{ fontSize: 11, color: '#717886', fontWeight: 600 }}>Activity Score: {u.score}</div>
+                      <div style={{ fontSize: 10, color: '#717886', fontWeight: 600 }}>Score: {u.score}</div>
                     </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontSize: 10, fontWeight: 800, color: rColor, textTransform: 'uppercase', opacity: 0.8 }}>Reward</div>
+
+                    {/* Points Badge - Fixed Width Plate */}
+                    <div style={{
+                      background: isTop3 ? 'rgba(5,150,105,0.08)' : '#F8F9FC',
+                      border: `1px solid ${isTop3 ? 'rgba(5,150,105,0.15)' : '#DEE1E7'}`,
+                      borderRadius: 10,
+                      width: 70, // Fixed width for alignment
+                      height: 28,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0
+                    }}>
                       <div style={{
-                        fontFamily: "'Barlow Condensed',sans-serif",
-                        fontSize: 18,
-                        fontWeight: 900,
-                        color: rColor,
-                        textShadow: rank === 1 ? '0.5px 0.5px 0px rgba(0,0,0,0.05)' : 'none'
+                        fontFamily: "'Barlow Condensed', sans-serif",
+                        fontSize: 14,
+                        fontWeight: 800,
+                        color: isTop3 ? '#059669' : '#32353D'
                       }}>
-                        +{reward} <span style={{ fontSize: 11 }}>HP</span>
+                        +{getReward(rank)}
                       </div>
                     </div>
                   </div>
