@@ -464,20 +464,25 @@ export function ProfileSection({ address, basename }) {
       </button>
       */}
 
-      {/* Senior Dev Redesign v2: Player Identity Card */}
+      {/* Senior Dev Redesign v8.2: Premium Player Passport */}
       <div
         style={{
-          background: 'linear-gradient(135deg, #020617 0%, #0000FF 100%)',
+          backgroundImage: 'url(/banner.jpg)',
+          backgroundColor: '#0000FF', // Fallback
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
           borderRadius: 24,
-          padding: '20px',
+          padding: '24px 20px',
           marginBottom: 14,
           position: 'relative',
           overflow: 'hidden',
           boxShadow: '0 12px 40px rgba(0,0,255,0.3)',
-          border: '1px solid rgba(255,255,255,0.12)',
+          border: '1px solid rgba(255,255,255,0.15)',
         }}
       >
-        <div style={{ position: 'absolute', inset: 0, opacity: 0.08, backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
+        {/* Dark Glass Overlay for Premium Texture */}
+        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0, 0, 100, 0.4)', backdropFilter: 'blur(2px)', zIndex: 0 }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,0,255,0.2) 100%)', zIndex: 0 }} />
         
         {/* Top Bar: Player Identity Passport */}
         <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
@@ -486,56 +491,68 @@ export function ProfileSection({ address, basename }) {
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
-            background: 'rgba(0,0,0,0.3)', 
+            background: 'rgba(255, 255, 255, 0.08)', 
+            backdropFilter: 'blur(12px)',
             padding: '6px 20px 6px 6px', 
             borderRadius: 60, 
-            border: '1px solid rgba(255,255,255,0.08)',
+            border: '1px solid rgba(255,255,255,0.12)',
             gap: 16,
-            boxShadow: '0 6px 20px rgba(0,0,0,0.25)'
+            boxShadow: '0 8px 32px rgba(0,0,0,0.3), inset 0 0 15px rgba(255,255,255,0.05)'
           }}>
             <div style={{ 
               width: 48, 
               height: 48, 
               borderRadius: '50%', 
               overflow: 'hidden', 
-              border: '2px solid rgba(255,255,255,0.15)',
-              background: 'rgba(255,255,255,0.05)',
+              border: '2px solid rgba(255,255,255,0.2)',
+              background: 'rgba(255,255,255,0.1)',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 0 15px rgba(255,255,255,0.05)'
+              justifyContent: 'center'
             }}>
               <UserAvatar address={address} size={48} />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <div style={{ fontSize: 8, fontWeight: 900, color: 'rgba(255,255,255,0.4)', letterSpacing: 0.8, textTransform: 'uppercase' }}>HP Balance</div>
-              <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 26, fontWeight: 900, color: '#fff', lineHeight: 1 }}>
-                {userStats.points.toLocaleString()}
+              <div style={{ fontSize: 8, fontWeight: 900, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase' }}>HP Balance</div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+                <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 28, fontWeight: 900, color: '#fff', lineHeight: 1, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
+                  {userStats.points.toLocaleString()}
+                </div>
+                <div style={{ fontSize: 10, fontWeight: 900, color: '#A5B4FC', opacity: 0.8 }}>HP</div>
               </div>
             </div>
           </div>
 
           {/* Right: Account Utilities (Disconnect & Address) */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, minWidth: 80 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
             <button
               onClick={() => disconnect()}
               style={{
-                background: 'rgba(255,255,255,0.1)',
-                border: '1px solid rgba(255,255,255,0.05)',
-                color: 'rgba(255,255,255,0.7)',
+                background: 'rgba(255,255,255,0.15)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                color: '#fff',
                 borderRadius: 50,
-                padding: '4px 12px',
+                padding: '4px 14px',
                 fontSize: 8,
                 fontWeight: 900,
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
-                width: '100%',
-                textAlign: 'center'
+                boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
               }}
             >
               DISCONNECT
             </button>
-            <div style={{ fontSize: 9, fontWeight: 800, color: '#fff', opacity: 0.35, letterSpacing: 0.5, width: '100%', textAlign: 'center' }}>
+            <div style={{ 
+              fontSize: 9, 
+              fontWeight: 800, 
+              color: '#fff', 
+              opacity: 0.5, 
+              letterSpacing: 0.8, 
+              background: 'rgba(0,0,0,0.2)', 
+              padding: '2px 8px', 
+              borderRadius: 6 
+            }}>
               {basename ? basename : short(address)}
             </div>
           </div>
@@ -546,24 +563,26 @@ export function ProfileSection({ address, basename }) {
           
           {/* Left: Multiplier Status */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>Multiplier</div>
+            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>Multiplier</div>
             <div style={{ 
               display: 'flex', 
               alignItems: 'center', 
               gap: 6, 
-              background: 'rgba(255,255,255,0.1)', 
+              background: 'rgba(255, 255, 255, 0.08)', 
+              backdropFilter: 'blur(12px)',
               padding: '8px 12px', 
               borderRadius: 14, 
-              border: '1px solid rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.1)',
               minWidth: 95,
               height: 38,
-              justifyContent: 'center'
+              justifyContent: 'center',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
             }}>
               <div style={{ fontSize: 16, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>{LEVELS.find(l => l.level === accountLevel)?.name}</div>
               <div style={{ 
                 background: (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 1.0 
                   ? 'linear-gradient(135deg, #94A3B8, #64748B)' 
-                  : (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 2.0
+                  : (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 5.0 || (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 2.0
                     ? 'linear-gradient(135deg, #34D399, #059669)'
                     : 'linear-gradient(135deg, #F4C81B, #F97316)',
                 color: '#000', 
@@ -579,20 +598,22 @@ export function ProfileSection({ address, basename }) {
 
           {/* Center: Active Boost */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
-            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>Boost</div>
+            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>Boost</div>
             
             <div style={{ 
-              background: 'rgba(255,255,255,0.1)', 
+              background: 'rgba(255, 255, 255, 0.08)', 
+              backdropFilter: 'blur(12px)',
               padding: '8px 12px', 
               borderRadius: 14, 
-              border: '1px solid rgba(255,255,255,0.05)', 
+              border: '1px solid rgba(255,255,255,0.1)', 
               minWidth: 95, 
               height: 38,
               textAlign: 'center',
               position: 'relative',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
             }}>
               {activeMultiplier > (LEVELS.find(l => l.level === accountLevel)?.mult || 1) ? (
                 <>
@@ -600,14 +621,14 @@ export function ProfileSection({ address, basename }) {
                     position: 'absolute', 
                     top: -6, 
                     right: -8, 
-                    background: '#020617', 
-                    border: '1px solid rgba(255,255,255,0.2)', 
-                    padding: '1px 5px', 
+                    background: '#0000FF', 
+                    border: '1px solid rgba(255,255,255,0.3)', 
+                    padding: '1px 6px', 
                     borderRadius: 5, 
                     fontSize: 7, 
                     fontWeight: 900, 
-                    color: '#F4C81B',
-                    boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+                    color: '#fff',
+                    boxShadow: '0 4px 10px rgba(0,0,0,0.4)',
                     whiteSpace: 'nowrap',
                     zIndex: 2
                   }}>
@@ -618,25 +639,27 @@ export function ProfileSection({ address, basename }) {
                   </div>
                 </>
               ) : (
-                <div style={{ fontSize: 16, fontWeight: 900, color: 'rgba(255,255,255,0.1)' }}>—</div>
+                <div style={{ fontSize: 16, fontWeight: 900, color: 'rgba(255,255,255,0.15)' }}>—</div>
               )}
             </div>
           </div>
 
           {/* Right: Streak Status */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>Streak</div>
+            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>Streak</div>
             <div style={{ 
               display: 'flex', 
               alignItems: 'center', 
               gap: 5, 
-              background: 'rgba(255,255,255,0.1)', 
+              background: 'rgba(255, 255, 255, 0.08)', 
+              backdropFilter: 'blur(12px)',
               padding: '8px 12px', 
               borderRadius: 14, 
-              border: '1px solid rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.1)',
               minWidth: 95,
               height: 38,
-              justifyContent: 'center'
+              justifyContent: 'center',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
             }}>
               <span style={{ fontSize: 16 }}>🔥</span>
               <div style={{ fontSize: 16, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>{streak.count}<span style={{ fontSize: 12, marginLeft: 1, opacity: 0.6 }}>d</span></div>
