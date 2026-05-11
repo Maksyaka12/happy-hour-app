@@ -189,23 +189,6 @@ export function LeaderboardSection({ address }) {
         {/* Dark overlay to make text more readable if image is light */}
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.25)', zIndex: 0 }} />
 
-        {/* Floating Season Status */}
-        <div style={{
-          position: 'absolute',
-          top: 14,
-          right: 14,
-          background: 'rgba(0,0,0,0.5)',
-          backdropFilter: 'blur(8px)',
-          padding: '6px 14px',
-          borderRadius: 14,
-          border: '1px solid rgba(255,255,255,0.15)',
-          textAlign: 'right',
-          zIndex: 2
-        }}>
-          <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 2 }}>Ends in</div>
-          <div style={{ fontSize: 13, fontWeight: 900, color: '#fff' }}>Coming soon</div>
-        </div>
-
         <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
           <div style={{
             fontFamily: "'Barlow Condensed', sans-serif",
@@ -224,15 +207,26 @@ export function LeaderboardSection({ address }) {
             backdropFilter: 'blur(10px)',
             borderRadius: 50,
             padding: '6px 20px',
-            fontSize: 13,
+            fontSize: 11,
             fontWeight: 800,
             color: '#fff',
             border: '1px solid rgba(255,255,255,0.3)',
             display: 'inline-block',
             textTransform: 'uppercase',
-            letterSpacing: '0.6px'
+            letterSpacing: '0.8px',
+            marginBottom: 8
           }}>
-            🏆 Top users win USDC
+            🏆 TOP USERS WILL GET USDC REWARDS
+          </div>
+          
+          <div style={{
+            fontSize: 12,
+            fontWeight: 700,
+            color: 'rgba(255,255,255,0.85)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px'
+          }}>
+            Ends in: <span style={{ color: '#fff' }}>Coming soon</span>
           </div>
         </div>
       </div>
