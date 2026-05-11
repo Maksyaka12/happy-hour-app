@@ -196,35 +196,48 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         </div>
       )}
 
-      {/* Header Banner - Hidden
+      {/* Header Banner - Airdrop Style */}
       <div style={{
-        background: 'linear-gradient(135deg, #0000FF 0%, #4F46E5 100%)', borderRadius: 20, padding: '22px 20px 18px',
-        marginBottom: 12, position: 'relative', overflow: 'hidden',
-        boxShadow: '0 8px 32px rgba(0,0,255,0.3)',
+        background: 'linear-gradient(135deg, #0000FF 0%, #4F46E5 100%)',
+        borderRadius: 24,
+        padding: '24px 20px',
+        marginBottom: 16,
+        position: 'relative',
+        overflow: 'hidden',
+        boxShadow: '0 8px 32px rgba(0,0,255,0.2)',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        minHeight: 110
       }}>
-        <div style={{
-          position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.1,
-          backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.9) 1.5px, transparent 1.5px)',
-          backgroundSize: '20px 20px',
-        }} />
+        {/* Falling Boxes Background Decoration */}
+        <img src="/common_box.png" style={{ position: 'absolute', top: -10, right: '15%', width: 50, opacity: 0.4, transform: 'rotate(-20deg)', filter: 'blur(1px)' }} alt="" />
+        <img src="/epic_box.png" style={{ position: 'absolute', top: 20, right: '5%', width: 40, opacity: 0.3, transform: 'rotate(15deg)', filter: 'blur(0.5px)' }} alt="" />
+        <img src="/legendary_box.png" style={{ position: 'absolute', bottom: -10, right: '25%', width: 60, opacity: 0.2, transform: 'rotate(-10deg)', filter: 'blur(2px)' }} alt="" />
+        <img src="/common_box.png" style={{ position: 'absolute', top: -15, left: '40%', width: 35, opacity: 0.2, transform: 'rotate(10deg)', filter: 'blur(1.5px)' }} alt="" />
 
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 20 }}>
-          <div style={{
-            fontSize: 64,
-            animation: 'magicBox 2.5s ease-in-out infinite',
-            flexShrink: 0,
-            lineHeight: 1
-          }}>
-            🎁
+        <div style={{ position: 'relative', zIndex: 2 }}>
+          <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.7)', letterSpacing: 1.5, marginBottom: 8, textTransform: 'uppercase' }}>
+            Airdrop Rewards
           </div>
-          <div>
-            <div style={{ fontSize: 15, color: '#fff', lineHeight: 1.4, fontWeight: 700 }}>
-              Open your Happy Boxes<br />to win more HP and boosts
-            </div>
+          <div style={{ fontSize: 16, color: '#fff', lineHeight: 1.3, fontWeight: 800, maxWidth: '70%' }}>
+            Open your Happy Boxes<br />to win more HP and boosts
           </div>
         </div>
+
+        {/* Abstract Glow */}
+        <div style={{
+          position: 'absolute',
+          top: -30,
+          right: -30,
+          width: 150,
+          height: 150,
+          background: 'rgba(255,255,255,0.15)',
+          borderRadius: '50%',
+          filter: 'blur(50px)',
+          zIndex: 1
+        }} />
       </div>
-      */}
 
       {/* Box List */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12 }}>
