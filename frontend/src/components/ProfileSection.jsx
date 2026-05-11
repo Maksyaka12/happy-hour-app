@@ -659,8 +659,6 @@ export function ProfileSection({ address, basename }) {
             </span>
           </button>
         )}
-      </div>
-
         {accountLevel === 5 && (
           <div style={{ 
             textAlign: 'center', 
