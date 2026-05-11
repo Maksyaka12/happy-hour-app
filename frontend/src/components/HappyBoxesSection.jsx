@@ -245,17 +245,21 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
               position: 'absolute',
               top: 0,
               right: 0,
-              background: box.id === 'legendary' ? '#D97706' : box.id === 'epic' ? '#9333EA' : '#8B5A2B',
+              background: box.id === 'legendary' ? '#D97706' : box.id === 'epic' ? '#9333EA' : '#0000FF',
               color: '#fff',
               fontSize: 8,
               fontWeight: 900,
-              padding: '3px 10px',
+              width: 64,
+              height: 18,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               borderBottomLeftRadius: 12,
               textTransform: 'uppercase',
               letterSpacing: '0.5px',
               zIndex: 2
             }}>
-              {box.id === 'legendary' ? '🔥 Jackpot' : box.id === 'epic' ? '✨ Hot' : 'Common'}
+              {box.id === 'legendary' ? 'Jackpot' : box.id === 'epic' ? 'Hot' : 'Common'}
             </div>
 
             <div style={{
