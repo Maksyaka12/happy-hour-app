@@ -933,7 +933,7 @@ export function ProfileSection({ address, basename }) {
           </button>
           <button
             onClick={() => {
-              navigator.clipboard.writeText(address)
+              navigator.clipboard.writeText(userStats.ref_code || address)
               setCodeCopied(true)
               setTimeout(() => setCodeCopied(false), 2000)
             }}
