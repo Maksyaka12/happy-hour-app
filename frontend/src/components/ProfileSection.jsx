@@ -544,18 +544,44 @@ export function ProfileSection({ address, basename }) {
           </div>
 
           {/* Center: Active Boost */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
             <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 8 }}>Boost</div>
-            <div style={{ background: 'rgba(255,255,255,0.06)', padding: '6px 16px', borderRadius: 16, border: '1px solid rgba(255,255,255,0.03)', minWidth: 85, textAlign: 'center' }}>
+            
+            <div style={{ 
+              background: 'rgba(255,255,255,0.06)', 
+              padding: '8px 16px', 
+              borderRadius: 16, 
+              border: '1px solid rgba(255,255,255,0.03)', 
+              minWidth: 85, 
+              textAlign: 'center',
+              position: 'relative'
+            }}>
               {activeMultiplier > (LEVELS.find(l => l.level === accountLevel)?.mult || 1) ? (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <div style={{ fontSize: 16, fontWeight: 900, color: '#F4C81B', display: 'flex', alignItems: 'center', gap: 4 }}>
+                <>
+                  {/* Floating Timer Badge (SALE style) */}
+                  <div style={{ 
+                    position: 'absolute', 
+                    top: -6, 
+                    right: -10, 
+                    background: '#020617', 
+                    border: '1px solid rgba(255,255,255,0.2)', 
+                    padding: '2px 6px', 
+                    borderRadius: 6, 
+                    fontSize: 8, 
+                    fontWeight: 900, 
+                    color: '#F4C81B',
+                    boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+                    whiteSpace: 'nowrap',
+                    zIndex: 2
+                  }}>
+                    {timeLeft}
+                  </div>
+                  <div style={{ fontSize: 16, fontWeight: 900, color: '#F4C81B', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
                     ⚡ {activeMultiplier}x
                   </div>
-                  <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.6)', fontWeight: 700 }}>{timeLeft}</div>
-                </div>
+                </>
               ) : (
-                <div style={{ fontSize: 16, fontWeight: 900, color: 'rgba(255,255,255,0.1)', padding: '4px 0' }}>—</div>
+                <div style={{ fontSize: 16, fontWeight: 900, color: 'rgba(255,255,255,0.1)', padding: '2px 0' }}>—</div>
               )}
             </div>
           </div>
