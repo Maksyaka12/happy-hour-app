@@ -19,45 +19,48 @@ function TaskCard({ task, taskState, onVisit, onCheck, onClaim, isClaiming }) {
   const left = Math.max(0, new Date(task.expires_at).getTime() - Date.now())
   const canCheck = taskState === 'visited'
   const isCounting = taskState === 'counting'
-  const canClaim = taskState === 'checked'    <div
+  const canClaim = taskState === 'checked'
+
+  return (
+    <div
       style={{
         background: '#fff',
         border: '1px solid #DEE1E7',
-        borderLeft: `2.5px solid ${canClaim ? '#059669' : canCheck ? '#0000FF' : '#DEE1E7'}`,
-        borderRadius: 20,
-        padding: 12,
+        borderLeft: `3px solid ${canClaim ? '#059669' : canCheck ? '#0000FF' : '#DEE1E7'}`,
+        borderRadius: 16,
+        padding: 16,
         animation: 'fadeIn 0.3s ease',
       }}
     >
-      <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
         <div
           style={{
-            width: 32,
-            height: 32,
-            borderRadius: 10,
+            width: 42,
+            height: 42,
+            borderRadius: 12,
             flexShrink: 0,
             background: canClaim ? '#059669' : '#0000FF',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: 16,
-            boxShadow: canClaim ? '0 4px 10px rgba(5,150,105,0.2)' : '0 4px 10px rgba(0,0,255,0.15)',
+            fontSize: 20,
+            boxShadow: canClaim ? '0 4px 12px rgba(5,150,105,0.35)' : '0 4px 12px rgba(0,0,255,0.25)',
           }}
         >
           {taskIcons[task.type] || '⭐'}
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 12, fontWeight: 800, color: '#0A0B0D' }}>{task.text}</div>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 2 }}>
-            <span style={{ fontSize: 9, color: '#D97706', fontWeight: 800, background: 'rgba(217,119,6,0.1)', borderRadius: 6, padding: '1px 6px', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+          <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 6, lineHeight: 1.4, color: '#0A0B0D' }}>{task.text}</div>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 11, color: '#D97706', fontWeight: 700, background: 'rgba(217,119,6,0.1)', borderRadius: 50, padding: '2px 10px' }}>
               +{task.points} HP
             </span>
-            <span style={{ fontSize: 9, color: '#64748B', fontWeight: 600 }}>⏰ {fmt(left)} LEFT</span>
+            <span style={{ fontSize: 11, color: '#717886' }}>⏰ {fmt(left)} left</span>
           </div>
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+      <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
         <a
           href={task.url}
           target="_blank"
@@ -65,20 +68,19 @@ function TaskCard({ task, taskState, onVisit, onCheck, onClaim, isClaiming }) {
           onClick={() => !taskState && onVisit(task.id)}
           style={{
             flex: 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'rgba(29,161,242,0.06)',
-            border: '1px solid rgba(29,161,242,0.15)',
+            display: 'block',
+            textAlign: 'center',
+            background: 'rgba(29,161,242,0.08)',
+            border: '1px solid rgba(29,161,242,0.25)',
             color: '#1DA1F2',
             borderRadius: 50,
-            padding: '8px 10px',
-            fontSize: 12,
-            fontWeight: 800,
+            padding: 10,
+            fontSize: 13,
+            fontWeight: 700,
             textDecoration: 'none',
           }}
         >
-          {task.type === 'retweet' ? 'RETWEET' : task.type === 'like' ? 'LIKE' : task.type === 'follow' ? 'FOLLOW' : task.type === 'comment' ? 'COMMENT' : task.type === 'bookmark' ? 'BOOKMARK' : 'VISIT'}
+          {task.type === 'retweet' ? 'Retweet' : task.type === 'like' ? 'Like' : task.type === 'follow' ? 'Follow' : task.type === 'comment' ? 'Comment' : task.type === 'bookmark' ? 'Bookmark' : 'Visit'}
         </a>
 
         {canClaim ? (
@@ -89,33 +91,38 @@ function TaskCard({ task, taskState, onVisit, onCheck, onClaim, isClaiming }) {
               background: '#059669',
               color: '#fff',
               borderRadius: 50,
-              padding: '8px 14px',
-              fontSize: 11,
+              padding: '10px 16px',
+              fontSize: 12,
               fontWeight: 800,
               border: 'none',
               cursor: isClaiming ? 'wait' : 'pointer',
               opacity: isClaiming ? 0.7 : 1,
-              boxShadow: '0 4px 12px rgba(5,150,105,0.2)',
-              minWidth: 90,
+              boxShadow: '0 4px 16px rgba(5,150,105,0.35)',
+              minWidth: 100,
+              whiteSpace: 'nowrap',
             }}
           >
-            {isClaiming ? '...' : 'CLAIM FREE'}
+            {isClaiming ? 'Claiming…' : (
+              <span>
+                Claim <span style={{ fontSize: 9, opacity: 0.9, fontWeight: 700, marginLeft: 2 }}>FREE</span>
+              </span>
+            )}
           </button>
         ) : isCounting ? (
           <div
             style={{
               borderRadius: 50,
-              padding: '8px 14px',
+              padding: '10px 22px',
               background: '#EEF0F3',
               border: '1px solid #DEE1E7',
-              fontSize: 11,
-              fontWeight: 800,
+              fontSize: 14,
+              fontWeight: 700,
               color: '#0000FF',
               minWidth: 80,
               textAlign: 'center',
             }}
           >
-            CHECKING...
+            Check…
           </div>
         ) : (
           <button
@@ -126,16 +133,15 @@ function TaskCard({ task, taskState, onVisit, onCheck, onClaim, isClaiming }) {
               border: `1px solid ${canCheck ? '#0000FF' : '#DEE1E7'}`,
               color: canCheck ? '#0000FF' : '#B1B7C3',
               borderRadius: 50,
-              padding: '8px 14px',
-              fontSize: 11,
-              fontWeight: 800,
+              padding: '10px 18px',
+              fontSize: 13,
+              fontWeight: 700,
               cursor: canCheck ? 'pointer' : 'not-allowed',
             }}
           >
-            CHECK
+            Check
           </button>
         )}
-      </div>        )}
       </div>
     </div>
   )
@@ -435,27 +441,24 @@ export function TasksSection({ address }) {
   return (
     <div style={{ paddingBottom: 120, padding: '0 12px 120px' }}>
 
-      {/* Promo Banner — Post about us */}
+      {/* Blue Banner — Post about us */}
       <div style={{
         background: 'linear-gradient(135deg, #0000FF 0%, #4F46E5 100%)',
-        borderRadius: 24, padding: '22px 20px', marginBottom: 16,
+        borderRadius: 20, padding: '18px 16px', marginBottom: 12,
         position: 'relative', overflow: 'hidden',
-        boxShadow: '0 8px 32px rgba(0,0,255,0.2)',
+        boxShadow: '0 8px 32px rgba(0,0,255,0.25)',
       }}>
         <div style={{
-          position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.1,
+          position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.08,
           backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.9) 1.5px, transparent 1.5px)',
           backgroundSize: '20px 20px',
         }} />
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.7)', letterSpacing: 1, marginBottom: 6, textTransform: 'uppercase' }}>
-            Daily Promotion
-          </div>
           <div style={{ fontSize: 16, fontWeight: 800, color: '#fff', marginBottom: 4 }}>
-            ✍️ Post & get <span style={{ color: '#A5B4FC' }}>+5 HP</span>
+            ✍️ Post about us and get <span style={{ color: '#A5B4FC' }}>+5 HP</span>
           </div>
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', marginBottom: 14, lineHeight: 1.5, fontWeight: 500 }}>
-            Share your experience on X/Farcaster and submit the link below for daily rewards.
+          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)', marginBottom: 12, lineHeight: 1.5 }}>
+            We value creators on Base. Post about our app or share useful content about Base and submit your link below.
           </div>
           {isCheckingPost ? (
             <div style={{ height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -464,36 +467,33 @@ export function TasksSection({ address }) {
           ) : hasSubmittedToday ? (
             <div style={{ 
               background: 'rgba(255,255,255,0.1)', 
-              borderRadius: 14, 
-              padding: '10px 16px', 
-              fontSize: 12, 
+              borderRadius: 12, 
+              padding: '12px 16px', 
+              fontSize: 13, 
               color: 'rgba(255,255,255,0.9)', 
-              fontWeight: 800,
+              fontWeight: 600,
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
-              border: '1px solid rgba(255,255,255,0.1)',
-              letterSpacing: 0.5,
-              textTransform: 'uppercase'
+              border: '1px solid rgba(255,255,255,0.1)'
             }}>
-              Available in {getWaitTime()}h
+              Next submit will be available in {getWaitTime()}h
             </div>
           ) : postStatus === 'success' ? (
-            <div style={{ background: 'rgba(5,150,105,0.25)', borderRadius: 14, padding: '10px 14px', fontSize: 12, color: '#6EE7B7', fontWeight: 800 }}>
-              ✓ SUCCESSFUL SUBMISSION
+            <div style={{ background: 'rgba(5,150,105,0.25)', borderRadius: 12, padding: '10px 14px', fontSize: 13, color: '#6EE7B7', fontWeight: 600 }}>
+              ✓ {postMsg}
             </div>
           ) : (
             <div style={{ display: 'flex', gap: 8 }}>
               <input
                 value={postUrl}
                 onChange={e => { setPostUrl(e.target.value); setPostStatus(''); setPostMsg('') }}
-                placeholder="Paste your link..."
+                placeholder="Paste your link here…"
                 style={{
-                  flex: 1, padding: '10px 16px', borderRadius: 50,
+                  flex: 1, padding: '10px 14px', borderRadius: 50,
                   border: postStatus === 'error' ? '1.5px solid #FCA5A5' : '1.5px solid rgba(255,255,255,0.2)',
                   background: 'rgba(255,255,255,0.1)', color: '#fff',
-                  fontSize: 12, outline: 'none', fontFamily: 'inherit',
-                  fontWeight: 600
+                  fontSize: 13, outline: 'none', fontFamily: 'inherit',
                 }}
               />
               <button
@@ -501,18 +501,18 @@ export function TasksSection({ address }) {
                 disabled={postStatus === 'submitting' || !postUrl}
                 style={{
                   background: '#fff', color: '#0000FF', borderRadius: 50,
-                  padding: '10px 20px', fontSize: 12, fontWeight: 800,
+                  padding: '10px 18px', fontSize: 13, fontWeight: 800,
                   border: 'none', cursor: postStatus === 'submitting' || !postUrl ? 'not-allowed' : 'pointer',
                   opacity: postStatus === 'submitting' || !postUrl ? 0.6 : 1,
                   whiteSpace: 'nowrap',
                 }}
               >
-                {postStatus === 'submitting' ? '...' : 'SUBMIT'}
+                {postStatus === 'submitting' ? '…' : 'Submit'}
               </button>
             </div>
           )}
           {postStatus === 'error' && (
-            <div style={{ fontSize: 9, color: '#FCA5A5', marginTop: 6, fontWeight: 800, textTransform: 'uppercase' }}>{postMsg}</div>
+            <div style={{ fontSize: 11, color: '#FCA5A5', marginTop: 6 }}>{postMsg}</div>
           )}
         </div>
       </div>
@@ -629,35 +629,28 @@ export function TasksSection({ address }) {
         </div>
       )}
 
-      {/* How it Works Section */}
-      <div style={{
-        marginTop: 24,
-        background: '#EEF0F3',
-        border: '1px solid #DEE1E7',
-        borderRadius: 20,
-        padding: '16px 20px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 16
-      }}>
-        <div style={{ fontSize: 9, fontWeight: 800, color: '#64748B', letterSpacing: 1, textTransform: 'uppercase' }}>
-          How it works
+      {visible.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '60px 20px', background: '#EEF0F3', borderRadius: 20 }}>
+          <div style={{ fontSize: 36, marginBottom: 12 }}>✓</div>
+          <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 22, fontWeight: 900, marginBottom: 6, color: '#0A0B0D' }}>All Done!</div>
+          <div style={{ fontSize: 13, color: '#717886' }}>Check back soon for new tasks</div>
         </div>
-        
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {[
-            ['How do tasks work?', 'Complete social actions like liking, retweeting, or following to earn HP rewards instantly.'],
-            ['How to claim rewards?', 'Once you complete a task, click "Check" to verify. After a few seconds, you can claim your HP reward for free.'],
-            ['Daily Promotions?', 'You can earn extra HP daily by posting about us on social media and submitting the link.'],
-            ['Is it free?', 'Yes! All task claims are completely free. We cover the verification and processing.'],
-          ].map(([q, a], i) => (
-            <div key={i}>
-              <div style={{ fontSize: 11, fontWeight: 800, color: '#0A0B0D', marginBottom: 4 }}>{q}</div>
-              <div style={{ fontSize: 10, color: '#64748B', lineHeight: 1.5, fontWeight: 500 }}>{a}</div>
-            </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {visible.map((task) => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              taskState={done[task.id]}
+              onVisit={handleVisit}
+              onCheck={handleCheck}
+              onClaim={handleClaim}
+              isClaiming={claimingId === task.id && (isPendingTx || isConfirmingTx || isSuccessTx)}
+            />
           ))}
         </div>
-      </div>
+      )}
+
     </div>
   )
 }
