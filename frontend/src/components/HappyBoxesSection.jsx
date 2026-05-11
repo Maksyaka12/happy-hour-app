@@ -352,21 +352,33 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         ))}
       </div>
 
-      <div style={{ background: '#EEF0F3', border: '1px solid #DEE1E7', borderRadius: 16, padding: '16px', marginTop: 24 }}>
-        <div style={{ fontSize: 9, fontWeight: 800, color: '#717886', letterSpacing: 0.5, marginBottom: 14, textTransform: 'uppercase' }}>
+      {/* How it Works Section */}
+      <div style={{
+        marginTop: 24,
+        background: '#EEF0F3',
+        borderRadius: 20,
+        padding: '16px 20px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 16
+      }}>
+        <div style={{ fontSize: 9, fontWeight: 800, color: '#64748B', letterSpacing: 1, textTransform: 'uppercase' }}>
           How it works
         </div>
-        {[
-          ['How do Happy Boxes work?', 'Choose a box to try your luck and win HP instantly. Each box has a different range of possible rewards.'],
-          ['What can I win?', 'Every box contains HP. Epic and Legendary boxes also give you a chance to win a 2x or 5x boost.'],
-          ['Are rewards guaranteed?', 'Yes, every box contains at least the minimum amount of HP shown in the description.'],
-          ['How does the multiplier work?', 'If you have an active multiplier, it will be applied to your boxes. If you win a higher boost from a box, it will be applied instantly and last for 24h.'],
-        ].map(([q, a], i, arr) => (
-          <div key={i} style={{ marginBottom: i < arr.length - 1 ? 14 : 0 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#0A0B0D', marginBottom: 3 }}>{q}</div>
-            <div style={{ fontSize: 10, color: '#717886', lineHeight: 1.6, fontWeight: 500 }}>{a}</div>
-          </div>
-        ))}
+        
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {[
+            ['How do Happy Boxes work?', 'Choose a box to try your luck and win HP instantly. Each box has a different range of possible rewards.'],
+            ['What can I win?', 'Every box contains HP. Epic and Legendary boxes also give you a chance to win a 2x or 5x boost.'],
+            ['Are rewards guaranteed?', 'Yes, every box contains at least the minimum amount of HP shown in the description.'],
+            ['How does the multiplier work?', 'If you have an active multiplier, it will be applied to your boxes. If you win a higher boost from a box, it will be applied instantly and last for 24h for all earned HP. Once it expires, your permanent multiplier resumes.'],
+          ].map(([q, a], i) => (
+            <div key={i}>
+              <div style={{ fontSize: 11, fontWeight: 800, color: '#0A0B0D', marginBottom: 4 }}>{q}</div>
+              <div style={{ fontSize: 10, color: '#64748B', lineHeight: 1.5, fontWeight: 500 }}>{a}</div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {selectedBox && !isSuccess && !isOpening && (
