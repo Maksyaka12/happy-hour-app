@@ -502,8 +502,33 @@ export function ProfileSection({ address, basename }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               {/* Permanent Multiplier Row */}
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <div style={{ background: 'rgba(255,255,255,0.2)', padding: '2px 8px', borderRadius: 6, fontSize: 9, fontWeight: 800, color: '#fff', border: '1px solid rgba(255,255,255,0.1)' }}>
-                  {LEVELS.find(l => l.level === accountLevel)?.name} ({LEVELS.find(l => l.level === accountLevel)?.mult}x)
+                <div style={{ 
+                  background: 'rgba(255,255,255,0.1)', 
+                  padding: '3px 8px', 
+                  borderRadius: 8, 
+                  fontSize: 9, 
+                  fontWeight: 800, 
+                  color: '#fff', 
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6
+                }}>
+                  <span style={{ opacity: 0.7, letterSpacing: 0.3 }}>MULTIPLIER:</span>
+                  <span style={{ color: '#A5B4FC', fontWeight: 900, textTransform: 'uppercase' }}>
+                    {LEVELS.find(l => l.level === accountLevel)?.name}
+                  </span>
+                  <span style={{ 
+                    background: '#fff', 
+                    color: '#0000FF', 
+                    borderRadius: 4, 
+                    padding: '1px 5px', 
+                    fontSize: 8, 
+                    fontWeight: 900,
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+                  }}>
+                    {LEVELS.find(l => l.level === accountLevel)?.mult}x
+                  </span>
                 </div>
               </div>
               
