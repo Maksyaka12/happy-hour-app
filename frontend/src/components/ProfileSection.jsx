@@ -774,7 +774,6 @@ export function ProfileSection({ address, basename }) {
                 height: 2, 
                 background: '#0000FF', 
                 borderRadius: 1, 
-                // Formula: (Factor% of container) - (Adjusted offset for 1st circle and scaling)
                 width: `calc(${progressFactor}% - ${(progressFactor / 100) * 44}px)`,
                 transition: 'width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)' 
               }} />
@@ -792,8 +791,8 @@ export function ProfileSection({ address, basename }) {
               const reached = streak.count >= reward.days
               return (
                 <div key={reward.days} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-                  <div style={{ fontSize: 7, fontWeight: 900, color: reached ? '#059669' : '#94A3B8', textTransform: 'uppercase' }}>
-                    {reward.pts > 0 ? `+${reward.pts} HP` : '—'}
+                  <div style={{ fontSize: 7, fontWeight: 900, color: reached ? '#059669' : '#94A3B8', textTransform: 'uppercase', minHeight: 10 }}>
+                    {reward.pts > 0 ? `+${reward.pts} HP` : ''}
                   </div>
                   <div style={{ width: 24, height: 24, borderRadius: '50%', background: reached ? '#0000FF' : '#fff', border: reached ? 'none' : '2px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: reached ? '0 4px 10px rgba(0,0,255,0.2)' : 'none' }}>
                     {reached ? <span style={{ fontSize: 10, color: '#fff' }}>✓</span> : <span style={{ fontSize: 8, color: '#94A3B8', fontWeight: 800 }}>{reward.days}d</span>}
