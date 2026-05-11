@@ -618,14 +618,14 @@ export function LeaderboardSection({ address }) {
 
           {/* How it works */}
           <div style={{ 
-            background: '#F8F9FC', 
+            background: '#EEF0F3', 
             border: '1px solid #DEE1E7', 
             borderRadius: 16, 
             padding: '16px', 
             marginTop: 24 
           }}>
             <div style={{ 
-              fontSize: 10, 
+              fontSize: 9, 
               fontWeight: 800, 
               color: '#717886', 
               letterSpacing: '0.5px', 
@@ -640,8 +640,8 @@ export function LeaderboardSection({ address }) {
               ['What happens when the timer hits 00:00?', 'The leaderboard resets along with your activity points. New day - new chance for everyone.'],
             ].map(([q, a], i, arr) => (
               <div key={i} style={{ marginBottom: i < arr.length - 1 ? 14 : 0 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: '#0A0B0D', marginBottom: 4 }}>{q}</div>
-                <div style={{ fontSize: 11, color: '#717886', lineHeight: 1.6, fontWeight: 500 }}>{a}</div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#0A0B0D', marginBottom: 3 }}>{q}</div>
+                <div style={{ fontSize: 10, color: '#717886', lineHeight: 1.6, fontWeight: 500 }}>{a}</div>
               </div>
             ))}
           </div>
