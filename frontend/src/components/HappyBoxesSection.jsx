@@ -196,7 +196,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         </div>
       )}
 
-      {/* Header Banner */}
+      {/* Header Banner - Hidden
       <div style={{
         background: 'linear-gradient(135deg, #0000FF 0%, #4F46E5 100%)', borderRadius: 20, padding: '22px 20px 18px',
         marginBottom: 12, position: 'relative', overflow: 'hidden',
@@ -224,16 +224,17 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           </div>
         </div>
       </div>
+      */}
 
       {/* Box List */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12 }}>
         {boxes.map((box) => (
           <div key={box.id} className="box-card" style={{
-            background: '#fff', 
-            border: `1.5px solid ${box.id === 'legendary' ? '#D97706' : '#DEE1E7'}`, 
+            background: box.id === 'legendary' ? '#FEF9EB' : '#fff', 
+            border: `1.5px solid ${box.id === 'legendary' ? '#D97706' : box.id === 'epic' ? '#9333EA' : '#DEE1E7'}`, 
             borderRadius: 20,
             padding: 10, 
-            boxShadow: box.id === 'legendary' ? '0 8px 20px rgba(217,119,6,0.15)' : '0 4px 12px rgba(10,11,13,0.03)',
+            boxShadow: box.id === 'legendary' ? '0 8px 20px rgba(217,119,6,0.15)' : box.id === 'epic' ? '0 8px 20px rgba(147,51,234,0.1)' : '0 4px 12px rgba(10,11,13,0.03)',
             display: 'flex', 
             alignItems: 'center', 
             gap: 14,
