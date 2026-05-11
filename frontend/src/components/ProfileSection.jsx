@@ -495,9 +495,9 @@ export function ProfileSection({ address, basename }) {
         </div>
 
         {/* Central Status Accent (The Multiplier Rank) */}
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 4 }}>Current Rank</div>
+            <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 6 }}>Account Tier</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{ fontSize: 22, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>{LEVELS.find(l => l.level === accountLevel)?.name}</div>
               <div style={{ background: 'linear-gradient(135deg, #F4C81B, #F97316)', color: '#000', padding: '2px 8px', borderRadius: 6, fontSize: 11, fontWeight: 900, boxShadow: '0 4px 12px rgba(244, 200, 27, 0.3)' }}>
@@ -515,11 +515,10 @@ export function ProfileSection({ address, basename }) {
 
           {/* HP Wallet Display */}
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 2 }}>Balance</div>
+            <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 6 }}>HP Balance</div>
             <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 34, fontWeight: 900, color: '#fff', lineHeight: 1 }}>
               {userStats.points.toLocaleString()}
             </div>
-            <div style={{ fontSize: 10, color: '#A5B4FC', fontWeight: 800, marginTop: 2 }}>HAPPY POINTS</div>
           </div>
         </div>
       </div>
