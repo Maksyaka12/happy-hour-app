@@ -249,39 +249,39 @@ export function LeaderboardSection({ address }) {
           <div
             style={{
               background: 'linear-gradient(135deg,#0000FF,#3C8AFF)',
-              borderRadius: 20,
-              padding: '14px 20px',
-              marginBottom: 14,
+              borderRadius: 18,
+              padding: '10px 16px',
+              marginBottom: 12,
               display: 'flex',
               alignItems: 'center',
-              gap: 16,
-              boxShadow: '0 8px 24px rgba(0,0,255,0.3)',
+              gap: 14,
+              boxShadow: '0 6px 20px rgba(0,0,255,0.25)',
               color: '#fff'
             }}
           >
             <div style={{ 
               fontFamily: "'Barlow Condensed', sans-serif", 
-              fontSize: 32, 
+              fontSize: 28, 
               fontWeight: 900, 
               lineHeight: 1,
-              minWidth: 44 
+              minWidth: 38 
             }}>
               #{displayRank}
             </div>
             
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 0 }}>
               {/* Labels Row */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Your Position</div>
-                <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Current HP</div>
+                <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Your Position</div>
+                <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Current HP</div>
               </div>
               
               {/* Values Row */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                <div style={{ fontSize: 14, fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 140 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 140 }}>
                   {displayEntry?.basename || short(address)}
                 </div>
-                <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 16, fontWeight: 900 }}>
+                <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 15, fontWeight: 900 }}>
                   {(displayEntry?.points ?? 0).toLocaleString()}
                 </div>
               </div>
@@ -293,38 +293,38 @@ export function LeaderboardSection({ address }) {
           <div
             style={{
               background: 'linear-gradient(135deg, #059669, #10B981)',
-              borderRadius: 20,
-              padding: '14px 20px',
-              marginBottom: 14,
+              borderRadius: 18,
+              padding: '10px 16px',
+              marginBottom: 12,
               display: 'flex',
               alignItems: 'center',
-              gap: 16,
-              boxShadow: '0 8px 24px rgba(5,150,105,0.3)',
+              gap: 14,
+              boxShadow: '0 6px 20px rgba(5,150,105,0.2)',
               color: '#fff'
             }}
           >
             <div style={{ 
               fontFamily: "'Barlow Condensed', sans-serif", 
-              fontSize: 32, 
+              fontSize: 28, 
               fontWeight: 900, 
               lineHeight: 1,
-              minWidth: 44 
+              minWidth: 38 
             }}>
               #{displayDailyRank}
             </div>
 
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 0 }}>
               {/* Labels Row */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.75)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Daily Rank</div>
-                <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.75)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Est. Reward</div>
+                <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.75)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Daily Rank</div>
+                <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.75)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Est. Reward</div>
               </div>
               
               {/* Values Row */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                <div style={{ fontSize: 14, fontWeight: 700 }}>Score: {displayDailyScore}</div>
-                <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 16, fontWeight: 900 }}>
-                  +{getReward(displayDailyRank)} <span style={{ fontSize: 10, opacity: 0.8 }}>HP</span>
+                <div style={{ fontSize: 13, fontWeight: 700 }}>Score: {displayDailyScore}</div>
+                <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 15, fontWeight: 900 }}>
+                  +{getReward(displayDailyRank)} <span style={{ fontSize: 9, opacity: 0.8 }}>HP</span>
                 </div>
               </div>
             </div>
