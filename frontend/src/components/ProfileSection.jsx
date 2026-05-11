@@ -488,8 +488,8 @@ export function ProfileSection({ address, basename }) {
             </div>
           </div>
           <div style={{ display: 'flex', gap: 6 }}>
-            <div style={{ width: 110, background: 'rgba(255,255,255,0.1)', padding: '4px 10px', borderRadius: 50, border: '1px solid rgba(255,255,255,0.05)', fontSize: 9, fontWeight: 800, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
-              🔥 {streak.count} DAYS
+            <div style={{ width: 140, background: 'rgba(255,255,255,0.1)', padding: '4px 10px', borderRadius: 50, border: '1px solid rgba(255,255,255,0.05)', fontSize: 9, fontWeight: 800, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+              🔥 {streak.count} DAY STREAK
             </div>
           </div>
         </div>
@@ -515,7 +515,7 @@ export function ProfileSection({ address, basename }) {
 
           {/* HP Wallet Display (Pill Style) */}
           <div style={{ 
-            width: 110,
+            width: 140,
             textAlign: 'center',
             background: 'rgba(255,255,255,0.1)', 
             padding: '8px 10px', 
@@ -526,7 +526,7 @@ export function ProfileSection({ address, basename }) {
             justifyContent: 'center'
           }}>
             <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.6)', letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 2 }}>HP Balance</div>
-            <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 22, fontWeight: 900, color: '#fff', lineHeight: 1 }}>
+            <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 28, fontWeight: 900, color: '#fff', lineHeight: 1 }}>
               {userStats.points.toLocaleString()}
             </div>
           </div>
