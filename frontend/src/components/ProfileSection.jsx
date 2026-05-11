@@ -464,7 +464,7 @@ export function ProfileSection({ address, basename }) {
       </button>
       */}
 
-      {/* Senior Dev Redesign: Hero Status Hub */}
+      {/* Senior Dev Redesign v2: Player Identity Card */}
       <div
         style={{
           background: 'linear-gradient(135deg, #020617 0%, #0000FF 100%)',
@@ -473,62 +473,60 @@ export function ProfileSection({ address, basename }) {
           marginBottom: 14,
           position: 'relative',
           overflow: 'hidden',
-          boxShadow: '0 12px 40px rgba(0,0,255,0.25)',
-          border: '1px solid rgba(255,255,255,0.1)',
+          boxShadow: '0 12px 40px rgba(0,0,255,0.3)',
+          border: '1px solid rgba(255,255,255,0.12)',
         }}
       >
-        <div style={{ position: 'absolute', inset: 0, opacity: 0.05, backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
+        <div style={{ position: 'absolute', inset: 0, opacity: 0.08, backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
         
-        {/* Top Identity Row (Secondary) */}
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <UserAvatar address={address} size={28} />
-            <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.6)', letterSpacing: 0.5 }}>
+        {/* Top Bar: Identity & Streak */}
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ border: '2px solid rgba(255,255,255,0.1)', borderRadius: '50%', padding: 2 }}>
+              <UserAvatar address={address} size={32} />
+            </div>
+            <div style={{ fontSize: 12, fontWeight: 800, color: '#fff', letterSpacing: 0.5 }}>
               {basename ? basename : short(address)}
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 6 }}>
-            <div style={{ width: 140, background: 'rgba(255,255,255,0.1)', padding: '4px 10px', borderRadius: 50, border: '1px solid rgba(255,255,255,0.05)', fontSize: 9, fontWeight: 800, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
-              🔥 {streak.count} DAY STREAK
-            </div>
+          <div style={{ background: 'rgba(255,255,255,0.15)', padding: '6px 14px', borderRadius: 50, border: '1px solid rgba(255,255,255,0.1)', fontSize: 10, fontWeight: 900, color: '#fff', display: 'flex', alignItems: 'center', gap: 6, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+            🔥 {streak.count} DAY STREAK
           </div>
         </div>
 
-        {/* Central Status Accent (The Multiplier Rank) */}
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 6 }}>Account Tier</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ fontSize: 22, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>{LEVELS.find(l => l.level === accountLevel)?.name}</div>
-              <div style={{ background: 'linear-gradient(135deg, #F4C81B, #F97316)', color: '#000', padding: '2px 8px', borderRadius: 6, fontSize: 11, fontWeight: 900, boxShadow: '0 4px 12px rgba(244, 200, 27, 0.3)' }}>
-                {LEVELS.find(l => l.level === accountLevel)?.mult}x
-              </div>
+        {/* Main Status Grid (3-Column Layout) */}
+        <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: '1fr 1.2fr 1fr', gap: 12 }}>
+          {/* Column 1: Rank */}
+          <div style={{ background: 'rgba(0,0,0,0.2)', padding: '12px', borderRadius: 16, border: '1px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 4 }}>Account Tier</div>
+            <div style={{ fontSize: 18, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>{LEVELS.find(l => l.level === accountLevel)?.name}</div>
+            <div style={{ display: 'inline-block', marginTop: 4, background: 'linear-gradient(135deg, #A5B4FC, #6366F1)', color: '#fff', padding: '1px 6px', borderRadius: 4, fontSize: 10, fontWeight: 900 }}>
+              {LEVELS.find(l => l.level === accountLevel)?.mult}x
             </div>
-            {activeMultiplier > (LEVELS.find(l => l.level === accountLevel)?.mult || 1) && (
-              <div style={{ marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.1)', padding: '4px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.05)' }}>
-                <span style={{ fontSize: 10 }}>⚡</span>
-                <span style={{ fontSize: 10, color: '#A5B4FC', fontWeight: 800 }}>{activeMultiplier}x BOOSTED</span>
-                <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>{timeLeft}</span>
-              </div>
+          </div>
+
+          {/* Column 2: Boost Status */}
+          <div style={{ background: 'rgba(0,0,0,0.2)', padding: '12px', borderRadius: 16, border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
+            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 4 }}>Applied Boost</div>
+            {activeMultiplier > (LEVELS.find(l => l.level === accountLevel)?.mult || 1) ? (
+              <>
+                <div style={{ fontSize: 16, fontWeight: 900, color: '#F4C81B', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+                  ⚡ {activeMultiplier}x
+                </div>
+                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', fontWeight: 700, marginTop: 2 }}>{timeLeft}</div>
+              </>
+            ) : (
+              <div style={{ fontSize: 18, fontWeight: 900, color: 'rgba(255,255,255,0.2)', marginTop: 2 }}>—</div>
             )}
           </div>
 
-          {/* HP Wallet Display (Pill Style) */}
-          <div style={{ 
-            width: 140,
-            textAlign: 'center',
-            background: 'rgba(255,255,255,0.1)', 
-            padding: '8px 10px', 
-            borderRadius: 16, 
-            border: '1px solid rgba(255,255,255,0.08)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center'
-          }}>
-            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.6)', letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 2 }}>HP Balance</div>
-            <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 28, fontWeight: 900, color: '#fff', lineHeight: 1 }}>
+          {/* Column 3: HP Balance */}
+          <div style={{ background: 'rgba(255,255,255,0.1)', padding: '12px', borderRadius: 16, border: '1px solid rgba(255,255,255,0.1)', textAlign: 'right', boxShadow: 'inset 0 0 20px rgba(255,255,255,0.02)' }}>
+            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 2 }}>HP Balance</div>
+            <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 26, fontWeight: 900, color: '#fff', lineHeight: 1 }}>
               {userStats.points.toLocaleString()}
             </div>
+            <div style={{ fontSize: 8, fontWeight: 900, color: '#A5B4FC', marginTop: 4 }}>POINTS</div>
           </div>
         </div>
       </div>
