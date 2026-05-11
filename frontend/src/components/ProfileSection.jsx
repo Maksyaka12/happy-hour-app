@@ -33,7 +33,7 @@ function normalizeUserRow(data) {
 }
 
 const LEVELS = [
-  { level: 1, name: 'Standard', mult: 1.0, price: 0.00 },
+  { level: 1, name: 'Basic',    mult: 1.0, price: 0.00 },
   { level: 2, name: 'Bronze',   mult: 1.2, price: 0.95 },
   { level: 3, name: 'Silver',   mult: 1.5, price: 1.75 },
   { level: 4, name: 'Gold',     mult: 1.7, price: 3.00 },
@@ -525,7 +525,19 @@ export function ProfileSection({ address, basename }) {
               minWidth: 100
             }}>
               <div style={{ fontSize: 18, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>{LEVELS.find(l => l.level === accountLevel)?.name}</div>
-              <div style={{ background: 'linear-gradient(135deg, #F4C81B, #F97316)', color: '#000', padding: '2px 6px', borderRadius: 4, fontSize: 10, fontWeight: 900, boxShadow: '0 4px 12px rgba(244, 200, 27, 0.3)' }}>
+              <div style={{ 
+                background: (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 1.0 
+                  ? 'linear-gradient(135deg, #94A3B8, #64748B)' 
+                  : (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 2.0
+                    ? 'linear-gradient(135deg, #34D399, #059669)'
+                    : 'linear-gradient(135deg, #F4C81B, #F97316)',
+                color: '#000', 
+                padding: '2px 6px', 
+                borderRadius: 4, 
+                fontSize: 10, 
+                fontWeight: 900, 
+                boxShadow: (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 1.0 ? 'none' : '0 4px 12px rgba(0,0,0,0.1)'
+              }}>
                 {LEVELS.find(l => l.level === accountLevel)?.mult}x
               </div>
             </div>
@@ -667,12 +679,14 @@ export function ProfileSection({ address, basename }) {
                   width: 26, 
                   height: 26, 
                   borderRadius: '50%', 
-                  background: isCurrent ? '#0000FF' : isActive ? '#A5B4FC' : '#fff', 
+                  background: isCurrent || isActive 
+                    ? (l.mult === 1.0 ? '#94A3B8' : l.mult === 2.0 ? '#34D399' : '#F97316')
+                    : '#fff', 
                   border: isCurrent ? '4px solid #DBEAFE' : '2px solid #E2E8F0',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  boxShadow: isCurrent ? '0 0 15px rgba(0,0,255,0.3)' : 'none'
+                  boxShadow: isCurrent ? `0 0 15px ${l.mult === 2.0 ? 'rgba(52,211,153,0.3)' : 'rgba(249,115,22,0.3)'}` : 'none'
                 }}>
                   <span style={{ fontSize: 9, color: isCurrent || isActive ? '#fff' : '#94A3B8', fontWeight: 900 }}>{l.mult}x</span>
                 </div>
