@@ -464,7 +464,7 @@ export function ProfileSection({ address, basename }) {
       </button>
       */}
 
-      {/* Senior Dev Redesign v8.2: Premium Player Passport */}
+      {/* Senior Dev Redesign v8.3: Crystal Clear Player Passport */}
       <div
         style={{
           backgroundImage: 'url(/banner.jpg)',
@@ -476,13 +476,13 @@ export function ProfileSection({ address, basename }) {
           marginBottom: 14,
           position: 'relative',
           overflow: 'hidden',
-          boxShadow: '0 12px 40px rgba(0,0,255,0.3)',
+          boxShadow: '0 12px 40px rgba(0,0,255,0.25)',
           border: '1px solid rgba(255,255,255,0.15)',
         }}
       >
-        {/* Dark Glass Overlay for Premium Texture */}
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0, 0, 100, 0.4)', backdropFilter: 'blur(2px)', zIndex: 0 }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,0,255,0.2) 100%)', zIndex: 0 }} />
+        {/* Subtler Dark Glass Overlay for Clarity */}
+        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0, 0, 80, 0.35)', zIndex: 0 }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,0,255,0.1) 100%)', zIndex: 0 }} />
         
         {/* Top Bar: Player Identity Passport */}
         <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
@@ -492,12 +492,12 @@ export function ProfileSection({ address, basename }) {
             display: 'flex', 
             alignItems: 'center', 
             background: 'rgba(255, 255, 255, 0.08)', 
-            backdropFilter: 'blur(12px)',
+            backdropFilter: 'blur(10px)',
             padding: '6px 20px 6px 6px', 
             borderRadius: 60, 
             border: '1px solid rgba(255,255,255,0.12)',
             gap: 16,
-            boxShadow: '0 8px 32px rgba(0,0,0,0.3), inset 0 0 15px rgba(255,255,255,0.05)'
+            boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
           }}>
             <div style={{ 
               width: 48, 
@@ -528,17 +528,16 @@ export function ProfileSection({ address, basename }) {
             <button
               onClick={() => disconnect()}
               style={{
-                background: 'rgba(255,255,255,0.15)',
-                backdropFilter: 'blur(10px)',
+                background: 'rgba(255,255,255,0.1)',
+                backdropFilter: 'blur(8px)',
                 border: '1px solid rgba(255,255,255,0.1)',
-                color: '#fff',
+                color: 'rgba(255,255,255,0.8)',
                 borderRadius: 50,
                 padding: '4px 14px',
                 fontSize: 8,
                 fontWeight: 900,
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
               }}
             >
               DISCONNECT
@@ -547,11 +546,9 @@ export function ProfileSection({ address, basename }) {
               fontSize: 9, 
               fontWeight: 800, 
               color: '#fff', 
-              opacity: 0.5, 
-              letterSpacing: 0.8, 
-              background: 'rgba(0,0,0,0.2)', 
-              padding: '2px 8px', 
-              borderRadius: 6 
+              opacity: 0.4, 
+              letterSpacing: 0.8,
+              padding: '0 4px'
             }}>
               {basename ? basename : short(address)}
             </div>
