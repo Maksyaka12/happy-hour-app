@@ -450,9 +450,6 @@ export function TasksSection({ address }) {
           backgroundSize: '20px 20px',
         }} />
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.7)', letterSpacing: 1, marginBottom: 8, textTransform: 'uppercase' }}>
-            Daily Promotion
-          </div>
           <div style={{ fontSize: 16, fontWeight: 800, color: '#fff', marginBottom: 4 }}>
             ✍️ Post about us and get <span style={{ color: '#A5B4FC' }}>+5 HP</span>
           </div>
