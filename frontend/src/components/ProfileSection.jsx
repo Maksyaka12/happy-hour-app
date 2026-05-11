@@ -464,327 +464,186 @@ export function ProfileSection({ address, basename }) {
       </button>
       */}
 
-      {/* Compact Profile Badge */}
+      {/* Senior Dev Redesign: Hero Status Hub */}
       <div
         style={{
-          background: 'linear-gradient(135deg,#0000FF 0%,#0041CC 45%,#3C8AFF 100%)',
+          background: 'linear-gradient(135deg, #020617 0%, #0000FF 100%)',
           borderRadius: 24,
-          padding: '16px',
-          marginBottom: 12,
+          padding: '20px',
+          marginBottom: 14,
           position: 'relative',
           overflow: 'hidden',
-          boxShadow: '0 8px 32px rgba(0,0,255,0.3)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          marginTop: 6, // Small gap after the title row
+          boxShadow: '0 12px 40px rgba(0,0,255,0.25)',
+          border: '1px solid rgba(255,255,255,0.1)',
         }}
       >
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            pointerEvents: 'none',
-            opacity: 0.1,
-            backgroundImage: 'radial-gradient(circle,rgba(255,255,255,0.9) 1.5px,transparent 1.5px)',
-            backgroundSize: '20px 20px',
-          }}
-        />
+        <div style={{ position: 'absolute', inset: 0, opacity: 0.05, backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
         
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
-          <UserAvatar address={address} size={48} />
-          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}>
-            <div style={{ fontSize: 14, fontWeight: 800, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        {/* Top Identity Row (Secondary) */}
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <UserAvatar address={address} size={28} />
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.6)', letterSpacing: 0.5 }}>
               {basename ? basename : short(address)}
             </div>
-            
-            {/* Multipliers & Boosts Display */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              {/* Permanent Multiplier Row */}
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <div style={{ 
-                  background: 'rgba(255,255,255,0.1)', 
-                  padding: '3px 8px', 
-                  borderRadius: 8, 
-                  fontSize: 9, 
-                  fontWeight: 800, 
-                  color: '#fff', 
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6
-                }}>
-                  <span style={{ opacity: 0.8 }}>Multiplier:</span>
-                  <span style={{ color: '#A5B4FC', fontWeight: 900 }}>
-                    {LEVELS.find(l => l.level === accountLevel)?.name}
-                  </span>
-                  <span style={{ 
-                    background: '#fff', 
-                    color: '#0000FF', 
-                    borderRadius: 4, 
-                    padding: '1px 5px', 
-                    fontSize: 8, 
-                    fontWeight: 900,
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-                  }}>
-                    {LEVELS.find(l => l.level === accountLevel)?.mult}x
-                  </span>
-                </div>
-              </div>
-              
-              {/* Temporary Boost Row */}
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                {activeMultiplier > 1 && activeMultiplier > (LEVELS.find(l => l.level === accountLevel)?.mult || 1) ? (
-                  <div style={{ 
-                    background: '#F4C81B', 
-                    color: '#000', 
-                    padding: '2px 8px', 
-                    borderRadius: 6, 
-                    fontSize: 9, 
-                    fontWeight: 900,
-                    boxShadow: '0 4px 10px rgba(244, 200, 27, 0.3)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 3
-                  }}>
-                    🔥 {activeMultiplier}x Boost {timeLeft ? <span style={{ opacity: 0.8, fontSize: 8, marginLeft: 2 }}>({timeLeft})</span> : ''}
-                  </div>
-                ) : (
-                  <div style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: 6, fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    Boost: —
-                  </div>
-                )}
-              </div>
+          </div>
+          <div style={{ display: 'flex', gap: 6 }}>
+            <div style={{ background: 'rgba(255,255,255,0.1)', padding: '4px 10px', borderRadius: 50, border: '1px solid rgba(255,255,255,0.05)', fontSize: 9, fontWeight: 800, color: '#fff', display: 'flex', alignItems: 'center', gap: 4 }}>
+              🔥 {streak.count} DAY STREAK
             </div>
           </div>
+        </div>
 
-          {/* HP Points (Compact Box) */}
-          <div style={{ 
-            background: 'rgba(0,0,0,0.2)', 
-            borderRadius: 16, 
-            height: 64, 
-            minWidth: 70, 
-            padding: '0 12px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            border: '1px solid rgba(255,255,255,0.1)',
-            boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.1)'
-          }}>
-            <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 24, fontWeight: 900, lineHeight: 1, color: '#fff' }}>
+        {/* Central Status Accent (The Multiplier Rank) */}
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 4 }}>Current Rank</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ fontSize: 22, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>{LEVELS.find(l => l.level === accountLevel)?.name}</div>
+              <div style={{ background: 'linear-gradient(135deg, #F4C81B, #F97316)', color: '#000', padding: '2px 8px', borderRadius: 6, fontSize: 11, fontWeight: 900, boxShadow: '0 4px 12px rgba(244, 200, 27, 0.3)' }}>
+                {LEVELS.find(l => l.level === accountLevel)?.mult}x
+              </div>
+            </div>
+            {activeMultiplier > (LEVELS.find(l => l.level === accountLevel)?.mult || 1) && (
+              <div style={{ marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.1)', padding: '4px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.05)' }}>
+                <span style={{ fontSize: 10 }}>⚡</span>
+                <span style={{ fontSize: 10, color: '#A5B4FC', fontWeight: 800 }}>{activeMultiplier}x BOOSTED</span>
+                <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>{timeLeft}</span>
+              </div>
+            )}
+          </div>
+
+          {/* HP Wallet Display */}
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 2 }}>Balance</div>
+            <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 34, fontWeight: 900, color: '#fff', lineHeight: 1 }}>
               {userStats.points.toLocaleString()}
             </div>
-            <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.6)', marginTop: 3, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5 }}>HP</div>
+            <div style={{ fontSize: 10, color: '#A5B4FC', fontWeight: 800, marginTop: 2 }}>HAPPY POINTS</div>
           </div>
         </div>
       </div>
 
-      <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, marginBottom: 12 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
+      {/* 2-Column Action Grid: Daily Rewards */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+        {/* Check-in Tile */}
+        <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 2, color: '#0A0B0D' }}>Daily Check-in</div>
-            <div style={{ fontSize: 10, color: '#717886', fontWeight: 500 }}>Earn <span style={{ color: '#0000FF', fontWeight: 700 }}>+1 HP</span> per day · Build your streak</div>
+            <div style={{ fontSize: 11, fontWeight: 800, color: '#0A0B0D', marginBottom: 4 }}>CHECK-IN</div>
+            <div style={{ fontSize: 9, color: '#717886', lineHeight: 1.4 }}>Build your streak for massive HP bonuses.</div>
           </div>
-          <div style={{ background: '#0000FF', borderRadius: 50, padding: '4px 10px', display: 'flex', alignItems: 'center', gap: 4 }}>
-            <span style={{ fontSize: 11 }}>🔥</span>
-            <span style={{ fontSize: 11, fontWeight: 800, color: '#fff' }}>{streak.count} day{streak.count !== 1 ? 's' : ''}</span>
+          <div style={{ marginTop: 14 }}>
+            {canCheckin ? (
+              <button
+                onClick={() => setTxModal('checkin')}
+                style={{ width: '100%', background: '#0000FF', color: '#fff', borderRadius: 50, padding: '10px', fontSize: 11, fontWeight: 800, border: 'none', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,255,0.2)' }}
+              >
+                ✓ Claim <span style={{ color: '#A5B4FC', textTransform: 'lowercase' }}>free</span>
+              </button>
+            ) : (
+              <div style={{ textAlign: 'center', padding: 10, background: '#EEF0F3', borderRadius: 50, border: '1px solid #DEE1E7', fontSize: 10, color: '#059669', fontWeight: 800 }}>
+                DONE TODAY
+              </div>
+            )}
           </div>
         </div>
 
-        <div style={{ position: 'relative', marginBottom: 18 }}>
-          <div style={{ position: 'absolute', top: 12, left: 12, right: 12, height: 2, background: '#DEE1E7', borderRadius: 1, zIndex: 0 }} />
-          <div
-            style={{
-              position: 'absolute',
-              top: 12,
-              left: 12,
-              height: 2,
-              background: '#0000FF',
-              borderRadius: 1,
-              zIndex: 1,
-              width: `${(() => {
-                const c = streak.count;
-                if (c >= 30) return 100;
-                if (c <= 1) return 0;
-                const m = [1, 3, 7, 14, 21, 30];
-                for (let i = 0; i < 5; i++) {
-                  if (c >= m[i] && c < m[i + 1]) {
-                    return (i * 20) + (((c - m[i]) / (m[i + 1] - m[i])) * 20);
-                  }
-                }
-                return 0;
-              })()}%`,
-              transition: 'width 0.5s ease',
-            }}
-          />
-          <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', zIndex: 2 }}>
-            {[1, 3, 7, 14, 21, 30].map((day) => {
+        {/* Boost Tile */}
+        <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 800, color: '#0A0B0D', marginBottom: 4 }}>HP BOOST</div>
+            <div style={{ fontSize: 9, color: '#717886', lineHeight: 1.4 }}>Get instant +2 HP to climb the ranks.</div>
+          </div>
+          <div style={{ marginTop: 14 }}>
+            {canBoost ? (
+              <button
+                onClick={() => setTxModal('boost')}
+                style={{ width: '100%', background: '#0000FF', color: '#fff', borderRadius: 50, padding: '10px', fontSize: 11, fontWeight: 800, border: 'none', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}
+              >
+                ✓ 0.10<img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14 }} />
+              </button>
+            ) : (
+              <div style={{ textAlign: 'center', padding: 10, background: '#EEF0F3', borderRadius: 50, border: '1px solid #DEE1E7', fontSize: 10, color: '#059669', fontWeight: 800 }}>
+                BOOSTED
+              </div>
+            )}
+      </div>
+
+      {/* Streak Milestone Row (Compact) */}
+      <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: '14px 16px', marginBottom: 12 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <div style={{ fontSize: 10, fontWeight: 800, color: '#64748B' }}>STREAK PROGRESS</div>
+          <div style={{ fontSize: 10, color: '#0000FF', fontWeight: 800 }}>{streak.count} DAYS</div>
+        </div>
+        <div style={{ position: 'relative', height: 40 }}>
+          <div style={{ position: 'absolute', top: 12, left: 10, right: 10, height: 2, background: '#F1F5F9', borderRadius: 1 }} />
+          <div style={{ position: 'absolute', top: 12, left: 10, height: 2, background: '#0000FF', borderRadius: 1, width: `${Math.min(100, (streak.count / 30) * 100)}%`, transition: 'width 0.5s ease' }} />
+          <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', zIndex: 1 }}>
+            {[1, 7, 14, 21, 30].map(day => {
               const reached = streak.count >= day
-              const milestone = STREAK_REWARDS.find((r) => r.days === day)
               return (
                 <div key={day} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                  <div
-                    style={{
-                      width: milestone ? 26 : 22,
-                      height: milestone ? 26 : 22,
-                      borderRadius: '50%',
-                      background: reached ? '#0000FF' : '#fff',
-                      border: reached ? '3px solid #0000FF' : '2px solid #DEE1E7',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    {reached ? <span style={{ fontSize: 11, color: '#fff', fontWeight: 900 }}>✓</span> : <span style={{ fontSize: 8, color: '#717886', fontWeight: 600 }}>{day}</span>}
+                  <div style={{ width: 22, height: 22, borderRadius: '50%', background: reached ? '#0000FF' : '#fff', border: reached ? 'none' : '2px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: reached ? '0 4px 10px rgba(0,0,255,0.2)' : 'none' }}>
+                    {reached ? <span style={{ fontSize: 10, color: '#fff' }}>✓</span> : <span style={{ fontSize: 8, color: '#94A3B8', fontWeight: 800 }}>{day}</span>}
                   </div>
-                  {milestone ? (
-                    <div style={{ fontSize: 9, fontWeight: 700, textAlign: 'center', lineHeight: 1.2 }}>
-                      <div style={{ color: reached ? '#0000FF' : '#717886' }}>Day {day}</div>
-                      <div style={{ color: reached ? '#059669' : '#3C8AFF', fontWeight: 800 }}>+{milestone.pts} HP</div>
-                    </div>
-                  ) : (
-                    <div style={{ fontSize: 9, color: '#717886' }}>{day}</div>
-                  )}
                 </div>
               )
             })}
           </div>
         </div>
-
-        {checkinError && (
-          <div style={{ background: '#FEF3C7', border: '1px solid #D97706', borderRadius: 12, padding: '10px 12px', marginBottom: 12, fontSize: 12, color: '#B45309' }}>
-            {checkinError}
-          </div>
-        )}
-
-        {canCheckin ? (
-          <button
-            onClick={() => setTxModal('checkin')}
-            style={{
-              width: '100%',
-              background: '#0000FF',
-              color: '#fff',
-              borderRadius: 50,
-              padding: '12px',
-              fontSize: 13,
-              fontWeight: 800,
-              border: 'none',
-              boxShadow: '0 4px 16px rgba(0,0,255,0.2)',
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 4
-            }}
-          >
-            ✓ Check-in Today <span style={{ color: '#A5B4FC', fontWeight: 700, opacity: 0.9 }}>free</span>
-          </button>
-        ) : (
-          <div style={{ textAlign: 'center', padding: 12, background: '#EEF0F3', borderRadius: 50, border: '1px solid #DEE1E7', fontSize: 11, color: '#717886', fontWeight: 600 }}>
-            Next check-in at 00:00 UTC
-          </div>
-        )}
       </div>
 
+      {checkinError && (
+        <div style={{ background: '#FEF3C7', border: '1px solid #D97706', borderRadius: 12, padding: '8px 12px', marginBottom: 12, fontSize: 10, color: '#B45309', fontWeight: 600, textAlign: 'center' }}>
+          ⚠️ {checkinError}
+        </div>
+      )}
+
+      {boostError && (
+        <div style={{ background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: 12, padding: '8px 12px', marginBottom: 12, fontSize: 10, color: '#DC2626', fontWeight: 600, textAlign: 'center' }}>
+          ⚠️ {boostError}
+        </div>
+      )}
+
+      {/* Account Progression: Roadmap */}
       <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, marginBottom: 12 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 3, color: '#0A0B0D' }}>Daily HP Boost</div>
-        <div style={{ fontSize: 10, color: '#717886', marginBottom: 12, lineHeight: 1.5, fontWeight: 500 }}>
-          Get an extra <span style={{ color: '#0000FF', fontWeight: 700 }}>+2 HP</span> per day · Boost your rank
-        </div>
-        {canBoost ? (
-          <button
-            onClick={() => setTxModal('boost')}
-            style={{
-              width: '100%',
-              background: '#0000FF',
-              color: '#fff',
-              borderRadius: 50,
-              padding: '12px',
-              fontSize: 13,
-              fontWeight: 800,
-              border: 'none',
-              boxShadow: '0 4px 16px rgba(0,0,255,0.2)',
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8
-            }}
-          >
-            ✓ Daily HP Boost <span style={{ color: '#A5B4FC', display: 'flex', alignItems: 'center', fontWeight: 700, opacity: 0.9 }}>0.10<img src="/usdc-logo.png" alt="USDC" style={{ width: 16, height: 16, marginLeft: 3 }} /></span>
-          </button>
-        ) : (
-          <div style={{ textAlign: 'center', padding: 12, background: '#EEF0F3', borderRadius: 50, border: '1px solid #DEE1E7', fontSize: 11, color: '#717886', fontWeight: 600 }}>
-            Next boost at 00:00 UTC
-          </div>
-        )}
-        {boostError && (
-          <div style={{ color: '#DC2626', fontSize: 12, marginTop: 10, textAlign: 'center' }}>{boostError}</div>
-        )}
-      </div>
-
-      <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, marginBottom: 12, position: 'relative', overflow: 'hidden' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <div>
-            <div style={{ fontSize: 12, fontWeight: 800, color: '#0A0B0D' }}>Account Multiplier</div>
-            <div style={{ fontSize: 10, color: '#717886', marginTop: 1, fontWeight: 500 }}>
-              <span style={{ color: '#0000FF', fontWeight: 700 }}>Permanent</span> multiplier for all earned HP
-            </div>
+            <div style={{ fontSize: 12, fontWeight: 800, color: '#0A0B0D' }}>ACCOUNT LEVEL</div>
+            <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>Unlock permanent multipliers.</div>
           </div>
-          <div style={{ 
-            background: 'linear-gradient(135deg, #0000FF, #3C8AFF)', 
-            color: '#fff', 
-            padding: '4px 12px', 
-            borderRadius: 10, 
-            fontSize: 11, 
-            fontWeight: 900,
-            boxShadow: '0 4px 12px rgba(0,0,255,0.2)'
-          }}>
-            {LEVELS.find(l => l.level === accountLevel)?.mult}x
+          <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '4px 10px', borderRadius: 8, fontSize: 10, fontWeight: 800, color: '#0000FF' }}>
+            RANK: {LEVELS.find(l => l.level === accountLevel)?.name}
           </div>
         </div>
 
-        {accountLevel < 5 && (
-          <div style={{ 
-            background: '#F9FAFB', 
-            border: '1px solid #EEF0F3', 
-            borderRadius: 16, 
-            padding: '12px 14px', 
-            marginBottom: 16,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between'
-          }}>
-            {/* Current */}
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 9, fontWeight: 700, color: '#717886', textTransform: 'uppercase', letterSpacing: 0.5 }}>Current Status</div>
-              <div style={{ fontSize: 14, fontWeight: 800, color: '#0A0B0D', marginTop: 1, display: 'flex', alignItems: 'center', gap: 4 }}>
-                {LEVELS.find(l => l.level === accountLevel)?.name}
-                <span style={{ color: '#0000FF', fontSize: 12 }}>{LEVELS.find(l => l.level === accountLevel)?.mult}x</span>
+        {/* Level Roadmap */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, position: 'relative', padding: '0 10px' }}>
+          <div style={{ position: 'absolute', top: 12, left: 20, right: 20, height: 2, background: '#F1F5F9', zIndex: 0 }} />
+          {LEVELS.map(l => {
+            const isActive = l.level <= accountLevel
+            const isCurrent = l.level === accountLevel
+            return (
+              <div key={l.level} style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+                <div style={{ 
+                  width: 26, 
+                  height: 26, 
+                  borderRadius: '50%', 
+                  background: isCurrent ? '#0000FF' : isActive ? '#A5B4FC' : '#fff', 
+                  border: isCurrent ? '4px solid #DBEAFE' : '2px solid #E2E8F0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: isCurrent ? '0 0 15px rgba(0,0,255,0.3)' : 'none'
+                }}>
+                  <span style={{ fontSize: 9, color: isCurrent || isActive ? '#fff' : '#94A3B8', fontWeight: 900 }}>{l.mult}x</span>
+                </div>
+                <div style={{ fontSize: 8, fontWeight: 800, color: isCurrent ? '#0000FF' : '#94A3B8', textTransform: 'uppercase' }}>LVL {l.level}</div>
               </div>
-            </div>
+            )
+          })}
+        </div>
 
-            {/* Arrow */}
-            <div style={{ padding: '0 10px', fontSize: 18, color: '#DEE1E7' }}>→</div>
-
-            {/* Next */}
-            <div style={{ flex: 1, textAlign: 'right' }}>
-              <div style={{ fontSize: 9, fontWeight: 700, color: '#717886', textTransform: 'uppercase', letterSpacing: 0.5 }}>Next Status</div>
-              <div style={{ fontSize: 14, fontWeight: 800, color: '#0A0B0D', marginTop: 1, display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'flex-end' }}>
-                {LEVELS.find(l => l.level === accountLevel + 1)?.name}
-                <span style={{ color: '#0000FF', fontSize: 12 }}>
-                  {LEVELS.find(l => l.level === accountLevel + 1)?.mult}x 
-                  {accountLevel + 1 === 5 ? ' MAX' : ''}
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Upgrade Next Level */}
         {accountLevel < 5 && (
           <button
             onClick={() => {
@@ -792,30 +651,15 @@ export function ProfileSection({ address, basename }) {
               setSelectedLevel(next)
               setTxModal('upgrade')
             }}
-            style={{
-              width: '100%',
-              background: '#0000FF',
-              color: '#fff',
-              borderRadius: 50,
-              padding: '12px',
-              fontSize: 13,
-              fontWeight: 800,
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 8px 20px rgba(0,0,255,0.15)',
-              transition: 'all 0.2s'
-            }}
+            style={{ width: '100%', background: '#0000FF', color: '#fff', borderRadius: 50, padding: '12px', fontSize: 13, fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, boxShadow: '0 8px 20px rgba(0,0,255,0.15)' }}
           >
-            Upgrade to {LEVELS.find(l => l.level === accountLevel + 1)?.name} {accountLevel === 4 ? '(MAX)' : ''}
-            <span style={{ color: '#A5B4FC', marginLeft: 8, display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: 20, fontWeight: 700 }}>
-              {LEVELS.find(l => l.level === accountLevel + 1)?.price.toFixed(2)}
-              <img src="/usdc-logo.png" alt="USDC" style={{ width: 16, height: 16, marginLeft: 4 }} />
+            Upgrade to {LEVELS.find(l => l.level === accountLevel + 1)?.name}
+            <span style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: 20, fontSize: 11, display: 'flex', alignItems: 'center', gap: 4 }}>
+              {LEVELS.find(l => l.level === accountLevel + 1)?.price.toFixed(2)}<img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14 }} />
             </span>
           </button>
         )}
+      </div>
 
         {accountLevel === 5 && (
           <div style={{ 
@@ -836,124 +680,60 @@ export function ProfileSection({ address, basename }) {
         )}
       </div>
 
-      <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 3, color: '#0A0B0D' }}>Referral Program</div>
-        <div style={{ fontSize: 10, color: '#717886', marginBottom: 12, lineHeight: 1.5, fontWeight: 500 }}>
-          Invite friends and earn <span style={{ color: '#D97706', fontWeight: 700 }}>50% of their points</span> forever.
+      {/* Referral Program: Senior Hub */}
+      <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, marginBottom: 12 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+          <div>
+            <div style={{ fontSize: 12, fontWeight: 800, color: '#0A0B0D' }}>REFERRAL HUB</div>
+            <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>Earn 50% commission from friends.</div>
+          </div>
         </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
+          <div style={{ background: '#F8FAFC', borderRadius: 12, padding: 12, border: '1px solid #F1F5F9', textAlign: 'center' }}>
+            <div style={{ fontSize: 16, fontWeight: 900, color: '#0000FF', lineHeight: 1 }}>{userStats.referral_count}</div>
+            <div style={{ fontSize: 8, color: '#64748B', marginTop: 4, fontWeight: 800 }}>FRIENDS</div>
+          </div>
+          <div style={{ background: '#F8FAFC', borderRadius: 12, padding: 12, border: '1px solid #F1F5F9', textAlign: 'center' }}>
+            <div style={{ fontSize: 16, fontWeight: 900, color: '#059669', lineHeight: 1 }}>{userStats.referral_points} <span style={{ fontSize: 9 }}>HP</span></div>
+            <div style={{ fontSize: 8, color: '#64748B', marginTop: 4, fontWeight: 800 }}>TOTAL EARNED</div>
+          </div>
+        </div>
+
         <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
-          <div style={{ flex: 1, background: '#EEF0F3', border: '1px solid #DEE1E7', borderRadius: 12, padding: '10px 12px', overflow: 'hidden', display: 'flex', alignItems: 'center', minWidth: 0 }}>
-            <span style={{ fontFamily: "'DM Mono',monospace", fontSize: 11, color: '#717886', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{referralLink}</span>
+          <div style={{ flex: 1, background: '#F1F5F9', borderRadius: 10, padding: '10px 12px', overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
+            <span style={{ fontFamily: "'DM Mono',monospace", fontSize: 10, color: '#64748B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{referralLink}</span>
           </div>
           <button
             onClick={copyRef}
-            style={{
-              background: copied ? 'rgba(5,150,105,0.1)' : 'rgba(0,0,255,0.05)',
-              border: `1px solid ${copied ? '#059669' : '#0000FF'}`,
-              color: copied ? '#059669' : '#0000FF',
-              borderRadius: 12,
-              padding: '0 12px',
-              fontSize: 12,
-              fontWeight: 700,
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              transition: 'all 0.2s',
-              minWidth: 80
-            }}
+            style={{ background: '#0000FF', color: '#fff', border: 'none', borderRadius: 10, padding: '0 12px', fontSize: 11, fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap' }}
           >
-            {copied ? '✓ Link' : 'Copy Link'}
+            {copied ? '✓' : 'COPY'}
           </button>
-          <button
-            onClick={copyCode}
-            style={{
-              background: copiedCode ? 'rgba(5,150,105,0.1)' : 'rgba(217,119,6,0.05)',
-              border: `1px solid ${copiedCode ? '#059669' : '#D97706'}`,
-              color: copiedCode ? '#059669' : '#D97706',
-              borderRadius: 12,
-              padding: '0 12px',
-              fontSize: 12,
-              fontWeight: 700,
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              transition: 'all 0.2s',
-              minWidth: 80
-            }}
-          >
-            {copiedCode ? '✓ Code' : 'Copy Code'}
-          </button>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-          <div style={{ background: 'rgba(0,0,0,0.03)', borderRadius: 12, padding: '10px', textAlign: 'center', border: '1px solid rgba(0,0,0,0.05)' }}>
-            <div style={{ fontSize: 14, fontWeight: 900, color: '#0A0B0D', lineHeight: 1 }}>{userStats.referral_count}</div>
-            <div style={{ fontSize: 8, color: '#717886', marginTop: 3, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5 }}>Friends</div>
-          </div>
-          <div style={{ background: 'rgba(0,0,0,0.03)', borderRadius: 12, padding: '10px', textAlign: 'center', border: '1px solid rgba(0,0,0,0.05)' }}>
-            <div style={{ fontSize: 14, fontWeight: 900, color: '#0000FF', lineHeight: 1 }}>{userStats.referral_points} <span style={{ fontSize: 8, opacity: 0.8 }}>HP</span></div>
-            <div style={{ fontSize: 8, color: '#717886', marginTop: 3, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5 }}>Earned</div>
-          </div>
         </div>
 
         {/* Manual Referral Entry */}
-        <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid rgba(0,0,0,0.05)' }}>
-          {userStats.referrer ? (
-            <div style={{ 
-              background: 'rgba(5, 150, 105, 0.05)', 
-              borderRadius: 12, 
-              padding: '10px 14px', 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: 8,
-              border: '1px solid rgba(5, 150, 105, 0.15)'
-            }}>
-              <span style={{ fontSize: 14 }}>✅</span>
-              <span style={{ fontSize: 13, color: '#059669', fontWeight: 600 }}>
-                Successfully referred by <span style={{ fontFamily: 'monospace' }}>{short(userStats.referrer)}</span>
-              </span>
-            </div>
-          ) : (
-            <div>
-              <div style={{ fontSize: 11, fontWeight: 700, color: '#717886', marginBottom: 8, textTransform: 'uppercase' }}>Redeem Referral Code</div>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <input
-                  type="text"
-                  value={refInput}
-                  onChange={(e) => setRefInput(e.target.value)}
-                  placeholder="Enter 8-digit code"
-                  style={{
-                    flex: 1,
-                    background: '#EEF0F3',
-                    border: '1px solid #DEE1E7',
-                    borderRadius: 12,
-                    padding: '10px 14px',
-                    fontSize: 13,
-                    outline: 'none',
-                    fontFamily: "'DM Mono', monospace"
-                  }}
-                />
-                <button
-                  onClick={handleApplyRef}
-                  disabled={refLoading || !refInput.trim()}
-                  style={{
-                    background: '#0000FF',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: 12,
-                    padding: '0 16px',
-                    fontSize: 13,
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    opacity: (refLoading || !refInput.trim()) ? 0.6 : 1
-                  }}
-                >
-                  {refLoading ? '...' : 'Submit'}
-                </button>
-              </div>
-              {refError && <div style={{ color: '#DC2626', fontSize: 11, marginTop: 6, fontWeight: 600 }}>⚠️ {refError}</div>}
-            </div>
-          )}
-        </div>
+        {!userStats.referrer && (
+          <div style={{ display: 'flex', gap: 6, paddingTop: 14, borderTop: '1px solid #F1F5F9' }}>
+            <input
+              type="text"
+              value={refInput}
+              onChange={(e) => setRefInput(e.target.value)}
+              placeholder="Referral Code"
+              style={{ flex: 1, background: '#fff', border: '1px solid #DEE1E7', borderRadius: 10, padding: '10px 12px', fontSize: 11, outline: 'none', fontFamily: "'DM Mono', monospace" }}
+            />
+            <button
+              onClick={handleApplyRef}
+              disabled={refLoading || !refInput.trim()}
+              style={{ background: '#EEF0F3', color: '#000', border: '1px solid #DEE1E7', borderRadius: 10, padding: '0 14px', fontSize: 11, fontWeight: 800, cursor: 'pointer' }}
+            >
+              APPLY
+            </button>
+          </div>
+        )}
       </div>
+
+
 
       <HistorySection address={address} />
 
