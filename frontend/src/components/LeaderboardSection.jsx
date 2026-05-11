@@ -267,7 +267,7 @@ export function LeaderboardSection({ address }) {
             <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,FF,0.5)', backdropFilter: 'blur(4px)', zIndex: 0 }} />
             
             <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', width: '100%', gap: 12 }}>
-              <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 26, fontWeight: 900, color: '#fff', minWidth: 38 }}>#{displayRank}</div>
+              <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 22, fontWeight: 900, color: '#fff', minWidth: 34 }}>#{displayRank}</div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.7)', fontWeight: 800, marginBottom: 1, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Your Position</div>
                 <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{displayEntry?.basename || short(address)}</div>
@@ -304,7 +304,7 @@ export function LeaderboardSection({ address }) {
             <div style={{ position: 'absolute', inset: 0, background: 'rgba(5,150,105,0.6)', backdropFilter: 'blur(4px)', zIndex: 0 }} />
 
             <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', width: '100%', gap: 12 }}>
-              <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 26, fontWeight: 900, color: '#fff', minWidth: 38 }}>#{displayDailyRank}</div>
+              <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 22, fontWeight: 900, color: '#fff', minWidth: 34 }}>#{displayDailyRank}</div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.75)', fontWeight: 800, marginBottom: 1, textTransform: 'uppercase' }}>Daily Rank</div>
                 <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>Score: {displayDailyScore}</div>
