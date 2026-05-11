@@ -550,7 +550,6 @@ export function ProfileSection({ address, basename }) {
 
         </div>
       </div>
-      </div>
 
       {/* 2-Column Action Grid: Daily Rewards */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
