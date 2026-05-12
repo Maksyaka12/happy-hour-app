@@ -278,7 +278,8 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             </div>
 
             <div style={{
-              width: 90, height: 90,
+              width: box.id === 'epic' ? 110 : 90, 
+              height: box.id === 'epic' ? 110 : 90,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               flexShrink: 0,
               animation: `${box.id === 'legendary' ? 'pulseGold 2s infinite, ' : ''}bobbing ${box.id === 'legendary' ? '2s' : box.id === 'epic' ? '2.5s' : '3s'} ease-in-out infinite`
@@ -290,7 +291,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                   width: '100%', 
                   height: '100%', 
                   objectFit: 'contain',
-                  mixBlendMode: 'multiply'
+                  transform: box.id === 'epic' ? 'scale(1.1)' : 'none'
                 }} 
               />
             </div>
