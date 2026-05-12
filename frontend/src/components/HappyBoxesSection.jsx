@@ -29,7 +29,7 @@ const BOX_CONFIG = {
   },
   epic: {
     label: 'Epic',
-    badge: 'HOT 🔥',
+    badge: '🔥 HOT',
     hp: '10 – 20 HP',
     boost: '+ Chance for 2x Boost',
     accent: '#8B5CF6',
@@ -408,11 +408,8 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                     letterSpacing: '0.3px'
                   }}
                 >
-                  Open Box
-                  <span style={{ background: 'rgba(0,0,0,0.18)', borderRadius: 20, padding: '1px 8px', fontSize: 10, display: 'flex', alignItems: 'center', gap: 4, color: 'rgba(255,255,255,0.9)' }}>
-                    {box.price.toFixed(2)}
-                    <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12 }} />
-                  </span>
+                  Open {box.price.toFixed(2)} USDC
+                  <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12 }} />
                 </button>
               </div>
             </div>
@@ -421,7 +418,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       </div>
 
       {/* ═══ HOW IT WORKS (Raffle Style) ═══ */}
-      <div style={{ background: '#EEF0F3', border: '1px solid #DEE1E7', borderRadius: 16, padding: '16px' }}>
+      <div style={{ background: '#EEF0F3', border: '1px solid #DEE1E7', borderRadius: 16, padding: '16px', marginTop: 32 }}>
         <div style={{ fontSize: 9, fontWeight: 800, color: '#717886', letterSpacing: 0.5, marginBottom: 14, textTransform: 'uppercase' }}>
           How it works
         </div>
