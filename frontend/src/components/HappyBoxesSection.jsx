@@ -252,22 +252,20 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
 
         <div style={{ position: 'relative', zIndex: 2 }}>
           <div style={{ 
-            fontFamily: "'Barlow Condensed', sans-serif",
-            fontSize: 24, 
+            fontSize: 22, 
             color: '#fff', 
             lineHeight: 1.1, 
-            fontWeight: 900,
+            fontWeight: 800,
             textShadow: '0 4px 15px rgba(0,0,0,0.6)',
-            letterSpacing: '-0.5px',
-            textTransform: 'uppercase'
+            letterSpacing: '-0.3px'
           }}>
             Open your Happy Boxes
           </div>
           <div style={{ 
-            fontSize: 16, 
+            fontSize: 15, 
             color: 'rgba(255,255,255,0.9)', 
             lineHeight: 1.2, 
-            fontWeight: 700,
+            fontWeight: 600,
             marginTop: 4,
             textShadow: '0 2px 8px rgba(0,0,0,0.4)'
           }}>
@@ -327,7 +325,8 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             </div>
 
             <div style={{
-              width: 95, height: 95,
+              width: box.id === 'epic' ? 95 : 85, 
+              height: box.id === 'epic' ? 95 : 85,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               flexShrink: 0,
               animation: `${box.id === 'legendary' ? 'pulseGold 2s infinite, ' : ''}bobbing ${box.id === 'legendary' ? '2s' : box.id === 'epic' ? '2.5s' : '3s'} ease-in-out infinite`
