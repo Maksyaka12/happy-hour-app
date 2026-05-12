@@ -271,8 +271,8 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
 
               {/* Box image */}
               <div style={{
-                width: box.id === 'epic' ? 95 : 85,
-                height: box.id === 'epic' ? 95 : 85,
+                width: 90,
+                height: 90,
                 flexShrink: 0, position: 'relative', zIndex: 2,
                 animation: `hbBob ${box.id === 'legendary' ? 2 : box.id === 'epic' ? 2.6 : 3.2}s ease-in-out infinite`,
                 filter: isHovered
@@ -368,7 +368,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(10,11,13,0.75)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(12px)' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
             <div style={{ animation: 'hbShake 0.6s infinite' }}>
-              <img src={selectedBox?.img} style={{ width: 130, height: 130, objectFit: 'contain', filter: 'drop-shadow(0 0 30px rgba(255,255,255,0.5))' }} alt="" />
+              <img src={selectedBox?.img} style={{ width: 130, height: 130, objectFit: 'contain', mixBlendMode: 'multiply', filter: 'drop-shadow(0 0 30px rgba(255,255,255,0.5))' }} alt="" />
             </div>
             <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.6)', letterSpacing: 2, textTransform: 'uppercase' }}>Opening…</div>
           </div>
