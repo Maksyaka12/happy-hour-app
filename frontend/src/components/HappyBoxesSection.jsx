@@ -76,20 +76,20 @@ const LEVELS = [
 ]
 
 const CINEMA = {
-  common:    { 
-    bg:'radial-gradient(ellipse at center,#2D3748 0%,#0D1117 100%)', 
-    flash:'rgba(209,213,219,0.9)', glow:'#94A3B8', shake:'hbShakeS',
-    btnBg:'linear-gradient(135deg, #4B5563, #1F2937)', btnGlow:'rgba(75,85,99,0.5)'
+  common: {
+    bg: 'radial-gradient(ellipse at center,#2D3748 0%,#0D1117 100%)',
+    flash: 'rgba(209,213,219,0.9)', glow: '#94A3B8', shake: 'hbShakeS',
+    btnBg: 'linear-gradient(135deg, #4B5563, #1F2937)', btnGlow: 'rgba(75,85,99,0.5)'
   },
-  epic:      { 
-    bg:'radial-gradient(ellipse at center,#4C1D95 0%,#1E1B4B 100%)', 
-    flash:'rgba(167,139,250,0.95)', glow:'#A78BFA', shake:'hbShakeM',
-    btnBg:'linear-gradient(135deg, #8B5CF6, #6D28D9)', btnGlow:'rgba(139,92,246,0.5)'
+  epic: {
+    bg: 'radial-gradient(ellipse at center,#4C1D95 0%,#1E1B4B 100%)',
+    flash: 'rgba(167,139,250,0.95)', glow: '#A78BFA', shake: 'hbShakeM',
+    btnBg: 'linear-gradient(135deg, #8B5CF6, #6D28D9)', btnGlow: 'rgba(139,92,246,0.5)'
   },
-  legendary: { 
-    bg:'radial-gradient(ellipse at center,#92400E 0%,#1C0A00 100%)', 
-    flash:'rgba(252,211,77,0.97)', glow:'#FCD34D', shake:'hbShakeL',
-    btnBg:'linear-gradient(135deg, #D97706, #92400E)', btnGlow:'rgba(217,119,6,0.5)'
+  legendary: {
+    bg: 'radial-gradient(ellipse at center,#92400E 0%,#1C0A00 100%)',
+    flash: 'rgba(252,211,77,0.97)', glow: '#FCD34D', shake: 'hbShakeL',
+    btnBg: 'linear-gradient(135deg, #D97706, #92400E)', btnGlow: 'rgba(217,119,6,0.5)'
   },
 }
 
@@ -125,8 +125,8 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
   const { data: txHash, writeContract, isPending, isConfirming, isSuccess, error: writeError, reset } = useBuilderWrite()
 
   const boxes = [
-    { id: 'common',    name: 'Common Box',    price: 0.20, img: '/box1.png' },
-    { id: 'epic',      name: 'Epic Box',      price: 0.45, img: '/box2.png' },
+    { id: 'common', name: 'Common Box', price: 0.20, img: '/box1.png' },
+    { id: 'epic', name: 'Epic Box', price: 0.45, img: '/box2.png' },
     { id: 'legendary', name: 'Legendary Box', price: 0.95, img: '/box3.png' },
   ]
 
@@ -150,17 +150,17 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           await new Promise(r => setTimeout(r, 4000))
           const { data, error } = await rpcCall
           if (error) throw error
-          
+
           if (data?.ok) {
             const baseHp = Math.round(data.hp_won / data.applied_multiplier)
-            const result = { 
-              hp: data.hp_won, 
-              mult: data.applied_multiplier, 
-              wonNewMult: data.multiplier_won > 1, 
-              baseHp, 
-              boxId: selectedBox.id 
+            const result = {
+              hp: data.hp_won,
+              mult: data.applied_multiplier,
+              wonNewMult: data.multiplier_won > 1,
+              baseHp,
+              boxId: selectedBox.id
             }
-            
+
             setPendingResult(result)
             setCountDisplayHp(baseHp)
             if (onUpdate) onUpdate()
@@ -170,7 +170,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
               await new Promise(r => setTimeout(r, 1200)) // pause on base hp
               setShowBoostText(true)
               await new Promise(r => setTimeout(r, 800)) // let boost text sink in
-              
+
               // Count up animation
               const target = result.hp
               const duration = 2000 // slower count up
@@ -189,7 +189,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                 }, 16)
               })
             }
-            
+
             await new Promise(r => setTimeout(r, 600))
             setShowAwesome(true)
           } else {
@@ -275,9 +275,9 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
 
         {/* Floating parachute boxes with HP label */}
         {[
-          { top: -8,  right: '8%',  w: 68, o: 0.55, r: '-14deg', blur: 1.5, dur: 2.5 },
-          { top: 35,  right: '26%', w: 48, o: 0.38, r: '10deg',  blur: 0.5, dur: 2.9 },
-          { top: -18, left: '48%',  w: 44, o: 0.45, r: '22deg',  blur: 1,   dur: 3.3 },
+          { top: -8, right: '8%', w: 68, o: 0.55, r: '-14deg', blur: 1.5, dur: 2.5 },
+          { top: 35, right: '26%', w: 48, o: 0.38, r: '10deg', blur: 0.5, dur: 2.9 },
+          { top: -18, left: '48%', w: 44, o: 0.45, r: '22deg', blur: 1, dur: 3.3 },
           { bottom: -10, right: '3%', w: 58, o: 0.38, r: '4deg', blur: 1.2, dur: 2.7 },
           { bottom: -8, right: '38%', w: 82, o: 0.25, r: '-22deg', blur: 3, dur: 3.6 },
         ].map((s, i) => (
@@ -303,7 +303,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           <div style={{ fontSize: 26, fontWeight: 900, color: '#fff', lineHeight: 1.1, textShadow: '0 4px 20px rgba(0,0,0,0.7)', letterSpacing: '-0.5px' }}>
             Open Your Happy Boxes
           </div>
-          <div style={{ fontSize: 15, color: '#F59E0B', fontWeight: 800, marginTop: 7, textShadow: '0 2px 12px rgba(0,0,0,0.6)', letterSpacing: '0.1px' }}>
+          <div style={{ fontSize: 17, color: '#F59E0B', fontWeight: 800, marginTop: 2, textShadow: '0 2px 12px rgba(0,0,0,0.6)', letterSpacing: '0.1px' }}>
             to win HP and Boosts
           </div>
         </div>
@@ -420,17 +420,24 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         })}
       </div>
 
-      {/* ═══ HOW IT WORKS (Light) ═══ */}
-      <div style={{ marginTop: 16, background: '#F8FAFC', border: '1px solid #DEE1E7', borderRadius: 20, padding: '16px 18px' }}>
+      {/* ═══ HOW IT WORKS (White Premium) ═══ */}
+      <div style={{ 
+        marginTop: 16, 
+        background: '#fff', 
+        border: '1px solid rgba(0,0,0,0.04)', 
+        borderRadius: 20, 
+        padding: '18px 20px',
+        boxShadow: '0 4px 14px rgba(10,11,13,0.03)'
+      }}>
         <div style={{ fontSize: 9, fontWeight: 800, color: '#94A3B8', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 14 }}>How it works</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
           {[
             ['How do Happy Boxes work?', 'Choose a box to try your luck and win HP instantly. Each box has a different range of possible rewards.'],
             ['What can I win?', 'Every box contains HP. Epic and Legendary boxes also give you a chance to win a 2x or 5x boost.'],
             ['Are rewards guaranteed?', 'Yes, every box contains at least the minimum amount of HP shown in the description.'],
             ['How does the multiplier work?', 'If you have an active multiplier, it will be applied to your boxes. If you win a higher boost, it activates instantly and lasts 24h. Once it expires, your permanent multiplier resumes.'],
           ].map(([q, a], i) => (
-            <div key={i} style={{ paddingBottom: 12, borderBottom: i < 3 ? '1px solid #F1F5F9' : 'none' }}>
+            <div key={i} style={{ padding: '12px 0', borderBottom: i < 3 ? '1px solid #F1F3F7' : 'none' }}>
               <div style={{ fontSize: 11, fontWeight: 800, color: '#0A0B0D', marginBottom: 3 }}>{q}</div>
               <div style={{ fontSize: 10, color: '#64748B', lineHeight: 1.6, fontWeight: 500 }}>{a}</div>
             </div>
@@ -457,21 +464,21 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       {isOpening && selectedBox && (() => {
         const c = CINEMA[selectedBox.id]
         return (
-          <div style={{ position:'fixed', inset:0, zIndex:2000, display:'flex', alignItems:'center', justifyContent:'center', backdropFilter:'blur(14px)', overflow:'hidden' }}>
+          <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(14px)', overflow: 'hidden' }}>
             {/* Dark base */}
-            <div style={{ position:'absolute', inset:0, background:'rgba(5,5,10,0.9)', animation:'hbBgIn 0.3s ease' }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'rgba(5,5,10,0.9)', animation: 'hbBgIn 0.3s ease' }} />
             {/* Tier color bg */}
-            <div style={{ position:'absolute', inset:0, background:c.bg, opacity:0.8, animation:'hbBgIn 0.6s ease' }} />
+            <div style={{ position: 'absolute', inset: 0, background: c.bg, opacity: 0.8, animation: 'hbBgIn 0.6s ease' }} />
             {/* Ambient pulsing orb */}
-            <div style={{ position:'absolute', width:360, height:360, borderRadius:'50%', background:`radial-gradient(circle, ${c.glow}66 0%, transparent 65%)`, animation:'hbGlowPulse 1.5s ease-in-out infinite', zIndex:1 }} />
+            <div style={{ position: 'absolute', width: 360, height: 360, borderRadius: '50%', background: `radial-gradient(circle, ${c.glow}66 0%, transparent 65%)`, animation: 'hbGlowPulse 1.5s ease-in-out infinite', zIndex: 1 }} />
 
             {/* Phase 2: flash */}
             {openAnimPhase >= 2 && (
-              <div style={{ position:'absolute', inset:0, background:c.flash, animation:'hbFlashOut 0.8s ease forwards', zIndex:5, pointerEvents:'none' }} />
+              <div style={{ position: 'absolute', inset: 0, background: c.flash, animation: 'hbFlashOut 0.8s ease forwards', zIndex: 5, pointerEvents: 'none' }} />
             )}
 
             {/* Main content area */}
-            <div style={{ position:'relative', zIndex:3, display:'flex', flexDirection:'column', alignItems:'center', gap:24 }}>
+            <div style={{ position: 'relative', zIndex: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24 }}>
 
               {/* Phase 0 & 1: box shakes */}
               {openAnimPhase < 2 && (
@@ -481,9 +488,9 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                     animation: `${c.shake} 0.3s infinite`,
                     transition: 'filter 0.5s ease'
                   }}>
-                    <img src={selectedBox.img} style={{ width:140, height:140, objectFit:'contain', mixBlendMode:'multiply' }} alt="" />
+                    <img src={selectedBox.img} style={{ width: 140, height: 140, objectFit: 'contain', mixBlendMode: 'multiply' }} alt="" />
                   </div>
-                  <div style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.4)', letterSpacing:3, textTransform:'uppercase' }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.4)', letterSpacing: 3, textTransform: 'uppercase' }}>
                     Opening...
                   </div>
                 </>
@@ -493,8 +500,8 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
 
               {/* Phase 3: HP slams out of opened box */}
               {openAnimPhase >= 3 && (
-                <div style={{ display:'flex', flexDirection:'column', alignItems:'center', animation:'hbHpSlam 0.7s cubic-bezier(.34,1.56,.64,1) forwards' }}>
-                  <div style={{ display:'flex', alignItems:'baseline', gap:12 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', animation: 'hbHpSlam 0.7s cubic-bezier(.34,1.56,.64,1) forwards' }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
                     <div style={{
                       fontSize: 94, fontWeight: 940, lineHeight: 1,
                       color: c.glow,
@@ -506,17 +513,17 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                     </div>
                     <div style={{ fontSize: 32, fontWeight: 900, color: 'rgba(255,255,255,0.7)', letterSpacing: 1, textShadow: `0 0 20px ${c.glow}` }}>HP</div>
                   </div>
-                  
+
                   {showBoostText && pendingResult?.mult > 1 && (() => {
                     const isNew = pendingResult.wonNewMult
                     const levelIdx = (userProfile?.account_level || 1) - 1
                     const baseMult = LEVELS[levelIdx]?.mult || 1.0
                     const isPerm = !isNew && Math.abs(pendingResult.mult - baseMult) < 0.01
-                    
+
                     const label = isPerm ? 'Multiplier' : 'Boost'
                     const action = isNew ? 'won!' : 'active!'
                     return (
-                      <div style={{ marginTop:16, fontSize:13, fontWeight:800, color:c.glow, background:`${c.glow}22`, border:`1px solid ${c.glow}55`, borderRadius:50, padding:'6px 18px', display:'inline-block', animation:'hbFadeIn 0.5s both' }}>
+                      <div style={{ marginTop: 16, fontSize: 13, fontWeight: 800, color: c.glow, background: `${c.glow}22`, border: `1px solid ${c.glow}55`, borderRadius: 50, padding: '6px 18px', display: 'inline-block', animation: 'hbFadeIn 0.5s both' }}>
                         x{pendingResult.mult} {label} {action}
                       </div>
                     )
