@@ -71,7 +71,7 @@ const CINEMA = {
   common:    { 
     bg:'radial-gradient(ellipse at center,#2D3748 0%,#0D1117 100%)', 
     flash:'rgba(209,213,219,0.9)', glow:'#94A3B8', shake:'hbShakeS',
-    btnBg:'linear-gradient(135deg, #6B7280, #374151)', btnGlow:'rgba(107,114,128,0.4)'
+    btnBg:'linear-gradient(135deg, #4B5563, #1F2937)', btnGlow:'rgba(75,85,99,0.5)'
   },
   epic:      { 
     bg:'radial-gradient(ellipse at center,#4C1D95 0%,#1E1B4B 100%)', 
@@ -492,11 +492,17 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                     <div style={{ fontSize: 32, fontWeight: 900, color: 'rgba(255,255,255,0.7)', letterSpacing: 1, textShadow: `0 0 20px ${c.glow}` }}>HP</div>
                   </div>
                   
-                  {showBoostText && pendingResult?.mult > 1 && (
-                    <div style={{ marginTop:16, fontSize:13, fontWeight:800, color:c.glow, background:`${c.glow}22`, border:`1px solid ${c.glow}55`, borderRadius:50, padding:'6px 18px', display:'inline-block', animation:'hbFadeIn 0.5s both' }}>
-                      {pendingResult.wonNewMult ? `x${pendingResult.mult} Boost won!` : `x${pendingResult.mult} Boost active!`}
-                    </div>
-                  )}
+                  {showBoostText && pendingResult?.mult > 1 && (() => {
+                    const isNew = pendingResult.wonNewMult
+                    const isPerm = profile?.multiplier && pendingResult.mult <= profile.multiplier
+                    const label = isPerm ? 'Multiplier' : 'Boost'
+                    const action = isNew ? 'won!' : 'active!'
+                    return (
+                      <div style={{ marginTop:16, fontSize:13, fontWeight:800, color:c.glow, background:`${c.glow}22`, border:`1px solid ${c.glow}55`, borderRadius:50, padding:'6px 18px', display:'inline-block', animation:'hbFadeIn 0.5s both' }}>
+                        x{pendingResult.mult} {label} {action}
+                      </div>
+                    )
+                  })()}
 
                   {showAwesome && (
                     <div style={{ marginTop: 32, animation: 'hbFadeIn 0.5s ease both' }}>
