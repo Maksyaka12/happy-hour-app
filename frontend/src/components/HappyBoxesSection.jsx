@@ -27,7 +27,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       price: 0.20,
       color: '#8B5A2B',
       bg: '#FAF4ED',
-      img: '/common_box.png',
+      img: '/box1.png',
       rewards: '4 - 8 HP'
     },
     {
@@ -36,7 +36,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       price: 0.45,
       color: '#9333EA',
       bg: '#F3E8FF',
-      img: '/epic_box.png',
+      img: '/box2.png',
       rewards: '10 - 20 HP + Chance for 2x Boost'
     },
     {
@@ -45,7 +45,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       price: 0.95,
       color: '#D97706',
       bg: '#FEF3C7',
-      img: '/legendary_box.png',
+      img: '/box3.png',
       rewards: '21 - 40 HP + Chance for 5x Boost'
     }
   ]
