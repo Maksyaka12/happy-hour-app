@@ -158,7 +158,6 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                     resolve()
                   } else {
                     const p = timePassed / duration
-                    // Ease out quadratic
                     setCountDisplayHp(Math.round(baseHp + (target - baseHp) * (1 - (1 - p) * (1 - p))))
                   }
                 }, 16)
@@ -170,12 +169,13 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           } else {
             alert(data?.error || 'Failed to open box')
             setIsOpening(false)
+            setSelectedBox(null)
+            reset()
           }
         } catch (err) {
           console.error(err)
           alert('Something went wrong opening the box.')
           setIsOpening(false)
-        } finally {
           setSelectedBox(null)
           reset()
         }
@@ -184,12 +184,20 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
     processBox()
   }, [isSuccess, txHash, selectedBox, address, onUpdate, reset, isOpening])
 
+  const handleConfirm = () => {
+    if (wrongChain) { switchChain({ chainId: base.id }); return }
+    if (!selectedBox) return
+    writeContract({ address: USDC_ADDRESS, abi: USDC_ABI, functionName: 'transfer', args: [CHECKIN_TARGET, parseUnits(selectedBox.price.toString(), 6)], chainId: base.id })
+  }
+
   const closeAll = () => {
     setIsOpening(false)
     setPendingResult(null)
     setShowAwesome(false)
     setShowBoostText(false)
     setCountDisplayHp(0)
+    setSelectedBox(null)
+    reset()
   }
 
   return (
