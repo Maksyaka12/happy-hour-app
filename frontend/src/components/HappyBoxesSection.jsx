@@ -67,6 +67,13 @@ const BOX_CONFIG = {
   },
 }
 
+const CINEMA = {
+  common:    { bg:'radial-gradient(ellipse at center,#2D3748 0%,#0D1117 100%)', particle:['⚡','💫','✨','⚪'], flash:'rgba(209,213,219,0.9)',  glow:'#94A3B8', shake:'hbShakeS' },
+  epic:      { bg:'radial-gradient(ellipse at center,#4C1D95 0%,#1E1B4B 100%)', particle:['✨','⭐','💜','🔮'], flash:'rgba(167,139,250,0.95)', glow:'#A78BFA', shake:'hbShakeM' },
+  legendary: { bg:'radial-gradient(ellipse at center,#92400E 0%,#1C0A00 100%)', particle:['⭐','🌟','💰','✨','👑','🏆'], flash:'rgba(252,211,77,0.97)', glow:'#FCD34D', shake:'hbShakeL' },
+}
+const PARTICLES = Array.from({length:14},(_,i)=>{ const a=(i/14)*Math.PI*2,d=90+(i%3)*45; return {px:Math.round(Math.cos(a)*d)+'px',py:Math.round(Math.sin(a)*d)+'px'} })
+
 export function HappyBoxesSection({ address, profile, onUpdate }) {
   const [selectedBox, setSelectedBox] = useState(null)
   const [isOpening, setIsOpening] = useState(false)
@@ -74,6 +81,15 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
   const [animPhase, setAnimPhase] = useState(0)
   const [displayHp, setDisplayHp] = useState(0)
   const [hoveredBox, setHoveredBox] = useState(null)
+  const [openAnimPhase, setOpenAnimPhase] = useState(0) // 0=shake 1=zoom 2=flash+particles
+
+  useEffect(() => {
+    if (!isOpening) { setOpenAnimPhase(0); return }
+    setOpenAnimPhase(0)
+    const t1 = setTimeout(() => setOpenAnimPhase(1), 650)
+    const t2 = setTimeout(() => setOpenAnimPhase(2), 1300)
+    return () => { clearTimeout(t1); clearTimeout(t2) }
+  }, [isOpening])
 
   const chainId = useChainId()
   const { switchChain, isPending: isSwitching } = useSwitchChain()
@@ -99,7 +115,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           })
           if (error) throw error
           if (data?.ok) {
-            await new Promise(r => setTimeout(r, 2000))
+            await new Promise(r => setTimeout(r, 3500))
             const baseHp = Math.round(data.hp_won / data.applied_multiplier)
             setOpenResult({ hp: data.hp_won, mult: data.applied_multiplier, wonNewMult: data.multiplier_won > 1, baseHp, boxId: selectedBox.id })
             if (onUpdate) onUpdate()
@@ -163,6 +179,14 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         @keyframes hbShake { 0%,100%{transform:rotate(0) scale(1)} 20%{transform:rotate(-9deg) scale(1.12)} 40%{transform:rotate(9deg) scale(1.15)} 60%{transform:rotate(-7deg) scale(1.12)} 80%{transform:rotate(7deg) scale(1.08)} }
         @keyframes hbPop { 0%{transform:scale(0.7);opacity:0} 70%{transform:scale(1.08)} 100%{transform:scale(1);opacity:1} }
         @keyframes hbFloat { 0%,100%{transform:translateY(0) rotate(var(--r,0deg))} 50%{transform:translateY(-10px) rotate(var(--r,0deg))} }
+        @keyframes hbShakeS { 0%,100%{transform:translate(0,0)} 25%{transform:translate(-5px,3px) rotate(-2deg)} 75%{transform:translate(5px,-3px) rotate(2deg)} }
+        @keyframes hbShakeM { 0%,100%{transform:translate(0,0) rotate(0)} 20%{transform:translate(-9px,6px) rotate(-5deg)} 50%{transform:translate(9px,-8px) rotate(5deg)} 80%{transform:translate(-7px,7px) rotate(-3deg)} }
+        @keyframes hbShakeL { 0%,100%{transform:translate(0,0) rotate(0)} 12%{transform:translate(-14px,10px) rotate(-7deg)} 32%{transform:translate(14px,-12px) rotate(7deg)} 52%{transform:translate(-12px,14px) rotate(-6deg)} 72%{transform:translate(12px,-10px) rotate(6deg)} 90%{transform:translate(-8px,6px) rotate(-4deg)} }
+        @keyframes hbZoomBox { from{transform:scale(1)} to{transform:scale(3.2) } }
+        @keyframes hbFlashOut { 0%{opacity:0} 25%{opacity:1} 100%{opacity:0} }
+        @keyframes hbPBurst { from{opacity:1;transform:translate(0,0) scale(1.2)} to{opacity:0;transform:translate(var(--px),var(--py)) scale(0.1)} }
+        @keyframes hbBgIn { from{opacity:0} to{opacity:1} }
+        @keyframes hbGlowPulse { 0%,100%{opacity:0.5;transform:scale(1)} 50%{opacity:1;transform:scale(1.15)} }
         .hb-card { transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease; cursor: pointer; }
         .hb-card:hover { transform: translateY(-3px) scale(1.01); }
         .hb-card:active { transform: scale(0.98); }
@@ -372,22 +396,59 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         />
       )}
 
-      {/* ═══ OPENING ANIMATION ═══ */}
-      {isOpening && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(10,11,13,0.75)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(12px)' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
-            {/* wrapper has filter; img has blend mode — keeping them separate prevents conflict */}
-            <div style={{ animation: 'hbShake 0.6s infinite', filter: 'drop-shadow(0 0 28px rgba(255,255,255,0.4))' }}>
-              <img
-                src={selectedBox?.img}
-                style={{ width: 130, height: 130, objectFit: 'contain', mixBlendMode: 'multiply' }}
-                alt=""
-              />
+      {/* ═══ CINEMATIC OPENING ═══ */}
+      {isOpening && selectedBox && (() => {
+        const c = CINEMA[selectedBox.id]
+        return (
+          <div style={{ position:'fixed', inset:0, zIndex:2000, display:'flex', alignItems:'center', justifyContent:'center', backdropFilter:'blur(14px)', overflow:'hidden' }}>
+            {/* Dark base */}
+            <div style={{ position:'absolute', inset:0, background:'rgba(5,5,10,0.9)', animation:'hbBgIn 0.3s ease' }} />
+            {/* Tier color bg */}
+            <div style={{ position:'absolute', inset:0, background:c.bg, opacity:0.8, animation:'hbBgIn 0.5s ease' }} />
+            {/* Pulsing glow orb */}
+            <div style={{ position:'absolute', width:320, height:320, borderRadius:'50%', background:`radial-gradient(circle, ${c.glow}55 0%, transparent 70%)`, animation:'hbGlowPulse 1.2s ease-in-out infinite', zIndex:1 }} />
+            {/* Flash overlay at phase 2 */}
+            {openAnimPhase >= 2 && (
+              <div style={{ position:'absolute', inset:0, background:c.flash, animation:'hbFlashOut 0.7s ease forwards', zIndex:5 }} />
+            )}
+            {/* Particle burst at phase 2 */}
+            {openAnimPhase >= 2 && PARTICLES.map((p, i) => (
+              <div key={i} style={{
+                position:'absolute', top:'50%', left:'50%',
+                fontSize: 14 + (i % 3) * 6,
+                '--px': p.px, '--py': p.py,
+                zIndex: 4, pointerEvents:'none', lineHeight:1,
+                animation: `hbPBurst ${0.5 + (i % 4) * 0.15}s cubic-bezier(.2,.8,.2,1) ${i * 0.04}s both`
+              }}>
+                {c.particle[i % c.particle.length]}
+              </div>
+            ))}
+            {/* Box + label */}
+            <div style={{ position:'relative', zIndex:3, display:'flex', flexDirection:'column', alignItems:'center', gap:22 }}>
+              {openAnimPhase < 2 ? (
+                <>
+                  <div style={{
+                    filter: `drop-shadow(0 0 ${openAnimPhase > 0 ? 50 : 18}px ${c.glow})`,
+                    animation: openAnimPhase === 0
+                      ? `${c.shake} 0.35s infinite`
+                      : 'hbZoomBox 0.65s cubic-bezier(.2,.8,.3,1) forwards',
+                    transition: 'filter 0.3s'
+                  }}>
+                    <img src={selectedBox.img} style={{ width:130, height:130, objectFit:'contain', mixBlendMode:'multiply' }} alt="" />
+                  </div>
+                  <div style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.45)', letterSpacing:3, textTransform:'uppercase' }}>
+                    {openAnimPhase === 0 ? 'Opening\u2026' : 'Get ready\u2026'}
+                  </div>
+                </>
+              ) : (
+                <div style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.4)', letterSpacing:3, textTransform:'uppercase', animation:'hbFadeIn 0.8s 0.4s both' }}>
+                  Claiming reward\u2026
+                </div>
+              )}
             </div>
-            <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.6)', letterSpacing: 2, textTransform: 'uppercase' }}>Opening…</div>
           </div>
-        </div>
-      )}
+        )
+      })()}
 
       {/* ═══ RESULT MODAL (Light) ═══ */}
       {openResult && (() => {
