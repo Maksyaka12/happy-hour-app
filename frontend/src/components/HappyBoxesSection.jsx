@@ -68,9 +68,21 @@ const BOX_CONFIG = {
 }
 
 const CINEMA = {
-  common:    { bg:'radial-gradient(ellipse at center,#2D3748 0%,#0D1117 100%)', particle:['⚡','💫','✨','⚪'], flash:'rgba(209,213,219,0.9)',  glow:'#94A3B8', shake:'hbShakeS' },
-  epic:      { bg:'radial-gradient(ellipse at center,#4C1D95 0%,#1E1B4B 100%)', particle:['✨','⭐','💜','🔮'], flash:'rgba(167,139,250,0.95)', glow:'#A78BFA', shake:'hbShakeM' },
-  legendary: { bg:'radial-gradient(ellipse at center,#92400E 0%,#1C0A00 100%)', particle:['⭐','🌟','💰','✨','👑','🏆'], flash:'rgba(252,211,77,0.97)', glow:'#FCD34D', shake:'hbShakeL' },
+  common:    { 
+    bg:'radial-gradient(ellipse at center,#2D3748 0%,#0D1117 100%)', 
+    flash:'rgba(209,213,219,0.9)', glow:'#94A3B8', shake:'hbShakeS',
+    btnBg:'linear-gradient(135deg, #6B7280, #374151)', btnGlow:'rgba(107,114,128,0.4)'
+  },
+  epic:      { 
+    bg:'radial-gradient(ellipse at center,#4C1D95 0%,#1E1B4B 100%)', 
+    flash:'rgba(167,139,250,0.95)', glow:'#A78BFA', shake:'hbShakeM',
+    btnBg:'linear-gradient(135deg, #8B5CF6, #6D28D9)', btnGlow:'rgba(139,92,246,0.5)'
+  },
+  legendary: { 
+    bg:'radial-gradient(ellipse at center,#92400E 0%,#1C0A00 100%)', 
+    flash:'rgba(252,211,77,0.97)', glow:'#FCD34D', shake:'hbShakeL',
+    btnBg:'linear-gradient(135deg, #D97706, #92400E)', btnGlow:'rgba(217,119,6,0.5)'
+  },
 }
 
 export function HappyBoxesSection({ address, profile, onUpdate }) {
