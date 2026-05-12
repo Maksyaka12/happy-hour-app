@@ -81,14 +81,16 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
   const [animPhase, setAnimPhase] = useState(0)
   const [displayHp, setDisplayHp] = useState(0)
   const [hoveredBox, setHoveredBox] = useState(null)
-  const [openAnimPhase, setOpenAnimPhase] = useState(0) // 0=shake 1=zoom 2=flash+particles
+  const [openAnimPhase, setOpenAnimPhase] = useState(0) // 0=shake 1=zoom 2=flash/open 3=hp-burst
+  const [pendingResult, setPendingResult] = useState(null) // holds RPC result during animation
 
   useEffect(() => {
     if (!isOpening) { setOpenAnimPhase(0); return }
     setOpenAnimPhase(0)
-    const t1 = setTimeout(() => setOpenAnimPhase(1), 650)
-    const t2 = setTimeout(() => setOpenAnimPhase(2), 1300)
-    return () => { clearTimeout(t1); clearTimeout(t2) }
+    const t1 = setTimeout(() => setOpenAnimPhase(1), 1500)  // slow zoom
+    const t2 = setTimeout(() => setOpenAnimPhase(2), 3000)  // flash + box opens
+    const t3 = setTimeout(() => setOpenAnimPhase(3), 4000)  // HP bursts out
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3) }
   }, [isOpening])
 
   const chainId = useChainId()
@@ -108,17 +110,24 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       if (isSuccess && selectedBox && txHash && !isOpening) {
         setIsOpening(true)
         try {
-          const { data, error } = await db.rpc('open_happy_box', {
+          // Start RPC and animation simultaneously
+          const rpcCall = db.rpc('open_happy_box', {
             p_address: address.toLowerCase(),
             p_box_type: selectedBox.id,
             p_tx_hash: txHash
           })
+          // Wait for phases 0+1+2 to play (4s), then await RPC (already done or nearly done)
+          await new Promise(r => setTimeout(r, 4000))
+          const { data, error } = await rpcCall
           if (error) throw error
           if (data?.ok) {
-            await new Promise(r => setTimeout(r, 3500))
             const baseHp = Math.round(data.hp_won / data.applied_multiplier)
-            setOpenResult({ hp: data.hp_won, mult: data.applied_multiplier, wonNewMult: data.multiplier_won > 1, baseHp, boxId: selectedBox.id })
+            const result = { hp: data.hp_won, mult: data.applied_multiplier, wonNewMult: data.multiplier_won > 1, baseHp, boxId: selectedBox.id }
+            setPendingResult(result) // phase 3 shows HP from the box
             if (onUpdate) onUpdate()
+            await new Promise(r => setTimeout(r, 2400)) // show HP for 2.4s
+            setOpenResult(result)  // now show the result modal
+            setPendingResult(null)
           } else {
             alert(data?.error || 'Failed to open box')
           }
@@ -187,6 +196,8 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         @keyframes hbPBurst { from{opacity:1;transform:translate(0,0) scale(1.2)} to{opacity:0;transform:translate(var(--px),var(--py)) scale(0.1)} }
         @keyframes hbBgIn { from{opacity:0} to{opacity:1} }
         @keyframes hbGlowPulse { 0%,100%{opacity:0.5;transform:scale(1)} 50%{opacity:1;transform:scale(1.15)} }
+        @keyframes hbBoxExplode { 0%{transform:scale(2.8) rotate(0deg);opacity:1} 60%{transform:scale(3.8) rotate(-8deg);opacity:0.5} 100%{transform:scale(5) rotate(8deg);opacity:0} }
+        @keyframes hbHpSlam { 0%{opacity:0;transform:scale(0.1) translateY(80px)} 55%{transform:scale(1.25) translateY(-20px)} 75%{transform:scale(0.92) translateY(8px)} 100%{opacity:1;transform:scale(1) translateY(0)} }
         .hb-card { transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease; cursor: pointer; }
         .hb-card:hover { transform: translateY(-3px) scale(1.01); }
         .hb-card:active { transform: scale(0.98); }
@@ -404,46 +415,74 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             {/* Dark base */}
             <div style={{ position:'absolute', inset:0, background:'rgba(5,5,10,0.9)', animation:'hbBgIn 0.3s ease' }} />
             {/* Tier color bg */}
-            <div style={{ position:'absolute', inset:0, background:c.bg, opacity:0.8, animation:'hbBgIn 0.5s ease' }} />
-            {/* Pulsing glow orb */}
-            <div style={{ position:'absolute', width:320, height:320, borderRadius:'50%', background:`radial-gradient(circle, ${c.glow}55 0%, transparent 70%)`, animation:'hbGlowPulse 1.2s ease-in-out infinite', zIndex:1 }} />
-            {/* Flash overlay at phase 2 */}
+            <div style={{ position:'absolute', inset:0, background:c.bg, opacity:0.8, animation:'hbBgIn 0.6s ease' }} />
+            {/* Ambient pulsing orb */}
+            <div style={{ position:'absolute', width:360, height:360, borderRadius:'50%', background:`radial-gradient(circle, ${c.glow}66 0%, transparent 65%)`, animation:'hbGlowPulse 1.5s ease-in-out infinite', zIndex:1 }} />
+
+            {/* Phase 2: flash */}
             {openAnimPhase >= 2 && (
-              <div style={{ position:'absolute', inset:0, background:c.flash, animation:'hbFlashOut 0.7s ease forwards', zIndex:5 }} />
+              <div style={{ position:'absolute', inset:0, background:c.flash, animation:'hbFlashOut 0.8s ease forwards', zIndex:5 }} />
             )}
-            {/* Particle burst at phase 2 */}
+
+            {/* Phase 2+: particles */}
             {openAnimPhase >= 2 && PARTICLES.map((p, i) => (
               <div key={i} style={{
                 position:'absolute', top:'50%', left:'50%',
-                fontSize: 14 + (i % 3) * 6,
+                fontSize: 16 + (i % 3) * 7,
                 '--px': p.px, '--py': p.py,
                 zIndex: 4, pointerEvents:'none', lineHeight:1,
-                animation: `hbPBurst ${0.5 + (i % 4) * 0.15}s cubic-bezier(.2,.8,.2,1) ${i * 0.04}s both`
+                animation: `hbPBurst ${0.7 + (i % 4) * 0.18}s cubic-bezier(.15,.85,.2,1) ${i * 0.05}s both`
               }}>
                 {c.particle[i % c.particle.length]}
               </div>
             ))}
-            {/* Box + label */}
-            <div style={{ position:'relative', zIndex:3, display:'flex', flexDirection:'column', alignItems:'center', gap:22 }}>
-              {openAnimPhase < 2 ? (
+
+            {/* Main content area */}
+            <div style={{ position:'relative', zIndex:3, display:'flex', flexDirection:'column', alignItems:'center', gap:24 }}>
+
+              {/* Phase 0 & 1: box shakes then zooms */}
+              {openAnimPhase < 2 && (
                 <>
                   <div style={{
-                    filter: `drop-shadow(0 0 ${openAnimPhase > 0 ? 50 : 18}px ${c.glow})`,
+                    filter: `drop-shadow(0 0 ${openAnimPhase > 0 ? 55 : 20}px ${c.glow})`,
                     animation: openAnimPhase === 0
-                      ? `${c.shake} 0.35s infinite`
-                      : 'hbZoomBox 0.65s cubic-bezier(.2,.8,.3,1) forwards',
-                    transition: 'filter 0.3s'
+                      ? `${c.shake} 0.3s infinite`
+                      : 'hbZoomBox 1.5s cubic-bezier(.25,.8,.25,1) forwards',
+                    transition: 'filter 0.5s ease'
                   }}>
-                    <img src={selectedBox.img} style={{ width:130, height:130, objectFit:'contain', mixBlendMode:'multiply' }} alt="" />
+                    <img src={selectedBox.img} style={{ width:140, height:140, objectFit:'contain', mixBlendMode:'multiply' }} alt="" />
                   </div>
-                  <div style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.45)', letterSpacing:3, textTransform:'uppercase' }}>
-                    {openAnimPhase === 0 ? 'Opening\u2026' : 'Get ready\u2026'}
+                  <div style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.4)', letterSpacing:3, textTransform:'uppercase' }}>
+                    {openAnimPhase === 0 ? 'Opening...' : 'Get ready...'}
                   </div>
                 </>
-              ) : (
-                <div style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.4)', letterSpacing:3, textTransform:'uppercase', animation:'hbFadeIn 0.8s 0.4s both' }}>
-                  Claiming reward\u2026
+              )}
+
+              {/* Phase 2: box exploding — just flash, no content */}
+
+              {/* Phase 3: HP slams out of opened box */}
+              {openAnimPhase >= 3 && (
+                <div style={{ textAlign:'center', animation:'hbHpSlam 0.7s cubic-bezier(.34,1.56,.64,1) forwards' }}>
+                  <div style={{
+                    fontSize: 88, fontWeight: 900, lineHeight: 1,
+                    color: c.glow,
+                    textShadow: `0 0 40px ${c.glow}, 0 0 80px ${c.flash}`,
+                    fontVariantNumeric: 'tabular-nums'
+                  }}>
+                    {pendingResult ? `+${pendingResult.hp}` : '...'}
+                  </div>
+                  <div style={{ fontSize:26, fontWeight:800, color:'rgba(255,255,255,0.6)', marginTop:4, letterSpacing:2 }}>HP</div>
+                  {pendingResult?.mult > 1 && (
+                    <div style={{ marginTop:16, fontSize:13, fontWeight:800, color:c.glow, background:`${c.glow}22`, border:`1px solid ${c.glow}55`, borderRadius:50, padding:'6px 18px', display:'inline-block', animation:'hbFadeIn 0.5s 0.4s both' }}>
+                      {pendingResult.wonNewMult ? `x${pendingResult.mult} Boost won!` : `x${pendingResult.mult} Boost active!`}
+                    </div>
+                  )}
                 </div>
+              )}
+
+              {/* Phase 3 waiting (RPC not back yet) */}
+              {openAnimPhase >= 3 && !pendingResult && (
+                <div style={{ fontSize:11, color:'rgba(255,255,255,0.3)', letterSpacing:3, textTransform:'uppercase', animation:'hbFadeIn 0.5s ease' }}>Claiming...</div>
               )}
             </div>
           </div>
