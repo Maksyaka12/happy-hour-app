@@ -280,7 +280,16 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                   : 'drop-shadow(0 4px 10px rgba(0,0,0,0.15))',
                 transition: 'filter 0.3s ease'
               }}>
-                <img src={box.img} alt={box.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                <img
+                  src={box.img}
+                  alt={box.name}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain',
+                    transform: box.id === 'epic' ? 'scale(1.2)' : 'scale(1)'
+                  }}
+                />
               </div>
 
               {/* Info + button */}
@@ -367,8 +376,13 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       {isOpening && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(10,11,13,0.75)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(12px)' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
-            <div style={{ animation: 'hbShake 0.6s infinite' }}>
-              <img src={selectedBox?.img} style={{ width: 130, height: 130, objectFit: 'contain', mixBlendMode: 'multiply', filter: 'drop-shadow(0 0 30px rgba(255,255,255,0.5))' }} alt="" />
+            {/* wrapper has filter; img has blend mode — keeping them separate prevents conflict */}
+            <div style={{ animation: 'hbShake 0.6s infinite', filter: 'drop-shadow(0 0 28px rgba(255,255,255,0.4))' }}>
+              <img
+                src={selectedBox?.img}
+                style={{ width: 130, height: 130, objectFit: 'contain', mixBlendMode: 'multiply' }}
+                alt=""
+              />
             </div>
             <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.6)', letterSpacing: 2, textTransform: 'uppercase' }}>Opening…</div>
           </div>
