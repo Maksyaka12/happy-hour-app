@@ -400,15 +400,14 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                   style={{
                     background: cfg.btnBg,
                     color: '#fff', border: 'none', borderRadius: 50,
-                    padding: '9px 14px', fontSize: 11, fontWeight: 900,
+                    padding: '9px 14px', fontSize: 11, fontWeight: 800,
                     cursor: 'pointer', fontFamily: 'inherit',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
                     boxShadow: `0 4px 16px ${cfg.btnGlow}`,
                     opacity: (isPending || isConfirming || isOpening) ? 0.5 : 1,
-                    letterSpacing: '0.3px'
                   }}
                 >
-                  Open {box.price.toFixed(2)} USDC
+                  Open {box.price.toFixed(2)}
                   <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12 }} />
                 </button>
               </div>
