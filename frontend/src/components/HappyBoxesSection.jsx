@@ -188,7 +188,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         borderRadius: 24, padding: '28px 20px', marginBottom: 16,
         position: 'relative', overflow: 'hidden', minHeight: 148,
         boxShadow: '0 16px 48px rgba(0,0,255,0.28), 0 0 0 1px rgba(255,255,255,0.1)',
-        display: 'flex', flexDirection: 'column', justifyContent: 'flex-end'
+        display: 'flex', flexDirection: 'column', justifyContent: 'center'
       }}>
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(160deg, rgba(0,0,60,0.55) 0%, rgba(0,0,0,0.65) 100%)', zIndex: 0 }} />
 
@@ -222,7 +222,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           <div style={{ fontSize: 26, fontWeight: 900, color: '#fff', lineHeight: 1.1, textShadow: '0 4px 20px rgba(0,0,0,0.7)', letterSpacing: '-0.5px' }}>
             Open Your Happy Boxes
           </div>
-          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', fontWeight: 600, marginTop: 5, textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
+          <div style={{ fontSize: 15, color: '#F59E0B', fontWeight: 800, marginTop: 7, textShadow: '0 2px 12px rgba(0,0,0,0.6)', letterSpacing: '0.1px' }}>
             to win HP and Boosts
           </div>
         </div>
