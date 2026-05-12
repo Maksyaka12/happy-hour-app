@@ -67,6 +67,14 @@ const BOX_CONFIG = {
   },
 }
 
+const LEVELS = [
+  { level: 1, mult: 1.0 },
+  { level: 2, mult: 1.2 },
+  { level: 3, mult: 1.5 },
+  { level: 4, mult: 1.7 },
+  { level: 5, mult: 2.0 },
+]
+
 const CINEMA = {
   common:    { 
     bg:'radial-gradient(ellipse at center,#2D3748 0%,#0D1117 100%)', 
@@ -94,6 +102,13 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
   const [countDisplayHp, setCountDisplayHp] = useState(0)
   const [showAwesome, setShowAwesome] = useState(false)
   const [showBoostText, setShowBoostText] = useState(false)
+  const [userProfile, setUserProfile] = useState(null)
+
+  useEffect(() => {
+    if (!address) return
+    db.from('users').select('active_multiplier, account_level').eq('address', address.toLowerCase()).maybeSingle()
+      .then(({ data }) => setUserProfile(data))
+  }, [address])
 
   useEffect(() => {
     if (!isOpening) { setOpenAnimPhase(0); return }
@@ -494,7 +509,10 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                   
                   {showBoostText && pendingResult?.mult > 1 && (() => {
                     const isNew = pendingResult.wonNewMult
-                    const isPerm = profile?.multiplier && pendingResult.mult <= profile.multiplier
+                    const levelIdx = (userProfile?.account_level || 1) - 1
+                    const baseMult = LEVELS[levelIdx]?.mult || 1.0
+                    const isPerm = !isNew && Math.abs(pendingResult.mult - baseMult) < 0.01
+                    
                     const label = isPerm ? 'Multiplier' : 'Boost'
                     const action = isNew ? 'won!' : 'active!'
                     return (
