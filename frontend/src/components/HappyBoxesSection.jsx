@@ -196,46 +196,95 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         </div>
       )}
 
-      {/* Header Banner - Dynamic Airdrop Style */}
+      {/* Header Banner - Dynamic Airdrop Style */}      {/* Premium Header Banner: Senior Base Redesign */}
       <div style={{
-        background: 'linear-gradient(135deg, #0000FF 0%, #4F46E5 100%)',
+        backgroundImage: 'url(/banner.jpg)',
+        backgroundColor: '#0000FF', // Fallback
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
         borderRadius: 24,
-        padding: '24px 20px',
+        padding: '32px 20px',
         marginBottom: 16,
         position: 'relative',
         overflow: 'hidden',
-        boxShadow: '0 8px 32px rgba(0,0,255,0.2)',
+        boxShadow: '0 12px 40px rgba(0,0,255,0.25)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        minHeight: 120
+        minHeight: 140,
+        border: '1px solid rgba(255,255,255,0.15)'
       }}>
-        {/* Scattered Airdrop Assets */}
-        <img src="/background_box.png" style={{ position: 'absolute', top: -10, right: '10%', width: 70, opacity: 0.6, transform: 'rotate(-15deg)', filter: 'blur(1.5px)' }} alt="" />
-        <img src="/background_box.png" style={{ position: 'absolute', top: 40, right: '25%', width: 50, opacity: 0.4, transform: 'rotate(10deg)', filter: 'blur(0.5px)' }} alt="" />
-        <img src="/background_box.png" style={{ position: 'absolute', bottom: -15, right: '40%', width: 90, opacity: 0.3, transform: 'rotate(-25deg)', filter: 'blur(3px)' }} alt="" />
-        <img src="/background_box.png" style={{ position: 'absolute', top: -20, left: '50%', width: 45, opacity: 0.5, transform: 'rotate(20deg)', filter: 'blur(1px)' }} alt="" />
-        <img src="/background_box.png" style={{ position: 'absolute', bottom: 10, right: '5%', width: 55, opacity: 0.4, transform: 'rotate(5deg)', filter: 'blur(1px)' }} alt="" />
+        {/* Deep Glass Overlay */}
+        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0, 0, 80, 0.45)', zIndex: 0 }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(0,0,0,0.4) 0%, rgba(0,0,255,0.05) 100%)', zIndex: 0 }} />
+
+        {/* Dynamic Floating Assets with HP Text */}
+        {[
+          { t: -10, r: '10%', w: 70, o: 0.6, rot: -15, b: 1.5 },
+          { t: 50, r: '22%', w: 50, o: 0.4, rot: 10, b: 0.5 },
+          { b: -15, r: '35%', w: 90, o: 0.3, rot: -25, b: 3 },
+          { t: -20, l: '45%', w: 45, o: 0.5, rot: 20, b: 1 },
+          { b: 15, r: '5%', w: 60, o: 0.4, rot: 5, b: 1 }
+        ].map((s, i) => (
+          <div key={i} style={{ 
+            position: 'absolute', 
+            top: s.t, right: s.r, bottom: s.b, left: s.l, 
+            width: s.w, opacity: s.o, 
+            transform: `rotate(${s.rot}deg)`, 
+            filter: `blur(${s.b}px)`, 
+            zIndex: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <img src="/background_box.png" style={{ width: '100%' }} alt="" />
+            <div style={{ 
+              position: 'absolute', 
+              top: '60%', // Centered on the box part
+              fontSize: s.w * 0.15, 
+              fontWeight: 900, 
+              color: '#fff', 
+              textShadow: '0 1px 4px rgba(0,0,0,0.8)',
+              opacity: 0.8
+            }}>HP</div>
+          </div>
+        ))}
 
         <div style={{ position: 'relative', zIndex: 2 }}>
-          <div style={{ fontSize: 18, color: '#fff', lineHeight: 1.2, fontWeight: 800 }}>
+          <div style={{ 
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontSize: 24, 
+            color: '#fff', 
+            lineHeight: 1.1, 
+            fontWeight: 900,
+            textShadow: '0 4px 15px rgba(0,0,0,0.6)',
+            letterSpacing: '-0.5px',
+            textTransform: 'uppercase'
+          }}>
             Open your Happy Boxes
           </div>
-          <div style={{ fontSize: 18, color: 'rgba(255,255,255,0.9)', lineHeight: 1.2, fontWeight: 800 }}>
+          <div style={{ 
+            fontSize: 16, 
+            color: 'rgba(255,255,255,0.9)', 
+            lineHeight: 1.2, 
+            fontWeight: 700,
+            marginTop: 4,
+            textShadow: '0 2px 8px rgba(0,0,0,0.4)'
+          }}>
             to win HP and Boosts
           </div>
         </div>
 
-        {/* Abstract Glow */}
+        {/* Abstract Particle Glow */}
         <div style={{
           position: 'absolute',
           top: -30,
           right: -30,
-          width: 150,
-          height: 150,
-          background: 'rgba(255,255,255,0.15)',
+          width: 180,
+          height: 180,
+          background: 'rgba(255,255,255,0.1)',
           borderRadius: '50%',
-          filter: 'blur(50px)',
+          filter: 'blur(60px)',
           zIndex: 1
         }} />
       </div>
@@ -278,8 +327,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             </div>
 
             <div style={{
-              width: box.id === 'epic' ? 110 : 90, 
-              height: box.id === 'epic' ? 110 : 90,
+              width: 95, height: 95,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               flexShrink: 0,
               animation: `${box.id === 'legendary' ? 'pulseGold 2s infinite, ' : ''}bobbing ${box.id === 'legendary' ? '2s' : box.id === 'epic' ? '2.5s' : '3s'} ease-in-out infinite`
@@ -290,8 +338,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                 style={{ 
                   width: '100%', 
                   height: '100%', 
-                  objectFit: 'contain',
-                  transform: box.id === 'epic' ? 'scale(1.1)' : 'none'
+                  objectFit: 'contain'
                 }} 
               />
             </div>
