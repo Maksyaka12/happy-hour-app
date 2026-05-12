@@ -72,17 +72,16 @@ const CINEMA = {
   epic:      { bg:'radial-gradient(ellipse at center,#4C1D95 0%,#1E1B4B 100%)', particle:['✨','⭐','💜','🔮'], flash:'rgba(167,139,250,0.95)', glow:'#A78BFA', shake:'hbShakeM' },
   legendary: { bg:'radial-gradient(ellipse at center,#92400E 0%,#1C0A00 100%)', particle:['⭐','🌟','💰','✨','👑','🏆'], flash:'rgba(252,211,77,0.97)', glow:'#FCD34D', shake:'hbShakeL' },
 }
-const PARTICLES = Array.from({length:14},(_,i)=>{ const a=(i/14)*Math.PI*2,d=90+(i%3)*45; return {px:Math.round(Math.cos(a)*d)+'px',py:Math.round(Math.sin(a)*d)+'px'} })
 
 export function HappyBoxesSection({ address, profile, onUpdate }) {
   const [selectedBox, setSelectedBox] = useState(null)
   const [isOpening, setIsOpening] = useState(false)
-  const [openResult, setOpenResult] = useState(null)
-  const [animPhase, setAnimPhase] = useState(0)
-  const [displayHp, setDisplayHp] = useState(0)
   const [hoveredBox, setHoveredBox] = useState(null)
-  const [openAnimPhase, setOpenAnimPhase] = useState(0) // 0=shake 1=zoom 2=flash/open 3=hp-burst
+  const [openAnimPhase, setOpenAnimPhase] = useState(0) // 0=shake 1=zoom 2=flash/open 3=hp-reveal
   const [pendingResult, setPendingResult] = useState(null) // holds RPC result during animation
+  const [countDisplayHp, setCountDisplayHp] = useState(0)
+  const [showAwesome, setShowAwesome] = useState(false)
+  const [showBoostText, setShowBoostText] = useState(false)
 
   useEffect(() => {
     if (!isOpening) { setOpenAnimPhase(0); return }
@@ -109,6 +108,10 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
     async function processBox() {
       if (isSuccess && selectedBox && txHash && !isOpening) {
         setIsOpening(true)
+        setShowAwesome(false)
+        setShowBoostText(false)
+        setCountDisplayHp(0)
+
         try {
           // Start RPC and animation simultaneously
           const rpcCall = db.rpc('open_happy_box', {
@@ -116,25 +119,63 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             p_box_type: selectedBox.id,
             p_tx_hash: txHash
           })
-          // Wait for phases 0+1+2 to play (4s), then await RPC (already done or nearly done)
+
+          // Wait for phases 0+1+2 to play (4s), then await RPC
           await new Promise(r => setTimeout(r, 4000))
           const { data, error } = await rpcCall
           if (error) throw error
+          
           if (data?.ok) {
             const baseHp = Math.round(data.hp_won / data.applied_multiplier)
-            const result = { hp: data.hp_won, mult: data.applied_multiplier, wonNewMult: data.multiplier_won > 1, baseHp, boxId: selectedBox.id }
-            setPendingResult(result) // phase 3 shows HP from the box
+            const result = { 
+              hp: data.hp_won, 
+              mult: data.applied_multiplier, 
+              wonNewMult: data.multiplier_won > 1, 
+              baseHp, 
+              boxId: selectedBox.id 
+            }
+            
+            setPendingResult(result)
+            setCountDisplayHp(baseHp)
             if (onUpdate) onUpdate()
-            await new Promise(r => setTimeout(r, 2400)) // show HP for 2.4s
-            setOpenResult(result)  // now show the result modal
-            setPendingResult(null)
+
+            // If there's a boost, wait then count up
+            if (result.mult > 1) {
+              await new Promise(r => setTimeout(r, 1200)) // pause on base hp
+              setShowBoostText(true)
+              await new Promise(r => setTimeout(r, 800)) // let boost text sink in
+              
+              // Count up animation
+              const target = result.hp
+              const duration = 2000 // slower count up
+              const start = Date.now()
+              await new Promise(resolve => {
+                const timer = setInterval(() => {
+                  const timePassed = Date.now() - start
+                  if (timePassed >= duration) {
+                    setCountDisplayHp(target)
+                    clearInterval(timer)
+                    resolve()
+                  } else {
+                    const p = timePassed / duration
+                    // Ease out quadratic
+                    setCountDisplayHp(Math.round(baseHp + (target - baseHp) * (1 - (1 - p) * (1 - p))))
+                  }
+                }, 16)
+              })
+            }
+            
+            await new Promise(r => setTimeout(r, 600))
+            setShowAwesome(true)
           } else {
             alert(data?.error || 'Failed to open box')
+            setIsOpening(false)
           }
         } catch (err) {
+          console.error(err)
           alert('Something went wrong opening the box.')
-        } finally {
           setIsOpening(false)
+        } finally {
           setSelectedBox(null)
           reset()
         }
@@ -143,42 +184,13 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
     processBox()
   }, [isSuccess, txHash, selectedBox, address, onUpdate, reset, isOpening])
 
-  useEffect(() => {
-    if (openResult && animPhase === 0) {
-      if (openResult.mult > 1) {
-        setDisplayHp(openResult.baseHp)
-        setAnimPhase(1)
-        setTimeout(() => {
-          setAnimPhase(2)
-          setTimeout(() => {
-            setAnimPhase(3)
-            const target = openResult.hp
-            const duration = 1200
-            const start = Date.now()
-            const timer = setInterval(() => {
-              const timePassed = Date.now() - start
-              if (timePassed >= duration) { setDisplayHp(target); setAnimPhase(4); clearInterval(timer) }
-              else {
-                const p = timePassed / duration
-                setDisplayHp(Math.round(openResult.baseHp + (target - openResult.baseHp) * (p * (2 - p))))
-              }
-            }, 16)
-          }, 800)
-        }, 800)
-      } else {
-        setDisplayHp(openResult.hp)
-        setAnimPhase(4)
-      }
-    }
-  }, [openResult, animPhase])
-
-  const handleConfirm = () => {
-    if (wrongChain) { switchChain({ chainId: base.id }); return }
-    if (!selectedBox) return
-    writeContract({ address: USDC_ADDRESS, abi: USDC_ABI, functionName: 'transfer', args: [CHECKIN_TARGET, parseUnits(selectedBox.price.toString(), 6)], chainId: base.id })
+  const closeAll = () => {
+    setIsOpening(false)
+    setPendingResult(null)
+    setShowAwesome(false)
+    setShowBoostText(false)
+    setCountDisplayHp(0)
   }
-
-  const closeResultModal = () => { setOpenResult(null); setAnimPhase(0); setDisplayHp(0) }
 
   return (
     <div style={{ padding: '0 16px 120px', animation: 'hbFadeIn 0.4s ease' }}>
@@ -424,19 +436,6 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
               <div style={{ position:'absolute', inset:0, background:c.flash, animation:'hbFlashOut 0.8s ease forwards', zIndex:5 }} />
             )}
 
-            {/* Phase 2+: particles */}
-            {openAnimPhase >= 2 && PARTICLES.map((p, i) => (
-              <div key={i} style={{
-                position:'absolute', top:'50%', left:'50%',
-                fontSize: 16 + (i % 3) * 7,
-                '--px': p.px, '--py': p.py,
-                zIndex: 4, pointerEvents:'none', lineHeight:1,
-                animation: `hbPBurst ${0.7 + (i % 4) * 0.18}s cubic-bezier(.15,.85,.2,1) ${i * 0.05}s both`
-              }}>
-                {c.particle[i % c.particle.length]}
-              </div>
-            ))}
-
             {/* Main content area */}
             <div style={{ position:'relative', zIndex:3, display:'flex', flexDirection:'column', alignItems:'center', gap:24 }}>
 
@@ -469,88 +468,35 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                     textShadow: `0 0 40px ${c.glow}, 0 0 80px ${c.flash}`,
                     fontVariantNumeric: 'tabular-nums'
                   }}>
-                    {pendingResult ? `+${pendingResult.hp}` : '...'}
+                    {pendingResult ? `+${countDisplayHp}` : '...'}
                   </div>
                   <div style={{ fontSize:26, fontWeight:800, color:'rgba(255,255,255,0.6)', marginTop:4, letterSpacing:2 }}>HP</div>
-                  {pendingResult?.mult > 1 && (
-                    <div style={{ marginTop:16, fontSize:13, fontWeight:800, color:c.glow, background:`${c.glow}22`, border:`1px solid ${c.glow}55`, borderRadius:50, padding:'6px 18px', display:'inline-block', animation:'hbFadeIn 0.5s 0.4s both' }}>
+                  
+                  {showBoostText && pendingResult?.mult > 1 && (
+                    <div style={{ marginTop:16, fontSize:13, fontWeight:800, color:c.glow, background:`${c.glow}22`, border:`1px solid ${c.glow}55`, borderRadius:50, padding:'6px 18px', display:'inline-block', animation:'hbFadeIn 0.5s both' }}>
                       {pendingResult.wonNewMult ? `x${pendingResult.mult} Boost won!` : `x${pendingResult.mult} Boost active!`}
+                    </div>
+                  )}
+
+                  {showAwesome && (
+                    <div style={{ marginTop: 32, animation: 'hbFadeIn 0.5s ease both' }}>
+                      <button
+                        onClick={closeAll}
+                        className="hb-open-btn"
+                        style={{
+                          background: c.btnBg,
+                          color: '#fff', border: 'none', borderRadius: 50,
+                          padding: '12px 32px', fontSize: 16, fontWeight: 900,
+                          cursor: 'pointer', fontFamily: 'inherit',
+                          boxShadow: `0 8px 24px ${c.btnGlow}`,
+                        }}
+                      >
+                        Awesome!
+                      </button>
                     </div>
                   )}
                 </div>
               )}
-
-              {/* Phase 3 waiting (RPC not back yet) */}
-              {openAnimPhase >= 3 && !pendingResult && (
-                <div style={{ fontSize:11, color:'rgba(255,255,255,0.3)', letterSpacing:3, textTransform:'uppercase', animation:'hbFadeIn 0.5s ease' }}>Claiming...</div>
-              )}
-            </div>
-          </div>
-        )
-      })()}
-
-      {/* ═══ RESULT MODAL (Light) ═══ */}
-      {openResult && (() => {
-        const cfg = BOX_CONFIG[openResult.boxId] || BOX_CONFIG.common
-        return (
-          <div style={{ position: 'fixed', inset: 0, background: 'rgba(10,11,13,0.75)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(14px)' }}>
-            <div style={{
-              background: '#fff',
-              border: `1.5px solid ${cfg.tagBorder}`,
-              borderRadius: 28, padding: '36px 28px', width: '88%', maxWidth: 360,
-              textAlign: 'center', animation: 'hbPop 0.5s cubic-bezier(.34,1.56,.64,1)',
-              boxShadow: `0 30px 80px rgba(0,0,0,0.2), 0 0 0 1px ${cfg.tagBorder}`,
-              position: 'relative', overflow: 'hidden'
-            }}>
-              {/* Subtle glow bg */}
-              <div style={{ position: 'absolute', top: -60, left: '50%', transform: 'translateX(-50%)', width: 280, height: 180, background: cfg.glow, filter: 'blur(60px)', borderRadius: '50%', zIndex: 0, opacity: 0.8 }} />
-
-              <div style={{ position: 'relative', zIndex: 1 }}>
-                <div style={{ fontSize: 56, marginBottom: 8, animation: 'hbBob 1.5s ease-in-out infinite' }}>🎉</div>
-                <div style={{ fontSize: 11, fontWeight: 800, color: cfg.badgeColor, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 4 }}>{cfg.label} Box</div>
-                <div style={{ fontSize: 20, fontWeight: 900, color: '#0A0B0D', marginBottom: 20 }}>You Won!</div>
-
-                <div style={{
-                  fontSize: 54, fontWeight: 900, lineHeight: 1,
-                  color: cfg.hpColor,
-                  marginBottom: 18,
-                }}>
-                  +{displayHp}
-                  <span style={{ fontSize: 22, fontWeight: 700, color: '#94A3B8', marginLeft: 6 }}>HP</span>
-                </div>
-
-                {openResult.mult > 1 && animPhase >= 2 && (
-                  <div style={{
-                    display: 'inline-block',
-                    background: cfg.tagBg, color: cfg.tagColor,
-                    border: `1px solid ${cfg.tagBorder}`,
-                    padding: '6px 18px', borderRadius: 50, fontSize: 13, fontWeight: 800,
-                    marginBottom: 20, animation: 'hbPop 0.4s ease'
-                  }}>
-                    {openResult.wonNewMult ? `⭐ You won a ${openResult.mult}x Boost!` : `⭐ ${openResult.mult}x Boost Applied!`}
-                  </div>
-                )}
-
-                {animPhase < 4 && openResult.mult > 1 && <div style={{ height: 43, marginBottom: 20 }} />}
-
-                <button
-                  onClick={closeResultModal}
-                  disabled={animPhase < 4}
-                  className="hb-open-btn"
-                  style={{
-                    width: '100%',
-                    background: animPhase < 4 ? '#F1F5F9' : cfg.btnBg,
-                    color: animPhase < 4 ? '#94A3B8' : '#fff',
-                    border: 'none', borderRadius: 50,
-                    padding: '14px', fontSize: 14, fontWeight: 800,
-                    cursor: animPhase < 4 ? 'default' : 'pointer',
-                    boxShadow: animPhase < 4 ? 'none' : `0 6px 20px ${cfg.btnGlow}`,
-                    transition: 'all 0.3s', fontFamily: 'inherit'
-                  }}
-                >
-                  {animPhase < 4 ? '…' : 'Awesome!'}
-                </button>
-              </div>
             </div>
           </div>
         )
