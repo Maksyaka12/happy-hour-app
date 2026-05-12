@@ -14,13 +14,18 @@ const BOX_CONFIG = {
     hp: '4 – 8 HP',
     boost: null,
     accent: '#6B7280',
-    glow: 'rgba(107,114,128,0.25)',
-    border: 'rgba(107,114,128,0.3)',
-    cardBg: 'linear-gradient(145deg, #1C1D1F 0%, #252628 100%)',
+    glow: 'rgba(107,114,128,0.15)',
+    border: '#DEE1E7',
+    cardBg: '#ffffff',
+    cardBgHover: '#F8FAFC',
     btnBg: 'linear-gradient(135deg, #4B5563, #374151)',
-    btnGlow: 'rgba(75,85,99,0.4)',
-    badgeBg: 'rgba(107,114,128,0.15)',
-    badgeColor: '#9CA3AF',
+    btnGlow: 'rgba(75,85,99,0.3)',
+    badgeBg: '#F1F5F9',
+    badgeColor: '#6B7280',
+    tagBg: '#F1F5F9',
+    tagColor: '#6B7280',
+    tagBorder: '#E2E8F0',
+    hpColor: '#374151',
   },
   epic: {
     label: 'Epic',
@@ -28,27 +33,37 @@ const BOX_CONFIG = {
     hp: '10 – 20 HP',
     boost: '+ Chance for 2x Boost',
     accent: '#8B5CF6',
-    glow: 'rgba(139,92,246,0.3)',
-    border: 'rgba(139,92,246,0.4)',
-    cardBg: 'linear-gradient(145deg, #1A1525 0%, #221B35 100%)',
+    glow: 'rgba(139,92,246,0.12)',
+    border: '#DDD6FE',
+    cardBg: '#FAFAFF',
+    cardBgHover: '#F5F3FF',
     btnBg: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
-    btnGlow: 'rgba(139,92,246,0.5)',
-    badgeBg: 'rgba(139,92,246,0.15)',
-    badgeColor: '#A78BFA',
+    btnGlow: 'rgba(139,92,246,0.35)',
+    badgeBg: '#EDE9FE',
+    badgeColor: '#7C3AED',
+    tagBg: '#EDE9FE',
+    tagColor: '#7C3AED',
+    tagBorder: '#DDD6FE',
+    hpColor: '#6D28D9',
   },
   legendary: {
     label: 'Legendary',
     badge: '⚡ JACKPOT',
     hp: '21 – 40 HP',
     boost: '+ Chance for 5x Boost',
-    accent: '#F59E0B',
-    glow: 'rgba(245,158,11,0.35)',
-    border: 'rgba(245,158,11,0.45)',
-    cardBg: 'linear-gradient(145deg, #1C1500 0%, #261C00 100%)',
+    accent: '#D97706',
+    glow: 'rgba(217,119,6,0.12)',
+    border: '#FDE68A',
+    cardBg: '#FFFDF5',
+    cardBgHover: '#FFFBEB',
     btnBg: 'linear-gradient(135deg, #D97706, #B45309)',
-    btnGlow: 'rgba(245,158,11,0.5)',
-    badgeBg: 'rgba(245,158,11,0.15)',
-    badgeColor: '#FCD34D',
+    btnGlow: 'rgba(217,119,6,0.4)',
+    badgeBg: '#FEF3C7',
+    badgeColor: '#B45309',
+    tagBg: '#FEF3C7',
+    tagColor: '#B45309',
+    tagBorder: '#FDE68A',
+    hpColor: '#B45309',
   },
 }
 
@@ -146,11 +161,9 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         @keyframes hbFadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
         @keyframes hbBob { 0%,100% { transform:translateY(0) scale(1); } 50% { transform:translateY(-8px) scale(1.03); } }
         @keyframes hbShake { 0%,100%{transform:rotate(0) scale(1)} 20%{transform:rotate(-9deg) scale(1.12)} 40%{transform:rotate(9deg) scale(1.15)} 60%{transform:rotate(-7deg) scale(1.12)} 80%{transform:rotate(7deg) scale(1.08)} }
-        @keyframes hbGlow { 0%,100%{opacity:0.6} 50%{opacity:1} }
         @keyframes hbPop { 0%{transform:scale(0.7);opacity:0} 70%{transform:scale(1.08)} 100%{transform:scale(1);opacity:1} }
-        @keyframes hbCountUp { from{transform:scale(1.3);color:#fff} to{transform:scale(1)} }
         @keyframes hbFloat { 0%,100%{transform:translateY(0) rotate(var(--r,0deg))} 50%{transform:translateY(-10px) rotate(var(--r,0deg))} }
-        .hb-card { transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), box-shadow 0.25s ease; cursor: pointer; }
+        .hb-card { transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease; cursor: pointer; }
         .hb-card:hover { transform: translateY(-3px) scale(1.01); }
         .hb-card:active { transform: scale(0.98); }
         .hb-open-btn { transition: all 0.2s ease; }
@@ -160,8 +173,8 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
 
       {/* Wrong Chain Banner */}
       {wrongChain && (
-        <div style={{ background: 'rgba(217,119,6,0.1)', border: '1px solid rgba(217,119,6,0.4)', borderRadius: 14, padding: '10px 16px', marginBottom: 14, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: 12, color: '#F59E0B', fontWeight: 700 }}>⚠ Switch to Base Mainnet</span>
+        <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 14, padding: '10px 16px', marginBottom: 14, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 12, color: '#D97706', fontWeight: 700 }}>⚠ Switch to Base Mainnet</span>
           <button onClick={() => switchChain({ chainId: base.id })} style={{ background: '#D97706', color: '#fff', borderRadius: 50, padding: '5px 14px', fontSize: 11, fontWeight: 800, border: 'none', cursor: 'pointer' }}>
             {isSwitching ? 'Switching…' : 'Switch'}
           </button>
@@ -173,24 +186,24 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         backgroundImage: 'url(/banner.jpg)', backgroundColor: '#0000FF',
         backgroundSize: 'cover', backgroundPosition: 'center',
         borderRadius: 24, padding: '28px 20px', marginBottom: 16,
-        position: 'relative', overflow: 'hidden', minHeight: 150,
-        boxShadow: '0 16px 48px rgba(0,0,255,0.3), 0 0 0 1px rgba(255,255,255,0.1)',
+        position: 'relative', overflow: 'hidden', minHeight: 148,
+        boxShadow: '0 16px 48px rgba(0,0,255,0.28), 0 0 0 1px rgba(255,255,255,0.1)',
         display: 'flex', flexDirection: 'column', justifyContent: 'flex-end'
       }}>
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(160deg, rgba(0,0,60,0.55) 0%, rgba(0,0,0,0.65) 100%)', zIndex: 0 }} />
 
-        {/* Floating parachute boxes */}
+        {/* Floating parachute boxes with HP label */}
         {[
-          { top: -8, right: '8%',  w: 68, o: 0.55, r: '-14deg', blur: 1.5 },
-          { top: 35, right: '26%', w: 48, o: 0.38, r: '10deg',  blur: 0.5 },
-          { top: -18,left: '48%', w: 44, o: 0.45, r: '22deg',  blur: 1 },
-          { bottom: -10, right:'3%', w:58, o: 0.38, r:'4deg',  blur: 1.2 },
-          { bottom: -8, right:'38%', w:82, o:0.25, r:'-22deg', blur:3 },
+          { top: -8,  right: '8%',  w: 68, o: 0.55, r: '-14deg', blur: 1.5, dur: 2.5 },
+          { top: 35,  right: '26%', w: 48, o: 0.38, r: '10deg',  blur: 0.5, dur: 2.9 },
+          { top: -18, left: '48%',  w: 44, o: 0.45, r: '22deg',  blur: 1,   dur: 3.3 },
+          { bottom: -10, right: '3%', w: 58, o: 0.38, r: '4deg', blur: 1.2, dur: 2.7 },
+          { bottom: -8, right: '38%', w: 82, o: 0.25, r: '-22deg', blur: 3, dur: 3.6 },
         ].map((s, i) => (
           <div key={i} style={{
             position: 'absolute', top: s.top, right: s.right, left: s.left, bottom: s.bottom,
             width: s.w, opacity: s.o, zIndex: 1,
-            animation: `hbFloat ${2.5 + i * 0.4}s ease-in-out infinite`,
+            animation: `hbFloat ${s.dur}s ease-in-out infinite`,
             '--r': s.r
           }}>
             <img src="/background_box.png" alt="" style={{ width: '100%', transform: `rotate(${s.r})`, filter: `blur(${s.blur}px)` }} />
@@ -203,12 +216,11 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         ))}
 
         {/* Glow orb */}
-        <div style={{ position:'absolute', top:-40, right:-40, width:200, height:200, background:'rgba(100,100,255,0.15)', borderRadius:'50%', filter:'blur(70px)', zIndex:1 }} />
+        <div style={{ position: 'absolute', top: -40, right: -40, width: 200, height: 200, background: 'rgba(100,100,255,0.15)', borderRadius: '50%', filter: 'blur(70px)', zIndex: 1 }} />
 
         <div style={{ position: 'relative', zIndex: 2 }}>
-          <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6 }}>Happy Hour</div>
           <div style={{ fontSize: 26, fontWeight: 900, color: '#fff', lineHeight: 1.1, textShadow: '0 4px 20px rgba(0,0,0,0.7)', letterSpacing: '-0.5px' }}>
-            Open your Happy Boxes
+            Open Your Happy Boxes
           </div>
           <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', fontWeight: 600, marginTop: 5, textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
             to win HP and Boosts
@@ -216,7 +228,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         </div>
       </div>
 
-      {/* ═══ BOX CARDS (Dark Glassmorphic) ═══ */}
+      {/* ═══ BOX CARDS (Light Premium) ═══ */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {boxes.map((box) => {
           const cfg = BOX_CONFIG[box.id]
@@ -228,20 +240,20 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
               onMouseEnter={() => setHoveredBox(box.id)}
               onMouseLeave={() => setHoveredBox(null)}
               style={{
-                background: cfg.cardBg,
+                background: isHovered ? cfg.cardBgHover : cfg.cardBg,
                 border: `1.5px solid ${isHovered ? cfg.accent : cfg.border}`,
                 borderRadius: 22,
-                padding: '14px 14px 14px 14px',
+                padding: '14px',
                 boxShadow: isHovered
-                  ? `0 12px 40px ${cfg.glow}, 0 0 0 1px ${cfg.accent}40`
-                  : `0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)`,
+                  ? `0 8px 32px ${cfg.glow}, 0 0 0 1px ${cfg.accent}30`
+                  : '0 2px 12px rgba(10,11,13,0.06)',
                 display: 'flex', alignItems: 'center', gap: 14,
                 position: 'relative', overflow: 'hidden',
               }}
             >
-              {/* Subtle inner glow when hovered */}
+              {/* Subtle inner glow on hover */}
               {isHovered && (
-                <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse at 30% 50%, ${cfg.glow} 0%, transparent 70%)`, zIndex: 0, pointerEvents: 'none' }} />
+                <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse at 30% 50%, ${cfg.glow} 0%, transparent 65%)`, zIndex: 0, pointerEvents: 'none' }} />
               )}
 
               {/* Tier badge */}
@@ -251,7 +263,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                 fontSize: 8, fontWeight: 900,
                 padding: '4px 10px', borderBottomLeftRadius: 12,
                 letterSpacing: '0.5px', zIndex: 3,
-                border: `1px solid ${cfg.border}`,
+                border: `1px solid ${cfg.tagBorder}`,
                 borderTop: 'none', borderRight: 'none',
               }}>
                 {cfg.badge}
@@ -259,9 +271,13 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
 
               {/* Box image */}
               <div style={{
-                width: 88, height: 88, flexShrink: 0, position: 'relative', zIndex: 2,
+                width: box.id === 'epic' ? 95 : 85,
+                height: box.id === 'epic' ? 95 : 85,
+                flexShrink: 0, position: 'relative', zIndex: 2,
                 animation: `hbBob ${box.id === 'legendary' ? 2 : box.id === 'epic' ? 2.6 : 3.2}s ease-in-out infinite`,
-                filter: isHovered ? `drop-shadow(0 0 16px ${cfg.accent}99)` : `drop-shadow(0 4px 12px rgba(0,0,0,0.5))`,
+                filter: isHovered
+                  ? `drop-shadow(0 0 14px ${cfg.accent}88)`
+                  : 'drop-shadow(0 4px 10px rgba(0,0,0,0.15))',
                 transition: 'filter 0.3s ease'
               }}>
                 <img src={box.img} alt={box.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
@@ -270,17 +286,17 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
               {/* Info + button */}
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 7, position: 'relative', zIndex: 2 }}>
                 <div>
-                  <div style={{ fontSize: 15, fontWeight: 900, color: '#F1F5F9', letterSpacing: '-0.3px' }}>{box.name}</div>
+                  <div style={{ fontSize: 14, fontWeight: 900, color: '#0A0B0D', letterSpacing: '-0.2px' }}>{box.name}</div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 5 }}>
                     <span style={{
-                      background: cfg.badgeBg, color: cfg.badgeColor,
-                      border: `1px solid ${cfg.border}`,
+                      background: cfg.tagBg, color: cfg.tagColor,
+                      border: `1px solid ${cfg.tagBorder}`,
                       padding: '2px 8px', borderRadius: 20, fontSize: 9, fontWeight: 800
                     }}>⚡ {cfg.hp}</span>
                     {cfg.boost && (
                       <span style={{
-                        background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.55)',
-                        border: '1px solid rgba(255,255,255,0.1)',
+                        background: '#F8FAFC', color: '#64748B',
+                        border: '1px solid #E2E8F0',
                         padding: '2px 8px', borderRadius: 20, fontSize: 9, fontWeight: 700
                       }}>{cfg.boost}</span>
                     )}
@@ -303,7 +319,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                   }}
                 >
                   Open Box
-                  <span style={{ background: 'rgba(0,0,0,0.2)', borderRadius: 20, padding: '1px 8px', fontSize: 10, display: 'flex', alignItems: 'center', gap: 4, color: 'rgba(255,255,255,0.85)' }}>
+                  <span style={{ background: 'rgba(0,0,0,0.18)', borderRadius: 20, padding: '1px 8px', fontSize: 10, display: 'flex', alignItems: 'center', gap: 4, color: 'rgba(255,255,255,0.9)' }}>
                     {box.price.toFixed(2)}
                     <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12 }} />
                   </span>
@@ -314,9 +330,9 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         })}
       </div>
 
-      {/* ═══ HOW IT WORKS ═══ */}
-      <div style={{ marginTop: 16, background: '#111214', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 20, padding: '16px 18px' }}>
-        <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.3)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 14 }}>How it works</div>
+      {/* ═══ HOW IT WORKS (Light) ═══ */}
+      <div style={{ marginTop: 16, background: '#F8FAFC', border: '1px solid #DEE1E7', borderRadius: 20, padding: '16px 18px' }}>
+        <div style={{ fontSize: 9, fontWeight: 800, color: '#94A3B8', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 14 }}>How it works</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {[
             ['How do Happy Boxes work?', 'Choose a box to try your luck and win HP instantly. Each box has a different range of possible rewards.'],
@@ -324,9 +340,9 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             ['Are rewards guaranteed?', 'Yes, every box contains at least the minimum amount of HP shown in the description.'],
             ['How does the multiplier work?', 'If you have an active multiplier, it will be applied to your boxes. If you win a higher boost, it activates instantly and lasts 24h. Once it expires, your permanent multiplier resumes.'],
           ].map(([q, a], i) => (
-            <div key={i} style={{ paddingBottom: 12, borderBottom: i < 3 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
-              <div style={{ fontSize: 11, fontWeight: 800, color: 'rgba(255,255,255,0.8)', marginBottom: 3 }}>{q}</div>
-              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', lineHeight: 1.6, fontWeight: 500 }}>{a}</div>
+            <div key={i} style={{ paddingBottom: 12, borderBottom: i < 3 ? '1px solid #F1F5F9' : 'none' }}>
+              <div style={{ fontSize: 11, fontWeight: 800, color: '#0A0B0D', marginBottom: 3 }}>{q}</div>
+              <div style={{ fontSize: 10, color: '#64748B', lineHeight: 1.6, fontWeight: 500 }}>{a}</div>
             </div>
           ))}
         </div>
@@ -349,53 +365,51 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
 
       {/* ═══ OPENING ANIMATION ═══ */}
       {isOpening && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(5,5,10,0.85)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(12px)' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(10,11,13,0.75)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(12px)' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
             <div style={{ animation: 'hbShake 0.6s infinite' }}>
-              <img src={selectedBox?.img} style={{ width: 130, height: 130, objectFit: 'contain', filter: 'drop-shadow(0 0 30px rgba(255,255,255,0.4))' }} alt="" />
+              <img src={selectedBox?.img} style={{ width: 130, height: 130, objectFit: 'contain', filter: 'drop-shadow(0 0 30px rgba(255,255,255,0.5))' }} alt="" />
             </div>
-            <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: 2, textTransform: 'uppercase' }}>Opening…</div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.6)', letterSpacing: 2, textTransform: 'uppercase' }}>Opening…</div>
           </div>
         </div>
       )}
 
-      {/* ═══ RESULT MODAL ═══ */}
+      {/* ═══ RESULT MODAL (Light) ═══ */}
       {openResult && (() => {
         const cfg = BOX_CONFIG[openResult.boxId] || BOX_CONFIG.common
         return (
-          <div style={{ position: 'fixed', inset: 0, background: 'rgba(5,5,10,0.88)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(14px)' }}>
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(10,11,13,0.75)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(14px)' }}>
             <div style={{
-              background: 'linear-gradient(160deg, #18191C 0%, #111214 100%)',
-              border: `1.5px solid ${cfg.border}`,
+              background: '#fff',
+              border: `1.5px solid ${cfg.tagBorder}`,
               borderRadius: 28, padding: '36px 28px', width: '88%', maxWidth: 360,
               textAlign: 'center', animation: 'hbPop 0.5s cubic-bezier(.34,1.56,.64,1)',
-              boxShadow: `0 30px 80px rgba(0,0,0,0.6), 0 0 60px ${cfg.glow}`,
+              boxShadow: `0 30px 80px rgba(0,0,0,0.2), 0 0 0 1px ${cfg.tagBorder}`,
               position: 'relative', overflow: 'hidden'
             }}>
-              {/* Glow bg */}
-              <div style={{ position: 'absolute', top: -60, left: '50%', transform: 'translateX(-50%)', width: 300, height: 200, background: cfg.glow, filter: 'blur(80px)', borderRadius: '50%', zIndex: 0 }} />
+              {/* Subtle glow bg */}
+              <div style={{ position: 'absolute', top: -60, left: '50%', transform: 'translateX(-50%)', width: 280, height: 180, background: cfg.glow, filter: 'blur(60px)', borderRadius: '50%', zIndex: 0, opacity: 0.8 }} />
 
               <div style={{ position: 'relative', zIndex: 1 }}>
                 <div style={{ fontSize: 56, marginBottom: 8, animation: 'hbBob 1.5s ease-in-out infinite' }}>🎉</div>
-                <div style={{ fontSize: 13, fontWeight: 800, color: cfg.badgeColor, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 4 }}>{cfg.label} Box</div>
-                <div style={{ fontSize: 20, fontWeight: 900, color: '#F1F5F9', marginBottom: 20 }}>You Won!</div>
+                <div style={{ fontSize: 11, fontWeight: 800, color: cfg.badgeColor, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 4 }}>{cfg.label} Box</div>
+                <div style={{ fontSize: 20, fontWeight: 900, color: '#0A0B0D', marginBottom: 20 }}>You Won!</div>
 
                 <div style={{
-                  fontSize: 52, fontWeight: 900, lineHeight: 1,
-                  color: cfg.accent,
-                  textShadow: `0 0 30px ${cfg.glow}`,
+                  fontSize: 54, fontWeight: 900, lineHeight: 1,
+                  color: cfg.hpColor,
                   marginBottom: 18,
-                  animation: animPhase === 3 ? 'hbCountUp 0.1s ease' : 'none'
                 }}>
                   +{displayHp}
-                  <span style={{ fontSize: 22, fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginLeft: 6 }}>HP</span>
+                  <span style={{ fontSize: 22, fontWeight: 700, color: '#94A3B8', marginLeft: 6 }}>HP</span>
                 </div>
 
                 {openResult.mult > 1 && animPhase >= 2 && (
                   <div style={{
                     display: 'inline-block',
-                    background: cfg.badgeBg, color: cfg.badgeColor,
-                    border: `1px solid ${cfg.border}`,
+                    background: cfg.tagBg, color: cfg.tagColor,
+                    border: `1px solid ${cfg.tagBorder}`,
                     padding: '6px 18px', borderRadius: 50, fontSize: 13, fontWeight: 800,
                     marginBottom: 20, animation: 'hbPop 0.4s ease'
                   }}>
@@ -411,8 +425,9 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                   className="hb-open-btn"
                   style={{
                     width: '100%',
-                    background: animPhase < 4 ? 'rgba(255,255,255,0.1)' : cfg.btnBg,
-                    color: '#fff', border: 'none', borderRadius: 50,
+                    background: animPhase < 4 ? '#F1F5F9' : cfg.btnBg,
+                    color: animPhase < 4 ? '#94A3B8' : '#fff',
+                    border: 'none', borderRadius: 50,
                     padding: '14px', fontSize: 14, fontWeight: 800,
                     cursor: animPhase < 4 ? 'default' : 'pointer',
                     boxShadow: animPhase < 4 ? 'none' : `0 6px 20px ${cfg.btnGlow}`,
