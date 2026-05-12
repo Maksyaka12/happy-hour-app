@@ -86,10 +86,9 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
   useEffect(() => {
     if (!isOpening) { setOpenAnimPhase(0); return }
     setOpenAnimPhase(0)
-    const t1 = setTimeout(() => setOpenAnimPhase(1), 1500)  // slow zoom
-    const t2 = setTimeout(() => setOpenAnimPhase(2), 3000)  // flash + box opens
-    const t3 = setTimeout(() => setOpenAnimPhase(3), 4000)  // HP bursts out
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3) }
+    const t1 = setTimeout(() => setOpenAnimPhase(2), 3500)  // shake for 3.5s then flash
+    const t2 = setTimeout(() => setOpenAnimPhase(3), 4200)  // reward reveals
+    return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [isOpening])
 
   const chainId = useChainId()
@@ -441,26 +440,24 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
 
             {/* Phase 2: flash */}
             {openAnimPhase >= 2 && (
-              <div style={{ position:'absolute', inset:0, background:c.flash, animation:'hbFlashOut 0.8s ease forwards', zIndex:5 }} />
+              <div style={{ position:'absolute', inset:0, background:c.flash, animation:'hbFlashOut 0.8s ease forwards', zIndex:5, pointerEvents:'none' }} />
             )}
 
             {/* Main content area */}
             <div style={{ position:'relative', zIndex:3, display:'flex', flexDirection:'column', alignItems:'center', gap:24 }}>
 
-              {/* Phase 0 & 1: box shakes then zooms */}
+              {/* Phase 0 & 1: box shakes */}
               {openAnimPhase < 2 && (
                 <>
                   <div style={{
-                    filter: `drop-shadow(0 0 ${openAnimPhase > 0 ? 55 : 20}px ${c.glow})`,
-                    animation: openAnimPhase === 0
-                      ? `${c.shake} 0.3s infinite`
-                      : 'hbZoomBox 1.5s cubic-bezier(.25,.8,.25,1) forwards',
+                    filter: `drop-shadow(0 0 24px ${c.glow})`,
+                    animation: `${c.shake} 0.3s infinite`,
                     transition: 'filter 0.5s ease'
                   }}>
                     <img src={selectedBox.img} style={{ width:140, height:140, objectFit:'contain', mixBlendMode:'multiply' }} alt="" />
                   </div>
                   <div style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.4)', letterSpacing:3, textTransform:'uppercase' }}>
-                    {openAnimPhase === 0 ? 'Opening...' : 'Get ready...'}
+                    Opening...
                   </div>
                 </>
               )}
@@ -469,16 +466,19 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
 
               {/* Phase 3: HP slams out of opened box */}
               {openAnimPhase >= 3 && (
-                <div style={{ textAlign:'center', animation:'hbHpSlam 0.7s cubic-bezier(.34,1.56,.64,1) forwards' }}>
-                  <div style={{
-                    fontSize: 88, fontWeight: 900, lineHeight: 1,
-                    color: c.glow,
-                    textShadow: `0 0 40px ${c.glow}, 0 0 80px ${c.flash}`,
-                    fontVariantNumeric: 'tabular-nums'
-                  }}>
-                    {pendingResult ? `+${countDisplayHp}` : '...'}
+                <div style={{ display:'flex', flexDirection:'column', alignItems:'center', animation:'hbHpSlam 0.7s cubic-bezier(.34,1.56,.64,1) forwards' }}>
+                  <div style={{ display:'flex', alignItems:'baseline', gap:12 }}>
+                    <div style={{
+                      fontSize: 94, fontWeight: 940, lineHeight: 1,
+                      color: c.glow,
+                      textShadow: `0 0 40px ${c.glow}, 0 0 80px ${c.flash}`,
+                      fontVariantNumeric: 'tabular-nums',
+                      letterSpacing: '-2px'
+                    }}>
+                      {pendingResult ? `+${countDisplayHp}` : '...'}
+                    </div>
+                    <div style={{ fontSize: 32, fontWeight: 900, color: 'rgba(255,255,255,0.7)', letterSpacing: 1, textShadow: `0 0 20px ${c.glow}` }}>HP</div>
                   </div>
-                  <div style={{ fontSize:26, fontWeight:800, color:'rgba(255,255,255,0.6)', marginTop:4, letterSpacing:2 }}>HP</div>
                   
                   {showBoostText && pendingResult?.mult > 1 && (
                     <div style={{ marginTop:16, fontSize:13, fontWeight:800, color:c.glow, background:`${c.glow}22`, border:`1px solid ${c.glow}55`, borderRadius:50, padding:'6px 18px', display:'inline-block', animation:'hbFadeIn 0.5s both' }}>
