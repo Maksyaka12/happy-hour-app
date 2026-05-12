@@ -271,7 +271,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         boxShadow: '0 16px 48px rgba(0,0,255,0.28), 0 0 0 1px rgba(255,255,255,0.1)',
         display: 'flex', flexDirection: 'column', justifyContent: 'center'
       }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(160deg, rgba(0,0,60,0.55) 0%, rgba(0,0,0,0.65) 100%)', zIndex: 0 }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(160deg, rgba(0,0,60,0.35) 0%, rgba(0,0,0,0.45) 100%)', zIndex: 0 }} />
 
         {/* Floating parachute boxes with HP label */}
         {[
@@ -288,11 +288,6 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             '--r': s.r
           }}>
             <img src="/background_box.png" alt="" style={{ width: '100%', transform: `rotate(${s.r})`, filter: `blur(${s.blur}px)` }} />
-            <div style={{
-              position: 'absolute', bottom: '28%', left: '50%', transform: 'translateX(-50%)',
-              fontSize: s.w * 0.14, fontWeight: 900, color: '#fff',
-              textShadow: '0 1px 6px rgba(0,0,0,0.9)', opacity: 0.85, whiteSpace: 'nowrap'
-            }}>HP</div>
           </div>
         ))}
 
