@@ -113,12 +113,33 @@ export function ContestBanner() {
         </div>
       </div>
       
+      {/* Floating Trophy Background Decoration */}
+      <div style={{
+        position: 'absolute',
+        right: '45px',
+        bottom: '-5px',
+        fontSize: '76px',
+        opacity: 0.22,
+        zIndex: 1,
+        pointerEvents: 'none',
+        userSelect: 'none',
+        filter: 'drop-shadow(0 0 20px rgba(244, 200, 27, 0.4))',
+        animation: 'float-trophy 5s ease-in-out infinite',
+      }}>
+        🏆
+      </div>
+
       {/* Shine & Hover Effects */}
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes shine {
           0% { left: -100%; }
           20% { left: 100%; }
           100% { left: 100%; }
+        }
+        @keyframes float-trophy {
+          0% { transform: translateY(0px) rotate(12deg); }
+          50% { transform: translateY(-8px) rotate(18deg); }
+          100% { transform: translateY(0px) rotate(12deg); }
         }
         .contest-banner-card:hover .banner-bg {
           transform: scale(1.03);
