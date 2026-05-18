@@ -1,9 +1,13 @@
 import React from 'react';
 
-export function ContestBanner({ onClick }) {
+export function ContestBanner() {
+  const handleClick = () => {
+    window.open('https://x.com/happyhour_base/status/2056345151455256589?s=20', '_blank');
+  };
+
   return (
     <div 
-      onClick={onClick}
+      onClick={handleClick}
       style={{
         margin: '0 16px 12px',
         height: '100px',
@@ -105,7 +109,7 @@ export function ContestBanner({ onClick }) {
           lineHeight: 1.4
         }}>
           * Follow us and join our TG group.<br />
-          * See detailed conditions on our X profile.
+          * Check details on our X contest's post.
         </div>
       </div>
       
