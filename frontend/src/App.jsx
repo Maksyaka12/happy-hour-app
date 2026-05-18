@@ -268,7 +268,7 @@ export default function App() {
           )}
         </div>
 
-        {/* <EventBanner onClick={() => setTab('boxes')} /> */}
+        <EventBanner onClick={() => setTab('boxes')} />
 
         <div style={{ position: 'relative', zIndex: 1, maxWidth: 640, margin: '0 auto' }}>
           {tab === 'raffle' && <RaffleSection address={address} basename={basename} />}
