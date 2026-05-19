@@ -83,4 +83,4 @@ happy-hour-app/
 5. **Frontend:** Deploy the `frontend/` directory to Vercel (or any static host).
 
 ---
-*Built with 💙 for the Base Ecosystem.*
+*Built by mksvibe with 💙 for the Base Community / Ecosystem.*
