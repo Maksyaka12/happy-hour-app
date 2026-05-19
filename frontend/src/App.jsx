@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useAccount, useReadContract, useSwitchChain, useWriteContract } from 'wagmi'
+import { useAccount, useReadContract, useSwitchChain } from 'wagmi'
 import { base } from 'wagmi/chains'
 import { formatUnits } from 'viem'
 import { db } from './config/supabase'
@@ -36,7 +36,6 @@ export default function App() {
   // useChainId() returns base.id by default when chain is not in wagmi config — can't use it here
   const { address, isConnected, isConnecting, isReconnecting, chainId: accountChainId } = useAccount()
   const { switchChain, isPending: isSwitching } = useSwitchChain()
-  const { writeContract: writeOperator } = useWriteContract()
   const basename = useBasename(address)
   const onWrongChain = isConnected && !!accountChainId && accountChainId !== base.id
 
@@ -151,7 +150,7 @@ export default function App() {
   const displayName = basename || short(address)
 
   // Maintenance Mode Toggle
-  const IS_MAINTENANCE_MODE = true;
+  const IS_MAINTENANCE_MODE = false;
 
   if (IS_MAINTENANCE_MODE && !isAdmin) {
     return (
@@ -258,48 +257,16 @@ export default function App() {
             {tabLabels[tab]}
           </span>
           {tab === 'leaderboard' && isAdmin && (
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <div style={{
-                background: 'var(--blue-bg)',
-                border: '1px solid rgba(0,0,255,0.15)',
-                borderRadius: 50,
-                padding: '4px 12px',
-                fontSize: 12,
-                fontWeight: 700,
-                color: '#717886'
-              }}>
-                📊 Total Users: <span style={{ color: '#0000FF' }}>{totalUsers}</span>
-              </div>
-              <button
-                onClick={() => {
-                  if (window.confirm("Rotate Operator to 0x1aA4aD048ADe8DC9e6b0eaA5F148f308dAB2E56f on-chain?")) {
-                    writeOperator({
-                      address: '0xdE76F43E17B1173947f63b72C85a2f0d9a97702F',
-                      abi: [{
-                        name: 'setOperator',
-                        type: 'function',
-                        inputs: [{ name: '_newOperator', type: 'address' }],
-                        outputs: [],
-                        stateMutability: 'nonpayable'
-                      }],
-                      functionName: 'setOperator',
-                      args: ['0x1aA4aD048ADe8DC9e6b0eaA5F148f308dAB2E56f']
-                    })
-                  }
-                }}
-                style={{
-                  background: '#FF3366',
-                  border: 'none',
-                  borderRadius: 50,
-                  padding: '4px 12px',
-                  fontSize: 11,
-                  fontWeight: 800,
-                  color: '#fff',
-                  cursor: 'pointer'
-                }}
-              >
-                🔄 Rotate Operator On-Chain
-              </button>
+            <div style={{
+              background: 'var(--blue-bg)',
+              border: '1px solid rgba(0,0,255,0.15)',
+              borderRadius: 50,
+              padding: '4px 12px',
+              fontSize: 12,
+              fontWeight: 700,
+              color: '#717886'
+            }}>
+              📊 Total Users: <span style={{ color: '#0000FF' }}>{totalUsers}</span>
             </div>
           )}
         </div>
