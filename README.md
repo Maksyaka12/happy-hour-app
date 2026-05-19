@@ -1,10 +1,26 @@
 <div align="center">
   <img src="frontend/public/logo.jfif" alt="Happy Hour Logo" width="120" style="border-radius: 20%; margin-bottom: 15px;" />
   <h1>Happy Hour App on Base Mainnet</h1>
+  
+  <p>
+    <a href="https://x.com/happyhour_base" target="_blank">
+      <img src="https://img.shields.io/badge/Project_X-000000?style=for-the-badge&logo=x&logoColor=white" alt="Project X" />
+    </a>
+    <a href="https://x.com/mksvibe" target="_blank">
+      <img src="https://img.shields.io/badge/Builder_X-000000?style=for-the-badge&logo=x&logoColor=white" alt="Builder X" />
+    </a>
+    <a href="https://x.com/happyhour_base/status/2056407740319138199?s=20" target="_blank">
+      <img src="https://img.shields.io/badge/🎬_Watch_Promo-FF0000?style=for-the-badge&logoColor=white" alt="Promo Video" />
+    </a>
+  </p>
+
+  <p>
+    <img src="https://img.shields.io/badge/Build_on-Base-0052FF?style=for-the-badge&logo=base&logoColor=white" alt="Base Ecosystem" />
+    <img src="https://img.shields.io/badge/Powered_by-Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase" />
+  </p>
 </div>
 
-![Base Ecosystem](https://img.shields.io/badge/Build_on-Base-0052FF?style=for-the-badge&logo=base&logoColor=white)
-![Supabase](https://img.shields.io/badge/Powered_by-Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
+<br />
 
 > Happy Hour is a consumer loyalty platform on Base that transforms blockchain activity into a cinematic, gaming experience with seasonal USDC rewards.
 
