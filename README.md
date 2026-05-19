@@ -1,4 +1,7 @@
-# 🍹 Happy Hour Based
+<div align="center">
+  <img src="frontend/public/logo.jfif" alt="Happy Hour Logo" width="120" style="border-radius: 20%; margin-bottom: 15px;" />
+  <h1>Happy Hour Based</h1>
+</div>
 
 ![Base Ecosystem](https://img.shields.io/badge/Build_on-Base-0052FF?style=for-the-badge&logo=base&logoColor=white)
 ![Supabase](https://img.shields.io/badge/Powered_by-Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
@@ -30,22 +33,29 @@ This infrastructure directly seeds a prize pool for daily random lotteries, crea
 ## 📂 Repository Structure
 
 ```text
-happy-hour/
+happy-hour-app/
 ├── frontend/
-│   ├── src/             ← React UI, Web3 components, and animations
-│   ├── index.html       ← App entry point
-│   └── vercel.json      ← Vercel deployment configuration
+│   ├── src/
+│   │   ├── components/  ← Modular React UI (Leaderboard, Raffle, HappyBoxes, etc.)
+│   │   ├── config/      ← Constants, Wagmi configs, and Supabase client
+│   │   ├── hooks/       ← Custom Web3 & Data fetching hooks
+│   │   ├── App.jsx      ← Core Layout & Tab routing
+│   │   └── main.jsx     ← Entry point & Context Providers (Wagmi + QueryClient)
+│   ├── index.html       
+│   └── vercel.json      ← Static routing & deployment config
 │
-├── backend/
-│   ├── on-deposit/      ← Alchemy webhook processor (records bets)
-│   ├── draw-round/      ← Raffle execution and payout logic
-│   └── get-state/       ← REST API for real-time frontend sync
+├── backend/ (Supabase Edge Functions / Deno)
+│   ├── on-deposit/      ← Alchemy webhook: records onchain check-ins & deposits
+│   ├── draw-round/      ← Core engine: runs hourly random payouts & selects winners
+│   ├── get-state/       ← REST API: syncs active round timer/pot to the frontend
+│   └── streak-reminder/ ← Automated Cron: manages user streaks & engagement
 │
-├── database/
-│   ├── 001_schema.sql   ← Core tables & Row Level Security (RLS)
-│   └── 002_functions.sql← SQL triggers and cron jobs
+├── database/ (PostgreSQL)
+│   ├── 001_schema.sql   ← Tables, Enums & Row Level Security (RLS) policies
+│   └── 002_functions.sql← SQL Views & RPC functions
 │
-└── .env.example         ← Environment template
+├── .env.example         ← Environment template
+└── .gitignore           ← Security configs (blocks local .env secrets)
 ```
 
 ## ⚡ Quick Deploy Guide
