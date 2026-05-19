@@ -1,6 +1,6 @@
 <div align="center">
   <img src="frontend/public/logo.jfif" alt="Happy Hour Logo" width="120" style="border-radius: 20%; margin-bottom: 15px;" />
-  <h1>Happy Hour Based</h1>
+  <h1>Happy Hour App on Base Mainnet</h1>
 </div>
 
 ![Base Ecosystem](https://img.shields.io/badge/Build_on-Base-0052FF?style=for-the-badge&logo=base&logoColor=white)
