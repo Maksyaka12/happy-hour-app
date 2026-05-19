@@ -26,9 +26,9 @@ import { base } from "https://esm.sh/viem@2/chains";
 // ── Константи ────────────────────────────────────────────────
 const USDC_ADDRESS =
   "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" as `0x${string}`;
-const WINNER_SHARE  = 0.85;
-const OWNER_SHARE   = 0.15;
-const MAX_PAYOUT    = 10_000; // USDC — анти-хак ліміт
+const WINNER_SHARE = 0.85;
+const OWNER_SHARE = 0.15;
+const MAX_PAYOUT = 10_000; // USDC — анти-хак ліміт
 const USDC_DECIMALS = 6;
 
 // ── ABI USDC transfer ────────────────────────────────────────
@@ -37,7 +37,7 @@ const USDC_ABI = [
     name: "transfer",
     type: "function",
     inputs: [
-      { name: "to",    type: "address" },
+      { name: "to", type: "address" },
       { name: "value", type: "uint256" },
     ],
     outputs: [{ type: "bool" }],
@@ -58,10 +58,10 @@ const VAULT_ABI = [
     name: "distributePrize",
     type: "function",
     inputs: [
-      { name: "_winner",       type: "address" },
+      { name: "_winner", type: "address" },
       { name: "_winnerAmount", type: "uint256" },
-      { name: "_foundation",   type: "address" },
-      { name: "_feeAmount",    type: "uint256" },
+      { name: "_foundation", type: "address" },
+      { name: "_feeAmount", type: "uint256" },
     ],
     outputs: [],
     stateMutability: "nonpayable",
@@ -88,19 +88,19 @@ const CORS = {
 // ── Helper для отримання суфікса ──────────────────────────────
 function getBuilderDataSuffix(): `0x${string}` | undefined {
   const code = Deno.env.get("BUILDER_CODE") || Deno.env.get("BUILDER_CODE_DATA_SUFFIX");
-  
+
   if (!code) {
     console.log("[draw-round] ℹ️ No Builder Code found in secrets. Skipping attribution.");
     return undefined;
   }
 
   const cleanCode = code.trim();
-  
+
   if (cleanCode.startsWith("0x")) {
     console.log("[draw-round] ✅ Using raw Hex Builder Suffix from secrets.");
     return cleanCode as `0x${string}`;
   }
-  
+
   try {
     // Native ERC-8021 suffix generation (Schema 0x01)
     // Format: [Data] + [Schema ID: 01] + [ERC Marker: 8021...8021]
@@ -110,7 +110,7 @@ function getBuilderDataSuffix(): `0x${string}` | undefined {
     const schemaId = '01';
     const marker = '80218021802180218021802180218021';
     const suffix = `0x${hexCode}${schemaId}${marker}` as `0x${string}`;
-    
+
     console.log(`[draw-round] ✅ Generated Builder Suffix from code: ${cleanCode}`);
     return suffix;
   } catch (e) {
@@ -278,7 +278,7 @@ serve(async (req) => {
         .reduce((s, b) => s + parseFloat(b.amount), 0);
 
       let prize = participants.length === 1 ? totalPool : totalPool * WINNER_SHARE;
-      
+
       // Якщо 2+ учасники, гарантуємо що переможець не отримає менше ніж вклав
       if (participants.length > 1 && prize < winnerStake) {
         console.log(`[draw-round] Round ${round.id}: Prize adjusted to cover winner's stake (${winnerStake} USDC)`);
@@ -308,9 +308,9 @@ serve(async (req) => {
       // ── Ставимо status = 'spinning' ──
       // Це сигнал для ВСІХ підключених юзерів запустити рулетку
       await supabase.from("rounds").update({
-        status:  "spinning",
-        winner:  winner,
-        prize:   prize,
+        status: "spinning",
+        winner: winner,
+        prize: prize,
       }).eq("id", round.id);
 
       console.log(`[draw-round] Round ${round.id}: status=spinning, waiting for animation...`);
@@ -325,7 +325,7 @@ serve(async (req) => {
         const dataSuffix = getBuilderDataSuffix();
 
         let txPromise: Promise<any>;
-        
+
         if (USE_VAULT_CONTRACT && VAULT_CONTRACT_ADDRESS) {
           // METHOD A: Smart Contract Vault Path
           const fee = totalPool - prize;
@@ -333,20 +333,20 @@ serve(async (req) => {
           const foundationTarget = walletClient.account.address; // The foundation gets the fee sent to the admin's EOA wallet for simplicity, or we can use an env var.
 
           txPromise = withTimeout(walletClient.writeContract({
-            address:      VAULT_CONTRACT_ADDRESS,
-            abi:          VAULT_ABI,
+            address: VAULT_CONTRACT_ADDRESS,
+            abi: VAULT_ABI,
             functionName: "distributePrize",
-            args:         [winner as `0x${string}`, prizeRaw, foundationTarget, feeRaw],
+            args: [winner as `0x${string}`, prizeRaw, foundationTarget, feeRaw],
             ...(dataSuffix ? { dataSuffix } : {}),
           }), 15000);
 
         } else {
           // METHOD BASE: Direct EOA Transfer (Current Logic)
           txPromise = withTimeout(walletClient.writeContract({
-            address:      USDC_ADDRESS,
-            abi:          USDC_ABI,
+            address: USDC_ADDRESS,
+            abi: USDC_ABI,
             functionName: "transfer",
-            args:         [winner as `0x${string}`, prizeRaw],
+            args: [winner as `0x${string}`, prizeRaw],
             ...(dataSuffix ? { dataSuffix } : {}),
           }), 15000);
         }
@@ -373,7 +373,7 @@ serve(async (req) => {
       // ── Фіналізуємо раунд ──
       // Видалено payout_error щоб уникнути крашу, якщо колонка відсутня в БД
       await supabase.from("rounds").update({
-        status:         "done",
+        status: "done",
         tx_hash_payout: txHash,
       }).eq("id", round.id);
 
@@ -381,8 +381,8 @@ serve(async (req) => {
       if (!payoutError) {
         await supabase.rpc("add_points", {
           p_address: winner,
-          p_points:  30,
-          p_reason:  `Won round ${round.id}`,
+          p_points: 30,
+          p_reason: `Won round ${round.id}`,
         });
         await supabase.rpc("increment_wins", { p_address: winner });
 
@@ -425,8 +425,8 @@ async function ensureNextRound(now: Date) {
 
   await supabase.from("rounds").insert({
     starts_at: startOf.toISOString(),
-    ends_at:   nextHour.toISOString(),
-    status:    "open",
+    ends_at: nextHour.toISOString(),
+    status: "open",
     total_pot: 0,
   });
 

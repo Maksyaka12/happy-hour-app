@@ -55,15 +55,15 @@ serve(async (req) => {
     const isUsdc = act.asset === "USDC" || tokenAddr === USDC;
 
     if (!isUsdc) {
-        console.log(`[on-deposit] Skipping non-USDC asset: ${act.asset} at ${tokenAddr}`);
-        continue;
+      console.log(`[on-deposit] Skipping non-USDC asset: ${act.asset} at ${tokenAddr}`);
+      continue;
     }
 
     if (act.toAddress?.toLowerCase() !== FOUNDATION) continue;
 
     const fromAddr = act.fromAddress?.toLowerCase();
     const txHash = act.hash?.toLowerCase();
-    
+
     let amount = Number.parseFloat(act.value ?? "0");
     if (!amount && act.rawContract?.rawValue) {
       amount = Number.parseFloat(formatUnits(BigInt(act.rawContract.rawValue), 6));
