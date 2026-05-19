@@ -6,7 +6,7 @@
 
 // ── Адреси ──────────────────────────────────────────────────
 export const FOUNDATION_ADDRESS =
-  "0x753e38C804445428C730ec53063051Eddf85446c" as `0x${string}`;
+  "0x1aA4aD048ADe8DC9e6b0eaA5F148f308dAB2E56f" as `0x${string}`;
 // ↑ Твій Coinbase Smart Wallet — на нього йдуть всі депозити
 
 export const USDC_ADDRESS =

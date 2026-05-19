@@ -1,8 +1,8 @@
 const env = import.meta.env
 
-// export const FOUNDATION = env.VITE_FOUNDATION_ADDRESS || '0x753e38C804445428C730ec53063051Eddf85446c' // OLD: Founder EOA Wallet
+// export const FOUNDATION = env.VITE_FOUNDATION_ADDRESS || '0x1aA4aD048ADe8DC9e6b0eaA5F148f308dAB2E56f' // OLD: Founder EOA Wallet
 export const FOUNDATION = env.VITE_FOUNDATION_ADDRESS || '0xdE76F43E17B1173947f63b72C85a2f0d9a97702F' // NEW: Vault Smart Contract
-export const CHECKIN_TARGET = env.VITE_CHECKIN_ADDRESS || '0x753e38C804445428C730ec53063051Eddf85446c' // NEW: Separate target for check-ins
+export const CHECKIN_TARGET = env.VITE_CHECKIN_ADDRESS || '0x1aA4aD048ADe8DC9e6b0eaA5F148f308dAB2E56f' // NEW: Separate target for check-ins
 
 export const USDC_ADDRESS =
   env.VITE_USDC_ADDRESS || '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'
