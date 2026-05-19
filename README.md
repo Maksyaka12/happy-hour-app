@@ -31,7 +31,7 @@
 
 <br />
 
-> Happy Hour is a consumer loyalty app on Base App that transforms blockchain activity into a cinematic, gaming experience with seasonal USDC rewards.
+> Happy Hour is a consumer loyalty app on Base App that transforms blockchain activity into a cinematic, gaming experience with seasonal USDC rewards and a luck-based chance to win USDC in daily raffles.
 
 ## 🌟 The Vision
 
@@ -43,10 +43,10 @@ This infrastructure directly seeds a prize pool for daily random lotteries, crea
 
 ## 🚀 Key Features
 
-- 🎲 **Hourly USDC Raffles:** Fully randomized, onchain raffles keeping the community engaged 24/7.
+- 🎲 **Hourly USDC Raffles:** Fully randomized, onchain raffles give chance for everyone & keeping the community engaged 24/7.
 - 📦 **Cinematic Unboxings:** Gamified "Happy Boxes" dropping random points (HP) & increasing rank for seasonal USDC rewards.
-- 🔥 **Daily Streaks & Quests:** Rewarding consistency and daily logins to boost ecosystem retention.
-- 🏆 **Dynamic Leaderboards:** Real-time tracking of the most active and loyal community members.
+- 🔥 **Daily Streaks & Quests:** Rewarding consistency and daily logins / completing tasks / create content about Base to boost ecosystem retention.
+- 🏆 **Dynamic Leaderboards:** Real-time tracking of the most active and loyal community members with USDC rewards in "Season Leaderboard" and points (HP) rewards in "Daily Leaderboard".
 
 ## 🛠️ Architecture
 
