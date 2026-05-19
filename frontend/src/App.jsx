@@ -250,7 +250,9 @@ export default function App() {
           padding: '14px 16px 8px',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between'
+          justifyContent: 'space-between',
+          position: 'relative',
+          zIndex: 10
         }}>
           <span style={{ fontSize: 24, fontWeight: 800, color: 'var(--text)', letterSpacing: -0.5 }}>
             {tabLabels[tab]}
