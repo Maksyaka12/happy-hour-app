@@ -1042,39 +1042,39 @@ export function ProfileSection({ address, basename }) {
       {address && address.toLowerCase() === '0x4c91D3BEd372C11795b9Ce9a9017dFE447Bf050a'.toLowerCase() && (
         <div style={{
           marginTop: 16,
-          background: '#fff',
+          background: '#FEF2F2',
           padding: 16,
           borderRadius: 20,
-          border: '1px solid #DEE1E7',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.02)'
+          border: '1px solid #FCA5A5',
+          boxShadow: '0 4px 20px rgba(220,38,38,0.02)'
         }}>
           {/* Admin Header */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
-            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#0000FF' }} />
-            <div style={{ fontWeight: 800, fontSize: 10, color: '#0A0B0D', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#DC2626' }} />
+            <div style={{ fontWeight: 800, fontSize: 10, color: '#DC2626', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
               🛠️ Admin Control Panel
             </div>
           </div>
 
           {/* Raffle Vault Block */}
-          <div style={{ marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid #F1F5F9' }}>
+          <div style={{ marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid rgba(252, 165, 165, 0.4)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-              <div style={{ fontSize: 10, fontWeight: 800, color: '#717886', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Raffle Vault Balance</div>
-              <div style={{ fontSize: 12, fontWeight: 900, color: '#0A0B0D', fontFamily: "'DM Mono', monospace" }}>
+              <div style={{ fontSize: 10, fontWeight: 800, color: '#B91C1C', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Raffle Vault Balance</div>
+              <div style={{ fontSize: 12, fontWeight: 900, color: '#991B1B', fontFamily: "'DM Mono', monospace" }}>
                 {vaultBalanceData ? parseFloat(vaultBalanceData.formatted).toFixed(2) : '0.00'} USDC
               </div>
             </div>
-            <div style={{ display: 'flex', gap: 6 }}>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
               <input
                 type="number"
                 value={refundAmount}
                 onChange={(e) => setRefundAmount(e.target.value)}
                 placeholder="Amount in USDC"
                 style={{
-                  flex: 1,
+                  flex: '1 1 120px',
                   padding: '8px 12px',
                   borderRadius: 50,
-                  border: '1px solid #DEE1E7',
+                  border: '1px solid #FCA5A5',
                   background: '#fff',
                   fontSize: 11,
                   fontFamily: "'DM Mono', monospace",
@@ -1085,15 +1085,16 @@ export function ProfileSection({ address, basename }) {
               <button
                 onClick={rescueMyFunds}
                 style={{
+                  flex: '1 0 auto',
                   padding: '8px 16px',
-                  background: '#0000FF',
+                  background: '#DC2626',
                   color: '#fff',
                   borderRadius: 50,
                   fontWeight: 800,
                   border: 'none',
                   cursor: 'pointer',
                   fontSize: 10,
-                  boxShadow: '0 4px 12px rgba(0,0,255,0.15)',
+                  boxShadow: '0 4px 12px rgba(220,38,38,0.15)',
                   whiteSpace: 'nowrap',
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px'
@@ -1105,24 +1106,24 @@ export function ProfileSection({ address, basename }) {
           </div>
 
           {/* Payments Vault Block */}
-          <div style={{ marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid #F1F5F9' }}>
+          <div style={{ marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid rgba(252, 165, 165, 0.4)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-              <div style={{ fontSize: 10, fontWeight: 800, color: '#717886', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Payments Vault Balance</div>
-              <div style={{ fontSize: 12, fontWeight: 900, color: '#0A0B0D', fontFamily: "'DM Mono', monospace" }}>
+              <div style={{ fontSize: 10, fontWeight: 800, color: '#B91C1C', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Payments Vault Balance</div>
+              <div style={{ fontSize: 12, fontWeight: 900, color: '#991B1B', fontFamily: "'DM Mono', monospace" }}>
                 {paymentsVaultBalanceData ? parseFloat(paymentsVaultBalanceData.formatted).toFixed(2) : '0.00'} USDC
               </div>
             </div>
-            <div style={{ display: 'flex', gap: 6 }}>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
               <input
                 type="number"
                 value={paymentsRefundAmount}
                 onChange={(e) => setPaymentsRefundAmount(e.target.value)}
                 placeholder="Amount in USDC"
                 style={{
-                  flex: 1,
+                  flex: '1 1 120px',
                   padding: '8px 12px',
                   borderRadius: 50,
-                  border: '1px solid #DEE1E7',
+                  border: '1px solid #FCA5A5',
                   background: '#fff',
                   fontSize: 11,
                   fontFamily: "'DM Mono', monospace",
@@ -1133,15 +1134,16 @@ export function ProfileSection({ address, basename }) {
               <button
                 onClick={refundPaymentsVaultSpecific}
                 style={{
+                  flex: '1 0 auto',
                   padding: '8px 16px',
-                  background: '#0000FF',
+                  background: '#DC2626',
                   color: '#fff',
                   borderRadius: 50,
                   fontWeight: 800,
                   border: 'none',
                   cursor: 'pointer',
                   fontSize: 10,
-                  boxShadow: '0 4px 12px rgba(0,0,255,0.15)',
+                  boxShadow: '0 4px 12px rgba(220,38,38,0.15)',
                   whiteSpace: 'nowrap',
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px'
@@ -1152,15 +1154,16 @@ export function ProfileSection({ address, basename }) {
               <button
                 onClick={sweepPaymentsVault}
                 style={{
+                  flex: '1 0 auto',
                   padding: '8px 16px',
-                  background: '#DC2626',
+                  background: '#991B1B',
                   color: '#fff',
                   borderRadius: 50,
                   fontWeight: 800,
                   border: 'none',
                   cursor: 'pointer',
                   fontSize: 10,
-                  boxShadow: '0 4px 12px rgba(220,38,38,0.15)',
+                  boxShadow: '0 4px 12px rgba(153,27,27,0.15)',
                   whiteSpace: 'nowrap',
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px'
