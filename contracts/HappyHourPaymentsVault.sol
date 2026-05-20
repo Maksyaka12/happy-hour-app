@@ -8,8 +8,8 @@ interface IERC20 {
 
 /**
  * @title HappyHourPaymentsVault
- * @dev Накопичувальний контракт для чекінів, бустів та інших оплат.
- * Дозволяє оператору автоматично пересилати накопичені USDC на холодний гаманець засновника.
+ * @dev Cumulative vault for check-ins, boosts, and other payments.
+ * Automatically forwards accumulated USDC to the founder's cold wallet via operator sweeps.
  */
 contract HappyHourPaymentsVault {
     address public owner;
@@ -37,8 +37,8 @@ contract HappyHourPaymentsVault {
     }
 
     /**
-     * @dev Пересилає всі накопичені на контракті USDC на холодний гаманець засновника.
-     * Викликається оператором (ботом) або тобою (власником).
+     * @dev Forwards all accumulated USDC in the contract to the founder's cold wallet.
+     * Callable by the operator (bot) or the owner.
      */
     function forwardFunds() external onlyOperator {
         uint256 balance = usdc.balanceOf(address(this));
@@ -48,7 +48,7 @@ contract HappyHourPaymentsVault {
     }
 
     /**
-     * @dev Дозволяє власнику змінити адресу холодного гаманця отримувача.
+     * @dev Allows the owner to change the destination cold wallet address.
      */
     function setColdWallet(address _newColdWallet) external onlyOwner {
         require(_newColdWallet != address(0), "Invalid address");
@@ -57,7 +57,7 @@ contract HappyHourPaymentsVault {
     }
 
     /**
-     * @dev Дозволяє змінити адресу оператора (бота), якщо гаманець бота буде скомпрометовано.
+     * @dev Allows the owner to change the operator (bot) address if it gets compromised.
      */
     function setOperator(address _newOperator) external onlyOwner {
         require(_newOperator != address(0), "Invalid address");
@@ -66,7 +66,7 @@ contract HappyHourPaymentsVault {
     }
 
     /**
-     * @dev Передача прав власності на контракт (наприклад, на твій Smart Wallet)
+     * @dev Transfers ownership of the contract (e.g. to your Smart Wallet).
      */
     function transferOwnership(address _newOwner) external onlyOwner {
         require(_newOwner != address(0), "Invalid address");
@@ -75,7 +75,7 @@ contract HappyHourPaymentsVault {
     }
 
     /**
-     * @dev Аварійна функція для виведення будь-яких інших випадкових токенів.
+     * @dev Emergency hatch to withdraw any other accidentally sent ERC-20 tokens.
      */
     function rescueToken(address _token, address _to, uint256 _amount) external onlyOwner {
         require(_to != address(0), "Invalid recipient");
