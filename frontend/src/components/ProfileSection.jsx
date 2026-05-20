@@ -70,6 +70,49 @@ export function ProfileSection({ address, basename }) {
   }
 
   const [refundAmount, setRefundAmount] = useState('')
+  const [paymentsRefundAmount, setPaymentsRefundAmount] = useState('')
+
+  const sweepPaymentsVault = () => {
+    wagmiWriteContract({
+      address: CHECKIN_TARGET,
+      abi: [{
+        name: 'forwardFunds',
+        type: 'function',
+        inputs: [],
+        outputs: [],
+        stateMutability: 'nonpayable'
+      }],
+      functionName: 'forwardFunds',
+      args: []
+    })
+  }
+
+  const refundPaymentsVaultSpecific = () => {
+    if (!paymentsRefundAmount || isNaN(paymentsRefundAmount)) return;
+    const amountBigInt = BigInt(Math.floor(parseFloat(paymentsRefundAmount) * 1000000));
+
+    wagmiWriteContract({
+      address: CHECKIN_TARGET,
+      abi: [{
+        name: 'rescueToken',
+        type: 'function',
+        inputs: [
+          { name: '_token', type: 'address' },
+          { name: '_to', type: 'address' },
+          { name: '_amount', type: 'uint256' }
+        ],
+        outputs: [],
+        stateMutability: 'nonpayable'
+      }],
+      functionName: 'rescueToken',
+      args: [
+        USDC_ADDRESS,
+        '0xf76365c4157eE3f08fBAb77E9d57B965892D137d', // Cold Wallet
+        amountBigInt
+      ]
+    })
+  }
+
   const chainId = useChainId()
   const { switchChain } = useSwitchChain()
   const [txModal, setTxModal] = useState(false)
@@ -79,6 +122,14 @@ export function ProfileSection({ address, basename }) {
 
   const { data: vaultBalanceData } = useBalance({
     address: FOUNDATION,
+    token: USDC_ADDRESS,
+    query: {
+      refetchInterval: 5000,
+    }
+  })
+
+  const { data: paymentsVaultBalanceData } = useBalance({
+    address: CHECKIN_TARGET,
     token: USDC_ADDRESS,
     query: {
       refetchInterval: 5000,
@@ -990,28 +1041,75 @@ export function ProfileSection({ address, basename }) {
 
       {address && address.toLowerCase() === '0x4c91D3BEd372C11795b9Ce9a9017dFE447Bf050a'.toLowerCase() && (
         <div style={{ marginTop: 10, background: '#FEF2F2', padding: 20, borderRadius: 16, border: '1px solid #FCA5A5' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-            <div style={{ fontWeight: 800, color: '#DC2626' }}>🛠 Admin Panel</div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#DC2626' }}>
-              Vault: {vaultBalanceData ? parseFloat(vaultBalanceData.formatted).toFixed(2) : '0.00'} USDC
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 15 }}>
+            <div style={{ fontWeight: 800, color: '#DC2626', fontSize: 16 }}>🛠 Admin Panel</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 700, color: '#DC2626' }}>
+              <span>Raffle Vault Balance:</span>
+              <span>{vaultBalanceData ? parseFloat(vaultBalanceData.formatted).toFixed(2) : '0.00'} USDC</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 700, color: '#DC2626' }}>
+              <span>Payments Vault Balance:</span>
+              <span>{paymentsVaultBalanceData ? parseFloat(paymentsVaultBalanceData.formatted).toFixed(2) : '0.00'} USDC</span>
             </div>
           </div>
 
-          {/* Refund */}
-          <div style={{ display: 'flex', gap: 10, marginBottom: 20, paddingBottom: 20, borderBottom: '1px solid #FCA5A5' }}>
-            <input
-              type="number"
-              value={refundAmount}
-              onChange={(e) => setRefundAmount(e.target.value)}
-              placeholder="Rescue USDC"
-              style={{ flex: 1, padding: 12, borderRadius: 30, border: '1px solid #FCA5A5', background: '#fff', fontSize: 14, outline: 'none' }}
-            />
-            <button
-              onClick={rescueMyFunds}
-              style={{ padding: '10px 20px', background: '#DC2626', color: '#fff', borderRadius: 30, fontWeight: 800, border: 'none', cursor: 'pointer', fontSize: 13 }}
-            >
-              Refund
-            </button>
+          {/* Raffle Vault Actions */}
+          <div style={{ marginBottom: 20, paddingBottom: 20, borderBottom: '1px solid #FCA5A5' }}>
+            <div style={{ fontSize: 12, fontWeight: 800, color: '#B91C1C', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>
+              🎟️ Raffle Vault (Rescues to Admin Wallet)
+            </div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <input
+                type="number"
+                value={refundAmount}
+                onChange={(e) => setRefundAmount(e.target.value)}
+                placeholder="Amount in USDC"
+                style={{ flex: 1, padding: 12, borderRadius: 30, border: '1px solid #FCA5A5', background: '#fff', fontSize: 14, outline: 'none' }}
+              />
+              <button
+                onClick={rescueMyFunds}
+                style={{ padding: '10px 20px', background: '#DC2626', color: '#fff', borderRadius: 30, fontWeight: 800, border: 'none', cursor: 'pointer', fontSize: 13 }}
+              >
+                Rescue USDC
+              </button>
+            </div>
+          </div>
+
+          {/* Payments Vault Actions */}
+          <div style={{ marginBottom: 20, paddingBottom: 20, borderBottom: '1px solid #FCA5A5' }}>
+            <div style={{ fontSize: 12, fontWeight: 800, color: '#B91C1C', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
+              💳 Payments Vault (Refunds/Sweeps to Cold Wallet)
+            </div>
+            <div style={{ fontSize: 11, color: '#7F1D1D', marginBottom: 10, fontWeight: 500 }}>
+              All swept/refunded funds from this contract are sent directly to the Cold Wallet: <span style={{ fontFamily: 'monospace', fontWeight: 700 }}>0xf76365c4157eE3f08fBAb77E9d57B965892D137d</span>
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <input
+                  type="number"
+                  value={paymentsRefundAmount}
+                  onChange={(e) => setPaymentsRefundAmount(e.target.value)}
+                  placeholder="Amount in USDC"
+                  style={{ flex: 1, padding: 12, borderRadius: 30, border: '1px solid #FCA5A5', background: '#fff', fontSize: 14, outline: 'none' }}
+                />
+                <button
+                  onClick={refundPaymentsVaultSpecific}
+                  style={{ padding: '10px 20px', background: '#DC2626', color: '#fff', borderRadius: 30, fontWeight: 800, border: 'none', cursor: 'pointer', fontSize: 13 }}
+                >
+                  Refund USDC
+                </button>
+              </div>
+
+              <button
+                onClick={sweepPaymentsVault}
+                style={{ width: '100%', padding: '12px', background: '#991B1B', color: '#fff', borderRadius: 30, fontWeight: 800, border: 'none', cursor: 'pointer', fontSize: 13, transition: 'background 0.2s' }}
+                onMouseOver={(e) => e.currentTarget.style.background = '#7F1D1D'}
+                onMouseOut={(e) => e.currentTarget.style.background = '#991B1B'}
+              >
+                Sweep All USDC to Cold Wallet (forwardFunds)
+              </button>
+            </div>
           </div>
 
           {/* Bot Management */}
