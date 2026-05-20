@@ -150,7 +150,7 @@ export default function App() {
   const displayName = basename || short(address)
 
   // Maintenance Mode Toggle
-  const IS_MAINTENANCE_MODE = false;
+  const IS_MAINTENANCE_MODE = true;
 
   if (IS_MAINTENANCE_MODE && !isAdmin) {
     return (
