@@ -1051,7 +1051,7 @@ export function ProfileSection({ address, basename }) {
           {/* Admin Header */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
             <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#DC2626' }} />
-            <div style={{ fontWeight: 800, fontSize: 10, color: '#DC2626', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
+            <div style={{ fontWeight: 800, fontSize: 10, color: '#DC2626', letterSpacing: '0.5px' }}>
               🛠️ Admin Control Panel
             </div>
           </div>
@@ -1059,24 +1059,24 @@ export function ProfileSection({ address, basename }) {
           {/* Raffle Vault Block */}
           <div style={{ marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid rgba(252, 165, 165, 0.4)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-              <div style={{ fontSize: 10, fontWeight: 800, color: '#B91C1C', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Raffle Vault Balance</div>
+              <div style={{ fontSize: 10, fontWeight: 800, color: '#B91C1C', letterSpacing: '0.5px' }}>Raffle Vault Balance</div>
               <div style={{ fontSize: 12, fontWeight: 900, color: '#991B1B', fontFamily: "'DM Mono', monospace" }}>
                 {vaultBalanceData ? parseFloat(vaultBalanceData.formatted).toFixed(2) : '0.00'} USDC
               </div>
             </div>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 6 }}>
               <input
                 type="number"
                 value={refundAmount}
                 onChange={(e) => setRefundAmount(e.target.value)}
-                placeholder="Amount in USDC"
+                placeholder="Amount USDC"
                 style={{
-                  flex: '1 1 120px',
-                  padding: '8px 12px',
-                  borderRadius: 50,
+                  flex: 1.5,
+                  padding: '8px 10px',
+                  borderRadius: 12,
                   border: '1px solid #FCA5A5',
                   background: '#fff',
-                  fontSize: 11,
+                  fontSize: 10,
                   fontFamily: "'DM Mono', monospace",
                   outline: 'none',
                   color: '#0A0B0D'
@@ -1085,19 +1085,17 @@ export function ProfileSection({ address, basename }) {
               <button
                 onClick={rescueMyFunds}
                 style={{
-                  flex: '1 0 auto',
-                  padding: '8px 16px',
+                  flex: 1,
+                  padding: '8px 8px',
                   background: '#DC2626',
                   color: '#fff',
-                  borderRadius: 50,
+                  borderRadius: 12,
                   fontWeight: 800,
                   border: 'none',
                   cursor: 'pointer',
                   fontSize: 10,
                   boxShadow: '0 4px 12px rgba(220,38,38,0.15)',
-                  whiteSpace: 'nowrap',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
+                  whiteSpace: 'nowrap'
                 }}
               >
                 Refund
@@ -1108,24 +1106,24 @@ export function ProfileSection({ address, basename }) {
           {/* Payments Vault Block */}
           <div style={{ marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid rgba(252, 165, 165, 0.4)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-              <div style={{ fontSize: 10, fontWeight: 800, color: '#B91C1C', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Payments Vault Balance</div>
+              <div style={{ fontSize: 10, fontWeight: 800, color: '#B91C1C', letterSpacing: '0.5px' }}>Payments Vault Balance</div>
               <div style={{ fontSize: 12, fontWeight: 900, color: '#991B1B', fontFamily: "'DM Mono', monospace" }}>
                 {paymentsVaultBalanceData ? parseFloat(paymentsVaultBalanceData.formatted).toFixed(2) : '0.00'} USDC
               </div>
             </div>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 6 }}>
               <input
                 type="number"
                 value={paymentsRefundAmount}
                 onChange={(e) => setPaymentsRefundAmount(e.target.value)}
-                placeholder="Amount in USDC"
+                placeholder="Amount USDC"
                 style={{
-                  flex: '1 1 120px',
-                  padding: '8px 12px',
-                  borderRadius: 50,
+                  flex: 1.5,
+                  padding: '8px 10px',
+                  borderRadius: 12,
                   border: '1px solid #FCA5A5',
                   background: '#fff',
-                  fontSize: 11,
+                  fontSize: 10,
                   fontFamily: "'DM Mono', monospace",
                   outline: 'none',
                   color: '#0A0B0D'
@@ -1134,19 +1132,17 @@ export function ProfileSection({ address, basename }) {
               <button
                 onClick={refundPaymentsVaultSpecific}
                 style={{
-                  flex: '1 0 auto',
-                  padding: '8px 16px',
+                  flex: 1,
+                  padding: '8px 8px',
                   background: '#DC2626',
                   color: '#fff',
-                  borderRadius: 50,
+                  borderRadius: 12,
                   fontWeight: 800,
                   border: 'none',
                   cursor: 'pointer',
                   fontSize: 10,
                   boxShadow: '0 4px 12px rgba(220,38,38,0.15)',
-                  whiteSpace: 'nowrap',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
+                  whiteSpace: 'nowrap'
                 }}
               >
                 Refund
@@ -1154,19 +1150,17 @@ export function ProfileSection({ address, basename }) {
               <button
                 onClick={sweepPaymentsVault}
                 style={{
-                  flex: '1 0 auto',
-                  padding: '8px 16px',
+                  flex: 1,
+                  padding: '8px 8px',
                   background: '#991B1B',
                   color: '#fff',
-                  borderRadius: 50,
+                  borderRadius: 12,
                   fontWeight: 800,
                   border: 'none',
                   cursor: 'pointer',
                   fontSize: 10,
                   boxShadow: '0 4px 12px rgba(153,27,27,0.15)',
-                  whiteSpace: 'nowrap',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
+                  whiteSpace: 'nowrap'
                 }}
               >
                 Full Refund
@@ -1177,30 +1171,30 @@ export function ProfileSection({ address, basename }) {
           {/* Bot Management */}
           <div style={{ color: '#000' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-              <div style={{ fontWeight: 800, fontSize: 11, color: '#4B5563', letterSpacing: '0.5px', textTransform: 'uppercase' }}>🤖 Leaderboard Simulation</div>
+              <div style={{ fontWeight: 800, fontSize: 11, color: '#4B5563', letterSpacing: '0.5px' }}>🤖 Leaderboard Simulation</div>
               <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF' }}>Total Bots: <span style={{ color: '#4F46E5', fontFamily: "'DM Mono', monospace" }}>{bots.length}</span></div>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 10 }}>
               <div>
-                <div style={{ fontSize: 9, fontWeight: 800, color: '#9CA3AF', marginBottom: 4, letterSpacing: '0.5px' }}>COUNT</div>
-                <input type="number" value={botCountInput} onChange={e => setBotCountInput(e.target.value)} style={{ width: '100%', padding: '6px 10px', borderRadius: 50, border: '1px solid #DEE1E7', fontSize: 11, fontFamily: "'DM Mono', monospace", outline: 'none', textAlign: 'center' }} />
+                <div style={{ fontSize: 9, fontWeight: 800, color: '#9CA3AF', marginBottom: 4, letterSpacing: '0.5px' }}>Count</div>
+                <input type="number" value={botCountInput} onChange={e => setBotCountInput(e.target.value)} style={{ width: '100%', padding: '6px 10px', borderRadius: 12, border: '1px solid #FCA5A5', fontSize: 11, fontFamily: "'DM Mono', monospace", outline: 'none', textAlign: 'center' }} />
               </div>
               <div>
-                <div style={{ fontSize: 9, fontWeight: 800, color: '#9CA3AF', marginBottom: 4, letterSpacing: '0.5px' }}>MIN HP</div>
-                <input type="number" step="any" value={botMinPoints} onChange={e => setBotMinPoints(e.target.value)} style={{ width: '100%', padding: '6px 10px', borderRadius: 50, border: '1px solid #DEE1E7', fontSize: 11, fontFamily: "'DM Mono', monospace", outline: 'none', textAlign: 'center' }} />
+                <div style={{ fontSize: 9, fontWeight: 800, color: '#9CA3AF', marginBottom: 4, letterSpacing: '0.5px' }}>Min HP</div>
+                <input type="number" step="any" value={botMinPoints} onChange={e => setBotMinPoints(e.target.value)} style={{ width: '100%', padding: '6px 10px', borderRadius: 12, border: '1px solid #FCA5A5', fontSize: 11, fontFamily: "'DM Mono', monospace", outline: 'none', textAlign: 'center' }} />
               </div>
               <div>
-                <div style={{ fontSize: 9, fontWeight: 800, color: '#9CA3AF', marginBottom: 4, letterSpacing: '0.5px' }}>MAX HP</div>
-                <input type="number" step="any" value={botMaxPoints} onChange={e => setBotMaxPoints(e.target.value)} style={{ width: '100%', padding: '6px 10px', borderRadius: 50, border: '1px solid #DEE1E7', fontSize: 11, fontFamily: "'DM Mono', monospace", outline: 'none', textAlign: 'center' }} />
+                <div style={{ fontSize: 9, fontWeight: 800, color: '#9CA3AF', marginBottom: 4, letterSpacing: '0.5px' }}>Max HP</div>
+                <input type="number" step="any" value={botMaxPoints} onChange={e => setBotMaxPoints(e.target.value)} style={{ width: '100%', padding: '6px 10px', borderRadius: 12, border: '1px solid #FCA5A5', fontSize: 11, fontFamily: "'DM Mono', monospace", outline: 'none', textAlign: 'center' }} />
               </div>
             </div>
 
             <div style={{ display: 'flex', gap: 8, marginBottom: 15 }}>
-              <button onClick={handleCreateBots} disabled={isCreatingBots} style={{ flex: 1, padding: '8px 16px', background: '#4F46E5', color: '#fff', borderRadius: 50, fontWeight: 800, border: 'none', cursor: 'pointer', fontSize: 10, boxShadow: '0 4px 12px rgba(79,70,229,0.15)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              <button onClick={handleCreateBots} disabled={isCreatingBots} style={{ flex: 1, padding: '8px 16px', background: '#4F46E5', color: '#fff', borderRadius: 12, fontWeight: 800, border: 'none', cursor: 'pointer', fontSize: 10, boxShadow: '0 4px 12px rgba(79,70,229,0.15)', letterSpacing: '0.5px' }}>
                 {isCreatingBots ? 'Creating...' : `+ Add ${botCountInput} Bots`}
               </button>
-              <button onClick={handleDeleteBots} style={{ padding: '8px 16px', background: 'none', border: '1px solid #DC2626', color: '#DC2626', borderRadius: 50, fontWeight: 800, cursor: 'pointer', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              <button onClick={handleDeleteBots} style={{ padding: '8px 16px', background: 'none', border: '1px solid #DC2626', color: '#DC2626', borderRadius: 12, fontWeight: 800, cursor: 'pointer', fontSize: 10, letterSpacing: '0.5px' }}>
                 Reset All
               </button>
             </div>
