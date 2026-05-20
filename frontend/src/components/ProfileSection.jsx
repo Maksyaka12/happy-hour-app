@@ -25,7 +25,6 @@ function normalizeUserRow(data) {
     referral_points: data?.referral_points ?? 0,
     ref_code: data?.ref_code ?? null,
     boost_last: data?.boost_last ?? null,
-    boost_last: data?.boost_last ?? null,
     active_multiplier: data?.active_multiplier ?? 1.0,
     multiplier_expires_at: data?.multiplier_expires_at ?? null,
     account_level: data?.account_level ?? 1,
