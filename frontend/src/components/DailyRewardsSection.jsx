@@ -397,7 +397,7 @@ export function DailyRewardsSection({ address }) {
         </div>
         {[
           ['What are Activity Points?', 'All your in-app activity converts into activity points. Formula: daily check-in + tasks + in-app transactions + post approval + your streak.'],
-          ['When are rewards distributed?', 'Top 20 most active users automatically receive HP daily when the timer hits 0 (00:00 UTC).'],
+          ['When are rewards distributed?', 'Top-20 most active users automatically receive HP daily when the timer hits 00:00 (00:00 UTC).'],
           ['What happens when the timer hits 00:00?', 'The leaderboard resets along with your activity points. New day - new chance for everyone to earn HP.'],
         ].map(([q, a], i, arr) => (
           <div key={i} style={{ marginBottom: i < arr.length - 1 ? 14 : 0 }}>
