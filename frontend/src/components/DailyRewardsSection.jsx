@@ -112,9 +112,10 @@ export function DailyRewardsSection({ address }) {
       <div style={{
         background: 'linear-gradient(135deg, #0D1527 0%, #052E16 100%)',
         borderRadius: 24,
-        padding: '24px 16px',
+        padding: '32px 20px',
         marginBottom: 16,
         position: 'relative',
+        minHeight: 140,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -135,73 +136,97 @@ export function DailyRewardsSection({ address }) {
           pointerEvents: 'none'
         }} />
 
-        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, width: '100%' }}>
+        {/* Floating trophy background decorations */}
+        {[
+          { top: -10, right: '8%', size: 54, opacity: 0.14, r: '-12deg', blur: 0.5, dur: 4.2 },
+          { top: 45, right: '18%', size: 32, opacity: 0.11, r: '14deg', blur: 0, dur: 4.8 },
+          { top: -20, left: '12%', size: 48, opacity: 0.12, r: '22deg', blur: 1, dur: 5.4 },
+          { bottom: -8, left: '26%', size: 40, opacity: 0.13, r: '-15deg', blur: 0.8, dur: 4.0 },
+          { bottom: 10, right: '3%', size: 62, opacity: 0.16, r: '8deg', blur: 1.2, dur: 4.6 }
+        ].map((s, i) => (
+          <div key={i} style={{
+            position: 'absolute',
+            top: s.top,
+            right: s.right,
+            left: s.left,
+            bottom: s.bottom,
+            zIndex: 1,
+            pointerEvents: 'none',
+            userSelect: 'none',
+            animation: `dailyTrophyFloat ${s.dur}s ease-in-out infinite`,
+          }}>
+            <div style={{
+              fontSize: `${s.size}px`,
+              opacity: s.opacity,
+              filter: s.blur > 0 ? `blur(${s.blur}px) drop-shadow(0 0 10px rgba(16,185,129,0.25))` : 'drop-shadow(0 0 10px rgba(16,185,129,0.25))',
+              transform: `rotate(${s.r})`,
+            }}>
+              🏆
+            </div>
+          </div>
+        ))}
+
+        <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', paddingTop: 0, paddingBottom: 20 }}>
           <div style={{
             fontFamily: "'Barlow Condensed', sans-serif",
-            fontSize: 42,
+            fontSize: 52,
             fontWeight: 900,
             color: '#fff',
             lineHeight: 1,
             textShadow: '0 4px 15px rgba(0,0,0,0.6)',
-            letterSpacing: '-0.5px',
-            textTransform: 'uppercase'
+            marginBottom: 12,
+            letterSpacing: '-1px'
           }}>
             DAILY <span style={{ color: '#10B981' }}>HP</span> REWARDS
           </div>
-          
           <div style={{
-            background: 'rgba(16, 185, 129, 0.12)',
-            border: '1px solid rgba(16, 185, 129, 0.3)',
+            background: 'rgba(16, 185, 129, 0.15)',
+            backdropFilter: 'blur(10px)',
             borderRadius: 50,
-            padding: '4px 14px',
-            fontSize: 10,
+            padding: '6px 20px',
+            fontSize: 11,
             fontWeight: 800,
             color: '#10B981',
+            border: '1px solid rgba(16, 185, 129, 0.3)',
             display: 'inline-block',
             textTransform: 'uppercase',
-            letterSpacing: '0.5px',
+            letterSpacing: '0.8px',
           }}>
             🏆 TOP-20 MOST ACTIVE USERS OF THE DAY GET HP
           </div>
+        </div>
 
-          {/* Countdown Clock - Horizontal Style */}
+        {/* Distinct Footer for Daily End Info */}
+        <div style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          background: 'rgba(0,0,0,0.45)',
+          backdropFilter: 'blur(12px)',
+          padding: '8px 0',
+          textAlign: 'center',
+          borderTop: '1px solid rgba(255,255,255,0.1)',
+          zIndex: 2
+        }}>
           <div style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 16,
-            background: 'rgba(0, 0, 0, 0.35)',
-            backdropFilter: 'blur(10px)',
-            borderRadius: 14,
-            padding: '10px 20px',
-            border: '1px solid rgba(255, 255, 255, 0.05)',
-            width: '100%',
-            maxWidth: 290,
-            marginTop: 4
+            fontSize: 11,
+            fontWeight: 800,
+            color: 'rgba(255,255,255,0.7)',
+            textTransform: 'uppercase',
+            letterSpacing: '1px'
           }}>
-            <div style={{
-              fontSize: 9,
-              fontWeight: 800,
-              color: 'rgba(255, 255, 255, 0.5)',
-              letterSpacing: '1px',
-              textTransform: 'uppercase',
-              whiteSpace: 'nowrap'
-            }}>
-              Distribute in
-            </div>
-            <div style={{
-              fontFamily: "'DM Mono', monospace",
-              fontSize: 24,
-              fontWeight: 900,
-              color: '#10B981',
-              letterSpacing: '1px',
-              lineHeight: 1
-            }}>
-              {timeLeft}
-            </div>
+            Distribute in: <span style={{ color: '#10B981', fontWeight: 900, fontFamily: "'DM Mono', monospace" }}>{timeLeft}</span>
           </div>
         </div>
+
+        <style dangerouslySetInnerHTML={{ __html: `
+          @keyframes dailyTrophyFloat {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+          }
+        ` }} />
       </div>
 
       {/* User Rank Card */}
