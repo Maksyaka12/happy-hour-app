@@ -115,7 +115,7 @@ export function DailyRewardsSection({ address }) {
         padding: '32px 20px',
         marginBottom: 16,
         position: 'relative',
-        minHeight: 140,
+        minHeight: 155,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -166,7 +166,7 @@ export function DailyRewardsSection({ address }) {
           </div>
         ))}
 
-        <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', paddingTop: 0, paddingBottom: 20 }}>
+        <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', paddingTop: 0, paddingBottom: 32 }}>
           <div style={{
             fontFamily: "'Barlow Condensed', sans-serif",
             fontSize: 38,
@@ -202,21 +202,32 @@ export function DailyRewardsSection({ address }) {
           bottom: 0,
           left: 0,
           right: 0,
-          background: 'rgba(0,0,0,0.45)',
+          background: 'rgba(0,0,0,0.5)',
           backdropFilter: 'blur(12px)',
-          padding: '8px 0',
+          padding: '11px 0',
           textAlign: 'center',
           borderTop: '1px solid rgba(255,255,255,0.1)',
           zIndex: 2
         }}>
           <div style={{
-            fontSize: 11,
+            fontSize: 12,
             fontWeight: 800,
-            color: 'rgba(255,255,255,0.7)',
+            color: 'rgba(255,255,255,0.75)',
             textTransform: 'uppercase',
-            letterSpacing: '1px'
+            letterSpacing: '1px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8
           }}>
-            Distribute in: <span style={{ color: '#10B981', fontWeight: 900, fontFamily: "'DM Mono', monospace" }}>{timeLeft}</span>
+            <span>Distribute in:</span>
+            <span style={{ 
+              color: '#10B981', 
+              fontWeight: 900, 
+              fontFamily: "'DM Mono', monospace",
+              fontSize: 15,
+              letterSpacing: '0.5px'
+            }}>{timeLeft}</span>
           </div>
         </div>
 
