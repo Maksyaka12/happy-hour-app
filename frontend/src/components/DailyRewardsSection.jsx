@@ -112,7 +112,7 @@ export function DailyRewardsSection({ address }) {
       <div style={{
         background: 'linear-gradient(135deg, #0D1527 0%, #052E16 100%)',
         borderRadius: 24,
-        padding: '22px 16px 24px',
+        padding: '24px 16px',
         marginBottom: 16,
         position: 'relative',
         display: 'flex',
@@ -135,10 +135,10 @@ export function DailyRewardsSection({ address }) {
           pointerEvents: 'none'
         }} />
 
-        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, width: '100%' }}>
+        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, width: '100%' }}>
           <div style={{
             fontFamily: "'Barlow Condensed', sans-serif",
-            fontSize: 34,
+            fontSize: 42,
             fontWeight: 900,
             color: '#fff',
             lineHeight: 1,
@@ -146,7 +146,7 @@ export function DailyRewardsSection({ address }) {
             letterSpacing: '-0.5px',
             textTransform: 'uppercase'
           }}>
-            DAILY REWARDS
+            DAILY <span style={{ color: '#10B981' }}>HP</span> REWARDS
           </div>
           
           <div style={{
@@ -161,21 +161,23 @@ export function DailyRewardsSection({ address }) {
             textTransform: 'uppercase',
             letterSpacing: '0.5px',
           }}>
-            🏆 Top 20 most active users of the day get HP rewards
+            🏆 TOP-20 MOST ACTIVE USERS OF THE DAY GET HP
           </div>
 
-          {/* Countdown Clock */}
+          {/* Countdown Clock - Horizontal Style */}
           <div style={{
             display: 'flex',
-            flexDirection: 'column',
+            flexDirection: 'row',
             alignItems: 'center',
+            justifyContent: 'center',
+            gap: 16,
             background: 'rgba(0, 0, 0, 0.35)',
             backdropFilter: 'blur(10px)',
             borderRadius: 14,
             padding: '10px 20px',
             border: '1px solid rgba(255, 255, 255, 0.05)',
             width: '100%',
-            maxWidth: 220,
+            maxWidth: 290,
             marginTop: 4
           }}>
             <div style={{
@@ -184,7 +186,7 @@ export function DailyRewardsSection({ address }) {
               color: 'rgba(255, 255, 255, 0.5)',
               letterSpacing: '1px',
               textTransform: 'uppercase',
-              marginBottom: 4
+              whiteSpace: 'nowrap'
             }}>
               Distribute in
             </div>
