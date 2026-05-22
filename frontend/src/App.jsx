@@ -283,21 +283,27 @@ export default function App() {
               </svg>
             </a>
 
+            {/* Docs Link */}
             <button
               onClick={() => setShowDocs(true)}
+              title="Read Documentation"
               style={{
-                background: 'rgba(0,82,255,0.08)',
-                border: '1px solid rgba(0,82,255,0.2)',
-                borderRadius: 20,
-                padding: '6px 12px',
-                display: 'flex', alignItems: 'center', gap: 5,
-                cursor: 'pointer', transition: 'all 0.2s',
+                width: 28,
+                height: 28,
+                borderRadius: '50%',
+                background: 'rgba(0, 82, 255, 0.08)',
+                border: '1px solid rgba(0, 82, 255, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                padding: 0
               }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,82,255,0.16)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'rgba(0,82,255,0.08)'}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(0, 82, 255, 0.16)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(0, 82, 255, 0.08)'}
             >
-              <span style={{ fontSize: 13 }}>📖</span>
-              <span style={{ fontSize: 11, fontWeight: 700, color: '#0052FF' }}>Docs</span>
+              <span style={{ fontSize: 13, lineHeight: 1 }}>📖</span>
             </button>
             <div style={{
               background: 'var(--blue-bg)',
