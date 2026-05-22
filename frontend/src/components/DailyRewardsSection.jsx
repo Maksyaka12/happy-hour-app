@@ -112,10 +112,9 @@ export function DailyRewardsSection({ address }) {
       <div style={{
         background: 'linear-gradient(135deg, #0D1527 0%, #052E16 100%)',
         borderRadius: 24,
-        padding: '32px 20px',
+        padding: '22px 16px 24px',
         marginBottom: 16,
         position: 'relative',
-        minHeight: 140,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -136,56 +135,69 @@ export function DailyRewardsSection({ address }) {
           pointerEvents: 'none'
         }} />
 
-        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', paddingTop: 0, paddingBottom: 20 }}>
+        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, width: '100%' }}>
           <div style={{
             fontFamily: "'Barlow Condensed', sans-serif",
-            fontSize: 52,
+            fontSize: 34,
             fontWeight: 900,
             color: '#fff',
             lineHeight: 1,
             textShadow: '0 4px 15px rgba(0,0,0,0.6)',
-            marginBottom: 12,
-            letterSpacing: '-1px'
+            letterSpacing: '-0.5px',
+            textTransform: 'uppercase'
           }}>
             DAILY REWARDS
           </div>
+          
           <div style={{
-            background: 'rgba(16, 185, 129, 0.15)',
-            border: '1px solid rgba(16, 185, 129, 0.4)',
+            background: 'rgba(16, 185, 129, 0.12)',
+            border: '1px solid rgba(16, 185, 129, 0.3)',
             borderRadius: 50,
-            padding: '6px 20px',
-            fontSize: 11,
+            padding: '4px 14px',
+            fontSize: 10,
             fontWeight: 800,
             color: '#10B981',
             display: 'inline-block',
             textTransform: 'uppercase',
-            letterSpacing: '0.8px',
+            letterSpacing: '0.5px',
           }}>
             🏆 Top 20 most active users of the day get HP rewards
           </div>
-        </div>
 
-        {/* Distinct Footer for Daily End Info */}
-        <div style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          background: 'rgba(0,0,0,0.45)',
-          backdropFilter: 'blur(12px)',
-          padding: '8px 0',
-          textAlign: 'center',
-          borderTop: '1px solid rgba(255,255,255,0.1)',
-          zIndex: 2
-        }}>
+          {/* Countdown Clock */}
           <div style={{
-            fontSize: 11,
-            fontWeight: 800,
-            color: 'rgba(255,255,255,0.7)',
-            textTransform: 'uppercase',
-            letterSpacing: '1px'
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            background: 'rgba(0, 0, 0, 0.35)',
+            backdropFilter: 'blur(10px)',
+            borderRadius: 14,
+            padding: '10px 20px',
+            border: '1px solid rgba(255, 255, 255, 0.05)',
+            width: '100%',
+            maxWidth: 220,
+            marginTop: 4
           }}>
-            Distribute in: <span style={{ color: '#10B981', fontWeight: 900, fontFamily: "'DM Mono', monospace" }}>{timeLeft}</span>
+            <div style={{
+              fontSize: 9,
+              fontWeight: 800,
+              color: 'rgba(255, 255, 255, 0.5)',
+              letterSpacing: '1px',
+              textTransform: 'uppercase',
+              marginBottom: 4
+            }}>
+              Distribute in
+            </div>
+            <div style={{
+              fontFamily: "'DM Mono', monospace",
+              fontSize: 24,
+              fontWeight: 900,
+              color: '#10B981',
+              letterSpacing: '1px',
+              lineHeight: 1
+            }}>
+              {timeLeft}
+            </div>
           </div>
         </div>
       </div>
