@@ -4,10 +4,22 @@ import { UserAvatar } from './UserAvatar'
 
 const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
 
+const calculateTimeLeft = () => {
+  const now = new Date()
+  const nextDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1))
+  const diff = nextDay - now
+
+  const h = Math.floor(diff / 3600000)
+  const m = Math.floor((diff % 3600000) / 60000)
+  const s = Math.floor((diff % 60000) / 1000)
+
+  return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
+}
+
 export function DailyRewardsSection({ address }) {
   const [dailyLeaders, setDailyLeaders] = useState([])
   const [outsideDailyRank, setOutsideDailyRank] = useState(null)
-  const [timeLeft, setTimeLeft] = useState('')
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft())
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -75,15 +87,7 @@ export function DailyRewardsSection({ address }) {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      const now = new Date()
-      const nextDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1))
-      const diff = nextDay - now
-
-      const h = Math.floor(diff / 3600000)
-      const m = Math.floor((diff % 3600000) / 60000)
-      const s = Math.floor((diff % 60000) / 1000)
-
-      setTimeLeft(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`)
+      setTimeLeft(calculateTimeLeft())
     }, 1000)
     return () => clearInterval(timer)
   }, [])
