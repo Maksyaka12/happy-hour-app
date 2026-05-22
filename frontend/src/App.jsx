@@ -60,7 +60,7 @@ export default function App() {
     raffle: 'Happy Raffle',
     boxes: 'Happy Boxes',
     tasks: 'Tasks',
-    daily: '⚡ Daily Rewards',
+    daily: 'Daily Rewards',
     leaderboard: 'Leaderboard',
     profile: 'Profile',
   }

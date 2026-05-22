@@ -112,9 +112,14 @@ export function DailyRewardsSection({ address }) {
       <div style={{
         background: 'linear-gradient(135deg, #0D1527 0%, #052E16 100%)',
         borderRadius: 24,
-        padding: '24px 20px 28px',
+        padding: '32px 20px',
         marginBottom: 16,
         position: 'relative',
+        minHeight: 140,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
         boxShadow: '0 12px 40px rgba(5,46,22,0.3)',
         overflow: 'hidden',
         border: '1px solid rgba(16,185,129,0.2)'
@@ -131,82 +136,56 @@ export function DailyRewardsSection({ address }) {
           pointerEvents: 'none'
         }} />
 
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          {/* Badge */}
+        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', paddingTop: 0, paddingBottom: 20 }}>
+          <div style={{
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontSize: 52,
+            fontWeight: 900,
+            color: '#fff',
+            lineHeight: 1,
+            textShadow: '0 4px 15px rgba(0,0,0,0.6)',
+            marginBottom: 12,
+            letterSpacing: '-1px'
+          }}>
+            DAILY REWARDS
+          </div>
           <div style={{
             background: 'rgba(16, 185, 129, 0.15)',
             border: '1px solid rgba(16, 185, 129, 0.4)',
             borderRadius: 50,
-            padding: '4px 14px',
-            fontSize: '9px',
+            padding: '6px 20px',
+            fontSize: 11,
             fontWeight: 800,
             color: '#10B981',
-            letterSpacing: '0.8px',
+            display: 'inline-block',
             textTransform: 'uppercase',
-            marginBottom: 16,
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 4
+            letterSpacing: '0.8px',
           }}>
-            <span>⚡</span> DAILY ACTIVITY COMPETITION
+            🏆 Top 20 most active users of the day get HP rewards
           </div>
+        </div>
 
-          <h2 style={{
-            fontFamily: "'Barlow Condensed', sans-serif",
-            fontSize: 38,
-            fontWeight: 900,
-            color: '#fff',
-            margin: '0 0 4px',
-            lineHeight: 1,
-            letterSpacing: '-0.5px',
-            textTransform: 'uppercase'
-          }}>
-            Daily Rewards
-          </h2>
-          <p style={{
-            fontSize: 12,
-            fontWeight: 500,
-            color: '#9CA3AF',
-            margin: '0 0 20px',
-            textAlign: 'center',
-            maxWidth: 280,
-            lineHeight: 1.4
-          }}>
-            Be in the top 20 most active users of the day and get massive HP points rewards!
-          </p>
-
-          {/* Countdown Clock */}
+        {/* Distinct Footer for Daily End Info */}
+        <div style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          background: 'rgba(0,0,0,0.45)',
+          backdropFilter: 'blur(12px)',
+          padding: '8px 0',
+          textAlign: 'center',
+          borderTop: '1px solid rgba(255,255,255,0.1)',
+          zIndex: 2
+        }}>
           <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            background: 'rgba(0, 0, 0, 0.35)',
-            backdropFilter: 'blur(10px)',
-            borderRadius: 16,
-            padding: '12px 24px',
-            border: '1px solid rgba(255, 255, 255, 0.05)',
-            width: '100%',
-            maxWidth: 260
+            fontSize: 11,
+            fontWeight: 800,
+            color: 'rgba(255,255,255,0.7)',
+            textTransform: 'uppercase',
+            letterSpacing: '1px'
           }}>
-            <div style={{
-              fontSize: 9,
-              fontWeight: 800,
-              color: 'rgba(255, 255, 255, 0.5)',
-              letterSpacing: '1px',
-              textTransform: 'uppercase',
-              marginBottom: 4
-            }}>
-              Ends In (UTC)
-            </div>
-            <div style={{
-              fontFamily: "'DM Mono', monospace",
-              fontSize: 26,
-              fontWeight: 900,
-              color: '#10B981',
-              letterSpacing: '1px'
-            }}>
-              {timeLeft}
-            </div>
+            Distribute in: <span style={{ color: '#10B981', fontWeight: 900, fontFamily: "'DM Mono', monospace" }}>{timeLeft}</span>
           </div>
         </div>
       </div>
