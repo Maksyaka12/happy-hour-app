@@ -9,11 +9,12 @@ import { RaffleSection } from './components/RaffleSection'
 import { TasksSection } from './components/TasksSection'
 import { HappyBoxesSection } from './components/HappyBoxesSection'
 import { LeaderboardSection } from './components/LeaderboardSection'
+import { DailyRewardsSection } from './components/DailyRewardsSection'
 import { ProfileSection } from './components/ProfileSection'
 import { BottomNav } from './components/BottomNav'
 import { HappyHourLogo } from './components/HappyHourLogo'
 import { EventBanner } from './components/EventBanner'
-import { ContestBanner } from './components/ContestBanner'
+// import { ContestBanner } from './components/ContestBanner'
 import { DocsSection } from './components/DocsSection'
 import { CSS } from './styles'
 import { HAS_SUPABASE_CONFIG, USDC_ADDRESS, USDC_ABI } from './config/constants'
@@ -59,6 +60,7 @@ export default function App() {
     raffle: 'Happy Raffle',
     boxes: 'Happy Boxes',
     tasks: 'Tasks',
+    daily: '⚡ Daily Rewards',
     leaderboard: 'Leaderboard',
     profile: 'Profile',
   }
@@ -285,12 +287,13 @@ export default function App() {
         </div>
 
         {/* <EventBanner onClick={() => setTab('boxes')} /> */}
-        <ContestBanner onClick={() => setTab('boxes')} />
+        {/* <ContestBanner onClick={() => setTab('boxes')} /> */}
 
         <div style={{ position: 'relative', zIndex: 1, maxWidth: 640, margin: '0 auto' }}>
           {tab === 'raffle' && <RaffleSection address={address} basename={basename} />}
           {tab === 'boxes' && <HappyBoxesSection address={address} />}
           {tab === 'tasks' && <TasksSection address={address} />}
+          {tab === 'daily' && <DailyRewardsSection address={address} />}
           {tab === 'leaderboard' && <LeaderboardSection address={address} />}
           {tab === 'profile' && <ProfileSection address={address} basename={basename} />}
         </div>

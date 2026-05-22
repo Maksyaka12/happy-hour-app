@@ -19,6 +19,7 @@ export function BottomNav({ tab, setTab }) {
     { id: 'raffle',      label: 'Raffle',  icon: '🎰' },
     { id: 'boxes',       label: 'Boxes',   icon: '🎁' },
     { id: 'tasks',       label: 'Tasks',   icon: '📋' },
+    { id: 'daily',       label: 'Daily',   icon: '⚡' },
     { id: 'leaderboard', label: 'Leaders', icon: '🏆' },
     { id: 'profile',     label: 'Profile', icon: '👤' },
   ]
