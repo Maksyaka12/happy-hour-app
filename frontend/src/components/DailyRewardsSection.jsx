@@ -169,7 +169,7 @@ export function DailyRewardsSection({ address }) {
         <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', paddingTop: 0, paddingBottom: 20 }}>
           <div style={{
             fontFamily: "'Barlow Condensed', sans-serif",
-            fontSize: 52,
+            fontSize: 38,
             fontWeight: 900,
             color: '#fff',
             lineHeight: 1,
@@ -183,8 +183,8 @@ export function DailyRewardsSection({ address }) {
             background: 'rgba(16, 185, 129, 0.15)',
             backdropFilter: 'blur(10px)',
             borderRadius: 50,
-            padding: '6px 20px',
-            fontSize: 11,
+            padding: '4px 12px',
+            fontSize: 9,
             fontWeight: 800,
             color: '#10B981',
             border: '1px solid rgba(16, 185, 129, 0.3)',
