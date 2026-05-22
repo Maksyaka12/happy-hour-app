@@ -173,7 +173,7 @@ export function DailyRewardsSection({ address }) {
         <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', paddingTop: 0, paddingBottom: 32 }}>
           <div style={{
             fontFamily: "'Barlow Condensed', sans-serif",
-            fontSize: 38,
+            fontSize: 42,
             fontWeight: 900,
             color: '#fff',
             lineHeight: 1,
@@ -277,7 +277,7 @@ export function DailyRewardsSection({ address }) {
             </div>
             
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-              <div style={{ fontSize: 13, fontWeight: 700 }}>Score: {displayDailyScore}</div>
+              <div style={{ fontSize: 13, fontWeight: 700 }}>Activity Points: {displayDailyScore}</div>
               <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 15, fontWeight: 900 }}>
                 +{getReward(displayDailyRank)} <span style={{ fontSize: 9, opacity: 0.8 }}>HP</span>
               </div>
@@ -347,7 +347,7 @@ export function DailyRewardsSection({ address }) {
                   }}>
                     {u.basename || short(u.address)}
                   </div>
-                  <div style={{ fontSize: 10, color: '#717886', fontWeight: 600 }}>Score: {u.score}</div>
+                  <div style={{ fontSize: 10, color: '#717886', fontWeight: 600 }}>Activity Points: {u.score}</div>
                 </div>
 
                 {/* Reward Badge */}
