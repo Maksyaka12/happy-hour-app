@@ -13,7 +13,7 @@ import { ProfileSection } from './components/ProfileSection'
 import { BottomNav } from './components/BottomNav'
 import { HappyHourLogo } from './components/HappyHourLogo'
 import { EventBanner } from './components/EventBanner'
-import { ContestBanner } from './components/ContestBanner'
+// import { ContestBanner } from './components/ContestBanner'
 import { CSS } from './styles'
 import { HAS_SUPABASE_CONFIG, USDC_ADDRESS, USDC_ABI } from './config/constants'
 
@@ -272,7 +272,7 @@ export default function App() {
         </div>
 
         {/* <EventBanner onClick={() => setTab('boxes')} /> */}
-        <ContestBanner onClick={() => setTab('boxes')} />
+        {/* <ContestBanner onClick={() => setTab('boxes')} /> */}
 
         <div style={{ position: 'relative', zIndex: 1, maxWidth: 640, margin: '0 auto' }}>
           {tab === 'raffle' && <RaffleSection address={address} basename={basename} />}
