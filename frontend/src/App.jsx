@@ -14,7 +14,6 @@ import { ProfileSection } from './components/ProfileSection'
 import { BottomNav } from './components/BottomNav'
 import { HappyHourLogo } from './components/HappyHourLogo'
 import { EventBanner } from './components/EventBanner'
-// import { ContestBanner } from './components/ContestBanner'
 import { DocsSection } from './components/DocsSection'
 import { CSS } from './styles'
 import { HAS_SUPABASE_CONFIG, USDC_ADDRESS, USDC_ABI } from './config/constants'
@@ -300,7 +299,6 @@ export default function App() {
               <span style={{ fontSize: 11 }}>📃</span>
               <span style={{ fontSize: 10, fontWeight: 700, color: '#0052FF' }}>Docs</span>
             </button>
-
             <div style={{
               background: 'var(--blue-bg)',
               border: '1px solid rgba(0,0,255,0.15)',
