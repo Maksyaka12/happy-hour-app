@@ -221,14 +221,14 @@ export default function App() {
             boxShadow: '0 1px 8px rgba(10,11,13,0.06)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <HappyHourLogo size={30} />
-            <span style={{ fontSize: 17, fontWeight: 800, color: 'var(--text)', letterSpacing: -0.5 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <HappyHourLogo size={24} />
+            <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--text)', letterSpacing: -0.5 }}>
               happy hour <span style={{ color: '#0052FF' }}>based</span>
             </span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             {/* Telegram Link */}
             <a 
               href="https://t.me/happyhourapp" 
@@ -236,8 +236,8 @@ export default function App() {
               rel="noopener noreferrer"
               title="Telegram Channel"
               style={{
-                width: 28,
-                height: 28,
+                width: 24,
+                height: 24,
                 borderRadius: '50%',
                 background: 'rgba(0, 136, 204, 0.08)',
                 border: '1px solid rgba(0, 136, 204, 0.2)',
@@ -251,7 +251,7 @@ export default function App() {
               onMouseEnter={e => e.currentTarget.style.background = 'rgba(0, 136, 204, 0.16)'}
               onMouseLeave={e => e.currentTarget.style.background = 'rgba(0, 136, 204, 0.08)'}
             >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#0088cc' }}>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#0088cc' }}>
                 <path d="M21.9 2.19a1 1 0 0 0-.99-.08l-19 8a1 1 0 0 0-.1 1.82l4.9 2.2 3.1 7.1a1 1 0 0 0 1.77.16l2.9-3.8 4.7 3.3a1 1 0 0 0 1.51-.55l4-17a1 1 0 0 0-.39-.85zM8.62 13.12l8.28-5.28-6.4 6.72-.4 2.88z"/>
               </svg>
             </a>
@@ -263,8 +263,8 @@ export default function App() {
               rel="noopener noreferrer"
               title="Follow us on X"
               style={{
-                width: 28,
-                height: 28,
+                width: 24,
+                height: 24,
                 borderRadius: '50%',
                 background: 'rgba(0, 0, 0, 0.05)',
                 border: '1px solid var(--border2)',
@@ -278,7 +278,7 @@ export default function App() {
               onMouseEnter={e => e.currentTarget.style.background = 'rgba(0, 0, 0, 0.1)'}
               onMouseLeave={e => e.currentTarget.style.background = 'rgba(0, 0, 0, 0.05)'}
             >
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" style={{ color: 'var(--text)' }}>
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" style={{ color: 'var(--text)' }}>
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
               </svg>
             </a>
@@ -286,36 +286,32 @@ export default function App() {
             {/* Docs Link */}
             <button
               onClick={() => setShowDocs(true)}
-              title="Read Documentation"
               style={{
-                width: 28,
-                height: 28,
-                borderRadius: '50%',
-                background: 'rgba(0, 82, 255, 0.08)',
-                border: '1px solid rgba(0, 82, 255, 0.2)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                padding: 0
+                background: 'rgba(0,82,255,0.08)',
+                border: '1px solid rgba(0,82,255,0.2)',
+                borderRadius: 20,
+                padding: '4px 8px',
+                display: 'flex', alignItems: 'center', gap: 4,
+                cursor: 'pointer', transition: 'all 0.2s',
               }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(0, 82, 255, 0.16)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'rgba(0, 82, 255, 0.08)'}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,82,255,0.16)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(0,82,255,0.08)'}
             >
-              <span style={{ fontSize: 13, lineHeight: 1 }}>📖</span>
+              <span style={{ fontSize: 11 }}>📃</span>
+              <span style={{ fontSize: 10, fontWeight: 700, color: '#0052FF' }}>Docs</span>
             </button>
+
             <div style={{
               background: 'var(--blue-bg)',
               border: '1px solid rgba(0,0,255,0.15)',
-              borderRadius: 50,
-              padding: '6px 14px',
+              borderRadius: 20,
+              padding: '4px 10px',
               display: 'flex',
               alignItems: 'center',
-              gap: 6
+              gap: 4
             }}>
-              <span style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>{usdcBalance}</span>
-              <span style={{ fontSize: 10, color: 'var(--blue)', fontWeight: 700 }}>USDC</span>
+              <span style={{ fontSize: 11, fontWeight: 800, color: '#0A0B0D' }}>{usdcBalance}</span>
+              <span style={{ fontSize: 9, color: 'var(--blue)', fontWeight: 700 }}>USDC</span>
             </div>
           </div>
         </div>
