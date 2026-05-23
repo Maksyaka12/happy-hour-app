@@ -224,7 +224,7 @@ export default function App() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <HappyHourLogo size={24} />
             <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--text)', letterSpacing: -0.5 }}>
-              happy hour <span style={{ color: '#0052FF' }}>based</span>
+              happy <span style={{ color: '#0052FF' }}>hour</span>
             </span>
           </div>
 
