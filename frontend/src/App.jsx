@@ -9,6 +9,7 @@ import { RaffleSection } from './components/RaffleSection'
 import { TasksSection } from './components/TasksSection'
 import { HappyBoxesSection } from './components/HappyBoxesSection'
 import { LeaderboardSection } from './components/LeaderboardSection'
+import { DailyRewardsSection } from './components/DailyRewardsSection'
 import { ProfileSection } from './components/ProfileSection'
 import { BottomNav } from './components/BottomNav'
 import { HappyHourLogo } from './components/HappyHourLogo'
@@ -57,6 +58,7 @@ export default function App() {
     raffle: 'Happy Raffle',
     boxes: 'Happy Boxes',
     tasks: 'Tasks',
+    daily: 'Daily Rewards',
     leaderboard: 'Leaderboard',
     profile: 'Profile',
   }
@@ -217,30 +219,79 @@ export default function App() {
             boxShadow: '0 1px 8px rgba(10,11,13,0.06)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <HappyHourLogo size={30} />
-            <span style={{ fontSize: 17, fontWeight: 800, color: 'var(--text)', letterSpacing: -0.5 }}>
-              happy hour <span style={{ color: '#0052FF' }}>based</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <HappyHourLogo size={26} />
+            <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--text)', letterSpacing: -0.5 }}>
+              happy <span style={{ color: '#0052FF' }}>hour</span>
             </span>
           </div>
 
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            {/* Telegram Link */}
+            <a 
+              href="https://t.me/happyhourapp" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              title="Telegram Channel"
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: '50%',
+                background: 'rgba(0, 136, 204, 0.08)',
+                border: '1px solid rgba(0, 136, 204, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                textDecoration: 'none'
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(0, 136, 204, 0.16)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(0, 136, 204, 0.08)'}
+            >
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#0088cc' }}>
+                <path d="M21.9 2.19a1 1 0 0 0-.99-.08l-19 8a1 1 0 0 0-.1 1.82l4.9 2.2 3.1 7.1a1 1 0 0 0 1.77.16l2.9-3.8 4.7 3.3a1 1 0 0 0 1.51-.55l4-17a1 1 0 0 0-.39-.85zM8.62 13.12l8.28-5.28-6.4 6.72-.4 2.88z"/>
+              </svg>
+            </a>
+
+            {/* X (Twitter) Link */}
+            <a 
+              href="https://x.com/happyhour_base" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              title="Follow us on X"
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: '50%',
+                background: 'rgba(0, 0, 0, 0.05)',
+                border: '1px solid var(--border2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                textDecoration: 'none'
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(0, 0, 0, 0.1)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(0, 0, 0, 0.05)'}
+            >
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" style={{ color: 'var(--text)' }}>
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+            </a>
+
             <div style={{
               background: 'var(--blue-bg)',
               border: '1px solid rgba(0,0,255,0.15)',
-              borderRadius: 50,
-              padding: '6px 14px',
+              borderRadius: 20,
+              padding: '4px 10px',
               display: 'flex',
               alignItems: 'center',
-              gap: 6
+              gap: 4
             }}>
-              <span style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>{usdcBalance}</span>
-              <span style={{ fontSize: 10, color: 'var(--blue)', fontWeight: 700 }}>USDC</span>
+              <span style={{ fontSize: 11, fontWeight: 800, color: '#0A0B0D' }}>{usdcBalance}</span>
+              <span style={{ fontSize: 9, color: 'var(--blue)', fontWeight: 700 }}>USDC</span>
             </div>
           </div>
         </div>
@@ -278,6 +329,7 @@ export default function App() {
           {tab === 'raffle' && <RaffleSection address={address} basename={basename} />}
           {tab === 'boxes' && <HappyBoxesSection address={address} />}
           {tab === 'tasks' && <TasksSection address={address} />}
+          {tab === 'daily' && <DailyRewardsSection address={address} />}
           {tab === 'leaderboard' && <LeaderboardSection address={address} />}
           {tab === 'profile' && <ProfileSection address={address} basename={basename} />}
         </div>
