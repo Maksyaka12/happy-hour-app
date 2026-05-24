@@ -245,19 +245,20 @@ export function DailyRewardsSection({ address }) {
       </div>
 
       {/* User Rank Card */}
-      {displayDailyRank > 0 && (
+      {address && (
         <div
           style={{
-            background: 'linear-gradient(135deg, #059669, #10B981)',
+            background: displayDailyRank > 0 ? 'linear-gradient(135deg, #059669, #10B981)' : 'linear-gradient(135deg, #374151, #1F2937)',
             borderRadius: 18,
             padding: '12px 18px',
             marginBottom: 16,
             display: 'flex',
             alignItems: 'center',
             gap: 14,
-            boxShadow: '0 6px 20px rgba(5,150,105,0.2)',
+            boxShadow: displayDailyRank > 0 ? '0 6px 20px rgba(5,150,105,0.2)' : '0 6px 20px rgba(55,65,81,0.15)',
             color: '#fff',
-            border: '1px solid rgba(255,255,255,0.1)'
+            border: '1px solid rgba(255,255,255,0.1)',
+            opacity: displayDailyRank > 0 ? 1 : 0.85
           }}
         >
           <div style={{ 
@@ -267,7 +268,7 @@ export function DailyRewardsSection({ address }) {
             lineHeight: 1,
             minWidth: 38 
           }}>
-            #{displayDailyRank}
+            {displayDailyRank > 0 ? `#${displayDailyRank}` : '—'}
           </div>
 
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 0 }}>
@@ -277,7 +278,7 @@ export function DailyRewardsSection({ address }) {
             </div>
             
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-              <div style={{ fontSize: 13, fontWeight: 700 }}>Activity Points: {displayDailyScore}</div>
+              <div style={{ fontSize: 13, fontWeight: 700 }}>Activity Points: {displayDailyScore || 0}</div>
               <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 15, fontWeight: 900 }}>
                 +{getReward(displayDailyRank)} <span style={{ fontSize: 9, opacity: 0.8 }}>HP</span>
               </div>
