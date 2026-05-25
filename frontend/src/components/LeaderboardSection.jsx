@@ -12,7 +12,7 @@ const getUsdcReward = (rank) => {
   if (rank === 3) return { value: '100', type: 'usdc' }
   if (rank >= 4 && rank <= 10) return { value: '50', type: 'usdc' }
   if (rank >= 11 && rank <= 20) return { value: '30', type: 'usdc' }
-  if (rank >= 21 && rank <= 30) return { value: 'Consolation 🎁', type: 'special' }
+  if (rank >= 21 && rank <= 30) return { value: '🎁', type: 'special' }
   return null
 }
 
@@ -259,27 +259,29 @@ export function LeaderboardSection({ address }) {
                 {(() => {
                   const capsuleStyle = (() => {
                     const rank = idx + 1;
-                    if (rank === 1) return { bg: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 100%)', color: '#fff', border: '1px solid rgba(79,70,229,0.3)', shadow: '0 2px 8px rgba(49,46,129,0.15)', div: 'rgba(255,255,255,0.3)', icon: '🏆' }
-                    if (rank === 2) return { bg: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 100%)', color: '#fff', border: '1px solid rgba(79,70,229,0.3)', shadow: '0 2px 8px rgba(49,46,129,0.15)', div: 'rgba(255,255,255,0.3)', icon: '🥈' }
-                    if (rank === 3) return { bg: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 100%)', color: '#fff', border: '1px solid rgba(79,70,229,0.3)', shadow: '0 2px 8px rgba(49,46,129,0.15)', div: 'rgba(255,255,255,0.3)', icon: '🥉' }
-                    if (rank >= 4 && rank <= 10) return { bg: 'linear-gradient(135deg, #0000FF 0%, #4F46E5 100%)', color: '#fff', border: 'none', shadow: 'none', div: 'rgba(255,255,255,0.25)', icon: '' }
-                    if (rank >= 11 && rank <= 20) return { bg: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)', color: '#fff', border: 'none', shadow: 'none', div: 'rgba(255,255,255,0.25)', icon: '' }
-                    if (rank >= 21 && rank <= 30) return { bg: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', color: '#fff', border: 'none', shadow: 'none', div: 'rgba(255,255,255,0.25)', icon: '🎁' }
-                    return { bg: '#F1F5F9', color: '#64748B', border: 'none', shadow: 'none', div: 'transparent', icon: '' }
+                    if (rank === 1) return { bg: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 100%)', color: '#fff', border: '1px solid rgba(79,70,229,0.3)', shadow: '0 2px 8px rgba(49,46,129,0.15)', div: 'rgba(255,255,255,0.3)' }
+                    if (rank === 2) return { bg: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 100%)', color: '#fff', border: '1px solid rgba(79,70,229,0.3)', shadow: '0 2px 8px rgba(49,46,129,0.15)', div: 'rgba(255,255,255,0.3)' }
+                    if (rank === 3) return { bg: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 100%)', color: '#fff', border: '1px solid rgba(79,70,229,0.3)', shadow: '0 2px 8px rgba(49,46,129,0.15)', div: 'rgba(255,255,255,0.3)' }
+                    if (rank >= 4 && rank <= 10) return { bg: 'linear-gradient(135deg, #0000FF 0%, #4F46E5 100%)', color: '#fff', border: 'none', shadow: 'none', div: 'rgba(255,255,255,0.25)' }
+                    if (rank >= 11 && rank <= 20) return { bg: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)', color: '#fff', border: 'none', shadow: 'none', div: 'rgba(255,255,255,0.25)' }
+                    if (rank >= 21 && rank <= 30) return { bg: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', color: '#fff', border: 'none', shadow: 'none', div: 'rgba(255,255,255,0.25)' }
+                    return { bg: '#F1F5F9', color: '#64748B', border: 'none', shadow: 'none', div: 'transparent' }
                   })();
 
                   return (
                     <div style={{
                       display: 'flex',
                       alignItems: 'center',
+                      justifyContent: 'center',
                       background: capsuleStyle.bg,
                       color: capsuleStyle.color,
                       border: capsuleStyle.border,
                       boxShadow: capsuleStyle.shadow,
                       borderRadius: 12,
-                      padding: '4px 10px',
-                      gap: 8,
+                      padding: '4px 6px',
+                      gap: 6,
                       minHeight: 28,
+                      width: 84, // Uniform fixed width for perfect vertical alignment
                       flexShrink: 0
                     }}>
                       <span style={{
@@ -288,7 +290,7 @@ export function LeaderboardSection({ address }) {
                         fontWeight: 900,
                         letterSpacing: '-0.3px'
                       }}>
-                        #{idx + 1} {capsuleStyle.icon}
+                        #{idx + 1}
                       </span>
                       
                       {reward && (
@@ -309,7 +311,7 @@ export function LeaderboardSection({ address }) {
                               </>
                             ) : (
                               <span style={{
-                                fontSize: 9,
+                                fontSize: 10,
                                 fontWeight: 800,
                                 textTransform: 'uppercase',
                                 letterSpacing: '0.2px'
