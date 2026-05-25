@@ -363,9 +363,27 @@ export function LeaderboardSection({ address }) {
                     color: '#0A0B0D',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap'
+                    whiteSpace: 'nowrap',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4
                   }}>
-                    {entry.basename || short(entry.address)}
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {entry.basename || short(entry.address)}
+                    </span>
+                    {address && entry.address?.toLowerCase() === address.toLowerCase() && (
+                      <span style={{
+                        fontSize: 10,
+                        fontWeight: 800,
+                        color: '#0000FF',
+                        background: 'rgba(0,0,255,0.06)',
+                        padding: '1px 6px',
+                        borderRadius: 6,
+                        flexShrink: 0
+                      }}>
+                        (you)
+                      </span>
+                    )}
                   </div>
                 </div>
 
