@@ -256,7 +256,6 @@ export function LeaderboardSection({ address }) {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
                   {myReward.type === 'usdc' ? (
                     <>
-                      <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14, borderRadius: '50%' }} />
                       <span style={{ 
                         fontFamily: "'Montserrat', sans-serif", 
                         fontSize: 14, 
@@ -266,6 +265,7 @@ export function LeaderboardSection({ address }) {
                       }}>
                         {myReward.value}
                       </span>
+                      <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14, borderRadius: '50%' }} />
                     </>
                   ) : (
                     <span style={{ 
@@ -351,7 +351,6 @@ export function LeaderboardSection({ address }) {
                           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                             {reward.type === 'usdc' ? (
                               <>
-                                <img src="/usdc-logo.png" alt="" style={{ width: 13, height: 13, borderRadius: '50%', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
                                 <span style={{
                                   fontFamily: "'Montserrat', sans-serif",
                                   fontSize: 12,
@@ -360,6 +359,7 @@ export function LeaderboardSection({ address }) {
                                 }}>
                                   {reward.value}
                                 </span>
+                                <img src="/usdc-logo.png" alt="" style={{ width: 13, height: 13, borderRadius: '50%', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
                               </>
                             ) : (
                               <span style={{

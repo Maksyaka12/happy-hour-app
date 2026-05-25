@@ -431,7 +431,7 @@ export function DailyRewardsSection({ address }) {
                           fontFamily: "'Montserrat', sans-serif",
                           fontSize: 11,
                           fontWeight: 700,
-                          color: '#022c22'
+                          color: '#fff'
                         }}>
                           HP
                         </span>
