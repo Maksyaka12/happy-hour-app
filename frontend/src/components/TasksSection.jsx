@@ -344,6 +344,37 @@ export function TasksSection({ address }) {
     setNewTasks(next)
   }
 
+  const handleFileChange = (e, identifier, isBulk = true) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const img = new Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        canvas.width = 128
+        canvas.height = 128
+        const ctx = canvas.getContext('2d')
+        if (ctx) {
+          const size = Math.min(img.width, img.height)
+          const sx = (img.width - size) / 2
+          const sy = (img.height - size) / 2
+          ctx.drawImage(img, sx, sy, size, size, 0, 0, 128, 128)
+          
+          const base64 = canvas.toDataURL('image/jpeg', 0.7)
+          if (isBulk) {
+            updateTaskRow(identifier, 'icon_url', base64)
+          } else {
+            setEditTaskState(prev => ({ ...prev, icon_url: base64 }))
+          }
+        }
+      }
+      img.src = event.target?.result
+    }
+    reader.readAsDataURL(file)
+  }
+
   useEffect(() => {
     loadTasks()
   }, [])
@@ -745,28 +776,34 @@ export function TasksSection({ address }) {
                   <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
                     <div style={{ flex: 1 }}>
                       <input
-                        placeholder="Custom Icon URL (optional)"
+                        placeholder="Custom Icon URL or Base64 (optional)"
                         value={task.icon_url || ''}
                         onChange={e => updateTaskRow(idx, 'icon_url', e.target.value)}
                         style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #ccc', background: '#fff', fontSize: 13, boxSizing: 'border-box' }}
                       />
                     </div>
                     <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>
-                      <button
-                        onClick={() => updateTaskRow(idx, 'icon_url', '/turbogum.jpg')}
+                      <label
                         style={{
-                          background: task.icon_url === '/turbogum.jpg' ? '#0000FF' : '#fff',
-                          color: task.icon_url === '/turbogum.jpg' ? '#fff' : '#0000FF',
-                          border: '1px solid #0000FF',
+                          background: task.icon_url?.startsWith('data:image/') ? '#059669' : '#0000FF',
+                          color: '#fff',
                           borderRadius: 8,
-                          padding: '9px 12px',
+                          padding: '10px 16px',
                           fontSize: 11,
                           fontWeight: 800,
-                          cursor: 'pointer'
+                          cursor: 'pointer',
+                          display: 'inline-block',
+                          boxShadow: '0 2px 6px rgba(0,0,255,0.1)'
                         }}
                       >
-                        🏎️ Turbo Gum
-                      </button>
+                        📷 {task.icon_url?.startsWith('data:image/') ? 'Uploaded' : 'Upload'}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={e => handleFileChange(e, idx, true)}
+                          style={{ display: 'none' }}
+                        />
+                      </label>
                     </div>
                   </div>
                   
@@ -833,26 +870,31 @@ export function TasksSection({ address }) {
                         
                         <div style={{ display: 'flex', gap: 8 }}>
                           <input
-                            placeholder="Custom Icon URL"
+                            placeholder="Custom Icon URL or Base64"
                             value={editTaskState.icon_url}
                             onChange={e => setEditTaskState({ ...editTaskState, icon_url: e.target.value })}
                             style={{ flex: 1, padding: 8, borderRadius: 8, border: '1px solid #ccc', fontSize: 13, boxSizing: 'border-box' }}
                           />
-                          <button
-                            onClick={() => setEditTaskState({ ...editTaskState, icon_url: '/turbogum.jpg' })}
+                          <label
                             style={{
-                              background: editTaskState.icon_url === '/turbogum.jpg' ? '#0000FF' : '#fff',
-                              color: editTaskState.icon_url === '/turbogum.jpg' ? '#fff' : '#0000FF',
-                              border: '1px solid #0000FF',
+                              background: editTaskState.icon_url?.startsWith('data:image/') ? '#059669' : '#0000FF',
+                              color: '#fff',
                               borderRadius: 8,
                               padding: '8px 12px',
                               fontSize: 11,
                               fontWeight: 800,
-                              cursor: 'pointer'
+                              cursor: 'pointer',
+                              display: 'inline-block'
                             }}
                           >
-                            🏎️ Turbo
-                          </button>
+                            📷 {editTaskState.icon_url?.startsWith('data:image/') ? 'Uploaded' : 'Upload'}
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={e => handleFileChange(e, t.id, false)}
+                              style={{ display: 'none' }}
+                            />
+                          </label>
                         </div>
 
                         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
