@@ -4,6 +4,23 @@ import { UserAvatar } from './UserAvatar'
 
 const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
 
+const UsdcIcon = ({ size = 16 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={{ display: 'inline-block', verticalAlign: 'middle', flexShrink: 0 }}>
+    <circle cx="12" cy="12" r="12" fill="#2775CA" />
+    <path d="M12 4v16M8 8h6.5a2.5 2.5 0 0 1 0 5H9.5a2.5 2.5 0 0 0 0 5H16" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+
+const getUsdcReward = (rank) => {
+  if (rank === 1) return { value: '200', type: 'usdc' }
+  if (rank === 2) return { value: '150', type: 'usdc' }
+  if (rank === 3) return { value: '100', type: 'usdc' }
+  if (rank >= 4 && rank <= 10) return { value: '50', type: 'usdc' }
+  if (rank >= 11 && rank <= 20) return { value: '30', type: 'usdc' }
+  if (rank >= 21 && rank <= 30) return { value: 'Consolation 🎁', type: 'special' }
+  return null
+}
+
 export function LeaderboardSection({ address }) {
   const [leaders, setLeaders] = useState([])
   const [loading, setLoading] = useState(true)
@@ -154,49 +171,69 @@ export function LeaderboardSection({ address }) {
       </div>
 
       {/* User Rank Card */}
-      {displayRank > 0 && (
-        <div
-          style={{
-            background: 'linear-gradient(135deg,#0000FF,#3C8AFF)',
-            borderRadius: 18,
-            padding: '10px 16px',
-            marginBottom: 16,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 14,
-            boxShadow: '0 6px 20px rgba(0,0,255,0.25)',
-            color: '#fff'
-          }}
-        >
-          <div style={{ 
-            fontFamily: "'Barlow Condensed', sans-serif", 
-            fontSize: 28, 
-            fontWeight: 900, 
-            lineHeight: 1,
-            minWidth: 38 
-          }}>
-            #{displayRank}
-          </div>
-          
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 0 }}>
-            {/* Labels Row */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Your Position</div>
-              <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Current HP</div>
+      {displayRank > 0 && (() => {
+        const myReward = getUsdcReward(displayRank);
+        return (
+          <div
+            style={{
+              background: 'linear-gradient(135deg,#0000FF,#3C8AFF)',
+              borderRadius: 18,
+              padding: '10px 16px',
+              marginBottom: 16,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 14,
+              boxShadow: '0 6px 20px rgba(0,0,255,0.25)',
+              color: '#fff'
+            }}
+          >
+            <div style={{ 
+              fontFamily: "'Barlow Condensed', sans-serif", 
+              fontSize: 28, 
+              fontWeight: 900, 
+              lineHeight: 1,
+              minWidth: 38 
+            }}>
+              #{displayRank}
             </div>
             
-            {/* Values Row */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-              <div style={{ fontSize: 13, fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 140 }}>
-                {displayEntry?.basename || short(address)}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 0 }}>
+              {/* Labels Row */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.3px', flex: '1 1 0', textAlign: 'left' }}>Your Position</div>
+                {myReward && <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.3px', flex: '1 1 0', textAlign: 'center' }}>Est. Reward</div>}
+                <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.3px', flex: '1 1 0', textAlign: 'right' }}>Current HP</div>
               </div>
-              <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 15, fontWeight: 900 }}>
-                {(displayEntry?.points ?? 0).toLocaleString()}
+              
+              {/* Values Row */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginTop: 2 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: '1 1 0', textAlign: 'left' }}>
+                  {displayEntry?.basename || short(address)}
+                </div>
+                {myReward && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'center', flex: '1 1 0', transform: 'translateY(1px)' }}>
+                    {myReward.type === 'usdc' ? (
+                      <>
+                        <UsdcIcon size={12} />
+                        <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 14, fontWeight: 900, color: '#fff' }}>
+                          {myReward.value}
+                        </span>
+                      </>
+                    ) : (
+                      <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 12, fontWeight: 800, color: '#FFD93D' }}>
+                        {myReward.value}
+                      </span>
+                    )}
+                  </div>
+                )}
+                <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 15, fontWeight: 900, flex: '1 1 0', textAlign: 'right' }}>
+                  {(displayEntry?.points ?? 0).toLocaleString()}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Leaders List */}
       {leaders.length === 0 ? (
@@ -208,18 +245,13 @@ export function LeaderboardSection({ address }) {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {leaders.map((entry, idx) => {
-            const isTop3 = idx < 3
-            const rowBorder = idx === 0 ? 'rgba(252, 211, 77, 1)' // Gold
-                           : idx === 1 ? 'rgba(148, 163, 184, 0.8)' // Silver
-                           : idx === 2 ? 'rgba(253, 186, 116, 1)' // Bronze
-                           : '#DEE1E7'
-
+            const reward = getUsdcReward(idx + 1)
             return (
               <div
                 key={entry.address}
                 style={{
                   background: '#fff',
-                  border: `1.5px solid ${rowBorder}`,
+                  border: '1px solid #DEE1E7',
                   borderRadius: 14,
                   padding: '8px 12px',
                   display: 'flex',
@@ -241,17 +273,6 @@ export function LeaderboardSection({ address }) {
 
                 <div style={{ position: 'relative', flexShrink: 0 }}>
                   <UserAvatar address={entry.address} size={28} />
-                  {isTop3 && (
-                    <div style={{
-                      position: 'absolute',
-                      top: -6,
-                      right: -6,
-                      fontSize: 12,
-                      filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'
-                    }}>
-                      {idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉'}
-                    </div>
-                  )}
                 </div>
 
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -266,6 +287,47 @@ export function LeaderboardSection({ address }) {
                     {entry.basename || short(entry.address)}
                   </div>
                 </div>
+
+                {/* USDC Reward Badge */}
+                {reward && (
+                  <div style={{
+                    background: reward.type === 'usdc' ? 'rgba(39, 117, 202, 0.06)' : 'rgba(16, 185, 129, 0.06)',
+                    border: reward.type === 'usdc' ? '1px solid rgba(39, 117, 202, 0.18)' : '1px solid rgba(16, 185, 129, 0.18)',
+                    borderRadius: 10,
+                    padding: '4px 10px',
+                    height: 28,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 4,
+                    flexShrink: 0
+                  }}>
+                    {reward.type === 'usdc' ? (
+                      <>
+                        <UsdcIcon size={12} />
+                        <span style={{
+                          fontFamily: "'Barlow Condensed', sans-serif",
+                          fontSize: 13,
+                          fontWeight: 900,
+                          color: '#2775CA',
+                          letterSpacing: '-0.2px'
+                        }}>
+                          {reward.value}
+                        </span>
+                      </>
+                    ) : (
+                      <span style={{
+                        fontFamily: "'Barlow Condensed', sans-serif",
+                        fontSize: 11,
+                        fontWeight: 800,
+                        color: '#059669',
+                        letterSpacing: '-0.1px'
+                      }}>
+                        {reward.value}
+                      </span>
+                    )}
+                  </div>
+                )}
 
                 {/* Points Badge */}
                 <div style={{
