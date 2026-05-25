@@ -311,9 +311,9 @@ export function LeaderboardSection({ address }) {
                       flexShrink: 0
                     }}>
                       <span style={{
-                        fontFamily: "'Barlow Condensed', sans-serif",
-                        fontSize: 14,
-                        fontWeight: 900,
+                        fontFamily: "'Montserrat', sans-serif",
+                        fontSize: 13,
+                        fontWeight: 600,
                         letterSpacing: '-0.3px'
                       }}>
                         #{idx + 1}
@@ -327,9 +327,9 @@ export function LeaderboardSection({ address }) {
                               <>
                                 <img src="/usdc-logo.png" alt="" style={{ width: 13, height: 13, borderRadius: '50%', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
                                 <span style={{
-                                  fontFamily: "'Barlow Condensed', sans-serif",
-                                  fontSize: 13,
-                                  fontWeight: 900,
+                                  fontFamily: "'Montserrat', sans-serif",
+                                  fontSize: 12,
+                                  fontWeight: 600,
                                   letterSpacing: '-0.2px'
                                 }}>
                                   {reward.value}
@@ -337,8 +337,9 @@ export function LeaderboardSection({ address }) {
                               </>
                             ) : (
                               <span style={{
-                                fontSize: 10,
-                                fontWeight: 800,
+                                fontFamily: "'Montserrat', sans-serif",
+                                fontSize: 11,
+                                fontWeight: 600,
                                 textTransform: 'uppercase',
                                 letterSpacing: '0.2px'
                               }}>
@@ -358,8 +359,9 @@ export function LeaderboardSection({ address }) {
 
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{
+                    fontFamily: "'Montserrat', sans-serif",
                     fontSize: 13,
-                    fontWeight: 700,
+                    fontWeight: 600,
                     color: '#0A0B0D',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
@@ -400,9 +402,9 @@ export function LeaderboardSection({ address }) {
                   flexShrink: 0
                 }}>
                   <div style={{
-                    fontFamily: "'Barlow Condensed', sans-serif",
-                    fontSize: 14,
-                    fontWeight: 800,
+                    fontFamily: "'Montserrat', sans-serif",
+                    fontSize: 12,
+                    fontWeight: 600,
                     color: '#32353D'
                   }}>
                     {entry.points.toLocaleString()}
