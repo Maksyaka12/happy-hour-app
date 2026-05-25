@@ -239,19 +239,23 @@ export function TasksSection({ address }) {
 
   const startEditing = (task) => {
     setEditingTaskId(task.id)
+    const leftMs = new Date(task.expires_at).getTime() - Date.now()
+    const leftHours = Math.max(1, Math.round(leftMs / 3600000))
     setEditTaskState({
       type: task.type,
       text: task.text,
       url: task.url,
       points: task.points,
       icon_url: task.icon_url || '',
-      expires_at: new Date(task.expires_at).toISOString().slice(0, 16)
+      expires_hours: leftHours
     })
   }
 
   const handleUpdateTask = async (id) => {
     setIsCreating(true)
     setErrorText('')
+    
+    const expiresAt = new Date(Date.now() + (Number(editTaskState.expires_hours || 24) * 3600000)).toISOString()
     
     const { data, error } = await db.rpc('admin_update_task', {
       p_admin_address: address.toLowerCase(),
@@ -261,7 +265,7 @@ export function TasksSection({ address }) {
       p_url: editTaskState.url,
       p_points: Number(editTaskState.points),
       p_icon_url: editTaskState.icon_url || null,
-      p_expires_at: new Date(editTaskState.expires_at).toISOString()
+      p_expires_at: expiresAt
     })
 
     if (error || !data?.ok) {
@@ -906,11 +910,12 @@ export function TasksSection({ address }) {
                             style={{ width: 60, padding: 6, borderRadius: 8, border: '1px solid #ccc', fontSize: 13 }}
                           />
                           
-                          <span style={{ fontSize: 12, fontWeight: 600, color: '#717886', marginLeft: 8 }}>Expires:</span>
+                          <span style={{ fontSize: 12, fontWeight: 600, color: '#717886', marginLeft: 8 }}>Hours Left:</span>
                           <input
-                            type="datetime-local"
-                            value={editTaskState.expires_at}
-                            onChange={e => setEditTaskState({ ...editTaskState, expires_at: e.target.value })}
+                            type="number"
+                            min="1"
+                            value={editTaskState.expires_hours || 24}
+                            onChange={e => setEditTaskState({ ...editTaskState, expires_hours: Number(e.target.value) })}
                             style={{ flex: 1, padding: 6, borderRadius: 8, border: '1px solid #ccc', fontSize: 13 }}
                           />
                         </div>
