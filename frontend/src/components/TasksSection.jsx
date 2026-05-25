@@ -40,15 +40,20 @@ function TaskCard({ task, taskState, onVisit, onCheck, onClaim, isClaiming }) {
             height: 32,
             borderRadius: 10,
             flexShrink: 0,
-            background: canClaim ? '#059669' : '#0000FF',
+            background: task.icon_url ? '#F3F4F6' : (canClaim ? '#059669' : '#0000FF'),
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             fontSize: 16,
             boxShadow: canClaim ? '0 4px 10px rgba(5,150,105,0.2)' : '0 4px 10px rgba(0,0,255,0.15)',
+            overflow: 'hidden'
           }}
         >
-          {taskIcons[task.type] || '⭐'}
+          {task.icon_url ? (
+            <img src={task.icon_url} alt="Task icon" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : (
+            taskIcons[task.type] || '⭐'
+          )}
         </div>
 
         {/* Content */}
@@ -164,7 +169,11 @@ export function TasksSection({ address }) {
   const [claimingId, setClaimingId] = useState('')
   const [errorText, setErrorText] = useState('')
   const [showAdmin, setShowAdmin] = useState(false)
-  const [newTasks, setNewTasks] = useState([{ type: 'retweet', text: '', url: '', points: 1 }])
+  const [adminTab, setAdminTab] = useState('create') // 'create' | 'manage'
+  const [allTasks, setAllTasks] = useState([])
+  const [editingTaskId, setEditingTaskId] = useState(null)
+  const [editTaskState, setEditTaskState] = useState({ type: 'retweet', text: '', url: '', points: 1, icon_url: '', expires_at: '' })
+  const [newTasks, setNewTasks] = useState([{ type: 'retweet', text: '', url: '', points: 1, icon_url: '', expires_hours: 24 }])
   const [isCreating, setIsCreating] = useState(false)
 
   const ADMIN_WALLET = '0x4c91d3bed372c11795b9ce9a9017dfe447bf050a'
@@ -214,6 +223,76 @@ export function TasksSection({ address }) {
       })
   }
 
+  const loadAllTasks = () => {
+    if (!isAdmin) return
+    db.from('tasks')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .then(({ data, error }) => {
+        if (error) {
+          console.error('load all tasks:', error)
+          return
+        }
+        setAllTasks(data ?? [])
+      })
+  }
+
+  const startEditing = (task) => {
+    setEditingTaskId(task.id)
+    setEditTaskState({
+      type: task.type,
+      text: task.text,
+      url: task.url,
+      points: task.points,
+      icon_url: task.icon_url || '',
+      expires_at: new Date(task.expires_at).toISOString().slice(0, 16)
+    })
+  }
+
+  const handleUpdateTask = async (id) => {
+    setIsCreating(true)
+    setErrorText('')
+    
+    const { data, error } = await db.rpc('admin_update_task', {
+      p_admin_address: address.toLowerCase(),
+      p_task_id: id,
+      p_type: editTaskState.type,
+      p_text: editTaskState.text,
+      p_url: editTaskState.url,
+      p_points: Number(editTaskState.points),
+      p_icon_url: editTaskState.icon_url || null,
+      p_expires_at: new Date(editTaskState.expires_at).toISOString()
+    })
+
+    if (error || !data?.ok) {
+      setErrorText(error?.message || data?.error || 'Failed to update task. Make sure to apply 027_task_admin_enhancements.sql first!')
+    } else {
+      setEditingTaskId(null)
+      loadTasks()
+      loadAllTasks()
+    }
+    setIsCreating(false)
+  }
+
+  const handleDeleteTask = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this task? This will also remove completion records!')) return
+    setIsCreating(true)
+    setErrorText('')
+    
+    const { data, error } = await db.rpc('admin_delete_task', {
+      p_admin_address: address.toLowerCase(),
+      p_task_id: id
+    })
+
+    if (error || !data?.ok) {
+      setErrorText(error?.message || data?.error || 'Failed to delete task. Make sure to apply 027_task_admin_enhancements.sql first!')
+    } else {
+      loadTasks()
+      loadAllTasks()
+    }
+    setIsCreating(false)
+  }
+
   const handleCreateTask = async () => {
     const validTasks = newTasks.filter(t => t.url && t.text)
     if (validTasks.length === 0) return
@@ -223,31 +302,35 @@ export function TasksSection({ address }) {
     
     let successCount = 0
     for (const task of validTasks) {
+      const expiresAt = new Date(Date.now() + (Number(task.expires_hours || 24) * 3600000)).toISOString()
       const { error } = await db.rpc('admin_create_task', {
         p_admin_address: address.toLowerCase(),
         p_type: task.type,
         p_text: task.text,
         p_url: task.url,
         p_points: Number(task.points),
+        p_icon_url: task.icon_url || null,
+        p_expires_at: expiresAt
       })
       if (!error) successCount++
     }
 
     if (successCount > 0) {
       setShowAdmin(false)
-      setNewTasks([{ type: 'retweet', text: '', url: '', points: 1 }])
+      setNewTasks([{ type: 'retweet', text: '', url: '', points: 1, icon_url: '', expires_hours: 24 }])
       loadTasks()
+      loadAllTasks()
       if (successCount < validTasks.length) {
         setErrorText(`Created ${successCount} of ${validTasks.length} tasks. Some failed.`)
       }
     } else {
-      setErrorText('Failed to create tasks')
+      setErrorText('Failed to create tasks. If this is a new function signature, make sure to apply 027_task_admin_enhancements.sql in Supabase SQL editor first!')
     }
     setIsCreating(false)
   }
 
   const addTaskRow = () => {
-    setNewTasks([...newTasks, { type: 'retweet', text: '', url: '', points: 1 }])
+    setNewTasks([...newTasks, { type: 'retweet', text: '', url: '', points: 1, icon_url: '', expires_hours: 24 }])
   }
 
   const removeTaskRow = (index) => {
@@ -273,8 +356,11 @@ export function TasksSection({ address }) {
   }
 
   useEffect(() => {
-    if (isAdmin) loadPendingPosts()
-  }, [isAdmin])
+    if (isAdmin) {
+      loadPendingPosts()
+      loadAllTasks()
+    }
+  }, [isAdmin, address])
 
   const checkTodaySubmission = async () => {
     if (!address) {
@@ -595,43 +681,255 @@ export function TasksSection({ address }) {
 
       {isAdmin && showAdmin && (
         <div style={{ background: '#EEF0F3', padding: 16, borderRadius: 16, marginBottom: 16, border: '1px solid #DEE1E7', animation: 'fadeIn 0.2s ease' }}>
-          <div style={{ fontSize: 14, fontWeight: 800, marginBottom: 12, color: '#0A0B0D' }}>Bulk Create Tasks (24h)</div>
-          
-          {newTasks.map((task, idx) => (
-            <div key={idx} style={{ marginBottom: 20, paddingBottom: 20, borderBottom: idx < newTasks.length - 1 ? '1px solid #DEE1E7' : 'none' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: '#717886' }}>Task #{idx + 1}</span>
-                {newTasks.length > 1 && (
-                  <button onClick={() => removeTaskRow(idx)} style={{ background: 'none', border: 'none', color: '#DC2626', fontSize: 11, cursor: 'pointer', fontWeight: 600 }}>Remove</button>
-                )}
-              </div>
+          {/* Sub tabs */}
+          <div style={{ display: 'flex', gap: 10, marginBottom: 16, borderBottom: '1px solid #DEE1E7', paddingBottom: 10 }}>
+            <button
+              onClick={() => setAdminTab('create')}
+              style={{
+                flex: 1,
+                padding: '8px 12px',
+                borderRadius: 12,
+                border: 'none',
+                background: adminTab === 'create' ? '#0000FF' : 'transparent',
+                color: adminTab === 'create' ? '#fff' : '#717886',
+                fontWeight: 800,
+                fontSize: 12,
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+            >
+              ➕ Create Tasks
+            </button>
+            <button
+              onClick={() => { setAdminTab('manage'); loadAllTasks(); }}
+              style={{
+                flex: 1,
+                padding: '8px 12px',
+                borderRadius: 12,
+                border: 'none',
+                background: adminTab === 'manage' ? '#0000FF' : 'transparent',
+                color: adminTab === 'manage' ? '#fff' : '#717886',
+                fontWeight: 800,
+                fontSize: 12,
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+            >
+              ⚙️ Manage Tasks ({allTasks.length})
+            </button>
+          </div>
 
-              <select value={task.type} onChange={e => updateTaskRow(idx, 'type', e.target.value)} style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #ccc', marginBottom: 8, background: '#fff', fontSize: 13 }}>
-                <option value="retweet">Retweet</option>
-                <option value="like">Like</option>
-                <option value="comment">Comment</option>
-                <option value="bookmark">Bookmark</option>
-                <option value="follow">Follow</option>
-              </select>
-              
-              <input placeholder="Task Description (e.g. Retweet & Tag 3 friends)" value={task.text} onChange={e => updateTaskRow(idx, 'text', e.target.value)} style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #ccc', marginBottom: 8, background: '#fff', fontSize: 13, boxSizing: 'border-box' }} />
-              
-              <input placeholder="Post URL (https://x.com/...)" value={task.url} onChange={e => updateTaskRow(idx, 'url', e.target.value)} style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #ccc', marginBottom: 8, background: '#fff', fontSize: 13, boxSizing: 'border-box' }} />
-              
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 13, fontWeight: 600 }}>Points:</span>
-                <input type="number" min="1" max="1000" value={task.points} onChange={e => updateTaskRow(idx, 'points', e.target.value)} style={{ width: 80, padding: 8, borderRadius: 8, border: '1px solid #ccc', background: '#fff', fontSize: 13 }} />
-              </div>
+          {adminTab === 'create' ? (
+            <div>
+              {newTasks.map((task, idx) => (
+                <div key={idx} style={{ marginBottom: 20, paddingBottom: 20, borderBottom: idx < newTasks.length - 1 ? '1px solid #DEE1E7' : 'none' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: '#717886' }}>Task #{idx + 1}</span>
+                    {newTasks.length > 1 && (
+                      <button onClick={() => removeTaskRow(idx)} style={{ background: 'none', border: 'none', color: '#DC2626', fontSize: 11, cursor: 'pointer', fontWeight: 600 }}>Remove</button>
+                    )}
+                  </div>
+
+                  <select value={task.type} onChange={e => updateTaskRow(idx, 'type', e.target.value)} style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #ccc', marginBottom: 8, background: '#fff', fontSize: 13 }}>
+                    <option value="retweet">Retweet</option>
+                    <option value="like">Like</option>
+                    <option value="comment">Comment</option>
+                    <option value="bookmark">Bookmark</option>
+                    <option value="follow">Follow</option>
+                  </select>
+                  
+                  <input placeholder="Task Description (e.g. Retweet & Tag 3 friends)" value={task.text} onChange={e => updateTaskRow(idx, 'text', e.target.value)} style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #ccc', marginBottom: 8, background: '#fff', fontSize: 13, boxSizing: 'border-box' }} />
+                  
+                  <input placeholder="Post URL (https://x.com/...)" value={task.url} onChange={e => updateTaskRow(idx, 'url', e.target.value)} style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #ccc', marginBottom: 8, background: '#fff', fontSize: 13, boxSizing: 'border-box' }} />
+                  
+                  <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                    <div style={{ flex: 1 }}>
+                      <input
+                        placeholder="Custom Icon URL (optional)"
+                        value={task.icon_url || ''}
+                        onChange={e => updateTaskRow(idx, 'icon_url', e.target.value)}
+                        style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #ccc', background: '#fff', fontSize: 13, boxSizing: 'border-box' }}
+                      />
+                    </div>
+                    <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>
+                      <button
+                        onClick={() => updateTaskRow(idx, 'icon_url', '/turbogum.jpg')}
+                        style={{
+                          background: task.icon_url === '/turbogum.jpg' ? '#0000FF' : '#fff',
+                          color: task.icon_url === '/turbogum.jpg' ? '#fff' : '#0000FF',
+                          border: '1px solid #0000FF',
+                          borderRadius: 8,
+                          padding: '9px 12px',
+                          fontSize: 11,
+                          fontWeight: 800,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        🏎️ Turbo Gum
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: '#717886' }}>HP:</span>
+                      <input type="number" min="1" max="1000" value={task.points} onChange={e => updateTaskRow(idx, 'points', e.target.value)} style={{ width: 60, padding: 8, borderRadius: 8, border: '1px solid #ccc', background: '#fff', fontSize: 13 }} />
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: '#717886' }}>Hours:</span>
+                      <input type="number" min="1" max="8760" value={task.expires_hours || 24} onChange={e => updateTaskRow(idx, 'expires_hours', e.target.value)} style={{ width: 60, padding: 8, borderRadius: 8, border: '1px solid #ccc', background: '#fff', fontSize: 13 }} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              <button onClick={addTaskRow} style={{ width: '100%', padding: 10, borderRadius: 8, border: '2px dashed #B1B7C3', background: 'none', color: '#717886', fontWeight: 700, cursor: 'pointer', marginBottom: 12, fontSize: 13 }}>
+                + Add Another Task
+              </button>
+
+              <button onClick={handleCreateTask} disabled={isCreating} style={{ width: '100%', padding: 12, borderRadius: 8, background: isCreating ? '#B1B7C3' : '#0000FF', color: '#fff', fontWeight: 800, border: 'none', cursor: isCreating ? 'not-allowed' : 'pointer' }}>
+                {isCreating ? 'Creating...' : `Create ${newTasks.length} Task${newTasks.length !== 1 ? 's' : ''}`}
+              </button>
             </div>
-          ))}
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 400, overflowY: 'auto', paddingRight: 4 }}>
+              {allTasks.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '20px', color: '#717886', fontSize: 13 }}>No tasks found in database.</div>
+              ) : (
+                allTasks.map(t => {
+                  const isEditing = editingTaskId === t.id
+                  const isExpired = new Date(t.expires_at) < new Date()
+                  
+                  if (isEditing) {
+                    return (
+                      <div key={t.id} style={{ background: '#fff', padding: 12, borderRadius: 14, border: '2px solid #0000FF', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        <div style={{ fontSize: 12, fontWeight: 800, color: '#0000FF' }}>Editing Task Settings</div>
+                        
+                        <select
+                          value={editTaskState.type}
+                          onChange={e => setEditTaskState({ ...editTaskState, type: e.target.value })}
+                          style={{ width: '100%', padding: 8, borderRadius: 8, border: '1px solid #ccc', background: '#fff', fontSize: 13 }}
+                        >
+                          <option value="retweet">Retweet</option>
+                          <option value="like">Like</option>
+                          <option value="comment">Comment</option>
+                          <option value="bookmark">Bookmark</option>
+                          <option value="follow">Follow</option>
+                        </select>
+                        
+                        <input
+                          placeholder="Task Description"
+                          value={editTaskState.text}
+                          onChange={e => setEditTaskState({ ...editTaskState, text: e.target.value })}
+                          style={{ width: '100%', padding: 8, borderRadius: 8, border: '1px solid #ccc', fontSize: 13, boxSizing: 'border-box' }}
+                        />
+                        
+                        <input
+                          placeholder="Link URL"
+                          value={editTaskState.url}
+                          onChange={e => setEditTaskState({ ...editTaskState, url: e.target.value })}
+                          style={{ width: '100%', padding: 8, borderRadius: 8, border: '1px solid #ccc', fontSize: 13, boxSizing: 'border-box' }}
+                        />
+                        
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          <input
+                            placeholder="Custom Icon URL"
+                            value={editTaskState.icon_url}
+                            onChange={e => setEditTaskState({ ...editTaskState, icon_url: e.target.value })}
+                            style={{ flex: 1, padding: 8, borderRadius: 8, border: '1px solid #ccc', fontSize: 13, boxSizing: 'border-box' }}
+                          />
+                          <button
+                            onClick={() => setEditTaskState({ ...editTaskState, icon_url: '/turbogum.jpg' })}
+                            style={{
+                              background: editTaskState.icon_url === '/turbogum.jpg' ? '#0000FF' : '#fff',
+                              color: editTaskState.icon_url === '/turbogum.jpg' ? '#fff' : '#0000FF',
+                              border: '1px solid #0000FF',
+                              borderRadius: 8,
+                              padding: '8px 12px',
+                              fontSize: 11,
+                              fontWeight: 800,
+                              cursor: 'pointer'
+                            }}
+                          >
+                            🏎️ Turbo
+                          </button>
+                        </div>
 
-          <button onClick={addTaskRow} style={{ width: '100%', padding: 10, borderRadius: 8, border: '2px dashed #B1B7C3', background: 'none', color: '#717886', fontWeight: 700, cursor: 'pointer', marginBottom: 12, fontSize: 13 }}>
-            + Add Another Task
-          </button>
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                          <span style={{ fontSize: 12, fontWeight: 600, color: '#717886' }}>HP:</span>
+                          <input
+                            type="number"
+                            value={editTaskState.points}
+                            onChange={e => setEditTaskState({ ...editTaskState, points: Number(e.target.value) })}
+                            style={{ width: 60, padding: 6, borderRadius: 8, border: '1px solid #ccc', fontSize: 13 }}
+                          />
+                          
+                          <span style={{ fontSize: 12, fontWeight: 600, color: '#717886', marginLeft: 8 }}>Expires:</span>
+                          <input
+                            type="datetime-local"
+                            value={editTaskState.expires_at}
+                            onChange={e => setEditTaskState({ ...editTaskState, expires_at: e.target.value })}
+                            style={{ flex: 1, padding: 6, borderRadius: 8, border: '1px solid #ccc', fontSize: 13 }}
+                          />
+                        </div>
 
-          <button onClick={handleCreateTask} disabled={isCreating} style={{ width: '100%', padding: 12, borderRadius: 8, background: isCreating ? '#B1B7C3' : '#0000FF', color: '#fff', fontWeight: 800, border: 'none', cursor: isCreating ? 'not-allowed' : 'pointer' }}>
-            {isCreating ? 'Creating...' : `Create ${newTasks.length} Task${newTasks.length !== 1 ? 's' : ''}`}
-          </button>
+                        <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
+                          <button
+                            onClick={() => handleUpdateTask(t.id)}
+                            style={{ flex: 1, background: '#059669', color: '#fff', border: 'none', borderRadius: 8, padding: '8px', fontSize: 12, fontWeight: 800, cursor: 'pointer' }}
+                          >
+                            Save
+                          </button>
+                          <button
+                            onClick={() => setEditingTaskId(null)}
+                            style={{ flex: 1, background: '#717886', color: '#fff', border: 'none', borderRadius: 8, padding: '8px', fontSize: 12, fontWeight: 800, cursor: 'pointer' }}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    )
+                  }
+
+                  return (
+                    <div key={t.id} style={{ background: '#fff', padding: 10, borderRadius: 12, border: '1px solid #DEE1E7', display: 'flex', gap: 10, alignItems: 'center' }}>
+                      <div style={{ width: 24, height: 24, borderRadius: 6, flexShrink: 0, background: t.icon_url ? '#F3F4F6' : '#EEF0F3', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, overflow: 'hidden' }}>
+                        {t.icon_url ? (
+                          <img src={t.icon_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ) : (
+                          taskIcons[t.type] || '⭐'
+                        )}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 11, fontWeight: 800, color: '#0A0B0D', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {t.text}
+                        </div>
+                        <div style={{ fontSize: 9, color: '#717886', display: 'flex', gap: 6, marginTop: 2 }}>
+                          <span style={{ color: '#D97706', fontWeight: 800 }}>+{t.points} HP</span>
+                          <span>•</span>
+                          <span style={{ color: isExpired ? '#DC2626' : '#059669', fontWeight: 600 }}>{isExpired ? 'Expired' : 'Active'}</span>
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+                        <button
+                          onClick={() => startEditing(t)}
+                          style={{ background: '#EEF0F3', border: 'none', color: '#0000FF', borderRadius: 8, padding: '4px 8px', fontSize: 10, fontWeight: 800, cursor: 'pointer' }}
+                        >
+                          ✏️ Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteTask(t.id)}
+                          style={{ background: '#FEE2E2', border: 'none', color: '#DC2626', borderRadius: 8, padding: '4px 8px', fontSize: 10, fontWeight: 800, cursor: 'pointer' }}
+                        >
+                          🗑️ Delete
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })
+              )}
+            </div>
+          )}
         </div>
       )}
 
