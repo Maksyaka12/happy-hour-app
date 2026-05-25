@@ -286,11 +286,9 @@ export function DailyRewardsSection({ address }) {
                 fontWeight: 600,
                 color: 'rgba(255,255,255,0.75)',
                 letterSpacing: '0.3px',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap'
+                textTransform: 'uppercase'
               }}>
-                {displayDailyEntry?.basename || short(address)}
+                Your Daily Rank
               </div>
               <div style={{
                 fontFamily: "'Montserrat', sans-serif",
@@ -424,7 +422,7 @@ export function DailyRewardsSection({ address }) {
                           fontFamily: "'Montserrat', sans-serif",
                           fontSize: 11,
                           fontWeight: 700,
-                          color: '#022c22',
+                          color: '#fff',
                           letterSpacing: '-0.2px'
                         }}>
                           +{rewardHP}
