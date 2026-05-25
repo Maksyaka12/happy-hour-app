@@ -4,12 +4,7 @@ import { UserAvatar } from './UserAvatar'
 
 const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
 
-const UsdcIcon = ({ size = 16 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={{ display: 'inline-block', verticalAlign: 'middle', flexShrink: 0 }}>
-    <circle cx="12" cy="12" r="12" fill="#2775CA" />
-    <path d="M12 4v16M8 8h6.5a2.5 2.5 0 0 1 0 5H9.5a2.5 2.5 0 0 0 0 5H16" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-)
+
 
 const getUsdcReward = (rank) => {
   if (rank === 1) return { value: '200', type: 'usdc' }
@@ -214,7 +209,7 @@ export function LeaderboardSection({ address }) {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'center', flex: '1 1 0', transform: 'translateY(1px)' }}>
                     {myReward.type === 'usdc' ? (
                       <>
-                        <UsdcIcon size={12} />
+                        <img src="/usdc-logo.png" alt="USDC" style={{ width: 13, height: 13, borderRadius: '50%', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
                         <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 14, fontWeight: 900, color: '#fff' }}>
                           {myReward.value}
                         </span>
@@ -260,18 +255,76 @@ export function LeaderboardSection({ address }) {
                   boxShadow: '0 2px 6px rgba(10,11,13,0.02)',
                 }}
               >
-                <div style={{
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: 14,
-                  fontWeight: 900,
-                  color: '#32353D',
-                  minWidth: 24,
-                  textAlign: 'center'
-                }}>
-                  {idx + 1}
-                </div>
+                {/* Unified Rank + Reward Pill */}
+                {(() => {
+                  const capsuleStyle = (() => {
+                    const rank = idx + 1;
+                    if (rank === 1) return { bg: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 100%)', color: '#fff', border: '1px solid rgba(79,70,229,0.3)', shadow: '0 2px 8px rgba(49,46,129,0.15)', div: 'rgba(255,255,255,0.3)', icon: '🏆' }
+                    if (rank === 2) return { bg: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 100%)', color: '#fff', border: '1px solid rgba(79,70,229,0.3)', shadow: '0 2px 8px rgba(49,46,129,0.15)', div: 'rgba(255,255,255,0.3)', icon: '🥈' }
+                    if (rank === 3) return { bg: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 100%)', color: '#fff', border: '1px solid rgba(79,70,229,0.3)', shadow: '0 2px 8px rgba(49,46,129,0.15)', div: 'rgba(255,255,255,0.3)', icon: '🥉' }
+                    if (rank >= 4 && rank <= 10) return { bg: 'linear-gradient(135deg, #0000FF 0%, #4F46E5 100%)', color: '#fff', border: 'none', shadow: 'none', div: 'rgba(255,255,255,0.25)', icon: '' }
+                    if (rank >= 11 && rank <= 20) return { bg: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)', color: '#fff', border: 'none', shadow: 'none', div: 'rgba(255,255,255,0.25)', icon: '' }
+                    if (rank >= 21 && rank <= 30) return { bg: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', color: '#fff', border: 'none', shadow: 'none', div: 'rgba(255,255,255,0.25)', icon: '🎁' }
+                    return { bg: '#F1F5F9', color: '#64748B', border: 'none', shadow: 'none', div: 'transparent', icon: '' }
+                  })();
 
-                <div style={{ position: 'relative', flexShrink: 0 }}>
+                  return (
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      background: capsuleStyle.bg,
+                      color: capsuleStyle.color,
+                      border: capsuleStyle.border,
+                      boxShadow: capsuleStyle.shadow,
+                      borderRadius: 12,
+                      padding: '4px 10px',
+                      gap: 8,
+                      minHeight: 28,
+                      flexShrink: 0
+                    }}>
+                      <span style={{
+                        fontFamily: "'Barlow Condensed', sans-serif",
+                        fontSize: 14,
+                        fontWeight: 900,
+                        letterSpacing: '-0.3px'
+                      }}>
+                        #{idx + 1} {capsuleStyle.icon}
+                      </span>
+                      
+                      {reward && (
+                        <>
+                          <div style={{ width: 1, height: 12, background: capsuleStyle.div }} />
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                            {reward.type === 'usdc' ? (
+                              <>
+                                <img src="/usdc-logo.png" alt="" style={{ width: 13, height: 13, borderRadius: '50%', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
+                                <span style={{
+                                  fontFamily: "'Barlow Condensed', sans-serif",
+                                  fontSize: 13,
+                                  fontWeight: 900,
+                                  letterSpacing: '-0.2px'
+                                }}>
+                                  {reward.value}
+                                </span>
+                              </>
+                            ) : (
+                              <span style={{
+                                fontSize: 9,
+                                fontWeight: 800,
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.2px'
+                              }}>
+                                {reward.value}
+                              </span>
+                            )}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  );
+                })()}
+
+                <div style={{ position: 'relative', flexShrink: 0, marginLeft: 2 }}>
                   <UserAvatar address={entry.address} size={28} />
                 </div>
 
@@ -287,47 +340,6 @@ export function LeaderboardSection({ address }) {
                     {entry.basename || short(entry.address)}
                   </div>
                 </div>
-
-                {/* USDC Reward Badge */}
-                {reward && (
-                  <div style={{
-                    background: reward.type === 'usdc' ? 'rgba(39, 117, 202, 0.06)' : 'rgba(16, 185, 129, 0.06)',
-                    border: reward.type === 'usdc' ? '1px solid rgba(39, 117, 202, 0.18)' : '1px solid rgba(16, 185, 129, 0.18)',
-                    borderRadius: 10,
-                    padding: '4px 10px',
-                    height: 28,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 4,
-                    flexShrink: 0
-                  }}>
-                    {reward.type === 'usdc' ? (
-                      <>
-                        <UsdcIcon size={12} />
-                        <span style={{
-                          fontFamily: "'Barlow Condensed', sans-serif",
-                          fontSize: 13,
-                          fontWeight: 900,
-                          color: '#2775CA',
-                          letterSpacing: '-0.2px'
-                        }}>
-                          {reward.value}
-                        </span>
-                      </>
-                    ) : (
-                      <span style={{
-                        fontFamily: "'Barlow Condensed', sans-serif",
-                        fontSize: 11,
-                        fontWeight: 800,
-                        color: '#059669',
-                        letterSpacing: '-0.1px'
-                      }}>
-                        {reward.value}
-                      </span>
-                    )}
-                  </div>
-                )}
 
                 {/* Points Badge */}
                 <div style={{
