@@ -200,22 +200,27 @@ export function LeaderboardSection({ address }) {
               </div>
               
               {/* User Details */}
-              <div style={{ minWidth: 0 }}>
-                <div style={{ fontSize: 13, fontWeight: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <div style={{
+                  fontFamily: "'Montserrat', sans-serif",
+                  fontSize: 10,
+                  fontWeight: 600,
+                  color: 'rgba(255,255,255,0.75)',
+                  letterSpacing: '0.3px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
+                }}>
                   {displayEntry?.basename || short(address)}
                 </div>
-                <div style={{ 
-                  display: 'inline-flex', 
-                  alignItems: 'center', 
-                  gap: 4, 
-                  background: 'rgba(255,255,255,0.15)', 
-                  padding: '2px 8px', 
-                  borderRadius: 6, 
-                  marginTop: 4,
-                  fontSize: 10,
-                  fontWeight: 700
+                <div style={{
+                  fontFamily: "'Montserrat', sans-serif",
+                  fontSize: 15,
+                  fontWeight: 700,
+                  color: '#fff',
+                  lineHeight: 1.2
                 }}>
-                  ⚡ {(displayEntry?.points ?? 0).toLocaleString()} HP
+                  {(displayEntry?.points ?? 0).toLocaleString()} HP
                 </div>
               </div>
             </div>
