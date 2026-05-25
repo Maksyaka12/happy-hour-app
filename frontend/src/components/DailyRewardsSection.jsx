@@ -298,15 +298,14 @@ export function DailyRewardsSection({ address }) {
         ) : (
           dailyLeaders.map((u, i) => {
             const rank = i + 1
-            const badgeBg = rank === 1 ? 'rgba(252, 211, 77, 0.2)' 
-                         : (rank >= 2 && rank <= 5) ? 'rgba(226, 232, 240, 0.6)' 
-                         : (rank >= 6 && rank <= 10) ? 'rgba(253, 186, 116, 0.2)' 
-                         : '#F8F9FC'
-            
-            const badgeBorder = rank === 1 ? 'rgba(252, 211, 77, 0.5)'
-                             : (rank >= 2 && rank <= 5) ? 'rgba(226, 232, 240, 1)'
-                             : (rank >= 6 && rank <= 10) ? 'rgba(253, 186, 116, 0.5)'
-                             : '#DEE1E7'
+            const rewardHP = getReward(rank)
+
+            const capsuleStyle = (() => {
+              if (rank >= 1 && rank <= 20) {
+                return { bg: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', color: '#fff', border: 'none', shadow: 'none', div: 'rgba(255,255,255,0.25)' }
+              }
+              return { bg: '#F1F5F9', color: '#64748B', border: 'none', shadow: 'none', div: 'transparent' }
+            })();
 
             return (
               <div
@@ -322,41 +321,100 @@ export function DailyRewardsSection({ address }) {
                   boxShadow: '0 2px 6px rgba(10,11,13,0.02)',
                 }}
               >
+                {/* Unified Rank + Reward Pill */}
                 <div style={{
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: 14,
-                  fontWeight: 900,
-                  color: '#32353D',
-                  minWidth: 24,
-                  textAlign: 'center'
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: capsuleStyle.bg,
+                  color: capsuleStyle.color,
+                  border: capsuleStyle.border,
+                  boxShadow: capsuleStyle.shadow,
+                  borderRadius: 12,
+                  padding: '4px 6px',
+                  gap: 5,
+                  minHeight: 28,
+                  width: 84, // Uniform fixed width for perfect vertical alignment
+                  flexShrink: 0
                 }}>
-                  {rank}
+                  <span style={{
+                    fontFamily: "'Montserrat', sans-serif",
+                    fontSize: 13,
+                    fontWeight: 600,
+                    letterSpacing: '-0.3px'
+                  }}>
+                    #{rank}
+                  </span>
+                  
+                  {rewardHP > 0 && (
+                    <>
+                      <div style={{ width: 1, height: 12, background: capsuleStyle.div }} />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <span style={{
+                          fontFamily: "'Montserrat', sans-serif",
+                          fontSize: 11,
+                          fontWeight: 600,
+                          letterSpacing: '-0.2px'
+                        }}>
+                          +{rewardHP}
+                        </span>
+                        <span style={{
+                          fontFamily: "'Montserrat', sans-serif",
+                          fontSize: 8,
+                          fontWeight: 600,
+                          opacity: 0.8,
+                          marginLeft: 1
+                        }}>
+                          HP
+                        </span>
+                      </div>
+                    </>
+                  )}
                 </div>
 
-                <div style={{ position: 'relative', flexShrink: 0 }}>
+                <div style={{ position: 'relative', flexShrink: 0, marginLeft: 2 }}>
                   <UserAvatar address={u.address} size={28} />
                 </div>
 
+                {/* Middle: User details */}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{
+                    fontFamily: "'Montserrat', sans-serif",
                     fontSize: 13,
-                    fontWeight: 700,
+                    fontWeight: 600,
                     color: '#0A0B0D',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap'
+                    whiteSpace: 'nowrap',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4
                   }}>
-                    {u.basename || short(u.address)}
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {u.basename || short(u.address)}
+                    </span>
+                    {address && u.address?.toLowerCase() === address.toLowerCase() && (
+                      <span style={{
+                        fontSize: 10,
+                        fontWeight: 800,
+                        color: '#0000FF',
+                        background: 'rgba(0,0,255,0.06)',
+                        padding: '1px 6px',
+                        borderRadius: 6,
+                        flexShrink: 0
+                      }}>
+                        (you)
+                      </span>
+                    )}
                   </div>
-                  <div style={{ fontSize: 10, color: '#717886', fontWeight: 600 }}>Activity Points: {u.score}</div>
                 </div>
 
-                {/* Reward Badge */}
+                {/* Right: Activity Points Badge */}
                 <div style={{
-                  background: badgeBg,
-                  border: `1px solid ${badgeBorder}`,
+                  background: '#F8F9FC',
+                  border: '1px solid #DEE1E7',
                   borderRadius: 10,
-                  width: 78, 
+                  width: 70, 
                   height: 28,
                   display: 'flex',
                   alignItems: 'center',
@@ -364,12 +422,12 @@ export function DailyRewardsSection({ address }) {
                   flexShrink: 0
                 }}>
                   <div style={{
-                    fontFamily: "'Barlow Condensed', sans-serif",
-                    fontSize: 13,
-                    fontWeight: 900,
+                    fontFamily: "'Montserrat', sans-serif",
+                    fontSize: 12,
+                    fontWeight: 600,
                     color: '#32353D'
                   }}>
-                    +{getReward(rank)} <span style={{ fontSize: 9, opacity: 0.8, fontWeight: 700 }}>HP</span>
+                    {(u.score ?? 0).toLocaleString()}
                   </div>
                 </div>
               </div>
