@@ -96,6 +96,7 @@ export function DailyRewardsSection({ address }) {
   const myDailyEntry = dailyLeaders.find((u) => u.address?.toLowerCase() === address?.toLowerCase())
   const displayDailyRank = myDailyRank > 0 ? myDailyRank : outsideDailyRank?.rank
   const displayDailyScore = myDailyRank > 0 ? myDailyEntry?.score : outsideDailyRank?.score
+  const displayDailyEntry = myDailyRank > 0 ? myDailyEntry : outsideDailyRank
 
   const getReward = (rank) => {
     if (!rank || rank > 20) return 0
@@ -250,40 +251,109 @@ export function DailyRewardsSection({ address }) {
           style={{
             background: displayDailyRank > 0 ? 'linear-gradient(135deg, #059669, #10B981)' : 'linear-gradient(135deg, #374151, #1F2937)',
             borderRadius: 18,
-            padding: '12px 18px',
+            padding: '12px 16px',
             marginBottom: 16,
             display: 'flex',
             alignItems: 'center',
-            gap: 14,
+            justifyContent: 'space-between',
             boxShadow: displayDailyRank > 0 ? '0 6px 20px rgba(5,150,105,0.2)' : '0 6px 20px rgba(55,65,81,0.15)',
             color: '#fff',
             border: '1px solid rgba(255,255,255,0.1)',
             opacity: displayDailyRank > 0 ? 1 : 0.85
           }}
         >
-          <div style={{ 
-            fontFamily: "'Barlow Condensed', sans-serif", 
-            fontSize: 28, 
-            fontWeight: 900, 
-            lineHeight: 1,
-            minWidth: 38 
-          }}>
-            {displayDailyRank > 0 ? `#${displayDailyRank}` : '—'}
-          </div>
-
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 0 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.75)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Your Daily Rank</div>
-              <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.75)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Est. Reward</div>
+          {/* Left: Rank & User Info */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0, flex: 1 }}>
+            {/* Rank */}
+            <div style={{ 
+              fontFamily: "'Barlow Condensed', sans-serif", 
+              fontSize: 32, 
+              fontWeight: 900, 
+              lineHeight: 1,
+              minWidth: 40,
+              textAlign: 'center',
+              borderRight: '1px solid rgba(255,255,255,0.2)',
+              paddingRight: 10
+            }}>
+              {displayDailyRank > 0 ? `#${displayDailyRank}` : '—'}
             </div>
             
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-              <div style={{ fontSize: 13, fontWeight: 700 }}>Activity Points: {displayDailyScore || 0}</div>
-              <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 15, fontWeight: 900 }}>
-                +{getReward(displayDailyRank)} <span style={{ fontSize: 9, opacity: 0.8 }}>HP</span>
+            {/* User Details */}
+            <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <div style={{
+                fontFamily: "'Montserrat', sans-serif",
+                fontSize: 10,
+                fontWeight: 600,
+                color: 'rgba(255,255,255,0.75)',
+                letterSpacing: '0.3px',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
+              }}>
+                {displayDailyEntry?.basename || short(address)}
+              </div>
+              <div style={{
+                fontFamily: "'Montserrat', sans-serif",
+                fontSize: 15,
+                fontWeight: 700,
+                color: '#fff',
+                lineHeight: 1.2
+              }}>
+                Activity Points: {(displayDailyScore || 0).toLocaleString()}
               </div>
             </div>
           </div>
+
+          {/* Right: Est. Reward Gold/Glass Ticket */}
+          {getReward(displayDailyRank) > 0 && (
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.15)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              color: '#fff',
+              borderRadius: 14,
+              padding: '6px 12px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
+              marginLeft: 12,
+              flexShrink: 0,
+              boxShadow: '0 4px 15px rgba(0,0,0,0.05)'
+            }}>
+              <span style={{ 
+                fontFamily: "'Montserrat', sans-serif",
+                fontSize: 8, 
+                fontWeight: 700, 
+                color: 'rgba(255, 255, 255, 0.75)', 
+                textTransform: 'uppercase', 
+                letterSpacing: '0.6px' 
+              }}>
+                Est. Reward
+              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
+                <span style={{ 
+                  fontFamily: "'Montserrat', sans-serif", 
+                  fontSize: 14, 
+                  fontWeight: 700, 
+                  color: '#fff', 
+                  lineHeight: 1 
+                }}>
+                  +{getReward(displayDailyRank)}
+                </span>
+                <span style={{ 
+                  fontFamily: "'Montserrat', sans-serif", 
+                  fontSize: 14, 
+                  fontWeight: 700, 
+                  color: '#fff', 
+                  lineHeight: 1 
+                }}>
+                  HP
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -349,21 +419,21 @@ export function DailyRewardsSection({ address }) {
                   {rewardHP > 0 && (
                     <>
                       <div style={{ width: 1, height: 12, background: capsuleStyle.div }} />
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                         <span style={{
                           fontFamily: "'Montserrat', sans-serif",
                           fontSize: 11,
-                          fontWeight: 600,
+                          fontWeight: 700,
+                          color: '#022c22',
                           letterSpacing: '-0.2px'
                         }}>
                           +{rewardHP}
                         </span>
                         <span style={{
                           fontFamily: "'Montserrat', sans-serif",
-                          fontSize: 8,
-                          fontWeight: 600,
-                          opacity: 0.8,
-                          marginLeft: 1
+                          fontSize: 11,
+                          fontWeight: 700,
+                          color: '#022c22'
                         }}>
                           HP
                         </span>
