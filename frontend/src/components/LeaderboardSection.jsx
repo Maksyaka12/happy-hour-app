@@ -171,61 +171,90 @@ export function LeaderboardSection({ address }) {
         return (
           <div
             style={{
-              background: 'linear-gradient(135deg,#0000FF,#3C8AFF)',
-              borderRadius: 18,
-              padding: '10px 16px',
+              background: 'linear-gradient(135deg, #0000FF 0%, #3C8AFF 100%)',
+              borderRadius: 20,
+              padding: '12px 16px',
               marginBottom: 16,
               display: 'flex',
               alignItems: 'center',
-              gap: 14,
-              boxShadow: '0 6px 20px rgba(0,0,255,0.25)',
-              color: '#fff'
+              justifyContent: 'space-between',
+              boxShadow: '0 8px 24px rgba(0,0,255,0.25)',
+              color: '#fff',
+              border: '1px solid rgba(255,255,255,0.1)'
             }}
           >
-            <div style={{ 
-              fontFamily: "'Barlow Condensed', sans-serif", 
-              fontSize: 28, 
-              fontWeight: 900, 
-              lineHeight: 1,
-              minWidth: 38 
-            }}>
-              #{displayRank}
-            </div>
-            
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 0 }}>
-              {/* Labels Row */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.3px', flex: '1 1 0', textAlign: 'left' }}>Your Position</div>
-                {myReward && <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.3px', flex: '1 1 0', textAlign: 'center' }}>Est. Reward</div>}
-                <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.3px', flex: '1 1 0', textAlign: 'right' }}>Current HP</div>
+            {/* Left: Rank & User Info */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0, flex: 1 }}>
+              {/* Rank */}
+              <div style={{ 
+                fontFamily: "'Barlow Condensed', sans-serif", 
+                fontSize: 32, 
+                fontWeight: 900, 
+                lineHeight: 1,
+                minWidth: 40,
+                textAlign: 'center',
+                borderRight: '1px solid rgba(255,255,255,0.2)',
+                paddingRight: 10
+              }}>
+                #{displayRank}
               </div>
               
-              {/* Values Row */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginTop: 2 }}>
-                <div style={{ fontSize: 13, fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: '1 1 0', textAlign: 'left' }}>
+              {/* User Details */}
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {displayEntry?.basename || short(address)}
                 </div>
-                {myReward && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'center', flex: '1 1 0', transform: 'translateY(1px)' }}>
-                    {myReward.type === 'usdc' ? (
-                      <>
-                        <img src="/usdc-logo.png" alt="USDC" style={{ width: 13, height: 13, borderRadius: '50%', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
-                        <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 14, fontWeight: 900, color: '#fff' }}>
-                          {myReward.value}
-                        </span>
-                      </>
-                    ) : (
-                      <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 12, fontWeight: 800, color: '#FFD93D' }}>
-                        {myReward.value}
-                      </span>
-                    )}
-                  </div>
-                )}
-                <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 15, fontWeight: 900, flex: '1 1 0', textAlign: 'right' }}>
-                  {(displayEntry?.points ?? 0).toLocaleString()}
+                <div style={{ 
+                  display: 'inline-flex', 
+                  alignItems: 'center', 
+                  gap: 4, 
+                  background: 'rgba(255,255,255,0.15)', 
+                  padding: '2px 8px', 
+                  borderRadius: 6, 
+                  marginTop: 4,
+                  fontSize: 10,
+                  fontWeight: 700
+                }}>
+                  ⚡ {(displayEntry?.points ?? 0).toLocaleString()} HP
                 </div>
               </div>
             </div>
+
+            {/* Right: Est. Reward Gold/Glass Ticket */}
+            {myReward && (
+              <div style={{
+                background: '#fff',
+                color: '#0000FF',
+                borderRadius: 14,
+                padding: '6px 12px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                border: '1px solid rgba(255,255,255,0.5)',
+                marginLeft: 12,
+                flexShrink: 0
+              }}>
+                <span style={{ fontSize: 8, fontWeight: 900, color: '#717886', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Est. Reward
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
+                  {myReward.type === 'usdc' ? (
+                    <>
+                      <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14, borderRadius: '50%' }} />
+                      <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 16, fontWeight: 900, color: '#0000FF', lineHeight: 1 }}>
+                        {myReward.value}
+                      </span>
+                    </>
+                  ) : (
+                    <span style={{ fontSize: 14, fontWeight: 900, color: '#059669', lineHeight: 1 }}>
+                      {myReward.value}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         );
       })()}
