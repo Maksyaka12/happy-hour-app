@@ -228,32 +228,53 @@ export function LeaderboardSection({ address }) {
             {/* Right: Est. Reward Gold/Glass Ticket */}
             {myReward && (
               <div style={{
-                background: '#fff',
-                color: '#0000FF',
+                background: 'rgba(255, 255, 255, 0.15)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+                color: '#fff',
                 borderRadius: 14,
                 padding: '6px 12px',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                border: '1px solid rgba(255,255,255,0.5)',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
                 marginLeft: 12,
-                flexShrink: 0
+                flexShrink: 0,
+                boxShadow: '0 4px 15px rgba(0,0,0,0.05)'
               }}>
-                <span style={{ fontSize: 8, fontWeight: 900, color: '#717886', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                <span style={{ 
+                  fontFamily: "'Montserrat', sans-serif",
+                  fontSize: 8, 
+                  fontWeight: 700, 
+                  color: 'rgba(255, 255, 255, 0.75)', 
+                  textTransform: 'uppercase', 
+                  letterSpacing: '0.6px' 
+                }}>
                   Est. Reward
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
                   {myReward.type === 'usdc' ? (
                     <>
                       <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14, borderRadius: '50%' }} />
-                      <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 16, fontWeight: 900, color: '#0000FF', lineHeight: 1 }}>
+                      <span style={{ 
+                        fontFamily: "'Montserrat', sans-serif", 
+                        fontSize: 14, 
+                        fontWeight: 700, 
+                        color: '#fff', 
+                        lineHeight: 1 
+                      }}>
                         {myReward.value}
                       </span>
                     </>
                   ) : (
-                    <span style={{ fontSize: 14, fontWeight: 900, color: '#059669', lineHeight: 1 }}>
+                    <span style={{ 
+                      fontFamily: "'Montserrat', sans-serif", 
+                      fontSize: 13, 
+                      fontWeight: 700, 
+                      color: '#FFF', 
+                      lineHeight: 1 
+                    }}>
                       {myReward.value}
                     </span>
                   )}
