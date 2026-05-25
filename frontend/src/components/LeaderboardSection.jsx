@@ -99,7 +99,7 @@ export function LeaderboardSection({ address }) {
         padding: '32px 20px',
         marginBottom: 16,
         position: 'relative',
-        minHeight: 140,
+        minHeight: 155,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -110,7 +110,7 @@ export function LeaderboardSection({ address }) {
       }}>
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 0 }} />
 
-        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', paddingTop: 0, paddingBottom: 20 }}>
+        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', paddingTop: 0, paddingBottom: 32 }}>
           <div style={{
             fontFamily: "'Barlow Condensed', sans-serif",
             fontSize: 52,
@@ -127,8 +127,8 @@ export function LeaderboardSection({ address }) {
             background: 'rgba(255,255,255,0.2)',
             backdropFilter: 'blur(10px)',
             borderRadius: 50,
-            padding: '6px 20px',
-            fontSize: 11,
+            padding: '4px 12px',
+            fontSize: 9,
             fontWeight: 800,
             color: '#fff',
             border: '1px solid rgba(255,255,255,0.3)',
@@ -136,7 +136,7 @@ export function LeaderboardSection({ address }) {
             textTransform: 'uppercase',
             letterSpacing: '0.8px',
           }}>
-            🏆 TOP USERS WILL GET USDC REWARDS
+            🏆 TOP-30 USERS WILL GET USDC REWARDS
           </div>
         </div>
 
@@ -148,19 +148,19 @@ export function LeaderboardSection({ address }) {
           right: 0,
           background: 'rgba(0,0,0,0.45)',
           backdropFilter: 'blur(12px)',
-          padding: '8px 0',
+          padding: '11px 0',
           textAlign: 'center',
           borderTop: '1px solid rgba(255,255,255,0.1)',
           zIndex: 2
         }}>
           <div style={{
-            fontSize: 11,
+            fontSize: 12,
             fontWeight: 800,
-            color: 'rgba(255,255,255,0.7)',
+            color: 'rgba(255,255,255,0.75)',
             textTransform: 'uppercase',
             letterSpacing: '1px'
           }}>
-            Ends in: <span style={{ color: '#F4C81B', fontWeight: 900 }}>Countdown Coming Soon</span>
+            Ends in: <span style={{ color: '#fff', fontWeight: 900 }}>Countdown Coming Soon</span>
           </div>
         </div>
       </div>
