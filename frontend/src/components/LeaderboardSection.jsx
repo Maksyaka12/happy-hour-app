@@ -259,12 +259,9 @@ export function LeaderboardSection({ address }) {
                 {(() => {
                   const capsuleStyle = (() => {
                     const rank = idx + 1;
-                    if (rank === 1) return { bg: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 100%)', color: '#fff', border: '1px solid rgba(79,70,229,0.3)', shadow: '0 2px 8px rgba(49,46,129,0.15)', div: 'rgba(255,255,255,0.3)' }
-                    if (rank === 2) return { bg: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 100%)', color: '#fff', border: '1px solid rgba(79,70,229,0.3)', shadow: '0 2px 8px rgba(49,46,129,0.15)', div: 'rgba(255,255,255,0.3)' }
-                    if (rank === 3) return { bg: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 100%)', color: '#fff', border: '1px solid rgba(79,70,229,0.3)', shadow: '0 2px 8px rgba(49,46,129,0.15)', div: 'rgba(255,255,255,0.3)' }
-                    if (rank >= 4 && rank <= 10) return { bg: 'linear-gradient(135deg, #0000FF 0%, #4F46E5 100%)', color: '#fff', border: 'none', shadow: 'none', div: 'rgba(255,255,255,0.25)' }
-                    if (rank >= 11 && rank <= 20) return { bg: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)', color: '#fff', border: 'none', shadow: 'none', div: 'rgba(255,255,255,0.25)' }
-                    if (rank >= 21 && rank <= 30) return { bg: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', color: '#fff', border: 'none', shadow: 'none', div: 'rgba(255,255,255,0.25)' }
+                    if (rank >= 1 && rank <= 30) {
+                      return { bg: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', color: '#fff', border: 'none', shadow: 'none', div: 'rgba(255,255,255,0.25)' }
+                    }
                     return { bg: '#F1F5F9', color: '#64748B', border: 'none', shadow: 'none', div: 'transparent' }
                   })();
 
