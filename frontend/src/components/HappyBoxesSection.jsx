@@ -249,14 +249,14 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       <div style={{
         background: 'linear-gradient(135deg, #090514 0%, #2E1065 50%, #03000A 100%)',
         borderRadius: 24,
-        padding: '24px 24px',
+        padding: '22px 20px',
         marginBottom: 16,
         position: 'relative',
-        minHeight: 120,
+        minHeight: 144,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        boxShadow: '0 12px 40px rgba(46,16,101,0.35)',
+        boxShadow: '0 8px 32px rgba(46,16,101,0.3)',
         overflow: 'hidden',
         border: '1px solid rgba(139,92,246,0.2)'
       }}>
@@ -314,7 +314,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           
           <div style={{
             fontSize: '11px',
-            color: 'rgba(255,255,255,0.6)',
+            color: 'rgba(255,255,255,0.75)',
             marginTop: '8px',
             letterSpacing: '0.1px',
             fontWeight: 500,
