@@ -420,7 +420,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           ['How do Happy Boxes work?', 'Choose a box to try your luck and win HP instantly. Each box has a different range of possible rewards.'],
           ['What can I win?', 'Every box contains HP. The higher the box tier, the more HP you can win.'],
           ['Are rewards guaranteed?', 'Yes, every box contains at least the minimum amount of HP shown in the description.'],
-          ['How does the multiplier work?', 'If you have an active HP Multiplier from your profile, it will automatically multiply the HP rewards you receive from opening boxes.'],
+          ['How does the boost work?', 'If you have an active HP Boost from your profile, it will automatically multiply the HP rewards you receive from opening boxes.'],
         ].map(([q, a], i, arr) => (
           <div key={i} style={{ marginBottom: i < arr.length - 1 ? 14 : 0 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: '#0A0B0D', marginBottom: 3 }}>{q}</div>
@@ -504,7 +504,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                     const baseMult = LEVELS[levelIdx]?.mult || 1.0
                     const isPerm = !isNew && Math.abs(pendingResult.mult - baseMult) < 0.01
 
-                    const label = isPerm ? 'Multiplier' : 'Boost'
+                    const label = 'Boost'
                     const action = isNew ? 'won!' : 'active!'
                     return (
                       <div style={{ marginTop: 16, fontSize: 13, fontWeight: 800, color: c.glow, background: `${c.glow}22`, border: `1px solid ${c.glow}55`, borderRadius: 50, padding: '6px 18px', display: 'inline-block', animation: 'hbFadeIn 0.5s both' }}>

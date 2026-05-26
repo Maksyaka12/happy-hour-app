@@ -657,7 +657,7 @@ export function ProfileSection({ address, basename }) {
 
           {/* Left: HP Multiplier Status */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>HP Mult</div>
+            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>HP BOOST</div>
             <div style={{
               display: 'flex',
               alignItems: 'center',
@@ -692,7 +692,7 @@ export function ProfileSection({ address, basename }) {
 
           {/* Center: Activity Multiplier Status */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>Activity Mult</div>
+            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>ACTIVITY BOOST</div>
             <div style={{
               display: 'flex',
               alignItems: 'center',
@@ -746,13 +746,13 @@ export function ProfileSection({ address, basename }) {
         </div>
       </div>
 
-      {/* Account Progression: HP Multiplier Roadmap */}
+      {/* Account Progression: HP Boost Roadmap */}
       <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, marginBottom: 12 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>HP Multiplier</div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>HP Boost</div>
             <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>
-              Permanent multiplier for all earned <strong style={{ color: '#0000FF' }}>HP</strong>.
+              Permanent boost for all earned <strong style={{ color: '#0000FF' }}>HP</strong>.
             </div>
           </div>
           <div style={{
@@ -831,7 +831,7 @@ export function ProfileSection({ address, basename }) {
             textTransform: 'uppercase',
             letterSpacing: 0.5
           }}>
-            YOU REACHED MAX MULTIPLIER
+            YOU REACHED MAX HP BOOST
           </div>
         )}
         {upgradeError && (
@@ -839,13 +839,13 @@ export function ProfileSection({ address, basename }) {
         )}
       </div>
 
-      {/* Account Progression: Activity Multiplier Roadmap */}
+      {/* Account Progression: Activity Boost Roadmap */}
       <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, marginBottom: 12 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Activity Multiplier</div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Activity Boost</div>
             <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>
-              Permanent multiplier for all earned <strong style={{ color: '#10B981' }}>Activity Points</strong>.
+              Permanent boost for all earned <strong style={{ color: '#10B981' }}>Activity Points</strong>.
             </div>
           </div>
           <div style={{
@@ -920,7 +920,7 @@ export function ProfileSection({ address, basename }) {
             textTransform: 'uppercase',
             letterSpacing: 0.5
           }}>
-            YOU REACHED MAX MULTIPLIER
+            YOU REACHED MAX ACTIVITY BOOST
           </div>
         )}
       </div>
@@ -959,7 +959,7 @@ export function ProfileSection({ address, basename }) {
               <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Daily Claim</div>
               <div style={{ background: '#0000FF', color: '#fff', padding: '1px 6px', borderRadius: 50, fontSize: 8, fontWeight: 900 }}>+2 HP</div>
             </div>
-            <div style={{ fontSize: 9, color: '#717886', marginTop: 4, fontWeight: 500 }}>Once every 24 hours</div>
+            <div style={{ fontSize: 9, color: '#717886', marginTop: 4, fontWeight: 500 }}>Climb the top</div>
           </div>
           <div style={{ marginTop: 14 }}>
             {canBoost ? (
@@ -1390,7 +1390,7 @@ export function ProfileSection({ address, basename }) {
       {txModal === 'upgrade_ap' && selectedApLevel && (
         <TxModal
           title={`Upgrade to AP ${selectedApLevel.name}`}
-          subtitle={`Permanent ${selectedApLevel.mult}x multiplier for all Activity Points you earn.`}
+          subtitle={`Permanent ${selectedApLevel.mult}x boost for all Activity Points you earn.`}
           amount={selectedApLevel.price}
           isPending={isPendingApUpgrade}
           isConfirming={isConfirmingApUpgrade}
@@ -1407,7 +1407,7 @@ export function ProfileSection({ address, basename }) {
       {txModal === 'upgrade' && selectedLevel && (
         <TxModal
           title={`Upgrade to ${selectedLevel.name}`}
-          subtitle={`Permanent ${selectedLevel.mult}x multiplier for all HP you earn.`}
+          subtitle={`Permanent ${selectedLevel.mult}x boost for all HP you earn.`}
           amount={selectedLevel.price}
           isPending={isPendingUpgrade}
           isConfirming={isConfirmingUpgrade}
