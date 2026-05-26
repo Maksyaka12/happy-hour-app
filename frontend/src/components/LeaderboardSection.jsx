@@ -113,7 +113,7 @@ export function LeaderboardSection({ address }) {
         <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', paddingTop: 0, paddingBottom: 32 }}>
           <div style={{
             fontFamily: "'Barlow Condensed', sans-serif",
-            fontSize: 46,
+            fontSize: 52,
             fontWeight: 900,
             color: '#fff',
             lineHeight: 1,
