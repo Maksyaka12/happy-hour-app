@@ -925,28 +925,52 @@ export function ProfileSection({ address, basename }) {
         )}
       </div>
 
-      {/* Daily Actions: Daily Check-in */}
-      <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, marginBottom: 12 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      {/* 2-Column Action Grid: Daily Rewards */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+        {/* Check-in Tile */}
+        <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Daily Check-in</div>
-              <div style={{ background: '#0000FF', color: '#fff', padding: '2px 8px', borderRadius: 50, fontSize: 9, fontWeight: 900 }}>+1 HP</div>
+              <div style={{ background: '#0000FF', color: '#fff', padding: '1px 6px', borderRadius: 50, fontSize: 8, fontWeight: 900 }}>+1 HP</div>
             </div>
-            <div style={{ fontSize: 9, color: '#717886', marginTop: 4, fontWeight: 500 }}>
-              Confirm your presence on-chain, build your streak, and earn <strong style={{ color: '#0000FF' }}>HP</strong>.
-            </div>
+            <div style={{ fontSize: 9, color: '#717886', marginTop: 4, fontWeight: 500 }}>Confirm your presence on-chain, build your streak, and earn <strong style={{ color: '#0000FF' }}>HP</strong>.</div>
           </div>
-          <div style={{ marginLeft: 16, flexShrink: 0 }}>
+          <div style={{ marginTop: 14 }}>
             {canCheckin ? (
               <button
                 onClick={() => setTxModal('checkin')}
-                style={{ background: '#0000FF', color: '#fff', borderRadius: 50, padding: '10px 20px', fontSize: 11, fontWeight: 800, border: 'none', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,255,0.2)' }}
+                style={{ width: '100%', background: '#0000FF', color: '#fff', borderRadius: 50, padding: '10px', fontSize: 11, fontWeight: 800, border: 'none', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,255,0.2)' }}
               >
                 ✓ Claim <span style={{ color: '#A5B4FC', textTransform: 'lowercase' }}>free</span>
               </button>
             ) : (
-              <div style={{ textAlign: 'center', padding: '10px 16px', background: '#ECFDF5', borderRadius: 50, border: '1px solid #D1FAE5', fontSize: 9, color: '#059669', fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+              <div style={{ textAlign: 'center', padding: '10px 4px', background: '#ECFDF5', borderRadius: 50, border: '1px solid #D1FAE5', fontSize: 8, color: '#059669', fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                RESETS AT 00:00 UTC
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Daily Claim Tile */}
+        <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Daily Claim</div>
+              <div style={{ background: '#0000FF', color: '#fff', padding: '1px 6px', borderRadius: 50, fontSize: 8, fontWeight: 900 }}>+2 HP</div>
+            </div>
+            <div style={{ fontSize: 9, color: '#717886', marginTop: 4, fontWeight: 500 }}>Accelerate your earnings and get additional <strong style={{ color: '#0000FF' }}>HP</strong>.</div>
+          </div>
+          <div style={{ marginTop: 14 }}>
+            {canBoost ? (
+              <button
+                onClick={() => setTxModal('boost')}
+                style={{ width: '100%', background: '#0000FF', color: '#fff', borderRadius: 50, padding: '10px', fontSize: 11, fontWeight: 800, border: 'none', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}
+              >
+                ✓ Claim <span style={{ color: '#A5B4FC' }}>0.10</span><img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14 }} />
+              </button>
+            ) : (
+              <div style={{ textAlign: 'center', padding: '10px 4px', background: '#ECFDF5', borderRadius: 50, border: '1px solid #D1FAE5', fontSize: 8, color: '#059669', fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5 }}>
                 RESETS AT 00:00 UTC
               </div>
             )}
@@ -1342,6 +1366,23 @@ export function ProfileSection({ address, basename }) {
           onCancel={() => {
             setTxModal(false)
             reset()
+          }}
+        />
+      )}
+
+      {txModal === 'boost' && (
+        <TxModal
+          title="Daily HP Boost"
+          subtitle="Get +2 HP instantly"
+          amount={BOOST_AMOUNT}
+          isPending={isPendingBoost}
+          isConfirming={isConfirmingBoost}
+          isSuccess={isSuccessBoost}
+          error={boostWriteError}
+          onConfirm={sendBoost}
+          onCancel={() => {
+            setTxModal(false)
+            resetBoost()
           }}
         />
       )}

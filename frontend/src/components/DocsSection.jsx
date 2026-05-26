@@ -503,8 +503,8 @@ export function DocsSection({ onClose }) {
                 headers={['Box Tier', 'Price (USDC)', 'HP Reward Range', 'Special Jackpot Chance']}
                 rows={[
                   ['Common Box', '0.20 USDC', '2.0 – 4.0 HP (Avg: 3.0 HP)', 'None'],
-                  ['Epic Box', '0.45 USDC', '5.0 – 10.0 HP (Avg: 7.5 HP)', '5% chance for 2x Multiplier for 24 hours'],
-                  ['Legendary Box', '0.95 USDC', '11.0 – 20.0 HP (Avg: 15.5 HP)', '2.5% chance for 5x Multiplier for 24 hours'],
+                  ['Epic Box', '0.45 USDC', '5.0 – 10.0 HP (Avg: 7.5 HP)', 'None'],
+                  ['Legendary Box', '0.95 USDC', '11.0 – 20.0 HP (Avg: 15.5 HP)', 'None'],
                 ]}
               />
               <InfoBox type="tip">

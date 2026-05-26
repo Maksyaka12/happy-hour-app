@@ -31,7 +31,7 @@ const BOX_CONFIG = {
     label: 'Epic',
     badge: '🔥 HOT',
     hp: '5.0 – 10.0 HP',
-    boost: '+ Chance for 2x Boost',
+    boost: null,
     accent: '#8B5CF6',
     glow: 'rgba(139,92,246,0.12)',
     border: '#DDD6FE',
@@ -50,7 +50,7 @@ const BOX_CONFIG = {
     label: 'Legendary',
     badge: '⚡ JACKPOT',
     hp: '11.0 – 20.0 HP',
-    boost: '+ Chance for 5x Boost',
+    boost: null,
     accent: '#D97706',
     glow: 'rgba(217,119,6,0.12)',
     border: '#FDE68A',
@@ -299,7 +299,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             Open Your Happy Boxes
           </div>
           <div style={{ fontSize: 17, color: '#F59E0B', fontWeight: 800, marginTop: 2, textShadow: '0 2px 12px rgba(0,0,0,0.6)', letterSpacing: '0.1px' }}>
-            to win HP and Boosts
+            to win massive HP rewards
           </div>
         </div>
       </div>
@@ -418,9 +418,9 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         </div>
         {[
           ['How do Happy Boxes work?', 'Choose a box to try your luck and win HP instantly. Each box has a different range of possible rewards.'],
-          ['What can I win?', 'Every box contains HP. Epic and Legendary boxes also give you a chance to win a 2x or 5x boost.'],
+          ['What can I win?', 'Every box contains HP. The higher the box tier, the more HP you can win.'],
           ['Are rewards guaranteed?', 'Yes, every box contains at least the minimum amount of HP shown in the description.'],
-          ['How does the multiplier work?', 'If you have an active multiplier, it will be applied to your boxes. If you win a higher boost from a box, it will be applied instantly and last for 24h for all earned HP. Once it expires, your permanent multiplier resumes.'],
+          ['How does the multiplier work?', 'If you have an active HP Multiplier from your profile, it will automatically multiply the HP rewards you receive from opening boxes.'],
         ].map(([q, a], i, arr) => (
           <div key={i} style={{ marginBottom: i < arr.length - 1 ? 14 : 0 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: '#0A0B0D', marginBottom: 3 }}>{q}</div>
