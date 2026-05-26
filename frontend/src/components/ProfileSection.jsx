@@ -934,7 +934,7 @@ export function ProfileSection({ address, basename }) {
               <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Daily Check-in</div>
               <div style={{ background: '#0000FF', color: '#fff', padding: '1px 6px', borderRadius: 50, fontSize: 8, fontWeight: 900 }}>+1 HP</div>
             </div>
-            <div style={{ fontSize: 9, color: '#717886', marginTop: 4, fontWeight: 500 }}>Confirm your presence on-chain, build your streak, and earn <strong style={{ color: '#0000FF' }}>HP</strong>.</div>
+            <div style={{ fontSize: 9, color: '#717886', marginTop: 4, fontWeight: 500 }}>Build your streak</div>
           </div>
           <div style={{ marginTop: 14 }}>
             {canCheckin ? (
@@ -959,7 +959,7 @@ export function ProfileSection({ address, basename }) {
               <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Daily Claim</div>
               <div style={{ background: '#0000FF', color: '#fff', padding: '1px 6px', borderRadius: 50, fontSize: 8, fontWeight: 900 }}>+2 HP</div>
             </div>
-            <div style={{ fontSize: 9, color: '#717886', marginTop: 4, fontWeight: 500 }}>Accelerate your earnings and get additional <strong style={{ color: '#0000FF' }}>HP</strong>.</div>
+            <div style={{ fontSize: 9, color: '#717886', marginTop: 4, fontWeight: 500 }}>Once every 24 hours</div>
           </div>
           <div style={{ marginTop: 14 }}>
             {canBoost ? (
