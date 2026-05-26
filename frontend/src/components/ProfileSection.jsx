@@ -746,183 +746,217 @@ export function ProfileSection({ address, basename }) {
         </div>
       </div>
 
-      {/* Account Progression: HP Boost Roadmap */}
-      <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, marginBottom: 12 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+      {/* 2-Column Grid: HP Boost & Activity Boost (Senior Dev Premium Overhaul) */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+        
+        {/* HP Boost Card */}
+        <div style={{
+          background: '#fff',
+          border: '1px solid #DEE1E7',
+          borderRadius: 24,
+          padding: 16,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          boxShadow: '0 4px 20px rgba(0,0,255,0.02)',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>HP Boost</div>
-            <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>
-              Permanent boost for all earned <strong style={{ color: '#0000FF' }}>HP</strong>.
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: 14 }}>⚡</span>
+                <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>HP Boost</div>
+              </div>
+              <div style={{
+                background: (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 1.0 ? '#F1F5F9' : '#EEF2FF',
+                color: (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 1.0 ? '#64748B' : '#0000FF',
+                padding: '2px 8px',
+                borderRadius: 50,
+                fontSize: 10,
+                fontWeight: 900,
+              }}>
+                {LEVELS.find(l => l.level === accountLevel)?.mult}x
+              </div>
+            </div>
+
+            {/* Subtext */}
+            <div style={{ fontSize: 9, color: '#717886', fontWeight: 500, marginBottom: 14, lineHeight: 1.3 }}>
+              Permanent boost on all earned <strong style={{ color: '#0000FF' }}>HP</strong> rewards.
+            </div>
+
+            {/* Sleek pill progress bar (5 segments) */}
+            <div style={{ display: 'flex', gap: 3, marginBottom: 16 }}>
+              {[1, 2, 3, 4, 5].map((lvl) => {
+                const active = lvl <= accountLevel;
+                return (
+                  <div
+                    key={lvl}
+                    style={{
+                      flex: 1,
+                      height: 4,
+                      borderRadius: 2,
+                      background: active ? '#0000FF' : '#E2E8F0',
+                      transition: 'background 0.3s ease'
+                    }}
+                  />
+                );
+              })}
             </div>
           </div>
-          <div style={{
-            background: (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 1.0
-              ? '#94A3B8'
-              : (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 2.0
-                ? '#059669'
-                : '#F97316',
-            color: '#fff',
-            padding: '2px 10px',
-            borderRadius: 50,
-            fontSize: 9,
-            fontWeight: 900,
-            marginTop: 1
-          }}>
-            {LEVELS.find(l => l.level === accountLevel)?.mult}x
-          </div>
-        </div>
 
-        {/* Level Roadmap */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, position: 'relative', padding: '0 10px' }}>
-          <div style={{ position: 'absolute', top: 27, left: 20, right: 20, height: 2, background: '#F1F5F9', zIndex: 0 }} />
-          {LEVELS.map(l => {
-            const isActive = l.level <= accountLevel
-            const isCurrent = l.level === accountLevel
-            const nameColor = isActive ? '#059669' : '#94A3B8'
-
-            return (
-              <div key={l.level} style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-                <div style={{ fontSize: 7, fontWeight: 900, color: nameColor, textTransform: 'uppercase' }}>{l.name}</div>
-                <div style={{
-                  width: 26,
-                  height: 26,
-                  borderRadius: '50%',
-                  background: isCurrent || isActive
-                    ? (l.mult === 1.0 ? '#94A3B8' : l.mult === 2.0 ? '#34D399' : '#F97316')
-                    : '#fff',
-                  border: isCurrent ? '4px solid #DBEAFE' : '2px solid #E2E8F0',
+          {/* Upgrade Button / Max Level Badge */}
+          <div>
+            {accountLevel < 5 ? (
+              <button
+                onClick={() => {
+                  const next = LEVELS.find(l => l.level === accountLevel + 1)
+                  setSelectedLevel(next)
+                  setTxModal('upgrade')
+                }}
+                style={{
+                  width: '100%',
+                  background: '#0000FF',
+                  color: '#fff',
+                  borderRadius: 50,
+                  padding: '10px 10px',
+                  fontSize: 11,
+                  fontWeight: 800,
+                  border: 'none',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(0,0,255,0.2)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  boxShadow: isCurrent ? `0 0 15px ${l.mult === 2.0 ? 'rgba(52,211,153,0.3)' : 'rgba(249,115,22,0.3)'}` : 'none'
-                }}>
-                  <span style={{ fontSize: 9, color: isCurrent || isActive ? '#fff' : '#94A3B8', fontWeight: 900 }}>{l.mult}x</span>
-                </div>
+                  gap: 4
+                }}
+              >
+                <span>Upgrade · {LEVELS.find(l => l.level === accountLevel + 1)?.price.toFixed(2)}</span>
+                <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12 }} />
+              </button>
+            ) : (
+              <div style={{
+                textAlign: 'center',
+                padding: '9px',
+                background: '#ECFDF5',
+                borderRadius: 50,
+                border: '1px solid #D1FAE5',
+                fontSize: 9,
+                color: '#059669',
+                fontWeight: 800,
+                letterSpacing: 0.5
+              }}>
+                ✓ MAX BOOST
               </div>
-            )
-          })}
+            )}
+          </div>
         </div>
 
-        {accountLevel < 5 && (
-          <button
-            onClick={() => {
-              const next = LEVELS.find(l => l.level === accountLevel + 1)
-              setSelectedLevel(next)
-              setTxModal('upgrade')
-            }}
-            style={{ width: '100%', background: '#0000FF', color: '#fff', borderRadius: 50, padding: '10px 12px', fontSize: 11, fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, boxShadow: '0 4px 12px rgba(0,0,255,0.2)' }}
-          >
-            {LEVELS.find(l => l.level === accountLevel)?.name.toUpperCase()} → {LEVELS.find(l => l.level === accountLevel + 1)?.name.toUpperCase()}
-            <span style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: 20, fontSize: 11, display: 'flex', alignItems: 'center', gap: 4, color: '#A5B4FC' }}>
-              {LEVELS.find(l => l.level === accountLevel + 1)?.price.toFixed(2)}<img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14 }} />
-            </span>
-          </button>
-        )}
-        {accountLevel === 5 && (
-          <div style={{
-            textAlign: 'center',
-            padding: '12px',
-            background: '#ECFDF5',
-            borderRadius: 50,
-            border: '1px solid #D1FAE5',
-            fontSize: 10,
-            color: '#059669',
-            fontWeight: 800,
-            textTransform: 'uppercase',
-            letterSpacing: 0.5
-          }}>
-            YOU REACHED MAX HP BOOST
-          </div>
-        )}
-        {upgradeError && (
-          <div style={{ color: '#DC2626', fontSize: 12, marginTop: 12, textAlign: 'center', fontWeight: 600 }}>⚠️ {upgradeError}</div>
-        )}
-      </div>
-
-      {/* Account Progression: Activity Boost Roadmap */}
-      <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, marginBottom: 12 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+        {/* Activity Boost Card */}
+        <div style={{
+          background: '#fff',
+          border: '1px solid #DEE1E7',
+          borderRadius: 24,
+          padding: 16,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          boxShadow: '0 4px 20px rgba(16,185,129,0.02)',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Activity Boost</div>
-            <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>
-              Permanent boost for all earned <strong style={{ color: '#10B981' }}>Activity Points</strong>.
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: 14 }}>🚀</span>
+                <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Activity Boost</div>
+              </div>
+              <div style={{
+                background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                color: '#fff',
+                padding: '2px 8px',
+                borderRadius: 50,
+                fontSize: 10,
+                fontWeight: 900,
+              }}>
+                {ACTIVITY_LEVELS.find(l => l.level === activityLevel)?.mult}x
+              </div>
+            </div>
+
+            {/* Subtext */}
+            <div style={{ fontSize: 9, color: '#717886', fontWeight: 500, marginBottom: 14, lineHeight: 1.3 }}>
+              Permanent boost on all <strong style={{ color: '#10B981' }}>Activity Points</strong> earned.
+            </div>
+
+            {/* Sleek pill progress bar (5 segments) */}
+            <div style={{ display: 'flex', gap: 3, marginBottom: 16 }}>
+              {[1, 2, 3, 4, 5].map((lvl) => {
+                const active = lvl <= activityLevel;
+                return (
+                  <div
+                    key={lvl}
+                    style={{
+                      flex: 1,
+                      height: 4,
+                      borderRadius: 2,
+                      background: active ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' : '#E2E8F0',
+                      transition: 'background 0.3s ease'
+                    }}
+                  />
+                );
+              })}
             </div>
           </div>
-          <div style={{
-            background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-            color: '#fff',
-            padding: '2px 10px',
-            borderRadius: 50,
-            fontSize: 9,
-            fontWeight: 900,
-            marginTop: 1
-          }}>
-            {ACTIVITY_LEVELS.find(l => l.level === activityLevel)?.mult}x
-          </div>
-        </div>
 
-        {/* Level Roadmap */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, position: 'relative', padding: '0 10px' }}>
-          <div style={{ position: 'absolute', top: 27, left: 20, right: 20, height: 2, background: '#F1F5F9', zIndex: 0 }} />
-          {ACTIVITY_LEVELS.map(l => {
-            const isActive = l.level <= activityLevel
-            const isCurrent = l.level === activityLevel
-            const nameColor = isActive ? '#059669' : '#94A3B8'
-
-            return (
-              <div key={l.level} style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-                <div style={{ fontSize: 7, fontWeight: 900, color: nameColor, textTransform: 'uppercase' }}>{l.name}</div>
-                <div style={{
-                  width: 26,
-                  height: 26,
-                  borderRadius: '50%',
-                  background: isCurrent || isActive
-                    ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
-                    : '#fff',
-                  border: isCurrent ? '4px solid #D1FAE5' : '2px solid #E2E8F0',
+          {/* Upgrade Button / Max Level Badge */}
+          <div>
+            {activityLevel < 5 ? (
+              <button
+                onClick={() => {
+                  const next = ACTIVITY_LEVELS.find(l => l.level === activityLevel + 1)
+                  setSelectedApLevel(next)
+                  setTxModal('upgrade_ap')
+                }}
+                style={{
+                  width: '100%',
+                  background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                  color: '#fff',
+                  borderRadius: 50,
+                  padding: '10px 10px',
+                  fontSize: 11,
+                  fontWeight: 800,
+                  border: 'none',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(16,185,129,0.2)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  boxShadow: isCurrent ? '0 0 15px rgba(16,185,129,0.3)' : 'none'
-                }}>
-                  <span style={{ fontSize: 9, color: isCurrent || isActive ? '#fff' : '#94A3B8', fontWeight: 900 }}>{l.mult}x</span>
-                </div>
+                  gap: 4
+                }}
+              >
+                <span>Upgrade · {ACTIVITY_LEVELS.find(l => l.level === activityLevel + 1)?.price.toFixed(2)}</span>
+                <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12 }} />
+              </button>
+            ) : (
+              <div style={{
+                textAlign: 'center',
+                padding: '9px',
+                background: '#ECFDF5',
+                borderRadius: 50,
+                border: '1px solid #D1FAE5',
+                fontSize: 9,
+                color: '#059669',
+                fontWeight: 800,
+                letterSpacing: 0.5
+              }}>
+                ✓ MAX BOOST
               </div>
-            )
-          })}
+            )}
+          </div>
         </div>
 
-        {activityLevel < 5 && (
-          <button
-            onClick={() => {
-              const next = ACTIVITY_LEVELS.find(l => l.level === activityLevel + 1)
-              setSelectedApLevel(next)
-              setTxModal('upgrade_ap')
-            }}
-            style={{ width: '100%', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', color: '#fff', borderRadius: 50, padding: '10px 12px', fontSize: 11, fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, boxShadow: '0 4px 12px rgba(16,185,129,0.2)' }}
-          >
-            {ACTIVITY_LEVELS.find(l => l.level === activityLevel)?.name.toUpperCase()} → {ACTIVITY_LEVELS.find(l => l.level === activityLevel + 1)?.name.toUpperCase()}
-            <span style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: 20, fontSize: 11, display: 'flex', alignItems: 'center', gap: 4, color: '#D1FAE5' }}>
-              {ACTIVITY_LEVELS.find(l => l.level === activityLevel + 1)?.price.toFixed(2)}<img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14 }} />
-            </span>
-          </button>
-        )}
-        {activityLevel === 5 && (
-          <div style={{
-            textAlign: 'center',
-            padding: '12px',
-            background: '#ECFDF5',
-            borderRadius: 50,
-            border: '1px solid #D1FAE5',
-            fontSize: 10,
-            color: '#059669',
-            fontWeight: 800,
-            textTransform: 'uppercase',
-            letterSpacing: 0.5
-          }}>
-            YOU REACHED MAX ACTIVITY BOOST
-          </div>
-        )}
       </div>
 
       {/* 2-Column Action Grid: Daily Rewards */}
