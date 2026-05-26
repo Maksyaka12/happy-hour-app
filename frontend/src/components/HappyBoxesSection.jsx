@@ -274,10 +274,10 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
 
         {/* Floating gift background decorations */}
         {[
-          { top: -10, right: '8%', size: 54, opacity: 0.14, r: '-12deg', blur: 0.5, dur: 4.2 },
-          { top: 45, right: '18%', size: 32, opacity: 0.11, r: '14deg', blur: 0, dur: 4.8 },
-          { top: -20, left: '60%', size: 48, opacity: 0.12, r: '22deg', blur: 1, dur: 5.4 },
-          { bottom: 10, right: '3%', size: 62, opacity: 0.16, r: '8deg', blur: 1.2, dur: 4.6 }
+          { top: '-5px', left: '5%', size: 54, opacity: 0.14, r: '-12deg', blur: 0.5, dur: 4.2 },
+          { top: '10px', right: '25%', size: 40, opacity: 0.11, r: '14deg', blur: 0, dur: 4.8 },
+          { bottom: '5px', left: '40%', size: 48, opacity: 0.12, r: '22deg', blur: 1, dur: 5.4 },
+          { bottom: '15px', right: '5%', size: 62, opacity: 0.16, r: '8deg', blur: 1.2, dur: 4.6 }
         ].map((s, i) => (
           <div key={i} style={{
             position: 'absolute',
@@ -303,9 +303,8 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
 
         <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'flex-start' }}>
           <div style={{
-            fontFamily: "'Barlow Condensed', sans-serif",
-            fontSize: '26px',
-            fontWeight: 900,
+            fontSize: '32px',
+            fontWeight: 700,
             color: '#fff',
             textTransform: 'uppercase',
             letterSpacing: '0.5px',
@@ -317,12 +316,12 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           </div>
           
           <div style={{
-            fontSize: '9px',
-            color: 'rgba(255,255,255,0.6)',
+            fontSize: '13px',
+            color: 'rgba(255,255,255,0.7)',
             marginTop: '8px',
             letterSpacing: '0.1px',
             fontWeight: 500,
-            lineHeight: 1.4,
+            lineHeight: 1.5,
             textAlign: 'left'
           }}>
             * Each box contains from 2 to 20 HP.<br />
