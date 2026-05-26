@@ -57,8 +57,8 @@ export default function App() {
 
   const tabLabels = {
     raffle: 'Happy Raffle',
-    boxes: 'Happy Boxes',
     tasks: 'Tasks',
+    boxes: 'Happy Boxes',
     daily: 'Daily Rewards',
     leaderboard: 'Leaderboard',
     profile: 'Profile',
