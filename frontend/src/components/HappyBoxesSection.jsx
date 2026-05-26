@@ -400,7 +400,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           boxShadow: '0 4px 16px rgba(139,92,246,0.3)',
           animation: 'hbFadeIn 0.3s ease, hbPulseGlow 2s infinite'
         }}>
-          🎉 Payment Confirmed! Tap any box below to reveal your reward!
+          🎉 Paid! Tap any box to reveal!
         </div>
       )}
 
@@ -428,7 +428,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           if (chest.status === 'locked') {
             if (anyOpened) {
               imageFilter = 'blur(2px) grayscale(30%) drop-shadow(0 4px 10px rgba(0,0,0,0.1))'
-              imageOpacity = 0.45
+              imageOpacity = 0.65
             } else {
               imageFilter = 'grayscale(60%) brightness(0.9) drop-shadow(0 4px 8px rgba(0,0,0,0.05))'
               imageOpacity = 0.3
@@ -517,26 +517,6 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                         }}
                       />
-                      
-                      {/* Blinking "Tap to Open" helper tag for active chests */}
-                      {chest.status === 'active' && (
-                        <div style={{
-                          position: 'absolute',
-                          bottom: 8,
-                          background: 'rgba(139, 92, 246, 0.1)',
-                          color: '#8B5CF6',
-                          border: '1px solid rgba(139, 92, 246, 0.3)',
-                          borderRadius: 20,
-                          padding: '2px 8px',
-                          fontSize: 7.5,
-                          fontWeight: 900,
-                          letterSpacing: '0.5px',
-                          textTransform: 'uppercase',
-                          animation: 'hbPulse 1.5s infinite'
-                        }}>
-                          ✨ Tap to Open
-                        </div>
-                      )}
 
                       {chest.status === 'locked' && !hasActiveChoice && anyOpened && (
                         <div style={{
