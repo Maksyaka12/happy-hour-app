@@ -110,6 +110,44 @@ export function LeaderboardSection({ address }) {
       }}>
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 0 }} />
 
+        {/* Floating trophy background decorations */}
+        {[
+          { top: -10, right: '8%', size: 54, opacity: 0.14, r: '-12deg', blur: 0.5, dur: 4.2 },
+          { top: 45, right: '18%', size: 32, opacity: 0.11, r: '14deg', blur: 0, dur: 4.8 },
+          { top: -20, left: '12%', size: 48, opacity: 0.12, r: '22deg', blur: 1, dur: 5.4 },
+          { bottom: -8, left: '26%', size: 40, opacity: 0.13, r: '-15deg', blur: 0.8, dur: 4.0 },
+          { bottom: 10, right: '3%', size: 62, opacity: 0.16, r: '8deg', blur: 1.2, dur: 4.6 }
+        ].map((s, i) => (
+          <div key={i} style={{
+            position: 'absolute',
+            top: s.top,
+            right: s.right,
+            left: s.left,
+            bottom: s.bottom,
+            zIndex: 1,
+            pointerEvents: 'none',
+            userSelect: 'none',
+            animation: `seasonalTrophyFloat ${s.dur}s ease-in-out infinite`,
+          }}>
+            <div style={{
+              fontSize: `${s.size}px`,
+              opacity: s.opacity,
+              filter: s.blur > 0 ? `blur(${s.blur}px) drop-shadow(0 0 10px rgba(60,138,255,0.25))` : 'drop-shadow(0 0 10px rgba(60,138,255,0.25))',
+              transform: `rotate(${s.r})`,
+            }}>
+              🏆
+            </div>
+          </div>
+        ))}
+
+        <style dangerouslySetInnerHTML={{ __html: `
+          @keyframes seasonalTrophyFloat {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+          }
+        ` }} />
+
         <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', paddingTop: 0, paddingBottom: 32 }}>
           <div style={{
             fontFamily: "'Barlow Condensed', sans-serif",
