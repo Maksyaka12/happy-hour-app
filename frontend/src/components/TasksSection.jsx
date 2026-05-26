@@ -62,7 +62,7 @@ function TaskCard({ task, taskState, onVisit, onCheck, onClaim, isClaiming }) {
             {task.text}
           </div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 2 }}>
-            <span style={{ fontSize: 9, color: '#10B981', fontWeight: 800, background: 'rgba(16,185,129,0.08)', borderRadius: 6, padding: '1px 6px', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: 9, color: '#10B981', fontWeight: 800, background: 'rgba(16,185,129,0.08)', borderRadius: 6, padding: '1px 6px' }}>
               +20 Activity Points
             </span>
             <span style={{ fontSize: 9, color: '#64748B', fontWeight: 600 }}>⏰ {fmt(left)} left</span>
@@ -239,15 +239,13 @@ export function TasksSection({ address }) {
 
   const startEditing = (task) => {
     setEditingTaskId(task.id)
-    const leftMs = new Date(task.expires_at).getTime() - Date.now()
-    const leftHours = Math.max(1, Math.round(leftMs / 3600000))
     setEditTaskState({
       type: task.type,
       text: task.text,
       url: task.url,
       points: task.points,
       icon_url: task.icon_url || '',
-      expires_hours: leftHours
+      expires_hours: 24
     })
   }
 
@@ -811,12 +809,7 @@ export function TasksSection({ address }) {
                     </div>
                   </div>
                   
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: '#717886' }}>Hours:</span>
-                      <input type="number" min="1" max="8760" value={task.expires_hours || 24} onChange={e => updateTaskRow(idx, 'expires_hours', e.target.value)} style={{ width: 60, padding: 8, borderRadius: 8, border: '1px solid #ccc', background: '#fff', fontSize: 13 }} />
-                    </div>
-                  </div>
+
                 </div>
               ))}
 
@@ -897,16 +890,7 @@ export function TasksSection({ address }) {
                           </label>
                         </div>
 
-                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                          <span style={{ fontSize: 12, fontWeight: 600, color: '#717886' }}>Hours Left:</span>
-                          <input
-                            type="number"
-                            min="1"
-                            value={editTaskState.expires_hours || 24}
-                            onChange={e => setEditTaskState({ ...editTaskState, expires_hours: Number(e.target.value) })}
-                            style={{ flex: 1, padding: 6, borderRadius: 8, border: '1px solid #ccc', fontSize: 13 }}
-                          />
-                        </div>
+
 
                         <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
                           <button
