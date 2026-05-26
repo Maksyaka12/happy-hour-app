@@ -431,7 +431,7 @@ export function DocsSection({ onClose }) {
                   ['Happy Boxes (Common Box)', '2.0 – 4.0 HP (Avg: 3.0 HP)'],
                   ['Happy Boxes (Epic Box)', '5.0 – 10.0 HP (Avg: 7.5 HP)'],
                   ['Happy Boxes (Legendary Box)', '11.0 – 20.0 HP (Avg: 15.5 HP)'],
-                  ['Post approval (Social)', '+3.0 to +5.0 HP per approved post'],
+                  ['Post approval (Social)', '+2.0 HP per approved post'],
                 ]}
               />
               <H3>What HP Is Used For</H3>

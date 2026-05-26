@@ -585,7 +585,7 @@ export function TasksSection({ address }) {
         }} />
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ fontSize: 16, fontWeight: 800, color: '#fff', marginBottom: 4 }}>
-            ✍️ Post about us and get <span style={{ color: '#A5B4FC' }}>+5 HP</span>
+            ✍️ Post about us and get <span style={{ color: '#A5B4FC' }}>+2 HP</span>
           </div>
           <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', marginBottom: 14, lineHeight: 1.5, fontWeight: 500 }}>
             We value creators on Base. Post about our app or share useful content about Base and submit your link below.
