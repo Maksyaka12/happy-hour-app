@@ -7,116 +7,22 @@ import { db } from '../config/supabase'
 import { useBuilderWrite } from '../hooks/useBuilderWrite'
 import { TxModal } from './TxModal'
 
-const BOX_CONFIG = {
-  common: {
-    label: 'Common',
-    badge: 'ENTRY',
-    hp: '2.0 – 4.0 HP',
-    boost: null,
-    accent: '#6B7280',
-    glow: 'rgba(107,114,128,0.15)',
-    border: '#DEE1E7',
-    cardBg: '#ffffff',
-    cardBgHover: '#F8FAFC',
-    btnBg: 'linear-gradient(135deg, #4B5563, #374151)',
-    btnGlow: 'rgba(75,85,99,0.3)',
-    badgeBg: '#F1F5F9',
-    badgeColor: '#6B7280',
-    tagBg: '#F1F5F9',
-    tagColor: '#6B7280',
-    tagBorder: '#E2E8F0',
-    hpColor: '#374151',
-  },
-  epic: {
-    label: 'Epic',
-    badge: '🔥 HOT',
-    hp: '5.0 – 10.0 HP',
-    boost: null,
-    accent: '#8B5CF6',
-    glow: 'rgba(139,92,246,0.12)',
-    border: '#DDD6FE',
-    cardBg: '#FAFAFF',
-    cardBgHover: '#F5F3FF',
-    btnBg: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
-    btnGlow: 'rgba(139,92,246,0.35)',
-    badgeBg: '#EDE9FE',
-    badgeColor: '#7C3AED',
-    tagBg: '#EDE9FE',
-    tagColor: '#7C3AED',
-    tagBorder: '#DDD6FE',
-    hpColor: '#6D28D9',
-  },
-  legendary: {
-    label: 'Legendary',
-    badge: '⚡ JACKPOT',
-    hp: '11.0 – 20.0 HP',
-    boost: null,
-    accent: '#D97706',
-    glow: 'rgba(217,119,6,0.12)',
-    border: '#FDE68A',
-    cardBg: '#FFFDF5',
-    cardBgHover: '#FFFBEB',
-    btnBg: 'linear-gradient(135deg, #D97706, #B45309)',
-    btnGlow: 'rgba(217,119,6,0.4)',
-    badgeBg: '#FEF3C7',
-    badgeColor: '#B45309',
-    tagBg: '#FEF3C7',
-    tagColor: '#B45309',
-    tagBorder: '#FDE68A',
-    hpColor: '#B45309',
-  },
-}
-
-const LEVELS = [
-  { level: 1, mult: 1.0 },
-  { level: 2, mult: 1.2 },
-  { level: 3, mult: 1.5 },
-  { level: 4, mult: 1.7 },
-  { level: 5, mult: 2.0 },
-]
-
-const CINEMA = {
-  common: {
-    bg: 'radial-gradient(ellipse at center,#2D3748 0%,#0D1117 100%)',
-    flash: 'rgba(209,213,219,0.9)', glow: '#94A3B8', shake: 'hbShakeS',
-    btnBg: 'linear-gradient(135deg, #4B5563, #1F2937)', btnGlow: 'rgba(75,85,99,0.5)'
-  },
-  epic: {
-    bg: 'radial-gradient(ellipse at center,#4C1D95 0%,#1E1B4B 100%)',
-    flash: 'rgba(167,139,250,0.95)', glow: '#A78BFA', shake: 'hbShakeM',
-    btnBg: 'linear-gradient(135deg, #8B5CF6, #6D28D9)', btnGlow: 'rgba(139,92,246,0.5)'
-  },
-  legendary: {
-    bg: 'radial-gradient(ellipse at center,#92400E 0%,#1C0A00 100%)',
-    flash: 'rgba(252,211,77,0.97)', glow: '#FCD34D', shake: 'hbShakeL',
-    btnBg: 'linear-gradient(135deg, #D97706, #92400E)', btnGlow: 'rgba(217,119,6,0.5)'
-  },
-}
-
 export function HappyBoxesSection({ address, profile, onUpdate }) {
-  const [selectedBox, setSelectedBox] = useState(null)
-  const [isOpening, setIsOpening] = useState(false)
-  const [hoveredBox, setHoveredBox] = useState(null)
-  const [openAnimPhase, setOpenAnimPhase] = useState(0) // 0=shake 1=zoom 2=flash/open 3=hp-reveal
-  const [pendingResult, setPendingResult] = useState(null) // holds RPC result during animation
-  const [countDisplayHp, setCountDisplayHp] = useState(0)
-  const [showAwesome, setShowAwesome] = useState(false)
-  const [showBoostText, setShowBoostText] = useState(false)
-  const [userProfile, setUserProfile] = useState(null)
+  // State for the 6 chest cells
+  const [chests, setChests] = useState([
+    { id: 1, status: 'locked', hp: null },
+    { id: 2, status: 'locked', hp: null },
+    { id: 3, status: 'locked', hp: null },
+    { id: 4, status: 'locked', hp: null },
+    { id: 5, status: 'locked', hp: null },
+    { id: 6, status: 'locked', hp: null },
+  ])
 
-  useEffect(() => {
-    if (!address) return
-    db.from('users').select('active_multiplier, account_level').eq('address', address.toLowerCase()).maybeSingle()
-      .then(({ data }) => setUserProfile(data))
-  }, [address])
-
-  useEffect(() => {
-    if (!isOpening) { setOpenAnimPhase(0); return }
-    setOpenAnimPhase(0)
-    const t1 = setTimeout(() => setOpenAnimPhase(2), 3500)  // shake for 3.5s then flash
-    const t2 = setTimeout(() => setOpenAnimPhase(3), 4200)  // reward reveals
-    return () => { clearTimeout(t1); clearTimeout(t2) }
-  }, [isOpening])
+  const [hasActiveChoice, setHasActiveChoice] = useState(false)
+  const [activeTxHash, setActiveTxHash] = useState(null)
+  const [txModal, setTxModal] = useState(false) // 'single' | 'bundle' | false
+  const [revealingIndex, setRevealingIndex] = useState(null)
+  const [errorMessage, setErrorMessage] = useState('')
 
   const chainId = useChainId()
   const { switchChain, isPending: isSwitching } = useSwitchChain()
@@ -124,132 +30,198 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
 
   const { data: txHash, writeContract, isPending, isConfirming, isSuccess, error: writeError, reset } = useBuilderWrite()
 
-  const boxes = [
-    { id: 'common', name: 'Common Box', price: 0.20, img: '/box1.png' },
-    { id: 'epic', name: 'Epic Box', price: 0.45, img: '/box2.png' },
-    { id: 'legendary', name: 'Legendary Box', price: 0.95, img: '/box3.png' },
-  ]
+  // Load user's opened chests state from DB to keep persistency across sessions
+  const loadChestsState = async () => {
+    if (!address) return
+    try {
+      // Fetch latest 6 chests opened in the current session (standard or standard_all box types)
+      const { data, error } = await db
+        .from('opened_boxes')
+        .select('hp_won, applied_multiplier, box_type, created_at')
+        .eq('address', address.toLowerCase())
+        .in('box_type', ['standard', 'standard_all'])
+        .order('created_at', { ascending: false })
+        .limit(6)
+
+      if (error) throw error
+
+      if (data && data.length > 0) {
+        // Map persistent opened chests to the slots
+        const newChests = [...chests]
+        data.forEach((box, index) => {
+          if (index < 6) {
+            newChests[index] = {
+              id: index + 1,
+              status: 'opened',
+              hp: (box.hp_won * box.applied_multiplier).toFixed(1)
+            }
+          }
+        })
+        setChests(newChests)
+      }
+    } catch (err) {
+      console.error('Error loading chests:', err)
+    }
+  }
 
   useEffect(() => {
-    async function processBox() {
-      if (isSuccess && selectedBox && txHash && !isOpening) {
-        setIsOpening(true)
-        setShowAwesome(false)
-        setShowBoostText(false)
-        setCountDisplayHp(0)
+    loadChestsState()
+  }, [address])
 
-        try {
-          // Start RPC and animation simultaneously
-          const rpcCall = db.rpc('open_happy_box', {
-            p_address: address.toLowerCase(),
-            p_box_type: selectedBox.id,
-            p_tx_hash: txHash
-          })
-
-          // Wait for phases 0+1+2 to play (4s), then await RPC
-          await new Promise(r => setTimeout(r, 4000))
-          const { data, error } = await rpcCall
-          if (error) throw error
-
-          if (data?.ok) {
-            const baseHp = Math.round(data.hp_won / data.applied_multiplier)
-            const result = {
-              hp: data.hp_won,
-              mult: data.applied_multiplier,
-              wonNewMult: data.multiplier_won > 1,
-              baseHp,
-              boxId: selectedBox.id
-            }
-
-            setPendingResult(result)
-            setCountDisplayHp(baseHp)
-            if (onUpdate) onUpdate()
-
-            // If there's a boost, wait then count up
-            if (result.mult > 1) {
-              await new Promise(r => setTimeout(r, 1200)) // pause on base hp
-              setShowBoostText(true)
-              await new Promise(r => setTimeout(r, 800)) // let boost text sink in
-
-              // Count up animation
-              const target = result.hp
-              const duration = 2000 // slower count up
-              const start = Date.now()
-              await new Promise(resolve => {
-                const timer = setInterval(() => {
-                  const timePassed = Date.now() - start
-                  if (timePassed >= duration) {
-                    setCountDisplayHp(target)
-                    clearInterval(timer)
-                    resolve()
-                  } else {
-                    const p = timePassed / duration
-                    setCountDisplayHp(Math.round(baseHp + (target - baseHp) * (1 - (1 - p) * (1 - p))))
-                  }
-                }, 16)
-              })
-            }
-
-            await new Promise(r => setTimeout(r, 600))
-            setShowAwesome(true)
-          } else {
-            alert(data?.error || 'Failed to open box')
-            setIsOpening(false)
-            setSelectedBox(null)
-            reset()
-          }
-        } catch (err) {
-          console.error(err)
-          alert('Something went wrong opening the box.')
-          setIsOpening(false)
-          setSelectedBox(null)
-          reset()
-        }
-      }
-    }
-    processBox()
-  }, [isSuccess, txHash, selectedBox, address, onUpdate, reset, isOpening])
-
-  const handleConfirm = () => {
-    if (wrongChain) { switchChain({ chainId: base.id }); return }
-    if (!selectedBox) return
-    writeContract({ address: USDC_ADDRESS, abi: USDC_ABI, functionName: 'transfer', args: [CHECKIN_TARGET, parseUnits(selectedBox.price.toString(), 6)], chainId: base.id })
-  }
-
-  const closeAll = () => {
-    setIsOpening(false)
-    setPendingResult(null)
-    setShowAwesome(false)
-    setShowBoostText(false)
-    setCountDisplayHp(0)
-    setSelectedBox(null)
+  // Reset the grid board to start fresh
+  const handleResetBoard = () => {
+    setChests([
+      { id: 1, status: 'locked', hp: null },
+      { id: 2, status: 'locked', hp: null },
+      { id: 3, status: 'locked', hp: null },
+      { id: 4, status: 'locked', hp: null },
+      { id: 5, status: 'locked', hp: null },
+      { id: 6, status: 'locked', hp: null },
+    ])
+    setHasActiveChoice(false)
+    setActiveTxHash(null)
+    setRevealingIndex(null)
+    setErrorMessage('')
     reset()
   }
+
+  // Handle successful USDC transactions
+  useEffect(() => {
+    if (isSuccess && txHash) {
+      if (txModal === 'single') {
+        // Unlock chests for user selection
+        setActiveTxHash(txHash)
+        setHasActiveChoice(true)
+        setChests(prev => prev.map(c => c.status === 'locked' ? { ...c, status: 'active' } : c))
+        setTxModal(false)
+      } else if (txModal === 'bundle') {
+        // Open all 6 chests automatically
+        setTxModal(false)
+        handleOpenAllChests(txHash)
+      }
+    }
+  }, [isSuccess, txHash, txModal])
+
+  // Single chest transaction confirm
+  const handleSinglePayment = () => {
+    if (wrongChain) { switchChain({ chainId: base.id }); return }
+    setErrorMessage('')
+    writeContract({
+      address: USDC_ADDRESS,
+      abi: USDC_ABI,
+      functionName: 'transfer',
+      args: [CHECKIN_TARGET, parseUnits('0.30', 6)],
+      chainId: base.id
+    })
+  }
+
+  // Bundle transaction confirm (Open All)
+  const handleBundlePayment = () => {
+    if (wrongChain) { switchChain({ chainId: base.id }); return }
+    setErrorMessage('')
+    writeContract({
+      address: USDC_ADDRESS,
+      abi: USDC_ABI,
+      functionName: 'transfer',
+      args: [CHECKIN_TARGET, parseUnits('1.50', 6)],
+      chainId: base.id
+    })
+  }
+
+  // User selects an active chest to open
+  const handleSelectChest = async (index) => {
+    if (!hasActiveChoice || !activeTxHash || chests[index].status !== 'active') return
+
+    setRevealingIndex(index)
+    setHasActiveChoice(false) // Lock other clicks
+
+    try {
+      const { data, error } = await db.rpc('open_standard_chest', {
+        p_address: address.toLowerCase(),
+        p_tx_hash: activeTxHash
+      })
+
+      if (error) throw error
+
+      if (data?.ok) {
+        setChests(prev => prev.map((c, i) => i === index 
+          ? { ...c, status: 'opened', hp: data.hp_won } 
+          : { ...c, status: c.status === 'active' ? 'locked' : c.status }
+        ))
+        if (onUpdate) onUpdate()
+      } else {
+        setErrorMessage(data?.error || 'Failed to open chest')
+        setChests(prev => prev.map(c => c.status === 'active' ? { ...c, status: 'locked' } : c))
+      }
+    } catch (err) {
+      console.error(err)
+      setErrorMessage('Something went wrong opening the chest.')
+      setChests(prev => prev.map(c => c.status === 'active' ? { ...c, status: 'locked' } : c))
+    } finally {
+      setRevealingIndex(null)
+      setActiveTxHash(null)
+      reset()
+    }
+  }
+
+  // Open all 6 chests automatically with bundle transaction
+  const handleOpenAllChests = async (hash) => {
+    setErrorMessage('')
+    // Set all chests to revealing status
+    setRevealingIndex('all')
+
+    try {
+      const { data, error } = await db.rpc('open_all_chests', {
+        p_address: address.toLowerCase(),
+        p_tx_hash: hash
+      })
+
+      if (error) throw error
+
+      if (data?.ok && data.rewards) {
+        // Stagger reveal of chests for a premium feel
+        const rewards = data.rewards
+        const newChests = [...chests]
+        
+        for (let i = 0; i < 6; i++) {
+          const rewardObj = rewards.find(r => r.index === i + 1)
+          newChests[i] = {
+            id: i + 1,
+            status: 'opened',
+            hp: rewardObj ? rewardObj.hp_won : 0
+          }
+          // Delay each slot update by 120ms
+          await new Promise(r => setTimeout(r, 120))
+          setChests([...newChests])
+        }
+
+        if (onUpdate) onUpdate()
+      } else {
+        setErrorMessage(data?.error || 'Failed to open all chests')
+      }
+    } catch (err) {
+      console.error(err)
+      setErrorMessage('Something went wrong opening all chests.')
+    } finally {
+      setRevealingIndex(null)
+      reset()
+    }
+  }
+
+  const allOpened = chests.every(c => c.status === 'opened')
+  const anyOpened = chests.some(c => c.status === 'opened')
 
   return (
     <div style={{ padding: '0 16px 120px', animation: 'hbFadeIn 0.4s ease' }}>
       <style>{`
         @keyframes hbFadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
-        @keyframes hbBob { 0%,100% { transform:translateY(0) scale(1); } 50% { transform:translateY(-8px) scale(1.03); } }
-        @keyframes hbShake { 0%,100%{transform:rotate(0) scale(1)} 20%{transform:rotate(-9deg) scale(1.12)} 40%{transform:rotate(9deg) scale(1.15)} 60%{transform:rotate(-7deg) scale(1.12)} 80%{transform:rotate(7deg) scale(1.08)} }
-        @keyframes hbPop { 0%{transform:scale(0.7);opacity:0} 70%{transform:scale(1.08)} 100%{transform:scale(1);opacity:1} }
-        @keyframes hbFloat { 0%,100%{transform:translateY(0) rotate(var(--r,0deg))} 50%{transform:translateY(-10px) rotate(var(--r,0deg))} }
-        @keyframes hbShakeS { 0%,100%{transform:translate(0,0)} 25%{transform:translate(-5px,3px) rotate(-2deg)} 75%{transform:translate(5px,-3px) rotate(2deg)} }
-        @keyframes hbShakeM { 0%,100%{transform:translate(0,0) rotate(0)} 20%{transform:translate(-9px,6px) rotate(-5deg)} 50%{transform:translate(9px,-8px) rotate(5deg)} 80%{transform:translate(-7px,7px) rotate(-3deg)} }
-        @keyframes hbShakeL { 0%,100%{transform:translate(0,0) rotate(0)} 12%{transform:translate(-14px,10px) rotate(-7deg)} 32%{transform:translate(14px,-12px) rotate(7deg)} 52%{transform:translate(-12px,14px) rotate(-6deg)} 72%{transform:translate(12px,-10px) rotate(6deg)} 90%{transform:translate(-8px,6px) rotate(-4deg)} }
-        @keyframes hbZoomBox { from{transform:scale(1)} to{transform:scale(3.2) } }
-        @keyframes hbFlashOut { 0%{opacity:0} 25%{opacity:1} 100%{opacity:0} }
-        @keyframes hbPBurst { from{opacity:1;transform:translate(0,0) scale(1.2)} to{opacity:0;transform:translate(var(--px),var(--py)) scale(0.1)} }
-        @keyframes hbBgIn { from{opacity:0} to{opacity:1} }
-        @keyframes hbGlowPulse { 0%,100%{opacity:0.5;transform:scale(1)} 50%{opacity:1;transform:scale(1.15)} }
-        @keyframes hbBoxExplode { 0%{transform:scale(2.8) rotate(0deg);opacity:1} 60%{transform:scale(3.8) rotate(-8deg);opacity:0.5} 100%{transform:scale(5) rotate(8deg);opacity:0} }
-        @keyframes hbHpSlam { 0%{opacity:0;transform:scale(0.1) translateY(80px)} 55%{transform:scale(1.25) translateY(-20px)} 75%{transform:scale(0.92) translateY(8px)} 100%{opacity:1;transform:scale(1) translateY(0)} }
-        .hb-card { transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease; cursor: pointer; }
-        .hb-card:hover { transform: translateY(-3px) scale(1.01); }
-        .hb-card:active { transform: scale(0.98); }
-        .hb-open-btn { transition: all 0.2s ease; }
-        .hb-open-btn:hover { filter: brightness(1.1); transform: scale(1.02); }
-        .hb-open-btn:active { transform: scale(0.97); }
+        @keyframes hbBob { 0%,100% { transform:translateY(0) scale(1); } 50% { transform:translateY(-5px) scale(1.05); } }
+        @keyframes hbPulseGlow { 0%,100% { box-shadow: 0 0 12px rgba(139,92,246,0.15); } 50% { box-shadow: 0 0 24px rgba(139,92,246,0.4); } }
+        .chest-slot { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
+        .chest-slot:hover { transform: translateY(-2px); }
+        .chest-btn { transition: all 0.2s ease; }
+        .chest-btn:hover { filter: brightness(1.05); transform: scale(1.01); }
+        .chest-btn:active { transform: scale(0.98); }
       `}</style>
 
       {/* Wrong Chain Banner */}
@@ -267,160 +239,276 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         backgroundImage: 'url(/banner.jpg)', backgroundColor: '#0000FF',
         backgroundSize: 'cover', backgroundPosition: 'center',
         borderRadius: 24, padding: '28px 20px', marginBottom: 16,
-        position: 'relative', overflow: 'hidden', minHeight: 148,
-        boxShadow: '0 16px 48px rgba(0,0,255,0.28), 0 0 0 1px rgba(255,255,255,0.1)',
+        position: 'relative', overflow: 'hidden', minHeight: 120,
+        boxShadow: '0 16px 48px rgba(0,0,255,0.15), 0 0 0 1px rgba(255,255,255,0.1)',
         display: 'flex', flexDirection: 'column', justifyContent: 'center'
       }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(160deg, rgba(0,0,60,0.35) 0%, rgba(0,0,0,0.45) 100%)', zIndex: 0 }} />
-
-        {/* Floating parachute boxes with HP label */}
-        {[
-          { top: -8, right: '8%', w: 68, o: 0.55, r: '-14deg', blur: 1.5, dur: 2.5 },
-          { top: 35, right: '26%', w: 48, o: 0.38, r: '10deg', blur: 0.5, dur: 2.9 },
-          { top: -18, left: '48%', w: 44, o: 0.45, r: '22deg', blur: 1, dur: 3.3 },
-          { bottom: -10, right: '3%', w: 58, o: 0.38, r: '4deg', blur: 1.2, dur: 2.7 },
-          { bottom: -8, right: '38%', w: 82, o: 0.25, r: '-22deg', blur: 3, dur: 3.6 },
-        ].map((s, i) => (
-          <div key={i} style={{
-            position: 'absolute', top: s.top, right: s.right, left: s.left, bottom: s.bottom,
-            width: s.w, opacity: s.o, zIndex: 1,
-            animation: `hbFloat ${s.dur}s ease-in-out infinite`,
-            '--r': s.r
-          }}>
-            <img src="/background_box.png" alt="" style={{ width: '100%', transform: `rotate(${s.r})`, filter: `blur(${s.blur}px)` }} />
-          </div>
-        ))}
-
-        {/* Glow orb */}
-        <div style={{ position: 'absolute', top: -40, right: -40, width: 200, height: 200, background: 'rgba(100,100,255,0.15)', borderRadius: '50%', filter: 'blur(70px)', zIndex: 1 }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(160deg, rgba(0,0,60,0.3) 0%, rgba(0,0,0,0.5) 100%)', zIndex: 0 }} />
+        
+        {/* Ambient glow */}
+        <div style={{ position: 'absolute', top: -30, right: -30, width: 160, height: 160, background: 'rgba(100,100,255,0.2)', borderRadius: '50%', filter: 'blur(50px)', zIndex: 1 }} />
 
         <div style={{ position: 'relative', zIndex: 2 }}>
-          <div style={{ fontSize: 26, fontWeight: 900, color: '#fff', lineHeight: 1.1, textShadow: '0 4px 20px rgba(0,0,0,0.7)', letterSpacing: '-0.5px' }}>
-            Open Your Happy Boxes
+          <div style={{ fontSize: 24, fontWeight: 900, color: '#fff', lineHeight: 1.1, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
+            Happy Boxes
           </div>
-          <div style={{ fontSize: 17, color: '#F59E0B', fontWeight: 800, marginTop: 2, textShadow: '0 2px 12px rgba(0,0,0,0.6)', letterSpacing: '0.1px' }}>
-            to win massive HP rewards
+          <div style={{ fontSize: 13, color: '#10B981', fontWeight: 800, marginTop: 4, textShadow: '0 1px 8px rgba(0,0,0,0.4)' }}>
+            Open chests to win massive HP rewards
           </div>
         </div>
       </div>
 
-      {/* ═══ BOX CARDS (Light Premium) ═══ */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {boxes.map((box) => {
-          const cfg = BOX_CONFIG[box.id]
-          const isHovered = hoveredBox === box.id
+      {/* Status Banner */}
+      {hasActiveChoice && (
+        <div style={{
+          background: 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)',
+          color: '#fff',
+          borderRadius: 16,
+          padding: '12px 16px',
+          marginBottom: 16,
+          textAlign: 'center',
+          fontSize: 12,
+          fontWeight: 800,
+          boxShadow: '0 4px 16px rgba(139,92,246,0.3)',
+          animation: 'hbFadeIn 0.3s ease, hbPulseGlow 2s infinite'
+        }}>
+          🎉 Payment Confirmed! Tap any chest below to reveal your reward!
+        </div>
+      )}
+
+      {errorMessage && (
+        <div style={{ background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: 16, padding: '12px 16px', marginBottom: 16, fontSize: 11, color: '#DC2626', fontWeight: 700, textAlign: 'center' }}>
+          ⚠️ {errorMessage}
+        </div>
+      )}
+
+      {/* ═══ CHESTS 3x2 GRID ═══ */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: 12,
+        marginBottom: 20
+      }}>
+        {chests.map((chest, index) => {
+          const isRevealing = revealingIndex === index || revealingIndex === 'all'
+          
           return (
             <div
-              key={box.id}
-              className="hb-card"
-              onMouseEnter={() => setHoveredBox(box.id)}
-              onMouseLeave={() => setHoveredBox(null)}
+              key={chest.id}
+              onClick={() => {
+                if (chest.status === 'active') {
+                  handleSelectChest(index)
+                } else if (chest.status === 'locked' && !hasActiveChoice && !allOpened) {
+                  // Direct click triggers single box payment
+                  setTxModal('single')
+                }
+              }}
+              className="chest-slot"
               style={{
-                background: isHovered ? cfg.cardBgHover : cfg.cardBg,
-                border: `1.5px solid ${isHovered ? cfg.accent : cfg.border}`,
-                borderRadius: 22,
-                padding: '14px',
-                boxShadow: isHovered
-                  ? `0 8px 32px ${cfg.glow}, 0 0 0 1px ${cfg.accent}30`
-                  : '0 2px 12px rgba(10,11,13,0.06)',
-                display: 'flex', alignItems: 'center', gap: 14,
-                position: 'relative', overflow: 'hidden',
+                aspectRatio: '1',
+                borderRadius: 20,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative',
+                overflow: 'hidden',
+                userSelect: 'none',
+                // Styles based on status
+                background: chest.status === 'opened'
+                  ? 'linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)'
+                  : chest.status === 'active'
+                    ? '#ffffff'
+                    : '#F8FAFC',
+                border: chest.status === 'opened'
+                  ? '1.5px solid #C7D2FE'
+                  : chest.status === 'active'
+                    ? '2.5px solid #8B5CF6'
+                    : '1px dashed #CBD5E1',
+                boxShadow: chest.status === 'active'
+                  ? '0 8px 24px rgba(139,92,246,0.18)'
+                  : chest.status === 'opened'
+                    ? '0 4px 12px rgba(0,0,255,0.03)'
+                    : 'none',
+                cursor: (chest.status === 'active' || (chest.status === 'locked' && !hasActiveChoice && !allOpened)) ? 'pointer' : 'default',
+                animation: chest.status === 'active' ? 'hbBob 1.6s ease-in-out infinite' : 'none',
+                opacity: (hasActiveChoice && chest.status !== 'active' && chest.status !== 'opened') ? 0.4 : 1
               }}
             >
-              {/* Subtle inner glow on hover */}
-              {isHovered && (
-                <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse at 30% 50%, ${cfg.glow} 0%, transparent 65%)`, zIndex: 0, pointerEvents: 'none' }} />
-              )}
-
-              {/* Tier badge */}
-              <div style={{
-                position: 'absolute', top: 0, right: 0,
-                background: cfg.badgeBg, color: cfg.badgeColor,
-                fontSize: 8, fontWeight: 900,
-                padding: '4px 10px', borderBottomLeftRadius: 12,
-                letterSpacing: '0.5px', zIndex: 3,
-                border: `1px solid ${cfg.tagBorder}`,
-                borderTop: 'none', borderRight: 'none',
-              }}>
-                {cfg.badge}
-              </div>
-
-              {/* Box image */}
-              <div style={{
-                width: 90,
-                height: 90,
-                flexShrink: 0, position: 'relative', zIndex: 2,
-                animation: `hbBob ${box.id === 'legendary' ? 2 : box.id === 'epic' ? 2.6 : 3.2}s ease-in-out infinite`,
-                filter: isHovered
-                  ? `drop-shadow(0 0 14px ${cfg.accent}88)`
-                  : 'drop-shadow(0 4px 10px rgba(0,0,0,0.15))',
-                transition: 'filter 0.3s ease'
-              }}>
-                <img
-                  src={box.img}
-                  alt={box.name}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'contain',
-                    transform: box.id === 'epic' ? 'scale(1.2)' : 'scale(1)'
-                  }}
-                />
-              </div>
-
-              {/* Info + button */}
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 7, position: 'relative', zIndex: 2 }}>
-                <div>
-                  <div style={{ fontSize: 14, fontWeight: 900, color: '#0A0B0D', letterSpacing: '-0.2px' }}>{box.name}</div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 5 }}>
-                    <span style={{
-                      background: cfg.tagBg, color: cfg.tagColor,
-                      border: `1px solid ${cfg.tagBorder}`,
-                      padding: '2px 8px', borderRadius: 20, fontSize: 9, fontWeight: 800
-                    }}>⚡ {cfg.hp}</span>
-                    {cfg.boost && (
-                      <span style={{
-                        background: '#F8FAFC', color: '#64748B',
-                        border: '1px solid #E2E8F0',
-                        padding: '2px 8px', borderRadius: 20, fontSize: 9, fontWeight: 700
-                      }}>{cfg.boost}</span>
-                    )}
-                  </div>
+              {isRevealing ? (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+                  <div style={{
+                    width: 24, height: 24,
+                    border: '3px solid #E2E8F0',
+                    borderTop: '3px solid #8B5CF6',
+                    borderRadius: '50%',
+                    animation: 'spin 0.8s linear infinite'
+                  }} />
+                  <span style={{ fontSize: 8, fontWeight: 900, color: '#6D28D9', textTransform: 'uppercase', letterSpacing: 0.5 }}>Opening...</span>
                 </div>
-
-                <button
-                  className="hb-open-btn"
-                  onClick={() => setSelectedBox(box)}
-                  disabled={isPending || isConfirming || isOpening}
-                  style={{
-                    background: cfg.btnBg,
-                    color: '#fff', border: 'none', borderRadius: 50,
-                    padding: '9px 14px', fontSize: 11, fontWeight: 800,
-                    cursor: 'pointer', fontFamily: 'inherit',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
-                    boxShadow: `0 4px 16px ${cfg.btnGlow}`,
-                    opacity: (isPending || isConfirming || isOpening) ? 0.5 : 1,
-                  }}
-                >
-                  Open {box.price.toFixed(2)}
-                  <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12 }} />
-                </button>
-              </div>
+              ) : chest.status === 'opened' ? (
+                <div style={{ textAlign: 'center', animation: 'hbFadeIn 0.3s ease' }}>
+                  <div style={{ fontSize: 16, fontWeight: 950, color: '#0000FF', letterSpacing: '-0.5px', lineHeight: 1.1 }}>
+                    +{chest.hp}
+                  </div>
+                  <div style={{ fontSize: 8, fontWeight: 900, color: '#A5B4FC', letterSpacing: 0.5, marginTop: 2 }}>HP</div>
+                </div>
+              ) : (
+                <>
+                  <img
+                    src="/box2.png"
+                    alt="Epic Chest"
+                    style={{
+                      width: '64%',
+                      height: '64%',
+                      objectFit: 'contain',
+                      filter: chest.status === 'locked' ? 'grayscale(1) brightness(0.95) contrast(0.8)' : 'none',
+                      transition: 'all 0.3s ease',
+                    }}
+                  />
+                  {chest.status === 'locked' && !hasActiveChoice && !allOpened && (
+                    <div style={{
+                      position: 'absolute',
+                      bottom: 8,
+                      background: 'rgba(255, 255, 255, 0.95)',
+                      border: '1px solid #E2E8F0',
+                      borderRadius: 30,
+                      padding: '3px 8px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 3,
+                      boxShadow: '0 4px 10px rgba(0,0,0,0.06)',
+                      fontSize: 8,
+                      fontWeight: 900,
+                      color: '#1E293B',
+                      letterSpacing: '-0.1px',
+                      textTransform: 'uppercase'
+                    }}>
+                      Open 0.3 <img src="/usdc-logo.png" alt="USDC" style={{ width: 9, height: 9 }} />
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           )
         })}
       </div>
 
-      {/* ═══ HOW IT WORKS (Raffle Style) ═══ */}
-      <div style={{ background: '#EEF0F3', border: '1px solid #DEE1E7', borderRadius: 16, padding: '16px', marginTop: 32 }}>
+      {/* ═══ BUTTONS ═══ */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {allOpened ? (
+          <button
+            className="chest-btn"
+            onClick={handleResetBoard}
+            style={{
+              background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 50,
+              padding: '14px 20px',
+              fontSize: 13,
+              fontWeight: 800,
+              cursor: 'pointer',
+              boxShadow: '0 4px 16px rgba(16,185,129,0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 6
+            }}
+          >
+            🔄 Reset Board & Play Again
+          </button>
+        ) : (
+          <>
+            {/* Main Single Open Button */}
+            <button
+              className="chest-btn"
+              onClick={() => setTxModal('single')}
+              disabled={isPending || isConfirming || hasActiveChoice || revealingIndex !== null}
+              style={{
+                background: 'linear-gradient(135deg, #0000FF 0%, #0000D0 100%)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: 50,
+                padding: '14px 20px',
+                fontSize: 13,
+                fontWeight: 900,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 6,
+                boxShadow: '0 4px 16px rgba(0,0,255,0.25)',
+                opacity: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null) ? 0.5 : 1
+              }}
+            >
+              Open Box 0.3
+              <img src="/usdc-logo.png" alt="USDC" style={{ width: 15, height: 15 }} />
+            </button>
+
+            {/* Bundle Open All Button */}
+            <button
+              className="chest-btn"
+              onClick={() => setTxModal('bundle')}
+              disabled={isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened}
+              style={{
+                background: 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: 50,
+                padding: '14px 20px',
+                fontSize: 13,
+                fontWeight: 800,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 6,
+                boxShadow: '0 4px 16px rgba(139,92,246,0.3)',
+                opacity: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened) ? 0.4 : 1
+              }}
+            >
+              ✨ Open All 6 chests for 1.50
+              <img src="/usdc-logo.png" alt="USDC" style={{ width: 15, height: 15 }} />
+              <span style={{ fontSize: 9, background: 'rgba(255,255,255,0.2)', padding: '2px 8px', borderRadius: 20, fontWeight: 900, color: '#FCD34D' }}>
+                1 FREE CHEST!
+              </span>
+            </button>
+          </>
+        )}
+
+        {/* Board Reset option if partially played */}
+        {anyOpened && !allOpened && !hasActiveChoice && (
+          <button
+            onClick={handleResetBoard}
+            style={{
+              background: 'none',
+              border: '1px solid #DEE1E7',
+              color: '#717886',
+              borderRadius: 50,
+              padding: '6px 14px',
+              fontSize: 10,
+              fontWeight: 800,
+              cursor: 'pointer',
+              alignSelf: 'center',
+              marginTop: 10
+            }}
+          >
+            Clear & Reset Board
+          </button>
+        )}
+      </div>
+
+      {/* ═══ HOW IT WORKS ═══ */}
+      <div style={{ background: '#EEF0F3', border: '1px solid #DEE1E7', borderRadius: 20, padding: '16px', marginTop: 32 }}>
         <div style={{ fontSize: 9, fontWeight: 800, color: '#717886', letterSpacing: 0.5, marginBottom: 14, textTransform: 'uppercase' }}>
           How it works
         </div>
         {[
-          ['How do Happy Boxes work?', 'Choose a box to try your luck and win HP instantly. Each box has a different range of possible rewards.'],
-          ['What can I win?', 'Every box contains HP. The higher the box tier, the more HP you can win.'],
-          ['Are rewards guaranteed?', 'Yes, every box contains at least the minimum amount of HP shown in the description.'],
-          ['How does the boost work?', 'If you have an active HP Boost from your profile, it will automatically multiply the HP rewards you receive from opening boxes.'],
+          ['How do Happy Boxes work?', 'Choose to open boxes one by one for 0.3 USDC each, or open all 6 boxes at once for a discounted price of 1.5 USDC (saving 0.3 USDC — equivalent to getting 1 chest completely free!).'],
+          ['What are the rewards?', 'Every box contains a surprise reward ranging from 2.0 to 10.0 HP. The rewards are randomly generated on-chain.'],
+          ['Do multipliers apply?', 'Yes! If you have an active HP Boost from your profile, it will automatically multiply the HP rewards you receive from opening chests.'],
+          ['Can I open multiple boxes?', 'Yes! You can continue opening chests one by one on the same grid until all 6 are revealed, or start fresh by clicking Reset Board.'],
         ].map(([q, a], i, arr) => (
           <div key={i} style={{ marginBottom: i < arr.length - 1 ? 14 : 0 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: '#0A0B0D', marginBottom: 3 }}>{q}</div>
@@ -430,112 +518,24 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       </div>
 
       {/* ═══ TX MODAL ═══ */}
-      {selectedBox && !isSuccess && !isOpening && (
+      {txModal && (
         <TxModal
-          title={`Open ${selectedBox.name}`}
-          subtitle="Try your luck!"
-          amount={selectedBox.price.toFixed(2)}
+          title={txModal === 'single' ? 'Open Chest' : 'Open All 6 Chests'}
+          subtitle={txModal === 'single' ? 'Pick a chest to reveal your reward!' : 'Unlock all 6 chests instantly with 1 box FREE!'}
+          amount={txModal === 'single' ? '0.30' : '1.50'}
           isPending={isPending}
           isConfirming={isConfirming}
           isSuccess={isSuccess}
           error={writeError}
-          onConfirm={handleConfirm}
-          onCancel={() => { setSelectedBox(null); reset() }}
+          onConfirm={txModal === 'single' ? handleSinglePayment : handleBundlePayment}
+          onCancel={() => { setTxModal(false); reset() }}
         />
       )}
 
-      {/* ═══ CINEMATIC OPENING ═══ */}
-      {isOpening && selectedBox && (() => {
-        const c = CINEMA[selectedBox.id]
-        return (
-          <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(14px)', overflow: 'hidden' }}>
-            {/* Dark base */}
-            <div style={{ position: 'absolute', inset: 0, background: 'rgba(5,5,10,0.9)', animation: 'hbBgIn 0.3s ease' }} />
-            {/* Tier color bg */}
-            <div style={{ position: 'absolute', inset: 0, background: c.bg, opacity: 0.8, animation: 'hbBgIn 0.6s ease' }} />
-            {/* Ambient pulsing orb */}
-            <div style={{ position: 'absolute', width: 360, height: 360, borderRadius: '50%', background: `radial-gradient(circle, ${c.glow}66 0%, transparent 65%)`, animation: 'hbGlowPulse 1.5s ease-in-out infinite', zIndex: 1 }} />
-
-            {/* Phase 2: flash */}
-            {openAnimPhase >= 2 && (
-              <div style={{ position: 'absolute', inset: 0, background: c.flash, animation: 'hbFlashOut 0.8s ease forwards', zIndex: 5, pointerEvents: 'none' }} />
-            )}
-
-            {/* Main content area */}
-            <div style={{ position: 'relative', zIndex: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24 }}>
-
-              {/* Phase 0 & 1: box shakes */}
-              {openAnimPhase < 2 && (
-                <>
-                  <div style={{
-                    filter: `drop-shadow(0 0 24px ${c.glow})`,
-                    animation: `${c.shake} 0.3s infinite`,
-                    transition: 'filter 0.5s ease'
-                  }}>
-                    <img src={selectedBox.img} style={{ width: 140, height: 140, objectFit: 'contain', mixBlendMode: 'multiply' }} alt="" />
-                  </div>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.4)', letterSpacing: 3, textTransform: 'uppercase' }}>
-                    Opening...
-                  </div>
-                </>
-              )}
-
-              {/* Phase 2: box exploding — just flash, no content */}
-
-              {/* Phase 3: HP slams out of opened box */}
-              {openAnimPhase >= 3 && (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', animation: 'hbHpSlam 0.7s cubic-bezier(.34,1.56,.64,1) forwards' }}>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
-                    <div style={{
-                      fontSize: 94, fontWeight: 940, lineHeight: 1,
-                      color: c.glow,
-                      textShadow: `0 0 40px ${c.glow}, 0 0 80px ${c.flash}`,
-                      fontVariantNumeric: 'tabular-nums',
-                      letterSpacing: '-2px'
-                    }}>
-                      {pendingResult ? `+${countDisplayHp}` : '...'}
-                    </div>
-                    <div style={{ fontSize: 32, fontWeight: 900, color: 'rgba(255,255,255,0.7)', letterSpacing: 1, textShadow: `0 0 20px ${c.glow}` }}>HP</div>
-                  </div>
-
-                  {showBoostText && pendingResult?.mult > 1 && (() => {
-                    const isNew = pendingResult.wonNewMult
-                    const levelIdx = (userProfile?.account_level || 1) - 1
-                    const baseMult = LEVELS[levelIdx]?.mult || 1.0
-                    const isPerm = !isNew && Math.abs(pendingResult.mult - baseMult) < 0.01
-
-                    const label = 'Boost'
-                    const action = isNew ? 'won!' : 'active!'
-                    return (
-                      <div style={{ marginTop: 16, fontSize: 13, fontWeight: 800, color: c.glow, background: `${c.glow}22`, border: `1px solid ${c.glow}55`, borderRadius: 50, padding: '6px 18px', display: 'inline-block', animation: 'hbFadeIn 0.5s both' }}>
-                        x{pendingResult.mult} {label} {action}
-                      </div>
-                    )
-                  })()}
-
-                  {showAwesome && (
-                    <div style={{ marginTop: 32, animation: 'hbFadeIn 0.5s ease both' }}>
-                      <button
-                        onClick={closeAll}
-                        className="hb-open-btn"
-                        style={{
-                          background: c.btnBg,
-                          color: '#fff', border: 'none', borderRadius: 50,
-                          padding: '12px 32px', fontSize: 16, fontWeight: 900,
-                          cursor: 'pointer', fontFamily: 'inherit',
-                          boxShadow: `0 8px 24px ${c.btnGlow}`,
-                        }}
-                      >
-                        Awesome!
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        )
-      })()}
+      {/* Spin style */}
+      <style>{`
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+      `}</style>
     </div>
   )
 }
