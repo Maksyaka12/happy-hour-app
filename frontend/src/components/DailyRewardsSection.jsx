@@ -190,10 +190,9 @@ export function DailyRewardsSection({ address }) {
           </div>
         ))}
 
-        <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', paddingTop: 0, paddingBottom: 32 }}>
           <div style={{
             fontFamily: "'Barlow Condensed', sans-serif",
-            fontSize: 42,
+            fontSize: 46,
             fontWeight: 900,
             color: '#fff',
             lineHeight: 1,
@@ -247,9 +246,14 @@ export function DailyRewardsSection({ address }) {
             <span>Distribute in:</span>
             <span style={{ 
               color: '#10B981', 
+              textShadow: '0 0 10px rgba(16,185,129,0.4)',
+              background: 'rgba(16,185,129,0.1)',
+              padding: '2px 8px',
+              borderRadius: 6,
+              border: '1px solid rgba(16,185,129,0.2)',
               fontWeight: 900, 
               fontFamily: "'DM Mono', monospace",
-              fontSize: 15,
+              fontSize: 14,
               letterSpacing: '0.5px'
             }}>{timeLeft}</span>
           </div>
