@@ -23,37 +23,22 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
     const m = parseFloat(mult) || 1.0
     if (m >= 2.0) {
       return {
-        background: 'linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%)',
-        border: '1.5px solid #34D399',
-        shadow: '0 8px 24px rgba(52, 211, 153, 0.15)',
-        textGradient: 'linear-gradient(135deg, #059669 0%, #10B981 100%)',
-        badgeBg: 'rgba(52, 211, 153, 0.18)',
-        badgeColor: '#065F46',
-        badgeText: '⚡ 2.0x Boost',
-        sparkleColor: '#34D399'
+        badgeBg: 'linear-gradient(135deg, #A7F3D0 0%, #34D399 100%)', // green
+        badgeColor: '#000000', // black text
+        badgeText: '⚡ 2.0x Boost'
       }
     }
     if (m > 1.0) {
       return {
-        background: 'linear-gradient(135deg, #FFFDF0 0%, #FEF3C7 100%)',
-        border: '1.5px solid #FCD34D',
-        shadow: '0 8px 24px rgba(245, 158, 11, 0.15)',
-        textGradient: 'linear-gradient(135deg, #D97706 0%, #F59E0B 100%)',
-        badgeBg: 'rgba(251, 191, 36, 0.18)',
-        badgeColor: '#92400E',
-        badgeText: `⚡ ${m}x Boost`,
-        sparkleColor: '#FBBF24'
+        badgeBg: 'linear-gradient(135deg, #FDE68A 0%, #FBBF24 100%)', // orange
+        badgeColor: '#000000', // black text
+        badgeText: `⚡ ${m}x Boost`
       }
     }
     return {
-      background: 'linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)',
-      border: '1.5px solid #C7D2FE',
-      shadow: '0 8px 24px rgba(99, 102, 241, 0.08)',
-      textGradient: 'linear-gradient(135deg, #4F46E5 0%, #6366F1 100%)',
-      badgeBg: 'rgba(199, 210, 254, 0.35)',
-      badgeColor: '#3730A3',
-      badgeText: '⚡ 1.0x Boost',
-      sparkleColor: '#C7D2FE'
+      badgeBg: 'linear-gradient(135deg, #E2E8F0 0%, #CBD5E1 100%)', // gray
+      badgeColor: '#000000', // black text
+      badgeText: '⚡ 1.0x Boost'
     }
   }
 
@@ -269,6 +254,17 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         .chest-btn { transition: all 0.2s ease; }
         .chest-btn:hover { filter: brightness(1.05); transform: scale(1.01); }
         .chest-btn:active { transform: scale(0.98); }
+        
+        .card-inner {
+          transform-style: preserve-3d;
+          transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-inner.flipped {
+          transform: rotateY(180deg);
+        }
+        .card-face {
+          backface-visibility: hidden;
+        }
       `}</style>
 
       {/* Wrong Chain Banner */}
@@ -424,6 +420,20 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         {chests.map((chest, index) => {
           const isRevealing = revealingIndex === index || revealingIndex === 'all'
           const details = chest.status === 'opened' ? getOpenedCardDetails(chest.mult) : null
+          const anyOpened = chests.some(c => c.status === 'opened')
+          
+          let imageFilter = 'drop-shadow(0 6px 12px rgba(139,92,246,0.15))'
+          let imageOpacity = 1
+
+          if (chest.status === 'locked') {
+            if (anyOpened) {
+              imageFilter = 'blur(4px) grayscale(30%) drop-shadow(0 4px 10px rgba(0,0,0,0.1))'
+              imageOpacity = 0.35
+            } else {
+              imageFilter = 'grayscale(15%) brightness(0.95) drop-shadow(0 4px 8px rgba(0,0,0,0.08))'
+              imageOpacity = 0.8
+            }
+          }
           
           return (
             <div
@@ -439,172 +449,210 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
               className="chest-slot"
               style={{
                 aspectRatio: '1',
-                borderRadius: 22,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
                 position: 'relative',
-                overflow: 'hidden',
-                userSelect: 'none',
-                // Styles based on status
-                background: chest.status === 'opened'
-                  ? details.background
-                  : chest.status === 'active'
-                    ? 'linear-gradient(135deg, #FFFFFF 0%, #F5F3FF 100%)'
-                    : 'linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%)',
-                border: chest.status === 'opened'
-                  ? details.border
-                  : chest.status === 'active'
-                    ? '2.5px solid #8B5CF6'
-                    : '1.5px dashed #CBD5E1',
-                boxShadow: chest.status === 'active'
-                  ? '0 8px 24px rgba(139,92,246,0.22)'
-                  : chest.status === 'opened'
-                    ? details.shadow
-                    : '0 4px 10px rgba(0,0,0,0.01)',
+                perspective: '1000px',
                 cursor: (chest.status === 'active' || (chest.status === 'locked' && !hasActiveChoice && !allOpened)) ? 'pointer' : 'default',
-                animation: chest.status === 'active' ? 'hbBob 1.6s ease-in-out infinite, hbActivePulse 2s infinite' : 'none',
                 opacity: (hasActiveChoice && chest.status !== 'active' && chest.status !== 'opened') ? 0.45 : 1,
-                transform: chest.status === 'active' ? 'scale(1.02)' : 'none'
               }}
             >
-              {isRevealing ? (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-                  <div style={{
-                    width: 24, height: 24,
-                    border: '3px solid #E2E8F0',
-                    borderTop: '3px solid #8B5CF6',
-                    borderRadius: '50%',
-                    animation: 'spin 0.8s linear infinite'
-                  }} />
-                  <span style={{ fontSize: 8, fontWeight: 900, color: '#6D28D9', textTransform: 'uppercase', letterSpacing: 0.5 }}>Opening...</span>
-                </div>
-              ) : chest.status === 'opened' ? (
-                <div style={{ textAlign: 'center', animation: 'hbFadeIn 0.3s ease', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', position: 'relative' }}>
-                  
-                  {/* Confetti / Sparkle background decoration */}
-                  <div style={{
+              <div 
+                className={`card-inner ${chest.status === 'opened' ? 'flipped' : ''}`}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  position: 'relative',
+                  transformStyle: 'preserve-3d',
+                  transition: 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)'
+                }}
+              >
+                {/* ─── FRONT FACE ─── */}
+                <div 
+                  className="card-face card-front"
+                  style={{
                     position: 'absolute',
                     inset: 0,
-                    opacity: 0.15,
-                    pointerEvents: 'none',
-                    backgroundImage: `radial-gradient(circle, ${details.sparkleColor} 1.5px, transparent 1.5px)`,
-                    backgroundSize: '12px 12px'
-                  }} />
-
-                  {/* Multiplier badge — floating top center */}
-                  {chest.mult && parseFloat(chest.mult) > 0 && (
-                    <div style={{
-                      position: 'absolute',
-                      top: 8,
-                      background: details.badgeBg,
-                      color: details.badgeColor,
-                      padding: '2px 8px',
-                      borderRadius: 20,
-                      fontSize: 8,
-                      fontWeight: 900,
-                      letterSpacing: '0.2px',
-                      textTransform: 'uppercase',
-                      boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
-                      zIndex: 5,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 2
-                    }}>
-                      {details.badgeText}
+                    backfaceVisibility: 'hidden',
+                    borderRadius: 22,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    overflow: 'hidden',
+                    background: chest.status === 'active'
+                      ? 'linear-gradient(135deg, #FFFFFF 0%, #F5F3FF 100%)'
+                      : 'linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%)',
+                    border: chest.status === 'active'
+                      ? '2.5px solid #8B5CF6'
+                      : '1.5px dashed #CBD5E1',
+                    boxShadow: chest.status === 'active'
+                      ? '0 8px 24px rgba(139,92,246,0.22)'
+                      : '0 4px 10px rgba(0,0,0,0.01)',
+                    animation: chest.status === 'active' ? 'hbBob 1.6s ease-in-out infinite, hbActivePulse 2s infinite' : 'none',
+                    transform: chest.status === 'active' ? 'scale(1.02)' : 'none',
+                    zIndex: 2
+                  }}
+                >
+                  {isRevealing ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+                      <div style={{
+                        width: 24, height: 24,
+                        border: '3px solid #E2E8F0',
+                        borderTop: '3px solid #8B5CF6',
+                        borderRadius: '50%',
+                        animation: 'spin 0.8s linear infinite'
+                      }} />
+                      <span style={{ fontSize: 8, fontWeight: 900, color: '#6D28D9', textTransform: 'uppercase', letterSpacing: 0.5 }}>Opening...</span>
                     </div>
+                  ) : (
+                    <>
+                      <img
+                        src="/box2.png"
+                        alt="Happy Box"
+                        style={{
+                          width: '84%',
+                          height: '84%',
+                          objectFit: 'contain',
+                          filter: imageFilter,
+                          opacity: imageOpacity,
+                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                        }}
+                      />
+                      
+                      {/* Blinking "Tap to Open" helper tag for active chests */}
+                      {chest.status === 'active' && (
+                        <div style={{
+                          position: 'absolute',
+                          bottom: 8,
+                          background: 'rgba(139, 92, 246, 0.1)',
+                          color: '#8B5CF6',
+                          border: '1px solid rgba(139, 92, 246, 0.3)',
+                          borderRadius: 20,
+                          padding: '2px 8px',
+                          fontSize: 7.5,
+                          fontWeight: 900,
+                          letterSpacing: '0.5px',
+                          textTransform: 'uppercase',
+                          animation: 'hbPulse 1.5s infinite'
+                        }}>
+                          ✨ Tap to Open
+                        </div>
+                      )}
+
+                      {chest.status === 'locked' && !hasActiveChoice && (
+                        <div style={{
+                          position: 'absolute',
+                          top: '50%',
+                          left: '50%',
+                          transform: 'translate(-50%, -50%)',
+                          background: 'linear-gradient(135deg, #0052FF 0%, #003CC0 100%)',
+                          color: '#ffffff',
+                          borderRadius: 20,
+                          padding: '6px 12px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 4,
+                          boxShadow: '0 8px 20px rgba(0,82,255,0.3)',
+                          fontSize: 9,
+                          fontWeight: 900,
+                          letterSpacing: '0.2px',
+                          textTransform: 'uppercase',
+                          cursor: 'pointer',
+                          zIndex: 10,
+                          whiteSpace: 'nowrap'
+                        }}>
+                          Open 0.30 <img src="/usdc-logo.png" alt="USDC" style={{ width: 10, height: 10, borderRadius: '50%' }} />
+                        </div>
+                      )}
+                    </>
                   )}
-
-                  {/* HP reward — large centered with unit */}
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, marginTop: 12 }}>
-                    <div style={{
-                      fontSize: 32,
-                      fontWeight: 950,
-                      fontFamily: "'Outfit', 'Inter', sans-serif",
-                      letterSpacing: '-1px',
-                      lineHeight: 1,
-                      background: details.textGradient,
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent'
-                    }}>
-                      {chest.hp}
-                    </div>
-                    <div style={{
-                      fontSize: 8,
-                      fontWeight: 900,
-                      color: details.badgeColor,
-                      opacity: 0.7,
-                      letterSpacing: '1px',
-                      marginTop: 4,
-                      textTransform: 'uppercase'
-                    }}>
-                      HP Points
-                    </div>
-                  </div>
                 </div>
-              ) : (
-                <>
-                  <img
-                    src="/box2.png"
-                    alt="Happy Box"
-                    style={{
-                      width: '60%',
-                      height: '60%',
-                      objectFit: 'contain',
-                      filter: (chest.status === 'locked' && anyOpened) ? 'blur(1.2px) drop-shadow(0 4px 10px rgba(0,0,0,0.15))' : 'drop-shadow(0 6px 12px rgba(139,92,246,0.15))',
-                      opacity: chest.status === 'locked' ? 0.45 : 1,
-                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    }}
-                  />
-                  
-                  {/* Blinking "Tap to Open" helper tag for active chests */}
-                  {chest.status === 'active' && (
-                    <div style={{
-                      position: 'absolute',
-                      bottom: 8,
-                      background: 'rgba(139, 92, 246, 0.1)',
-                      color: '#8B5CF6',
-                      border: '1px solid rgba(139, 92, 246, 0.3)',
-                      borderRadius: 20,
-                      padding: '2px 8px',
-                      fontSize: 7.5,
-                      fontWeight: 900,
-                      letterSpacing: '0.5px',
-                      textTransform: 'uppercase',
-                      animation: 'hbPulse 1.5s infinite'
-                    }}>
-                      ✨ Tap to Open
-                    </div>
-                  )}
 
-                  {chest.status === 'locked' && !hasActiveChoice && (
-                    <div style={{
-                      position: 'absolute',
-                      bottom: 8,
-                      background: 'linear-gradient(135deg, #0052FF 0%, #003CC0 100%)',
-                      color: '#ffffff',
-                      borderRadius: 16,
-                      padding: '4px 8px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 3,
-                      boxShadow: '0 4px 10px rgba(0,82,255,0.2)',
-                      fontSize: 8,
-                      fontWeight: 900,
-                      letterSpacing: '0.2px',
-                      textTransform: 'uppercase',
-                      cursor: 'pointer',
-                      opacity: anyOpened ? 1 : 0,
-                      transition: 'opacity 0.2s ease',
-                      pointerEvents: anyOpened ? 'auto' : 'none',
-                      animation: 'hbFadeIn 0.25s ease'
-                    }}>
-                      Open 0.30 <img src="/usdc-logo.png" alt="USDC" style={{ width: 8, height: 8, borderRadius: '50%' }} />
+                {/* ─── BACK FACE ─── */}
+                <div 
+                  className="card-face card-back"
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    backfaceVisibility: 'hidden',
+                    borderRadius: 22,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    overflow: 'hidden',
+                    transform: 'rotateY(180deg)',
+                    background: 'linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)',
+                    border: '1.5px solid #C7D2FE',
+                    boxShadow: '0 8px 24px rgba(99, 102, 241, 0.08)',
+                    zIndex: 1
+                  }}
+                >
+                  {chest.status === 'opened' && details && (
+                    <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', position: 'relative' }}>
+                      
+                      {/* Confetti / Sparkle background decoration */}
+                      <div style={{
+                        position: 'absolute',
+                        inset: 0,
+                        opacity: 0.15,
+                        pointerEvents: 'none',
+                        backgroundImage: 'radial-gradient(circle, #C7D2FE 1.5px, transparent 1.5px)',
+                        backgroundSize: '12px 12px'
+                      }} />
+
+                      {/* Multiplier badge — floating top center */}
+                      {chest.mult && parseFloat(chest.mult) > 0 && (
+                        <div style={{
+                          position: 'absolute',
+                          top: 8,
+                          background: details.badgeBg,
+                          color: details.badgeColor,
+                          padding: '2.5px 10px',
+                          borderRadius: 20,
+                          fontSize: 8,
+                          fontWeight: 900,
+                          letterSpacing: '0.2px',
+                          textTransform: 'uppercase',
+                          boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
+                          zIndex: 5,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 2
+                        }}>
+                          {details.badgeText}
+                        </div>
+                      )}
+
+                      {/* HP reward — large centered with unit */}
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, marginTop: 12 }}>
+                        <div style={{
+                          fontSize: 32,
+                          fontWeight: 950,
+                          fontFamily: "'Outfit', 'Inter', sans-serif",
+                          letterSpacing: '-1.5px',
+                          lineHeight: 1,
+                          background: 'linear-gradient(135deg, #0052FF 0%, #4F46E5 100%)',
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent'
+                        }}>
+                          {chest.hp}
+                        </div>
+                        <div style={{
+                          fontSize: 8,
+                          fontWeight: 900,
+                          color: '#4F46E5',
+                          opacity: 0.8,
+                          letterSpacing: '1px',
+                          marginTop: 4,
+                          textTransform: 'uppercase'
+                        }}>
+                          HP Points
+                        </div>
+                      </div>
                     </div>
                   )}
-                </>
-              )}
+                </div>
+              </div>
             </div>
           )
         })}
