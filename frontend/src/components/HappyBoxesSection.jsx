@@ -374,15 +374,14 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                       boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
                       zIndex: 5
                     }}>
-                      {chest.mult}x
+                      {chest.mult}x boost applied
                     </div>
                   )}
                   {/* HP reward — large centered */}
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-                    <div style={{ fontSize: 24, fontWeight: 950, color: '#0000FF', letterSpacing: '-0.8px', lineHeight: 1 }}>
-                      +{chest.hp}
+                    <div style={{ fontSize: 28, fontWeight: 950, color: '#0000FF', letterSpacing: '-0.8px', lineHeight: 1 }}>
+                      {chest.hp}
                     </div>
-                    <div style={{ fontSize: 12, fontWeight: 800, color: '#93A3FF', letterSpacing: 1.5, marginTop: 3, textTransform: 'uppercase' }}>HP</div>
                   </div>
                 </div>
               ) : (
