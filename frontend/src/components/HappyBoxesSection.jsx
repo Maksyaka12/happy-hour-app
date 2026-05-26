@@ -159,12 +159,12 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         ))
         if (onUpdate) onUpdate()
       } else {
-        setErrorMessage(data?.error || 'Failed to open chest')
+        setErrorMessage(data?.error || 'Failed to open box')
         setChests(prev => prev.map(c => c.status === 'active' ? { ...c, status: 'locked' } : c))
       }
     } catch (err) {
       console.error(err)
-      setErrorMessage('Something went wrong opening the chest.')
+      setErrorMessage('Something went wrong opening the box.')
       setChests(prev => prev.map(c => c.status === 'active' ? { ...c, status: 'locked' } : c))
     } finally {
       setRevealingIndex(null)
@@ -207,11 +207,11 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
 
         if (onUpdate) onUpdate()
       } else {
-        setErrorMessage(data?.error || 'Failed to open all chests')
+        setErrorMessage(data?.error || 'Failed to open all boxes')
       }
     } catch (err) {
       console.error(err)
-      setErrorMessage('Something went wrong opening all chests.')
+      setErrorMessage('Something went wrong opening all boxes.')
     } finally {
       setRevealingIndex(null)
       reset()
@@ -263,7 +263,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             Happy Boxes
           </div>
           <div style={{ fontSize: 13, color: '#10B981', fontWeight: 800, marginTop: 4, textShadow: '0 1px 8px rgba(0,0,0,0.4)' }}>
-            Open chests to win massive HP rewards
+            Open boxes to win massive HP rewards
           </div>
         </div>
       </div>
@@ -282,7 +282,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           boxShadow: '0 4px 16px rgba(139,92,246,0.3)',
           animation: 'hbFadeIn 0.3s ease, hbPulseGlow 2s infinite'
         }}>
-          🎉 Payment Confirmed! Tap any chest below to reveal your reward!
+          🎉 Payment Confirmed! Tap any box below to reveal your reward!
         </div>
       )}
 
@@ -388,7 +388,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                 <>
                   <img
                     src="/box2.png"
-                    alt="Epic Chest"
+                    alt="Happy Box"
                     style={{
                       width: '64%',
                       height: '64%',
@@ -504,10 +504,10 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                 opacity: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened) ? 0.4 : 1
               }}
             >
-              ✨ Open All 6 chests for 1.50
+              ✨ Open All 6 boxes for 1.50
               <img src="/usdc-logo.png" alt="USDC" style={{ width: 15, height: 15 }} />
               <span style={{ fontSize: 9, background: 'rgba(255,255,255,0.2)', padding: '2px 8px', borderRadius: 20, fontWeight: 900, color: '#FCD34D' }}>
-                1 FREE CHEST!
+                1 FREE BOX!
               </span>
             </button>
           </>
@@ -541,10 +541,10 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           How it works
         </div>
         {[
-          ['How do Happy Boxes work?', 'Choose to open boxes one by one for 0.3 USDC each, or open all 6 boxes at once for a discounted price of 1.5 USDC (saving 0.3 USDC — equivalent to getting 1 chest completely free!).'],
+          ['How do Happy Boxes work?', 'Choose to open boxes one by one for 0.3 USDC each, or open all 6 boxes at once for a discounted price of 1.5 USDC (saving 0.3 USDC — equivalent to getting 1 box completely free!).'],
           ['What are the rewards?', 'Every box contains a surprise reward ranging from 2.0 to 10.0 HP. The rewards are randomly generated on-chain.'],
-          ['Do multipliers apply?', 'Yes! If you have an active HP Boost from your profile, it will automatically multiply the HP rewards you receive from opening chests.'],
-          ['Can I open multiple boxes?', 'Yes! You can continue opening chests one by one on the same grid until all 6 are revealed, or start fresh by clicking Reset Board.'],
+          ['Do multipliers apply?', 'Yes! If you have an active HP Boost from your profile, it will automatically multiply the HP rewards you receive from opening boxes.'],
+          ['Can I open multiple boxes?', 'Yes! You can continue opening boxes one by one on the same grid until all 6 are revealed, or start fresh by clicking Reset Board.'],
         ].map(([q, a], i, arr) => (
           <div key={i} style={{ marginBottom: i < arr.length - 1 ? 14 : 0 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: '#0A0B0D', marginBottom: 3 }}>{q}</div>
@@ -556,8 +556,8 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       {/* ═══ TX MODAL ═══ */}
       {txModal && (
         <TxModal
-          title={txModal === 'single' ? 'Open Chest' : 'Open All 6 Chests'}
-          subtitle={txModal === 'single' ? 'Pick a chest to reveal your reward!' : 'Unlock all 6 chests instantly with 1 box FREE!'}
+          title={txModal === 'single' ? 'Open Box' : 'Open All 6 Boxes'}
+          subtitle={txModal === 'single' ? 'Pick a box to reveal your reward!' : 'Unlock all 6 boxes instantly with 1 box FREE!'}
           amount={txModal === 'single' ? '0.30' : '1.50'}
           isPending={isPending}
           isConfirming={isConfirming}
