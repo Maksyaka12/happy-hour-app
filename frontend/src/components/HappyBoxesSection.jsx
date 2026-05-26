@@ -18,12 +18,43 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
     { id: 6, status: 'locked', hp: null, mult: null },
   ])
 
-  // Color logic for multiplier badges (matches ProfileSection boost colors)
-  const getMultBadgeStyle = (mult) => {
+  // Color logic and premium styles for opened boxes
+  const getOpenedCardDetails = (mult) => {
     const m = parseFloat(mult) || 1.0
-    if (m >= 2.0) return { background: 'linear-gradient(135deg, #34D399, #059669)', color: '#000' }
-    if (m > 1.0) return { background: 'linear-gradient(135deg, #F4C81B, #F97316)', color: '#000' }
-    return { background: 'linear-gradient(135deg, #94A3B8, #64748B)', color: '#000' }
+    if (m >= 2.0) {
+      return {
+        background: 'linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%)',
+        border: '1.5px solid #34D399',
+        shadow: '0 8px 24px rgba(52, 211, 153, 0.15)',
+        textGradient: 'linear-gradient(135deg, #059669 0%, #10B981 100%)',
+        badgeBg: 'rgba(52, 211, 153, 0.18)',
+        badgeColor: '#065F46',
+        badgeText: '⚡ 2.0x Boost',
+        sparkleColor: '#34D399'
+      }
+    }
+    if (m > 1.0) {
+      return {
+        background: 'linear-gradient(135deg, #FFFDF0 0%, #FEF3C7 100%)',
+        border: '1.5px solid #FCD34D',
+        shadow: '0 8px 24px rgba(245, 158, 11, 0.15)',
+        textGradient: 'linear-gradient(135deg, #D97706 0%, #F59E0B 100%)',
+        badgeBg: 'rgba(251, 191, 36, 0.18)',
+        badgeColor: '#92400E',
+        badgeText: `⚡ ${m}x Boost`,
+        sparkleColor: '#FBBF24'
+      }
+    }
+    return {
+      background: 'linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)',
+      border: '1.5px solid #C7D2FE',
+      shadow: '0 8px 24px rgba(99, 102, 241, 0.08)',
+      textGradient: 'linear-gradient(135deg, #4F46E5 0%, #6366F1 100%)',
+      badgeBg: 'rgba(199, 210, 254, 0.35)',
+      badgeColor: '#3730A3',
+      badgeText: '⚡ 1.0x Boost',
+      sparkleColor: '#C7D2FE'
+    }
   }
 
   const [hasActiveChoice, setHasActiveChoice] = useState(false)
@@ -228,8 +259,13 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         @keyframes hbBob { 0%,100% { transform:translateY(0) scale(1); } 50% { transform:translateY(-5px) scale(1.05); } }
         @keyframes hbPulseGlow { 0%,100% { box-shadow: 0 0 12px rgba(139,92,246,0.15); } 50% { box-shadow: 0 0 24px rgba(139,92,246,0.4); } }
         @keyframes hbGiftFloat { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
+        @keyframes hbPulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+        @keyframes hbActivePulse { 
+          0%, 100% { border-color: rgba(139,92,246,0.6); box-shadow: 0 0 8px rgba(139,92,246,0.25); } 
+          50% { border-color: rgba(139,92,246,1); box-shadow: 0 0 20px rgba(139,92,246,0.5); } 
+        }
         .chest-slot { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
-        .chest-slot:hover { transform: translateY(-2px); }
+        .chest-slot:hover { transform: translateY(-3px); }
         .chest-btn { transition: all 0.2s ease; }
         .chest-btn:hover { filter: brightness(1.05); transform: scale(1.01); }
         .chest-btn:active { transform: scale(0.98); }
@@ -387,6 +423,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       }}>
         {chests.map((chest, index) => {
           const isRevealing = revealingIndex === index || revealingIndex === 'all'
+          const details = chest.status === 'opened' ? getOpenedCardDetails(chest.mult) : null
           
           return (
             <div
@@ -402,7 +439,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
               className="chest-slot"
               style={{
                 aspectRatio: '1',
-                borderRadius: 20,
+                borderRadius: 22,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -412,23 +449,24 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                 userSelect: 'none',
                 // Styles based on status
                 background: chest.status === 'opened'
-                  ? 'linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)'
+                  ? details.background
                   : chest.status === 'active'
-                    ? '#ffffff'
-                    : '#F8FAFC',
+                    ? 'linear-gradient(135deg, #FFFFFF 0%, #F5F3FF 100%)'
+                    : 'linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%)',
                 border: chest.status === 'opened'
-                  ? '1.5px solid #C7D2FE'
+                  ? details.border
                   : chest.status === 'active'
                     ? '2.5px solid #8B5CF6'
-                    : '1px dashed #CBD5E1',
+                    : '1.5px dashed #CBD5E1',
                 boxShadow: chest.status === 'active'
-                  ? '0 8px 24px rgba(139,92,246,0.18)'
+                  ? '0 8px 24px rgba(139,92,246,0.22)'
                   : chest.status === 'opened'
-                    ? '0 4px 12px rgba(0,0,255,0.03)'
-                    : 'none',
+                    ? details.shadow
+                    : '0 4px 10px rgba(0,0,0,0.01)',
                 cursor: (chest.status === 'active' || (chest.status === 'locked' && !hasActiveChoice && !allOpened)) ? 'pointer' : 'default',
-                animation: chest.status === 'active' ? 'hbBob 1.6s ease-in-out infinite' : 'none',
-                opacity: (hasActiveChoice && chest.status !== 'active' && chest.status !== 'opened') ? 0.4 : 1
+                animation: chest.status === 'active' ? 'hbBob 1.6s ease-in-out infinite, hbActivePulse 2s infinite' : 'none',
+                opacity: (hasActiveChoice && chest.status !== 'active' && chest.status !== 'opened') ? 0.45 : 1,
+                transform: chest.status === 'active' ? 'scale(1.02)' : 'none'
               }}
             >
               {isRevealing ? (
@@ -444,29 +482,64 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                 </div>
               ) : chest.status === 'opened' ? (
                 <div style={{ textAlign: 'center', animation: 'hbFadeIn 0.3s ease', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', position: 'relative' }}>
-                  {/* Multiplier badge — top right corner */}
+                  
+                  {/* Confetti / Sparkle background decoration */}
+                  <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    opacity: 0.15,
+                    pointerEvents: 'none',
+                    backgroundImage: `radial-gradient(circle, ${details.sparkleColor} 1.5px, transparent 1.5px)`,
+                    backgroundSize: '12px 12px'
+                  }} />
+
+                  {/* Multiplier badge — floating top center */}
                   {chest.mult && parseFloat(chest.mult) > 0 && (
                     <div style={{
                       position: 'absolute',
-                      top: 6,
-                      right: 6,
-                      ...getMultBadgeStyle(chest.mult),
-                      padding: '2px 6px',
-                      borderRadius: 6,
-                      fontSize: 9,
+                      top: 8,
+                      background: details.badgeBg,
+                      color: details.badgeColor,
+                      padding: '2px 8px',
+                      borderRadius: 20,
+                      fontSize: 8,
                       fontWeight: 900,
-                      letterSpacing: '-0.3px',
-                      lineHeight: 1.3,
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
-                      zIndex: 5
+                      letterSpacing: '0.2px',
+                      textTransform: 'uppercase',
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
+                      zIndex: 5,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 2
                     }}>
-                      {chest.mult}x boost applied
+                      {details.badgeText}
                     </div>
                   )}
-                  {/* HP reward — large centered */}
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-                    <div style={{ fontSize: 28, fontWeight: 950, color: '#0000FF', letterSpacing: '-0.8px', lineHeight: 1 }}>
+
+                  {/* HP reward — large centered with unit */}
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, marginTop: 12 }}>
+                    <div style={{
+                      fontSize: 32,
+                      fontWeight: 950,
+                      fontFamily: "'Outfit', 'Inter', sans-serif",
+                      letterSpacing: '-1px',
+                      lineHeight: 1,
+                      background: details.textGradient,
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent'
+                    }}>
                       {chest.hp}
+                    </div>
+                    <div style={{
+                      fontSize: 8,
+                      fontWeight: 900,
+                      color: details.badgeColor,
+                      opacity: 0.7,
+                      letterSpacing: '1px',
+                      marginTop: 4,
+                      textTransform: 'uppercase'
+                    }}>
+                      HP Points
                     </div>
                   </div>
                 </div>
@@ -476,37 +549,58 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                     src="/box2.png"
                     alt="Happy Box"
                     style={{
-                      width: '64%',
-                      height: '64%',
+                      width: '60%',
+                      height: '60%',
                       objectFit: 'contain',
-                      filter: (chest.status === 'locked' && anyOpened) ? 'blur(1.2px)' : 'none',
+                      filter: (chest.status === 'locked' && anyOpened) ? 'blur(1.2px) drop-shadow(0 4px 10px rgba(0,0,0,0.15))' : 'drop-shadow(0 6px 12px rgba(139,92,246,0.15))',
                       opacity: chest.status === 'locked' ? 0.45 : 1,
                       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                     }}
                   />
-                  {chest.status === 'locked' && !hasActiveChoice && anyOpened && (
+                  
+                  {/* Blinking "Tap to Open" helper tag for active chests */}
+                  {chest.status === 'active' && (
                     <div style={{
                       position: 'absolute',
-                      top: '50%',
-                      left: '50%',
-                      transform: 'translate(-50%, -50%)',
-                      background: 'linear-gradient(135deg, #0000FF 0%, #0000B0 100%)',
+                      bottom: 8,
+                      background: 'rgba(139, 92, 246, 0.1)',
+                      color: '#8B5CF6',
+                      border: '1px solid rgba(139, 92, 246, 0.3)',
+                      borderRadius: 20,
+                      padding: '2px 8px',
+                      fontSize: 7.5,
+                      fontWeight: 900,
+                      letterSpacing: '0.5px',
+                      textTransform: 'uppercase',
+                      animation: 'hbPulse 1.5s infinite'
+                    }}>
+                      ✨ Tap to Open
+                    </div>
+                  )}
+
+                  {chest.status === 'locked' && !hasActiveChoice && (
+                    <div style={{
+                      position: 'absolute',
+                      bottom: 8,
+                      background: 'linear-gradient(135deg, #0052FF 0%, #003CC0 100%)',
                       color: '#ffffff',
-                      borderRadius: 30,
-                      padding: '4px 10px',
+                      borderRadius: 16,
+                      padding: '4px 8px',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: 4,
-                      boxShadow: '0 8px 20px rgba(0,0,255,0.3)',
+                      gap: 3,
+                      boxShadow: '0 4px 10px rgba(0,82,255,0.2)',
                       fontSize: 8,
                       fontWeight: 900,
-                      letterSpacing: '-0.1px',
+                      letterSpacing: '0.2px',
                       textTransform: 'uppercase',
-                      whiteSpace: 'nowrap',
-                      zIndex: 10,
+                      cursor: 'pointer',
+                      opacity: anyOpened ? 1 : 0,
+                      transition: 'opacity 0.2s ease',
+                      pointerEvents: anyOpened ? 'auto' : 'none',
                       animation: 'hbFadeIn 0.25s ease'
                     }}>
-                      Open 0.30 <img src="/usdc-logo.png" alt="USDC" style={{ width: 9, height: 9, flexShrink: 0, borderRadius: '50%' }} />
+                      Open 0.30 <img src="/usdc-logo.png" alt="USDC" style={{ width: 8, height: 8, borderRadius: '50%' }} />
                     </div>
                   )}
                 </>
