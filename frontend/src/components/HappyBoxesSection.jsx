@@ -486,7 +486,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                       zIndex: 10,
                       animation: 'hbFadeIn 0.25s ease'
                     }}>
-                      Open 0.30 <img src="/usdc-logo.png" alt="USDC" style={{ width: 9, height: 9 }} />
+                      Open 0.30 <img src="/usdc-logo.png" alt="USDC" style={{ width: 9, height: 9, flexShrink: 0, borderRadius: '50%' }} />
                     </div>
                   )}
                 </>
@@ -544,8 +544,8 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                 opacity: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null) ? 0.5 : 1
               }}
             >
-              Open Box 0.3
-              <img src="/usdc-logo.png" alt="USDC" style={{ width: 15, height: 15 }} />
+              Open Box 0.30
+              <img src="/usdc-logo.png" alt="USDC" style={{ width: 15, height: 15, flexShrink: 0, borderRadius: '50%' }} />
             </button>
 
             {/* Bundle Open All Button */}
@@ -571,7 +571,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
               }}
             >
               ✨ Open All 6 boxes for 1.50
-              <img src="/usdc-logo.png" alt="USDC" style={{ width: 15, height: 15 }} />
+              <img src="/usdc-logo.png" alt="USDC" style={{ width: 15, height: 15, flexShrink: 0, borderRadius: '50%' }} />
               <span style={{ fontSize: 9, background: 'rgba(255,255,255,0.2)', padding: '2px 8px', borderRadius: 20, fontWeight: 900, color: '#FCD34D' }}>
                 1 FREE BOX!
               </span>
@@ -601,23 +601,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         )}
       </div>
 
-      {/* ═══ HOW IT WORKS ═══ */}
-      <div style={{ background: '#EEF0F3', border: '1px solid #DEE1E7', borderRadius: 20, padding: '16px', marginTop: 32 }}>
-        <div style={{ fontSize: 9, fontWeight: 800, color: '#717886', letterSpacing: 0.5, marginBottom: 14, textTransform: 'uppercase' }}>
-          How it works
-        </div>
-        {[
-          ['How do Happy Boxes work?', 'Choose to open boxes one by one for 0.3 USDC each, or open all 6 boxes at once for a discounted price of 1.5 USDC (saving 0.3 USDC — equivalent to getting 1 box completely free!).'],
-          ['What are the rewards?', 'Every box contains a surprise reward ranging from 2.0 to 10.0 HP. The rewards are randomly generated on-chain.'],
-          ['Do multipliers apply?', 'Yes! If you have an active HP Boost from your profile, it will automatically multiply the HP rewards you receive from opening boxes.'],
-          ['Can I open multiple boxes?', 'Yes! You can continue opening boxes one by one on the same grid until all 6 are revealed, or start fresh by clicking Reset Board.'],
-        ].map(([q, a], i, arr) => (
-          <div key={i} style={{ marginBottom: i < arr.length - 1 ? 14 : 0 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#0A0B0D', marginBottom: 3 }}>{q}</div>
-            <div style={{ fontSize: 10, color: '#717886', lineHeight: 1.6, fontWeight: 500 }}>{a}</div>
-          </div>
-        ))}
-      </div>
+
 
       {/* ═══ TX MODAL ═══ */}
       {txModal && (
