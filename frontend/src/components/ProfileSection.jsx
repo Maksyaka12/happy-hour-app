@@ -47,7 +47,7 @@ const ACTIVITY_LEVELS = [
   { level: 5, name: 'MAX', mult: 2.0, price: 1.00 },
 ]
 
-export function ProfileSection({ address, basename }) {
+export function ProfileSection({ address, basename, totalUsers }) {
   const { disconnect } = useDisconnect()
   const { writeContract: wagmiWriteContract } = useWriteContract()
 
@@ -1314,6 +1314,16 @@ export function ProfileSection({ address, basename }) {
               >
                 Full Refund
               </button>
+            </div>
+          </div>
+
+          {/* Total Registered Users */}
+          <div style={{ marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid rgba(252, 165, 165, 0.4)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ fontSize: 10, fontWeight: 800, color: '#B91C1C', letterSpacing: '0.5px' }}>Total Registered Users</div>
+              <div style={{ fontSize: 12, fontWeight: 900, color: '#991B1B', fontFamily: "'DM Mono', monospace" }}>
+                {totalUsers}
+              </div>
             </div>
           </div>
 

@@ -314,31 +314,7 @@ export default function App() {
           </div>
         </div>
 
-        <div style={{
-          padding: '14px 16px 8px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          position: 'relative',
-          zIndex: 10
-        }}>
-          <span style={{ fontSize: 24, fontWeight: 800, color: 'var(--text)', letterSpacing: -0.5 }}>
-            {tabLabels[tab]}
-          </span>
-          {tab === 'leaderboard' && isAdmin && (
-            <div style={{
-              background: 'var(--blue-bg)',
-              border: '1px solid rgba(0,0,255,0.15)',
-              borderRadius: 50,
-              padding: '4px 12px',
-              fontSize: 12,
-              fontWeight: 700,
-              color: '#717886'
-            }}>
-              📊 Total Users: <span style={{ color: '#0000FF' }}>{totalUsers}</span>
-            </div>
-          )}
-        </div>
+        <div style={{ height: 12 }} />
 
         {/* <EventBanner onClick={() => setTab('boxes')} /> */}
         {/* <ContestBanner onClick={() => setTab('boxes')} /> */}
@@ -349,7 +325,7 @@ export default function App() {
           {tab === 'tasks' && <TasksSection address={address} />}
           {tab === 'daily' && <DailyRewardsSection address={address} />}
           {tab === 'leaderboard' && <LeaderboardSection address={address} />}
-          {tab === 'profile' && <ProfileSection address={address} basename={basename} />}
+          {tab === 'profile' && <ProfileSection address={address} basename={basename} totalUsers={totalUsers} />}
         </div>
 
         <BottomNav tab={tab} setTab={setTab} />
