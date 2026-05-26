@@ -136,7 +136,7 @@ export function DailyRewardsSection({ address }) {
           backgroundImage: 'url(/banner.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          filter: 'hue-rotate(110deg) brightness(0.65) contrast(1.15)',
+          filter: 'hue-rotate(-120deg) brightness(0.65) contrast(1.15)',
           zIndex: 0,
           pointerEvents: 'none'
         }} />
