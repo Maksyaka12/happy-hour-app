@@ -62,7 +62,7 @@ function TaskCard({ task, taskState, onVisit, onCheck, onClaim, isClaiming }) {
             {task.text}
           </div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 2 }}>
-            <span style={{ fontSize: 9, color: '#10B981', fontWeight: 800, background: 'rgba(16,185,129,0.08)', borderRadius: 6, padding: '1px 6px' }}>
+            <span style={{ fontSize: 9, color: '#fff', fontWeight: 800, background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', borderRadius: 6, padding: '2px 8px' }}>
               +20 Activity Points
             </span>
             <span style={{ fontSize: 9, color: '#64748B', fontWeight: 600 }}>⏰ {fmt(left)} left</span>
@@ -924,7 +924,9 @@ export function TasksSection({ address }) {
                           {t.text}
                         </div>
                         <div style={{ fontSize: 9, color: '#717886', display: 'flex', gap: 6, marginTop: 2 }}>
-                          <span style={{ color: '#10B981', fontWeight: 800 }}>+20 Activity Points</span>
+                          <span style={{ fontSize: 9, color: '#fff', fontWeight: 800, background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', borderRadius: 6, padding: '2px 8px' }}>
+                            +20 Activity Points
+                          </span>
                           <span>•</span>
                           <span style={{ color: isExpired ? '#DC2626' : '#059669', fontWeight: 600 }}>{isExpired ? 'Expired' : 'Active'}</span>
                         </div>
