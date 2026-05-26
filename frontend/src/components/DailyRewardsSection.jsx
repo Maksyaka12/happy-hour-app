@@ -192,14 +192,13 @@ export function DailyRewardsSection({ address }) {
 
         <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', paddingTop: 0, paddingBottom: 32 }}>
           <div style={{
-            fontFamily: "'Barlow Condensed', sans-serif",
-            fontSize: 46,
-            fontWeight: 900,
+            fontSize: '26px',
+            fontWeight: 800,
             color: '#fff',
-            lineHeight: 1,
-            textShadow: '0 4px 15px rgba(0,0,0,0.6)',
-            marginBottom: 12,
-            letterSpacing: '-1px'
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+            marginBottom: '6px',
+            textShadow: '0 2px 10px rgba(0,0,0,0.5)'
           }}>
             DAILY <span style={{ color: '#10B981' }}>HP</span> REWARDS
           </div>
