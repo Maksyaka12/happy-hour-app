@@ -249,13 +249,12 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       <div style={{
         background: 'linear-gradient(135deg, #090514 0%, #2E1065 50%, #03000A 100%)',
         borderRadius: 24,
-        padding: '32px 20px',
+        padding: '24px 24px',
         marginBottom: 16,
         position: 'relative',
-        minHeight: 155,
+        minHeight: 120,
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
         justifyContent: 'center',
         boxShadow: '0 12px 40px rgba(46,16,101,0.35)',
         overflow: 'hidden',
@@ -277,8 +276,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         {[
           { top: -10, right: '8%', size: 54, opacity: 0.14, r: '-12deg', blur: 0.5, dur: 4.2 },
           { top: 45, right: '18%', size: 32, opacity: 0.11, r: '14deg', blur: 0, dur: 4.8 },
-          { top: -20, left: '12%', size: 48, opacity: 0.12, r: '22deg', blur: 1, dur: 5.4 },
-          { bottom: -8, left: '26%', size: 40, opacity: 0.13, r: '-15deg', blur: 0.8, dur: 4.0 },
+          { top: -20, left: '60%', size: 48, opacity: 0.12, r: '22deg', blur: 1, dur: 5.4 },
           { bottom: 10, right: '3%', size: 62, opacity: 0.16, r: '8deg', blur: 1.2, dur: 4.6 }
         ].map((s, i) => (
           <div key={i} style={{
@@ -303,33 +301,32 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           </div>
         ))}
 
-        <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', paddingTop: 0, paddingBottom: 0 }}>
+        <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'flex-start' }}>
           <div style={{
             fontFamily: "'Barlow Condensed', sans-serif",
-            fontSize: 42,
+            fontSize: '26px',
             fontWeight: 900,
             color: '#fff',
-            lineHeight: 1,
-            textShadow: '0 4px 15px rgba(0,0,0,0.6)',
-            marginBottom: 12,
-            letterSpacing: '-1px'
-          }}>
-            HAPPY <span style={{ color: '#8B5CF6' }}>BOXES</span>
-          </div>
-          <div style={{
-            background: 'rgba(139, 92, 246, 0.15)',
-            backdropFilter: 'blur(10px)',
-            borderRadius: 50,
-            padding: '4px 12px',
-            fontSize: 9,
-            fontWeight: 800,
-            color: '#C084FC',
-            border: '1px solid rgba(139, 92, 246, 0.3)',
-            display: 'inline-block',
             textTransform: 'uppercase',
-            letterSpacing: '0.8px',
+            letterSpacing: '0.5px',
+            marginBottom: '4px',
+            lineHeight: 1.1,
+            textShadow: '0 2px 10px rgba(0,0,0,0.5)'
           }}>
-            🎁 OPEN BOXES TO WIN MASSIVE HP REWARDS
+            HAPPY BOXES
+          </div>
+          
+          <div style={{
+            fontSize: '9px',
+            color: 'rgba(255,255,255,0.6)',
+            marginTop: '8px',
+            letterSpacing: '0.1px',
+            fontWeight: 500,
+            lineHeight: 1.4,
+            textAlign: 'left'
+          }}>
+            * Each box contains from 2 to 20 HP.<br />
+            * Your boost is automatically applied.
           </div>
         </div>
       </div>
