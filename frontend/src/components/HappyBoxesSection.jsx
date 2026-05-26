@@ -247,7 +247,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
 
       {/* ═══ HERO BANNER ═══ */}
       <div style={{
-        background: 'linear-gradient(135deg, #090514 0%, #2E1065 50%, #03000A 100%)',
+        background: '#090514',
         borderRadius: 24,
         padding: '22px 20px',
         marginBottom: 16,
@@ -260,6 +260,25 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         overflow: 'hidden',
         border: '1px solid rgba(139,92,246,0.2)'
       }}>
+        {/* Branded background banner in purple tones */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'url(/banner.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          filter: 'hue-rotate(50deg) brightness(0.6) contrast(1.15)',
+          zIndex: 0,
+          pointerEvents: 'none'
+        }} />
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(135deg, rgba(9, 5, 20, 0.25) 0%, rgba(46, 16, 101, 0.7) 100%)',
+          zIndex: 0,
+          pointerEvents: 'none'
+        }} />
+
         {/* Glow overlay */}
         <div style={{
           position: 'absolute',
