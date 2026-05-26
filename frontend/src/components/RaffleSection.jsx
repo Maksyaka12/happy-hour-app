@@ -320,8 +320,16 @@ export function RaffleSection({ address }) {
           ['How long does each round last?',   'Each round runs exactly 60 minutes.'],
           ['When do deposits close?',           'Deposits close 3 minutes before the draw.'],
           ['How is the winner selected?',       'Secure random selection, lucky-based. Anyone with 1+ ticket can win. More tickets = more chances.'],
-          ['How many points do I get for playing?', '1 ticket = 10 AP. The winner receives 2 HP.'],
-          ['What happens if I’m the only player in a round?', 'You will receive a 100% refund and 2 HP as the winner.'],
+          ['How many points do I get for playing?', (
+            <>
+              1 ticket = 10 <strong style={{ color: '#10B981' }}>Activity Points</strong>. The winner receives 2 <strong style={{ color: '#0000FF' }}>HP</strong>.
+            </>
+          )],
+          ['What happens if I’m the only player in a round?', (
+            <>
+              You will receive a 100% refund and 2 <strong style={{ color: '#0000FF' }}>HP</strong> as the winner.
+            </>
+          )],
           ['How much does the winner receive?', 'Winner takes 85% of the total pot. The remaining 15% goes to the foundation for future rewards.'],
           ['When are winnings paid?',           'Automatically after the draw, directly to the winner\'s wallet via the smart contract.'],
           ['Can I deposit multiple times?',     'Yes! Multiple deposits per round are allowed and all contribute to your ticket count.'],
