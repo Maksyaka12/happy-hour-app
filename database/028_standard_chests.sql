@@ -40,7 +40,7 @@ BEGIN
   INSERT INTO opened_boxes (
     address, box_type, hp_won, applied_multiplier, multiplier_won, price_paid, tx_hash
   ) VALUES (
-    v_address, 'standard', v_hp_won, v_applied_mult, 1.0, v_price, v_tx_hash
+    v_address, 'happy', v_hp_won, v_applied_mult, 1.0, v_price, v_tx_hash
   );
 
   -- Increment user's total spent
@@ -82,6 +82,7 @@ DECLARE
   v_hp_won NUMERIC;
   v_applied_mult NUMERIC;
   v_total_hp_won NUMERIC := 0.0;
+  v_sum_base_hp NUMERIC := 0.0;
   v_idx INTEGER;
 BEGIN
   -- Input validation
@@ -105,12 +106,13 @@ BEGIN
     -- Add points
     v_applied_mult := add_points(v_address, v_hp_won, 'box_open');
     v_total_hp_won := v_total_hp_won + (v_hp_won * v_applied_mult);
+    v_sum_base_hp := v_sum_base_hp + v_hp_won;
 
     -- Record each box open with a unique transaction hash suffix
     INSERT INTO opened_boxes (
       address, box_type, hp_won, applied_multiplier, multiplier_won, price_paid, tx_hash
     ) VALUES (
-      v_address, 'standard_all', v_hp_won, v_applied_mult, 1.0, 0.25, v_tx_hash || '_' || v_idx
+      v_address, 'happy_all', v_hp_won, v_applied_mult, 1.0, 0.25, v_tx_hash || '_' || v_idx
     );
 
     -- Append to rewards array
@@ -126,7 +128,7 @@ BEGIN
   INSERT INTO opened_boxes (
     address, box_type, hp_won, applied_multiplier, multiplier_won, price_paid, tx_hash
   ) VALUES (
-    v_address, 'standard_bundle', 0, 1.0, 1.0, v_price, v_tx_hash
+    v_address, 'happy_bundle', v_sum_base_hp, v_applied_mult, 1.0, v_price, v_tx_hash
   );
 
   -- Increment user's total spent
