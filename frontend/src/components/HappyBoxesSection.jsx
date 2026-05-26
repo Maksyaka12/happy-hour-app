@@ -10,13 +10,21 @@ import { TxModal } from './TxModal'
 export function HappyBoxesSection({ address, profile, onUpdate }) {
   // State for the 6 chest cells
   const [chests, setChests] = useState([
-    { id: 1, status: 'locked', hp: null },
-    { id: 2, status: 'locked', hp: null },
-    { id: 3, status: 'locked', hp: null },
-    { id: 4, status: 'locked', hp: null },
-    { id: 5, status: 'locked', hp: null },
-    { id: 6, status: 'locked', hp: null },
+    { id: 1, status: 'locked', hp: null, mult: null },
+    { id: 2, status: 'locked', hp: null, mult: null },
+    { id: 3, status: 'locked', hp: null, mult: null },
+    { id: 4, status: 'locked', hp: null, mult: null },
+    { id: 5, status: 'locked', hp: null, mult: null },
+    { id: 6, status: 'locked', hp: null, mult: null },
   ])
+
+  // Color logic for multiplier badges (matches ProfileSection boost colors)
+  const getMultBadgeStyle = (mult) => {
+    const m = parseFloat(mult) || 1.0
+    if (m >= 2.0) return { background: 'linear-gradient(135deg, #34D399, #059669)', color: '#000' }
+    if (m > 1.0) return { background: 'linear-gradient(135deg, #F4C81B, #F97316)', color: '#000' }
+    return { background: 'linear-gradient(135deg, #94A3B8, #64748B)', color: '#000' }
+  }
 
   const [hasActiveChoice, setHasActiveChoice] = useState(false)
   const [activeTxHash, setActiveTxHash] = useState(null)
@@ -53,7 +61,8 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             newChests[index] = {
               id: index + 1,
               status: 'opened',
-              hp: (box.hp_won * box.applied_multiplier).toFixed(1)
+              hp: (box.hp_won * box.applied_multiplier).toFixed(1),
+              mult: box.applied_multiplier
             }
           }
         })
@@ -71,12 +80,12 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
   // Reset the grid board to start fresh
   const handleResetBoard = () => {
     setChests([
-      { id: 1, status: 'locked', hp: null },
-      { id: 2, status: 'locked', hp: null },
-      { id: 3, status: 'locked', hp: null },
-      { id: 4, status: 'locked', hp: null },
-      { id: 5, status: 'locked', hp: null },
-      { id: 6, status: 'locked', hp: null },
+      { id: 1, status: 'locked', hp: null, mult: null },
+      { id: 2, status: 'locked', hp: null, mult: null },
+      { id: 3, status: 'locked', hp: null, mult: null },
+      { id: 4, status: 'locked', hp: null, mult: null },
+      { id: 5, status: 'locked', hp: null, mult: null },
+      { id: 6, status: 'locked', hp: null, mult: null },
     ])
     setHasActiveChoice(false)
     setActiveTxHash(null)
@@ -145,7 +154,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
 
       if (data?.ok) {
         setChests(prev => prev.map((c, i) => i === index 
-          ? { ...c, status: 'opened', hp: data.hp_won } 
+          ? { ...c, status: 'opened', hp: data.hp_won, mult: data.applied_multiplier } 
           : { ...c, status: c.status === 'active' ? 'locked' : c.status }
         ))
         if (onUpdate) onUpdate()
@@ -188,7 +197,8 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           newChests[i] = {
             id: i + 1,
             status: 'opened',
-            hp: rewardObj ? rewardObj.hp_won : 0
+            hp: rewardObj ? rewardObj.hp_won : 0,
+            mult: rewardObj ? rewardObj.applied_multiplier : 1.0
           }
           // Delay each slot update by 120ms
           await new Promise(r => setTimeout(r, 120))
@@ -347,11 +357,33 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                   <span style={{ fontSize: 8, fontWeight: 900, color: '#6D28D9', textTransform: 'uppercase', letterSpacing: 0.5 }}>Opening...</span>
                 </div>
               ) : chest.status === 'opened' ? (
-                <div style={{ textAlign: 'center', animation: 'hbFadeIn 0.3s ease', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                  <div style={{ fontSize: 28, fontWeight: 950, color: '#0000FF', letterSpacing: '-1px', lineHeight: 1 }}>
-                    +{chest.hp}
+                <div style={{ textAlign: 'center', animation: 'hbFadeIn 0.3s ease', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', position: 'relative' }}>
+                  {/* Multiplier badge — top right corner */}
+                  {chest.mult && parseFloat(chest.mult) > 0 && (
+                    <div style={{
+                      position: 'absolute',
+                      top: 6,
+                      right: 6,
+                      ...getMultBadgeStyle(chest.mult),
+                      padding: '2px 6px',
+                      borderRadius: 6,
+                      fontSize: 9,
+                      fontWeight: 900,
+                      letterSpacing: '-0.3px',
+                      lineHeight: 1.3,
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+                      zIndex: 5
+                    }}>
+                      {chest.mult}x
+                    </div>
+                  )}
+                  {/* HP reward — large centered */}
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+                    <div style={{ fontSize: 24, fontWeight: 950, color: '#0000FF', letterSpacing: '-0.8px', lineHeight: 1 }}>
+                      +{chest.hp}
+                    </div>
+                    <div style={{ fontSize: 12, fontWeight: 800, color: '#93A3FF', letterSpacing: 1.5, marginTop: 3, textTransform: 'uppercase' }}>HP</div>
                   </div>
-                  <div style={{ fontSize: 11, fontWeight: 900, color: '#A5B4FC', letterSpacing: 1, marginTop: 4, textTransform: 'uppercase' }}>HP</div>
                 </div>
               ) : (
                 <>
