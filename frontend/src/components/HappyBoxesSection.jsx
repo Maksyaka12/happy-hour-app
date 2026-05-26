@@ -347,11 +347,11 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                   <span style={{ fontSize: 8, fontWeight: 900, color: '#6D28D9', textTransform: 'uppercase', letterSpacing: 0.5 }}>Opening...</span>
                 </div>
               ) : chest.status === 'opened' ? (
-                <div style={{ textAlign: 'center', animation: 'hbFadeIn 0.3s ease' }}>
-                  <div style={{ fontSize: 16, fontWeight: 950, color: '#0000FF', letterSpacing: '-0.5px', lineHeight: 1.1 }}>
+                <div style={{ textAlign: 'center', animation: 'hbFadeIn 0.3s ease', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ fontSize: 28, fontWeight: 950, color: '#0000FF', letterSpacing: '-1px', lineHeight: 1 }}>
                     +{chest.hp}
                   </div>
-                  <div style={{ fontSize: 8, fontWeight: 900, color: '#A5B4FC', letterSpacing: 0.5, marginTop: 2 }}>HP</div>
+                  <div style={{ fontSize: 11, fontWeight: 900, color: '#A5B4FC', letterSpacing: 1, marginTop: 4, textTransform: 'uppercase' }}>HP</div>
                 </div>
               ) : (
                 <>
@@ -362,7 +362,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                       width: '64%',
                       height: '64%',
                       objectFit: 'contain',
-                      filter: (chest.status === 'locked' && anyOpened) ? 'blur(2.5px)' : 'none',
+                      filter: (chest.status === 'locked' && anyOpened) ? 'blur(1.2px)' : 'none',
                       opacity: chest.status === 'locked' ? 0.45 : 1,
                       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                     }}
@@ -389,7 +389,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                       zIndex: 10,
                       animation: 'hbFadeIn 0.25s ease'
                     }}>
-                      Open 0.30 <img src="/usdc-logo.png" alt="USDC" style={{ width: 9, height: 9, filter: 'brightness(0) invert(1)' }} />
+                      Open 0.30 <img src="/usdc-logo.png" alt="USDC" style={{ width: 9, height: 9 }} />
                     </div>
                   )}
                 </>
