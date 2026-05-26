@@ -674,9 +674,9 @@ export function ProfileSection({ address, basename }) {
             }}>
               <div style={{ fontSize: 16, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>{LEVELS.find(l => l.level === accountLevel)?.name}</div>
               <div style={{
-                background: (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 1.0
+                background: (LEVELS.find(l => l.level === accountLevel)?.mult || 1.0) === 1.0
                   ? 'linear-gradient(135deg, #94A3B8, #64748B)'
-                  : (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 5.0 || (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 2.0
+                  : (LEVELS.find(l => l.level === accountLevel)?.mult || 1.0) === 2.0
                     ? 'linear-gradient(135deg, #34D399, #059669)'
                     : 'linear-gradient(135deg, #F4C81B, #F97316)',
                 color: '#000',
@@ -709,8 +709,12 @@ export function ProfileSection({ address, basename }) {
             }}>
               <div style={{ fontSize: 16, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>{ACTIVITY_LEVELS.find(l => l.level === activityLevel)?.name}</div>
               <div style={{
-                background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-                color: '#fff',
+                background: (ACTIVITY_LEVELS.find(l => l.level === activityLevel)?.mult || 1.0) === 1.0
+                  ? 'linear-gradient(135deg, #94A3B8, #64748B)'
+                  : (ACTIVITY_LEVELS.find(l => l.level === activityLevel)?.mult || 1.0) === 2.0
+                    ? 'linear-gradient(135deg, #34D399, #059669)'
+                    : 'linear-gradient(135deg, #F4C81B, #F97316)',
+                color: '#000',
                 padding: '1px 5px',
                 borderRadius: 4,
                 fontSize: 9,
@@ -769,8 +773,12 @@ export function ProfileSection({ address, basename }) {
                 <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>HP Boost</div>
               </div>
               <div style={{
-                background: (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 1.0 ? '#F1F5F9' : '#EEF2FF',
-                color: (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 1.0 ? '#64748B' : '#0000FF',
+                background: (LEVELS.find(l => l.level === accountLevel)?.mult || 1.0) === 1.0
+                  ? 'linear-gradient(135deg, #94A3B8, #64748B)'
+                  : (LEVELS.find(l => l.level === accountLevel)?.mult || 1.0) === 2.0
+                    ? 'linear-gradient(135deg, #34D399, #059669)'
+                    : 'linear-gradient(135deg, #F4C81B, #F97316)',
+                color: '#000',
                 padding: '2px 8px',
                 borderRadius: 50,
                 fontSize: 10,
@@ -872,8 +880,12 @@ export function ProfileSection({ address, basename }) {
                 <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Activity Boost</div>
               </div>
               <div style={{
-                background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-                color: '#fff',
+                background: (ACTIVITY_LEVELS.find(l => l.level === activityLevel)?.mult || 1.0) === 1.0
+                  ? 'linear-gradient(135deg, #94A3B8, #64748B)'
+                  : (ACTIVITY_LEVELS.find(l => l.level === activityLevel)?.mult || 1.0) === 2.0
+                    ? 'linear-gradient(135deg, #34D399, #059669)'
+                    : 'linear-gradient(135deg, #F4C81B, #F97316)',
+                color: '#000',
                 padding: '2px 8px',
                 borderRadius: 50,
                 fontSize: 10,
