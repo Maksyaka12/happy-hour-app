@@ -35,7 +35,7 @@ export function DailyRewardsSection({ address }) {
         .select('address, score, users!inner(basename)')
         .eq('day', today)
         .order('score', { ascending: false })
-        .limit(20)
+        .limit(30)
 
       if (error) {
         console.error('loadDailyLeaders error:', error)
