@@ -204,14 +204,14 @@ export function DailyRewardsSection({ address }) {
             DAILY REWARDS
           </div>
           <div style={{
-            background: 'rgba(16, 185, 129, 0.15)',
+            background: 'rgba(255,255,255,0.2)',
             backdropFilter: 'blur(10px)',
             borderRadius: 50,
             padding: '4px 12px',
             fontSize: 9,
             fontWeight: 800,
-            color: '#10B981',
-            border: '1px solid rgba(16, 185, 129, 0.3)',
+            color: '#fff',
+            border: '1px solid rgba(255,255,255,0.3)',
             display: 'inline-block',
             textTransform: 'uppercase',
             letterSpacing: '0.8px',
