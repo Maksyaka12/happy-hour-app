@@ -62,8 +62,8 @@ function TaskCard({ task, taskState, onVisit, onCheck, onClaim, isClaiming }) {
             {task.text}
           </div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 2 }}>
-            <span style={{ fontSize: 9, color: '#0000FF', fontWeight: 800, background: 'rgba(0,0,255,0.06)', borderRadius: 6, padding: '1px 6px', textTransform: 'uppercase' }}>
-              +{task.points} AP
+            <span style={{ fontSize: 9, color: '#10B981', fontWeight: 800, background: 'rgba(16,185,129,0.08)', borderRadius: 6, padding: '1px 6px', textTransform: 'uppercase' }}>
+              +20 Activity Points
             </span>
             <span style={{ fontSize: 9, color: '#64748B', fontWeight: 600 }}>⏰ {fmt(left)} left</span>
           </div>
@@ -172,8 +172,8 @@ export function TasksSection({ address }) {
   const [adminTab, setAdminTab] = useState('create') // 'create' | 'manage'
   const [allTasks, setAllTasks] = useState([])
   const [editingTaskId, setEditingTaskId] = useState(null)
-  const [editTaskState, setEditTaskState] = useState({ type: 'retweet', text: '', url: '', points: 1, icon_url: '', expires_at: '' })
-  const [newTasks, setNewTasks] = useState([{ type: 'retweet', text: '', url: '', points: 1, icon_url: '', expires_hours: 24 }])
+  const [editTaskState, setEditTaskState] = useState({ type: 'retweet', text: '', url: '', points: 10, icon_url: '', expires_at: '' })
+  const [newTasks, setNewTasks] = useState([{ type: 'retweet', text: '', url: '', points: 10, icon_url: '', expires_hours: 24 }])
   const [isCreating, setIsCreating] = useState(false)
 
   const ADMIN_WALLET = '0x4c91d3bed372c11795b9ce9a9017dfe447bf050a'
@@ -321,7 +321,7 @@ export function TasksSection({ address }) {
 
     if (successCount > 0) {
       setShowAdmin(false)
-      setNewTasks([{ type: 'retweet', text: '', url: '', points: 1, icon_url: '', expires_hours: 24 }])
+      setNewTasks([{ type: 'retweet', text: '', url: '', points: 10, icon_url: '', expires_hours: 24 }])
       loadTasks()
       loadAllTasks()
       if (successCount < validTasks.length) {
@@ -334,7 +334,7 @@ export function TasksSection({ address }) {
   }
 
   const addTaskRow = () => {
-    setNewTasks([...newTasks, { type: 'retweet', text: '', url: '', points: 1, icon_url: '', expires_hours: 24 }])
+    setNewTasks([...newTasks, { type: 'retweet', text: '', url: '', points: 10, icon_url: '', expires_hours: 24 }])
   }
 
   const removeTaskRow = (index) => {
@@ -813,10 +813,6 @@ export function TasksSection({ address }) {
                   
                   <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: '#717886' }}>AP:</span>
-                      <input type="number" min="1" max="1000" value={task.points} onChange={e => updateTaskRow(idx, 'points', e.target.value)} style={{ width: 60, padding: 8, borderRadius: 8, border: '1px solid #ccc', background: '#fff', fontSize: 13 }} />
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <span style={{ fontSize: 12, fontWeight: 600, color: '#717886' }}>Hours:</span>
                       <input type="number" min="1" max="8760" value={task.expires_hours || 24} onChange={e => updateTaskRow(idx, 'expires_hours', e.target.value)} style={{ width: 60, padding: 8, borderRadius: 8, border: '1px solid #ccc', background: '#fff', fontSize: 13 }} />
                     </div>
@@ -902,15 +898,7 @@ export function TasksSection({ address }) {
                         </div>
 
                         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                          <span style={{ fontSize: 12, fontWeight: 600, color: '#717886' }}>AP:</span>
-                          <input
-                            type="number"
-                            value={editTaskState.points}
-                            onChange={e => setEditTaskState({ ...editTaskState, points: Number(e.target.value) })}
-                            style={{ width: 60, padding: 6, borderRadius: 8, border: '1px solid #ccc', fontSize: 13 }}
-                          />
-                          
-                          <span style={{ fontSize: 12, fontWeight: 600, color: '#717886', marginLeft: 8 }}>Hours Left:</span>
+                          <span style={{ fontSize: 12, fontWeight: 600, color: '#717886' }}>Hours Left:</span>
                           <input
                             type="number"
                             min="1"
@@ -952,7 +940,7 @@ export function TasksSection({ address }) {
                           {t.text}
                         </div>
                         <div style={{ fontSize: 9, color: '#717886', display: 'flex', gap: 6, marginTop: 2 }}>
-                          <span style={{ color: '#0000FF', fontWeight: 800 }}>+{t.points} AP</span>
+                          <span style={{ color: '#10B981', fontWeight: 800 }}>+20 Activity Points</span>
                           <span>•</span>
                           <span style={{ color: isExpired ? '#DC2626' : '#059669', fontWeight: 600 }}>{isExpired ? 'Expired' : 'Active'}</span>
                         </div>
