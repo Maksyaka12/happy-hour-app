@@ -227,6 +227,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         @keyframes hbFadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
         @keyframes hbBob { 0%,100% { transform:translateY(0) scale(1); } 50% { transform:translateY(-5px) scale(1.05); } }
         @keyframes hbPulseGlow { 0%,100% { box-shadow: 0 0 12px rgba(139,92,246,0.15); } 50% { box-shadow: 0 0 24px rgba(139,92,246,0.4); } }
+        @keyframes hbGiftFloat { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
         .chest-slot { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
         .chest-slot:hover { transform: translateY(-2px); }
         .chest-btn { transition: all 0.2s ease; }
@@ -246,24 +247,89 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
 
       {/* ═══ HERO BANNER ═══ */}
       <div style={{
-        backgroundImage: 'url(/banner.jpg)', backgroundColor: '#0000FF',
-        backgroundSize: 'cover', backgroundPosition: 'center',
-        borderRadius: 24, padding: '28px 20px', marginBottom: 16,
-        position: 'relative', overflow: 'hidden', minHeight: 120,
-        boxShadow: '0 16px 48px rgba(0,0,255,0.15), 0 0 0 1px rgba(255,255,255,0.1)',
-        display: 'flex', flexDirection: 'column', justifyContent: 'center'
+        background: 'linear-gradient(135deg, #090514 0%, #2E1065 50%, #03000A 100%)',
+        borderRadius: 24,
+        padding: '32px 20px',
+        marginBottom: 16,
+        position: 'relative',
+        minHeight: 155,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        boxShadow: '0 12px 40px rgba(46,16,101,0.35)',
+        overflow: 'hidden',
+        border: '1px solid rgba(139,92,246,0.2)'
       }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(160deg, rgba(0,0,60,0.3) 0%, rgba(0,0,0,0.5) 100%)', zIndex: 0 }} />
-        
-        {/* Ambient glow */}
-        <div style={{ position: 'absolute', top: -30, right: -30, width: 160, height: 160, background: 'rgba(100,100,255,0.2)', borderRadius: '50%', filter: 'blur(50px)', zIndex: 1 }} />
+        {/* Glow overlay */}
+        <div style={{
+          position: 'absolute',
+          top: '-20%',
+          right: '-10%',
+          width: '180px',
+          height: '180px',
+          background: 'radial-gradient(circle, rgba(139,92,246,0.25) 0%, transparent 70%)',
+          zIndex: 0,
+          pointerEvents: 'none'
+        }} />
 
-        <div style={{ position: 'relative', zIndex: 2 }}>
-          <div style={{ fontSize: 24, fontWeight: 900, color: '#fff', lineHeight: 1.1, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
-            Happy Boxes
+        {/* Floating gift background decorations */}
+        {[
+          { top: -10, right: '8%', size: 54, opacity: 0.14, r: '-12deg', blur: 0.5, dur: 4.2 },
+          { top: 45, right: '18%', size: 32, opacity: 0.11, r: '14deg', blur: 0, dur: 4.8 },
+          { top: -20, left: '12%', size: 48, opacity: 0.12, r: '22deg', blur: 1, dur: 5.4 },
+          { bottom: -8, left: '26%', size: 40, opacity: 0.13, r: '-15deg', blur: 0.8, dur: 4.0 },
+          { bottom: 10, right: '3%', size: 62, opacity: 0.16, r: '8deg', blur: 1.2, dur: 4.6 }
+        ].map((s, i) => (
+          <div key={i} style={{
+            position: 'absolute',
+            top: s.top,
+            right: s.right,
+            left: s.left,
+            bottom: s.bottom,
+            zIndex: 1,
+            pointerEvents: 'none',
+            userSelect: 'none',
+            animation: `hbGiftFloat ${s.dur}s ease-in-out infinite`,
+          }}>
+            <div style={{
+              fontSize: `${s.size}px`,
+              opacity: s.opacity,
+              filter: s.blur > 0 ? `blur(${s.blur}px) drop-shadow(0 0 10px rgba(139,92,246,0.25))` : 'drop-shadow(0 0 10px rgba(139,92,246,0.25))',
+              transform: `rotate(${s.r})`,
+            }}>
+              🎁
+            </div>
           </div>
-          <div style={{ fontSize: 13, color: '#10B981', fontWeight: 800, marginTop: 4, textShadow: '0 1px 8px rgba(0,0,0,0.4)' }}>
-            Open boxes to win massive HP rewards
+        ))}
+
+        <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', paddingTop: 0, paddingBottom: 0 }}>
+          <div style={{
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontSize: 42,
+            fontWeight: 900,
+            color: '#fff',
+            lineHeight: 1,
+            textShadow: '0 4px 15px rgba(0,0,0,0.6)',
+            marginBottom: 12,
+            letterSpacing: '-1px'
+          }}>
+            HAPPY <span style={{ color: '#8B5CF6' }}>BOXES</span>
+          </div>
+          <div style={{
+            background: 'rgba(139, 92, 246, 0.15)',
+            backdropFilter: 'blur(10px)',
+            borderRadius: 50,
+            padding: '4px 12px',
+            fontSize: 9,
+            fontWeight: 800,
+            color: '#C084FC',
+            border: '1px solid rgba(139, 92, 246, 0.3)',
+            display: 'inline-block',
+            textTransform: 'uppercase',
+            letterSpacing: '0.8px',
+          }}>
+            🎁 OPEN BOXES TO WIN MASSIVE HP REWARDS
           </div>
         </div>
       </div>
