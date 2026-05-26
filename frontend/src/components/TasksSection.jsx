@@ -62,8 +62,8 @@ function TaskCard({ task, taskState, onVisit, onCheck, onClaim, isClaiming }) {
             {task.text}
           </div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 2 }}>
-            <span style={{ fontSize: 9, color: '#D97706', fontWeight: 800, background: 'rgba(217,119,6,0.1)', borderRadius: 6, padding: '1px 6px', textTransform: 'uppercase' }}>
-              +{task.points} HP
+            <span style={{ fontSize: 9, color: '#0000FF', fontWeight: 800, background: 'rgba(0,0,255,0.06)', borderRadius: 6, padding: '1px 6px', textTransform: 'uppercase' }}>
+              +{task.points} AP
             </span>
             <span style={{ fontSize: 9, color: '#64748B', fontWeight: 600 }}>⏰ {fmt(left)} left</span>
           </div>
@@ -813,7 +813,7 @@ export function TasksSection({ address }) {
                   
                   <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: '#717886' }}>HP:</span>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: '#717886' }}>AP:</span>
                       <input type="number" min="1" max="1000" value={task.points} onChange={e => updateTaskRow(idx, 'points', e.target.value)} style={{ width: 60, padding: 8, borderRadius: 8, border: '1px solid #ccc', background: '#fff', fontSize: 13 }} />
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -902,7 +902,7 @@ export function TasksSection({ address }) {
                         </div>
 
                         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                          <span style={{ fontSize: 12, fontWeight: 600, color: '#717886' }}>HP:</span>
+                          <span style={{ fontSize: 12, fontWeight: 600, color: '#717886' }}>AP:</span>
                           <input
                             type="number"
                             value={editTaskState.points}
@@ -952,7 +952,7 @@ export function TasksSection({ address }) {
                           {t.text}
                         </div>
                         <div style={{ fontSize: 9, color: '#717886', display: 'flex', gap: 6, marginTop: 2 }}>
-                          <span style={{ color: '#D97706', fontWeight: 800 }}>+{t.points} HP</span>
+                          <span style={{ color: '#0000FF', fontWeight: 800 }}>+{t.points} AP</span>
                           <span>•</span>
                           <span style={{ color: isExpired ? '#DC2626' : '#059669', fontWeight: 600 }}>{isExpired ? 'Expired' : 'Active'}</span>
                         </div>

@@ -417,14 +417,21 @@ export function DocsSection({ onClose }) {
               <Table
                 headers={['Action', 'HP Earned']}
                 rows={[
-                  ['Daily check-in', '1 HP'],
-                  ['3-day streak bonus', '+1 HP'],
-                  ['7-day streak bonus', '+3 HP'],
-                  ['14-day streak bonus', '+7 HP'],
-                  ['30-day streak bonus', '+15 HP'],
-                  ['HP Boost (0.1 USDC)', '+2 HP instantly'],
-                  ['Completing tasks', 'Varies per task'],
-                  ['Raffle entries', 'Contributes to Activity HP score'],
+                  ['Daily check-in', '1.0 HP / day'],
+                  ['3-day streak bonus', '+1.0 HP'],
+                  ['7-day streak bonus', '+3.0 HP'],
+                  ['14-day streak bonus', '+7.0 HP'],
+                  ['30-day streak bonus', '+15.0 HP'],
+                  ['HP Boost (0.10 USDC)', '+2.0 HP instantly (Limit: 1/day)'],
+                  ['Daily Leaderboard Rank 1', '+20.0 HP'],
+                  ['Daily Leaderboard Rank 2-5', '+15.0 HP'],
+                  ['Daily Leaderboard Rank 6-10', '+10.0 HP'],
+                  ['Daily Leaderboard Rank 11-20', '+5.0 HP'],
+                  ['Daily Leaderboard Rank 21-30', '+3.0 HP'],
+                  ['Happy Boxes (Common Box)', '2.0 – 4.0 HP (Avg: 3.0 HP)'],
+                  ['Happy Boxes (Epic Box)', '5.0 – 10.0 HP (Avg: 7.5 HP)'],
+                  ['Happy Boxes (Legendary Box)', '11.0 – 20.0 HP (Avg: 15.5 HP)'],
+                  ['Post approval (Social)', '+3.0 to +5.0 HP per approved post'],
                 ]}
               />
               <H3>What HP Is Used For</H3>
@@ -433,7 +440,7 @@ export function DocsSection({ onClose }) {
               </P>
               <H3>HP Boost</H3>
               <P>
-                If you want to accelerate your HP earning, you can use the <strong style={{ color: '#fff' }}>HP Boost</strong> feature. For 0.1 USDC, you instantly receive +2 HP. Boost can be activated multiple times.
+                If you want to accelerate your HP earning, you can use the <strong style={{ color: '#fff' }}>HP Boost</strong> feature. For 0.10 USDC, you instantly receive +2.0 HP. Boost can be activated once per calendar day as a Sybil protection gate.
               </P>
               <InfoBox type="info">
                 HP is non-transferable and lives in your profile. It cannot be sent or traded — it's purely a measure of your engagement.
@@ -491,6 +498,15 @@ export function DocsSection({ onClose }) {
               <P>
                 Boxes contain a variety of prize types including USDC rewards, HP bonuses, and special in-app perks. Each box opening is a unique on-chain interaction.
               </P>
+              <H3>Box Tiers & Reward Ranges (V3 Economy)</H3>
+              <Table
+                headers={['Box Tier', 'Price (USDC)', 'HP Reward Range', 'Special Jackpot Chance']}
+                rows={[
+                  ['Common Box', '0.20 USDC', '2.0 – 4.0 HP (Avg: 3.0 HP)', 'None'],
+                  ['Epic Box', '0.45 USDC', '5.0 – 10.0 HP (Avg: 7.5 HP)', '5% chance for 2x Multiplier for 24 hours'],
+                  ['Legendary Box', '0.95 USDC', '11.0 – 20.0 HP (Avg: 15.5 HP)', '2.5% chance for 5x Multiplier for 24 hours'],
+                ]}
+              />
               <InfoBox type="tip">
                 Watch the Boxes tab for limited-time special boxes that appear during events and community milestones.
               </InfoBox>
@@ -527,18 +543,30 @@ export function DocsSection({ onClose }) {
               <P>
                 The activity score is calculated daily based on your on-chain actions: check-ins, transactions through Happy Hour contracts, task completions, and more. It is designed to reward consistent daily participants.
               </P>
-              <H3>Activity Score Components</H3>
+              <H3>Activity Score Components (AP Logic)</H3>
               <Table
-                headers={['Activity', 'Contribution']}
+                headers={['Activity Action', 'Points Contributed (AP)', 'Details']}
                 rows={[
-                  ['Daily check-in', 'Check-in done: YES/NO'],
-                  ['Transaction count', 'Number of on-chain txs through the app'],
-                  ['Current streak', 'Your streak count on that day'],
-                  ['HP balance', 'Total HP accumulated'],
+                  ['Daily Check-in', '30 AP', 'Triggers on your daily check-in'],
+                  ['Current Streak', '+1 AP per day', 'E.g., 10 AP for a 10-day streak'],
+                  ['Completing Quests', '10 AP per task', 'Plus the transaction AP trigger (20 AP total)'],
+                  ['Transaction count', '10 AP per transaction', 'Triggers on checkins, boosts, box opens, bets, etc.'],
+                  ['Approved Posts', '50 AP per post', 'Awarded once post is verified and approved'],
+                ]}
+              />
+              <H3>Daily Leaderboard Reward Pyramid (Top-30)</H3>
+              <Table
+                headers={['Rank Zone', 'Reward per Player', 'Group Payout Status']}
+                rows={[
+                  ['Rank 1', '20.0 HP', 'V3 prestige pool'],
+                  ['Rank 2 – 5', '15.0 HP', 'High prestige tier'],
+                  ['Rank 6 – 10', '10.0 HP', 'Active builder tier'],
+                  ['Rank 11 – 20', '5.0 HP', 'Community support tier'],
+                  ['Rank 21 – 30', '3.0 HP', 'Consolation incentive'],
                 ]}
               />
               <InfoBox type="info">
-                The Activity Leaderboard resets daily at midnight UTC. It's a great way to see who the most active community members are on any given day.
+                The Activity Leaderboard resets daily at midnight UTC. It's a great way to see who the most active community members are on any given day and claim valuable prestige HP.
               </InfoBox>
             </Section>
 

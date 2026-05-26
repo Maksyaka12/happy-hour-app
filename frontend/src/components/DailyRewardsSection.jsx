@@ -99,12 +99,12 @@ export function DailyRewardsSection({ address }) {
   const displayDailyEntry = myDailyRank > 0 ? myDailyEntry : outsideDailyRank
 
   const getReward = (rank) => {
-    if (!rank || rank > 20) return 0
-    if (rank === 1) return 50
-    if (rank <= 5) return 30
-    if (rank <= 10) return 15
-    if (rank <= 15) return 10
-    return 5
+    if (!rank || rank > 30) return 0
+    if (rank === 1) return 20.0
+    if (rank <= 5) return 15.0
+    if (rank <= 10) return 10.0
+    if (rank <= 20) return 5.0
+    return 3.0
   }
 
   if (loading) {
@@ -197,7 +197,7 @@ export function DailyRewardsSection({ address }) {
             textTransform: 'uppercase',
             letterSpacing: '0.8px',
           }}>
-            🏆 TOP-20 MOST ACTIVE USERS OF THE DAY GET HP
+            🏆 TOP-30 MOST ACTIVE USERS OF THE DAY GET HP
           </div>
         </div>
 
@@ -369,7 +369,7 @@ export function DailyRewardsSection({ address }) {
             const rewardHP = getReward(rank)
 
             const capsuleStyle = (() => {
-              if (rank >= 1 && rank <= 20) {
+              if (rank >= 1 && rank <= 30) {
                 return { bg: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', color: '#fff', border: 'none', shadow: 'none', div: 'rgba(255,255,255,0.25)' }
               }
               return { bg: '#F1F5F9', color: '#64748B', border: 'none', shadow: 'none', div: 'transparent' }
@@ -524,7 +524,7 @@ export function DailyRewardsSection({ address }) {
         </div>
         {[
           ['What are Activity Points?', 'All your in-app activity converts into activity points. Formula: daily check-in + tasks + in-app transactions + post approval + your streak.'],
-          ['When are rewards distributed?', 'Top-20 most active users automatically receive HP daily when the timer hits 00:00 (00:00 UTC).'],
+          ['When are rewards distributed?', 'Top-30 most active users automatically receive HP daily when the timer hits 00:00 (00:00 UTC).'],
           ['What happens when the timer hits 00:00?', 'The leaderboard resets along with your activity points. New day - new chance for everyone to earn HP.'],
         ].map(([q, a], i, arr) => (
           <div key={i} style={{ marginBottom: i < arr.length - 1 ? 14 : 0 }}>

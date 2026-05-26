@@ -11,7 +11,7 @@ const BOX_CONFIG = {
   common: {
     label: 'Common',
     badge: 'ENTRY',
-    hp: '4 – 8 HP',
+    hp: '2.0 – 4.0 HP',
     boost: null,
     accent: '#6B7280',
     glow: 'rgba(107,114,128,0.15)',
@@ -30,7 +30,7 @@ const BOX_CONFIG = {
   epic: {
     label: 'Epic',
     badge: '🔥 HOT',
-    hp: '10 – 20 HP',
+    hp: '5.0 – 10.0 HP',
     boost: '+ Chance for 2x Boost',
     accent: '#8B5CF6',
     glow: 'rgba(139,92,246,0.12)',
@@ -49,7 +49,7 @@ const BOX_CONFIG = {
   legendary: {
     label: 'Legendary',
     badge: '⚡ JACKPOT',
-    hp: '21 – 40 HP',
+    hp: '11.0 – 20.0 HP',
     boost: '+ Chance for 5x Boost',
     accent: '#D97706',
     glow: 'rgba(217,119,6,0.12)',
