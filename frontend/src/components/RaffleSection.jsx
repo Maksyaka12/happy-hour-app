@@ -322,7 +322,7 @@ export function RaffleSection({ address }) {
           ['How is the winner selected?',       'Secure random selection, lucky-based. Anyone with 1+ ticket can win. More tickets = more chances.'],
           ['How many points do I get for playing?', (
             <>
-              You get <strong style={{ color: '#10B981' }}>Activity Points</strong>. Winner receives <strong style={{ color: '#0000FF' }}>2 HP</strong>.
+              You get <strong style={{ color: '#10B981' }}>Activity Points</strong> for every bet. Winner receives <strong style={{ color: '#0000FF' }}>2 HP</strong>.
             </>
           )],
           ['What happens if I’m the only player in a round?', (
@@ -331,7 +331,7 @@ export function RaffleSection({ address }) {
             </>
           )],
           ['How much does the winner receive?', 'Winner takes 85% of the total pot. The remaining 15% goes to the foundation for future rewards.'],
-          ['When are winnings paid?',           'Automatically after the draw, directly to the winner\'s wallet via the smart contract.'],
+          ['When are winnings paid?',           'Automatically after the draw, directly to the winner\'s wallet.'],
           ['Can I deposit multiple times?',     'Yes! Multiple deposits per round are allowed and all contribute to your ticket count.'],
         ].map(([q, a], i, arr) => (
           <div key={i} style={{ marginBottom: i < arr.length - 1 ? 14 : 0 }}>
