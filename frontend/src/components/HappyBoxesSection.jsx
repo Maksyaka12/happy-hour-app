@@ -362,29 +362,34 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                       width: '64%',
                       height: '64%',
                       objectFit: 'contain',
-                      filter: chest.status === 'locked' ? 'grayscale(1) brightness(0.95) contrast(0.8)' : 'none',
-                      transition: 'all 0.3s ease',
+                      filter: (chest.status === 'locked' && anyOpened) ? 'blur(2.5px)' : 'none',
+                      opacity: chest.status === 'locked' ? 0.45 : 1,
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                     }}
                   />
-                  {chest.status === 'locked' && !hasActiveChoice && !allOpened && (
+                  {chest.status === 'locked' && !hasActiveChoice && anyOpened && (
                     <div style={{
                       position: 'absolute',
-                      bottom: 8,
-                      background: 'rgba(255, 255, 255, 0.95)',
-                      border: '1px solid #E2E8F0',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      background: 'linear-gradient(135deg, #0000FF 0%, #0000B0 100%)',
+                      color: '#ffffff',
                       borderRadius: 30,
-                      padding: '3px 8px',
+                      padding: '4px 10px',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: 3,
-                      boxShadow: '0 4px 10px rgba(0,0,0,0.06)',
+                      gap: 4,
+                      boxShadow: '0 8px 20px rgba(0,0,255,0.3)',
                       fontSize: 8,
                       fontWeight: 900,
-                      color: '#1E293B',
                       letterSpacing: '-0.1px',
-                      textTransform: 'uppercase'
+                      textTransform: 'uppercase',
+                      whiteSpace: 'nowrap',
+                      zIndex: 10,
+                      animation: 'hbFadeIn 0.25s ease'
                     }}>
-                      Open 0.3 <img src="/usdc-logo.png" alt="USDC" style={{ width: 9, height: 9 }} />
+                      Open 0.30 <img src="/usdc-logo.png" alt="USDC" style={{ width: 9, height: 9, filter: 'brightness(0) invert(1)' }} />
                     </div>
                   )}
                 </>
