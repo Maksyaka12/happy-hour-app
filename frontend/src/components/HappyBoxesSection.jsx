@@ -18,25 +18,25 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
     { id: 6, status: 'locked', hp: null, mult: null },
   ])
 
-  // Color logic and premium styles for opened boxes
+  // Color logic and premium styles for opened boxes (matches ProfileSection boost colors)
   const getOpenedCardDetails = (mult) => {
     const m = parseFloat(mult) || 1.0
     if (m >= 2.0) {
       return {
-        badgeBg: 'linear-gradient(135deg, #A7F3D0 0%, #34D399 100%)', // green
+        badgeBg: 'linear-gradient(135deg, #34D399, #059669)', // green
         badgeColor: '#000000', // black text
         badgeText: '⚡ 2.0x Boost'
       }
     }
     if (m > 1.0) {
       return {
-        badgeBg: 'linear-gradient(135deg, #FDE68A 0%, #FBBF24 100%)', // orange
+        badgeBg: 'linear-gradient(135deg, #F4C81B, #F97316)', // orange
         badgeColor: '#000000', // black text
         badgeText: `⚡ ${m}x Boost`
       }
     }
     return {
-      badgeBg: 'linear-gradient(135deg, #E2E8F0 0%, #CBD5E1 100%)', // gray
+      badgeBg: 'linear-gradient(135deg, #94A3B8, #64748B)', // gray
       badgeColor: '#000000', // black text
       badgeText: '⚡ 1.0x Boost'
     }
