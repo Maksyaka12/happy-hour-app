@@ -62,13 +62,38 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
     if (pendingHash) {
       setActiveTxHash(pendingHash)
       setHasActiveChoice(true)
+      
+      const savedBoard = localStorage.getItem('happy_boxes_board')
+      if (savedBoard) {
+        try {
+          const parsed = JSON.parse(savedBoard)
+          if (Array.isArray(parsed) && parsed.length === 6) {
+            setChests(parsed.map(c => c.status === 'locked' ? { ...c, status: 'active' } : c))
+            return
+          }
+        } catch (e) {
+          console.error('Failed to parse saved board:', e)
+        }
+      }
       setChests(prev => prev.map(c => c.status === 'locked' ? { ...c, status: 'active' } : c))
+    } else {
+      // Variant 1: No pending transaction, clear saved board to start fresh
+      localStorage.removeItem('happy_boxes_board')
     }
   }, [])
+
+  // Persist board state to localStorage whenever chests change
+  useEffect(() => {
+    const hasOpenOrActive = chests.some(c => c.status === 'opened' || c.status === 'active')
+    if (hasOpenOrActive) {
+      localStorage.setItem('happy_boxes_board', JSON.stringify(chests))
+    }
+  }, [chests])
 
   // Reset the grid board to start fresh
   const handleResetBoard = () => {
     localStorage.removeItem('happy_boxes_pending')
+    localStorage.removeItem('happy_boxes_board')
     setChests([
       { id: 1, status: 'locked', hp: null, mult: null },
       { id: 2, status: 'locked', hp: null, mult: null },

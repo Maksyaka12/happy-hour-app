@@ -114,15 +114,11 @@ BEGIN
     );
 
     -- Append to rewards array
-    v_rewards := jsonb_insert(
-      v_rewards,
-      array_to_json(ARRAY[jsonb_array_length(v_rewards)])::text[],
-      jsonb_build_object(
-        'index', v_idx,
-        'hp_won', ROUND(v_hp_won * v_applied_mult, 1),
-        'base_hp', v_hp_won,
-        'applied_multiplier', v_applied_mult
-      )
+    v_rewards := v_rewards || jsonb_build_object(
+      'index', v_idx,
+      'hp_won', ROUND(v_hp_won * v_applied_mult, 1),
+      'base_hp', v_hp_won,
+      'applied_multiplier', v_applied_mult
     );
   END LOOP;
 
