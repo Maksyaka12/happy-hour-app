@@ -1113,7 +1113,7 @@ export function ProfileSection({ address, basename }) {
           <div>
             <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Referral Hub</div>
             <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>
-              Invite friends and <span style={{ color: '#EA580C', fontWeight: 700 }}>earn 50% of their HP</span> forever.
+              Invite friends and <span style={{ color: '#0000FF', fontWeight: 700 }}>earn 50% of their HP</span> forever.
             </div>
           </div>
         </div>
@@ -1128,7 +1128,7 @@ export function ProfileSection({ address, basename }) {
               setLinkCopied(true)
               setTimeout(() => setLinkCopied(false), 2000)
             }}
-            style={{ flex: 1, background: '#F0F3FF', color: '#0000FF', border: '1px solid #0000FF', borderRadius: 12, fontSize: 10, fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap' }}
+            style={{ flex: 1, background: '#0000FF', color: '#fff', border: 'none', borderRadius: 12, fontSize: 10, fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap', boxShadow: '0 2px 8px rgba(0,0,255,0.15)' }}
           >
             {linkCopied ? '✓' : 'Copy Link'}
           </button>
@@ -1138,7 +1138,7 @@ export function ProfileSection({ address, basename }) {
               setCodeCopied(true)
               setTimeout(() => setCodeCopied(false), 2000)
             }}
-            style={{ flex: 1, background: '#FFF7ED', color: '#EA580C', border: '1px solid #EA580C', borderRadius: 12, fontSize: 10, fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap' }}
+            style={{ flex: 1, background: '#10B981', color: '#fff', border: 'none', borderRadius: 12, fontSize: 10, fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap', boxShadow: '0 2px 8px rgba(16,185,129,0.15)' }}
           >
             {codeCopied ? '✓' : 'Copy Code'}
           </button>
