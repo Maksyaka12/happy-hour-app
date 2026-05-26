@@ -765,8 +765,7 @@ export function ProfileSection({ address, basename }) {
           <div>
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ fontSize: 14 }}>⚡</span>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
                 <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>HP Boost</div>
               </div>
               <div style={{
@@ -869,8 +868,7 @@ export function ProfileSection({ address, basename }) {
           <div>
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ fontSize: 14 }}>🚀</span>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
                 <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Activity Boost</div>
               </div>
               <div style={{
