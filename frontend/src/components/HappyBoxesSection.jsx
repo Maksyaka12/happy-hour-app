@@ -427,11 +427,11 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
 
           if (chest.status === 'locked') {
             if (anyOpened) {
-              imageFilter = 'blur(4px) grayscale(30%) drop-shadow(0 4px 10px rgba(0,0,0,0.1))'
-              imageOpacity = 0.35
+              imageFilter = 'blur(2px) grayscale(30%) drop-shadow(0 4px 10px rgba(0,0,0,0.1))'
+              imageOpacity = 0.45
             } else {
-              imageFilter = 'grayscale(15%) brightness(0.95) drop-shadow(0 4px 8px rgba(0,0,0,0.08))'
-              imageOpacity = 0.8
+              imageFilter = 'grayscale(60%) brightness(0.9) drop-shadow(0 4px 8px rgba(0,0,0,0.05))'
+              imageOpacity = 0.3
             }
           }
           
@@ -441,8 +441,8 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
               onClick={() => {
                 if (chest.status === 'active') {
                   handleSelectChest(index)
-                } else if (chest.status === 'locked' && !hasActiveChoice && !allOpened) {
-                  // Direct click triggers single box payment
+                } else if (chest.status === 'locked' && !hasActiveChoice && !allOpened && anyOpened) {
+                  // Direct click triggers single box payment only if board is already active with openings
                   setTxModal('single')
                 }
               }}
@@ -451,7 +451,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                 aspectRatio: '1',
                 position: 'relative',
                 perspective: '1000px',
-                cursor: (chest.status === 'active' || (chest.status === 'locked' && !hasActiveChoice && !allOpened)) ? 'pointer' : 'default',
+                cursor: (chest.status === 'active' || (chest.status === 'locked' && !hasActiveChoice && !allOpened && anyOpened)) ? 'pointer' : 'default',
                 opacity: (hasActiveChoice && chest.status !== 'active' && chest.status !== 'opened') ? 0.45 : 1,
               }}
             >
@@ -538,29 +538,27 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                         </div>
                       )}
 
-                      {chest.status === 'locked' && !hasActiveChoice && (
+                      {chest.status === 'locked' && !hasActiveChoice && anyOpened && (
                         <div style={{
                           position: 'absolute',
                           top: '50%',
                           left: '50%',
                           transform: 'translate(-50%, -50%)',
-                          background: 'linear-gradient(135deg, #0052FF 0%, #003CC0 100%)',
+                          background: '#0000FF',
                           color: '#ffffff',
-                          borderRadius: 20,
-                          padding: '6px 12px',
+                          borderRadius: 50,
+                          padding: '8px 12px',
                           display: 'flex',
                           alignItems: 'center',
                           gap: 4,
-                          boxShadow: '0 8px 20px rgba(0,82,255,0.3)',
-                          fontSize: 9,
-                          fontWeight: 900,
-                          letterSpacing: '0.2px',
-                          textTransform: 'uppercase',
+                          boxShadow: '0 4px 12px rgba(0,0,255,0.2)',
+                          fontSize: 11,
+                          fontWeight: 800,
                           cursor: 'pointer',
                           zIndex: 10,
                           whiteSpace: 'nowrap'
                         }}>
-                          Open 0.30 <img src="/usdc-logo.png" alt="USDC" style={{ width: 10, height: 10, borderRadius: '50%' }} />
+                          <span>Open · 0.30</span> <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12 }} />
                         </div>
                       )}
                     </>
@@ -665,22 +663,23 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             className="chest-btn"
             onClick={handleResetBoard}
             style={{
+              width: '100%',
               background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
               color: '#fff',
               border: 'none',
               borderRadius: 50,
-              padding: '14px 20px',
-              fontSize: 13,
+              padding: '10px 10px',
+              fontSize: 11,
               fontWeight: 800,
               cursor: 'pointer',
-              boxShadow: '0 4px 16px rgba(16,185,129,0.3)',
+              boxShadow: '0 4px 12px rgba(16,185,129,0.2)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: 6
+              gap: 4
             }}
           >
-            🔄 Reset Board & Play Again
+            <span>Reset Board & Play Again</span>
           </button>
         ) : (
           <>
@@ -690,24 +689,25 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
               onClick={() => setTxModal('single')}
               disabled={isPending || isConfirming || hasActiveChoice || revealingIndex !== null}
               style={{
-                background: 'linear-gradient(135deg, #0000FF 0%, #0000D0 100%)',
+                width: '100%',
+                background: '#0000FF',
                 color: '#fff',
                 border: 'none',
                 borderRadius: 50,
-                padding: '14px 20px',
-                fontSize: 13,
-                fontWeight: 900,
+                padding: '10px 10px',
+                fontSize: 11,
+                fontWeight: 800,
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: 6,
-                boxShadow: '0 4px 16px rgba(0,0,255,0.25)',
+                gap: 4,
+                boxShadow: '0 4px 12px rgba(0,0,255,0.2)',
                 opacity: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null) ? 0.5 : 1
               }}
             >
-              Open Box 0.30
-              <img src="/usdc-logo.png" alt="USDC" style={{ width: 15, height: 15, flexShrink: 0, borderRadius: '50%' }} />
+              <span>Open Box · 0.30</span>
+              <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, flexShrink: 0 }} />
             </button>
 
             {/* Bundle Open All Button */}
@@ -716,25 +716,26 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
               onClick={() => setTxModal('bundle')}
               disabled={isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened}
               style={{
+                width: '100%',
                 background: 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)',
                 color: '#fff',
                 border: 'none',
                 borderRadius: 50,
-                padding: '14px 20px',
-                fontSize: 13,
+                padding: '10px 10px',
+                fontSize: 11,
                 fontWeight: 800,
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: 6,
-                boxShadow: '0 4px 16px rgba(139,92,246,0.3)',
+                gap: 4,
+                boxShadow: '0 4px 12px rgba(139,92,246,0.2)',
                 opacity: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened) ? 0.4 : 1
               }}
             >
-              ✨ Open All 6 boxes for 1.50
-              <img src="/usdc-logo.png" alt="USDC" style={{ width: 15, height: 15, flexShrink: 0, borderRadius: '50%' }} />
-              <span style={{ fontSize: 9, background: 'rgba(255,255,255,0.2)', padding: '2px 8px', borderRadius: 20, fontWeight: 900, color: '#FCD34D' }}>
+              <span>Open All 6 · 1.50</span>
+              <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, flexShrink: 0 }} />
+              <span style={{ fontSize: 9, background: 'rgba(255,255,255,0.2)', padding: '2px 8px', borderRadius: 20, fontWeight: 900, color: '#FCD34D', marginLeft: 4 }}>
                 1 FREE BOX!
               </span>
             </button>
