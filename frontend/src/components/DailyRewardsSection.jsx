@@ -190,6 +190,7 @@ export function DailyRewardsSection({ address }) {
           </div>
         ))}
 
+        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', paddingTop: 0, paddingBottom: 32 }}>
           <div style={{
             fontFamily: "'Barlow Condensed', sans-serif",
             fontSize: 46,
