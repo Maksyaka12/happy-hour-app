@@ -54,47 +54,21 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
 
   const { data: txHash, writeContract, isPending, isConfirming, isSuccess, error: writeError, reset } = useBuilderWrite()
 
-  // Load user's opened chests state from DB to keep persistency across sessions
-  const loadChestsState = async () => {
-    if (!address) return
-    try {
-      // Fetch latest 6 chests opened in the current session (standard or standard_all box types)
-      const { data, error } = await db
-        .from('opened_boxes')
-        .select('hp_won, applied_multiplier, box_type, created_at')
-        .eq('address', address.toLowerCase())
-        .in('box_type', ['standard', 'standard_all'])
-        .order('created_at', { ascending: false })
-        .limit(6)
+  const [clickedBoxIndex, setClickedBoxIndex] = useState(null)
 
-      if (error) throw error
-
-      if (data && data.length > 0) {
-        // Map persistent opened chests to the slots
-        const newChests = [...chests]
-        data.forEach((box, index) => {
-          if (index < 6) {
-            newChests[index] = {
-              id: index + 1,
-              status: 'opened',
-              hp: (box.hp_won * box.applied_multiplier).toFixed(1),
-              mult: box.applied_multiplier
-            }
-          }
-        })
-        setChests(newChests)
-      }
-    } catch (err) {
-      console.error('Error loading chests:', err)
-    }
-  }
-
+  // Recovery of pending choice across tab unmounts (Option 2)
   useEffect(() => {
-    loadChestsState()
-  }, [address])
+    const pendingHash = localStorage.getItem('happy_boxes_pending')
+    if (pendingHash) {
+      setActiveTxHash(pendingHash)
+      setHasActiveChoice(true)
+      setChests(prev => prev.map(c => c.status === 'locked' ? { ...c, status: 'active' } : c))
+    }
+  }, [])
 
   // Reset the grid board to start fresh
   const handleResetBoard = () => {
+    localStorage.removeItem('happy_boxes_pending')
     setChests([
       { id: 1, status: 'locked', hp: null, mult: null },
       { id: 2, status: 'locked', hp: null, mult: null },
@@ -106,6 +80,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
     setHasActiveChoice(false)
     setActiveTxHash(null)
     setRevealingIndex(null)
+    setClickedBoxIndex(null)
     setErrorMessage('')
     reset()
   }
@@ -114,18 +89,23 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
   useEffect(() => {
     if (isSuccess && txHash) {
       if (txModal === 'single') {
-        // Unlock chests for user selection
-        setActiveTxHash(txHash)
-        setHasActiveChoice(true)
-        setChests(prev => prev.map(c => c.status === 'locked' ? { ...c, status: 'active' } : c))
         setTxModal(false)
+        if (clickedBoxIndex !== null) {
+          // Option 1: User pre-clicked a chest card badge. Open it directly!
+          handleSelectChest(clickedBoxIndex, txHash)
+        } else {
+          // Standard flow: User clicked main bottom button. Give them a choice.
+          setActiveTxHash(txHash)
+          setHasActiveChoice(true)
+          setChests(prev => prev.map(c => c.status === 'locked' ? { ...c, status: 'active' } : c))
+          localStorage.setItem('happy_boxes_pending', txHash)
+        }
       } else if (txModal === 'bundle') {
-        // Open all 6 chests automatically
         setTxModal(false)
         handleOpenAllChests(txHash)
       }
     }
-  }, [isSuccess, txHash, txModal])
+  }, [isSuccess, txHash, txModal, clickedBoxIndex])
 
   // Single chest transaction confirm
   const handleSinglePayment = () => {
@@ -154,25 +134,40 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
   }
 
   // User selects an active chest to open
-  const handleSelectChest = async (index) => {
-    if (!hasActiveChoice || !activeTxHash || chests[index].status !== 'active') return
+  async function handleSelectChest(index, hash = null) {
+    const txHashToUse = hash || activeTxHash
+    if (!txHashToUse) return
+    if (!hash && (!hasActiveChoice || chests[index].status !== 'active')) return
 
     setRevealingIndex(index)
     setHasActiveChoice(false) // Lock other clicks
+    localStorage.removeItem('happy_boxes_pending') // clear immediately!
 
     try {
       const { data, error } = await db.rpc('open_standard_chest', {
         p_address: address.toLowerCase(),
-        p_tx_hash: activeTxHash
+        p_tx_hash: txHashToUse
       })
 
       if (error) throw error
 
       if (data?.ok) {
-        setChests(prev => prev.map((c, i) => i === index 
-          ? { ...c, status: 'opened', hp: data.hp_won, mult: data.applied_multiplier } 
-          : { ...c, status: c.status === 'active' ? 'locked' : c.status }
-        ))
+        setChests(prev => {
+          const nextChests = prev.map((c, i) => i === index 
+            ? { ...c, status: 'opened', hp: data.hp_won, mult: data.applied_multiplier } 
+            : { ...c, status: c.status === 'active' ? 'locked' : c.status }
+          )
+          
+          // Auto reset check: Option 3!
+          const allOpen = nextChests.every(c => c.status === 'opened')
+          if (allOpen) {
+            setTimeout(() => {
+              handleResetBoard()
+            }, 2500)
+          }
+          
+          return nextChests
+        })
         if (onUpdate) onUpdate()
       } else {
         setErrorMessage(data?.error || 'Failed to open box')
@@ -185,6 +180,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
     } finally {
       setRevealingIndex(null)
       setActiveTxHash(null)
+      setClickedBoxIndex(null)
       reset()
     }
   }
@@ -222,6 +218,11 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         }
 
         if (onUpdate) onUpdate()
+
+        // Auto reset for Option 3!
+        setTimeout(() => {
+          handleResetBoard()
+        }, 2500)
       } else {
         setErrorMessage(data?.error || 'Failed to open all boxes')
       }
@@ -443,6 +444,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                   handleSelectChest(index)
                 } else if (chest.status === 'locked' && !hasActiveChoice && !allOpened && anyOpened) {
                   // Direct click triggers single box payment only if board is already active with openings
+                  setClickedBoxIndex(index)
                   setTxModal('single')
                 }
               }}
@@ -638,110 +640,62 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
 
       {/* ═══ BUTTONS ═══ */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {allOpened ? (
-          <button
-            className="chest-btn"
-            onClick={handleResetBoard}
-            style={{
-              width: '100%',
-              background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-              color: '#fff',
-              border: 'none',
-              borderRadius: 50,
-              padding: '10px 10px',
-              fontSize: 11,
-              fontWeight: 800,
-              cursor: 'pointer',
-              boxShadow: '0 4px 12px rgba(16,185,129,0.2)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 4
-            }}
-          >
-            <span>Reset Board & Play Again</span>
-          </button>
-        ) : (
-          <>
-            {/* Main Single Open Button */}
-            <button
-              className="chest-btn"
-              onClick={() => setTxModal('single')}
-              disabled={isPending || isConfirming || hasActiveChoice || revealingIndex !== null}
-              style={{
-                width: '100%',
-                background: '#0000FF',
-                color: '#fff',
-                border: 'none',
-                borderRadius: 50,
-                padding: '10px 10px',
-                fontSize: 11,
-                fontWeight: 800,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 4,
-                boxShadow: '0 4px 12px rgba(0,0,255,0.2)',
-                opacity: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null) ? 0.5 : 1
-              }}
-            >
-              <span>Open Box · 0.30</span>
-              <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, flexShrink: 0 }} />
-            </button>
+        {/* Main Single Open Button */}
+        <button
+          className="chest-btn"
+          onClick={() => setTxModal('single')}
+          disabled={isPending || isConfirming || hasActiveChoice || revealingIndex !== null || allOpened}
+          style={{
+            width: '100%',
+            background: '#0000FF',
+            color: '#fff',
+            border: 'none',
+            borderRadius: 50,
+            padding: '10px 10px',
+            fontSize: 11,
+            fontWeight: 800,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 4,
+            boxShadow: '0 4px 12px rgba(0,0,255,0.2)',
+            opacity: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || allOpened) ? 0.5 : 1
+          }}
+        >
+          <span>Open Box · 0.30</span>
+          <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, flexShrink: 0 }} />
+        </button>
 
-            {/* Bundle Open All Button */}
-            <button
-              className="chest-btn"
-              onClick={() => setTxModal('bundle')}
-              disabled={isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened}
-              style={{
-                width: '100%',
-                background: 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)',
-                color: '#fff',
-                border: 'none',
-                borderRadius: 50,
-                padding: '10px 10px',
-                fontSize: 11,
-                fontWeight: 800,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 4,
-                boxShadow: '0 4px 12px rgba(139,92,246,0.2)',
-                opacity: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened) ? 0.4 : 1
-              }}
-            >
-              <span>Open All 6 · 1.50</span>
-              <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, flexShrink: 0 }} />
-              <span style={{ fontSize: 9, background: 'rgba(255,255,255,0.2)', padding: '2px 8px', borderRadius: 20, fontWeight: 900, color: '#FCD34D', marginLeft: 4 }}>
-                1 FREE BOX!
-              </span>
-            </button>
-          </>
-        )}
-
-        {/* Board Reset option if partially played */}
-        {anyOpened && !allOpened && !hasActiveChoice && (
-          <button
-            onClick={handleResetBoard}
-            style={{
-              background: 'none',
-              border: '1px solid #DEE1E7',
-              color: '#717886',
-              borderRadius: 50,
-              padding: '6px 14px',
-              fontSize: 10,
-              fontWeight: 800,
-              cursor: 'pointer',
-              alignSelf: 'center',
-              marginTop: 10
-            }}
-          >
-            Clear & Reset Board
-          </button>
-        )}
+        {/* Bundle Open All Button */}
+        <button
+          className="chest-btn"
+          onClick={() => setTxModal('bundle')}
+          disabled={isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened}
+          style={{
+            width: '100%',
+            background: 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)',
+            color: '#fff',
+            border: 'none',
+            borderRadius: 50,
+            padding: '10px 10px',
+            fontSize: 11,
+            fontWeight: 800,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 4,
+            boxShadow: '0 4px 12px rgba(139,92,246,0.2)',
+            opacity: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened) ? 0.4 : 1
+          }}
+        >
+          <span>Open All 6 · 1.50</span>
+          <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, flexShrink: 0 }} />
+          <span style={{ fontSize: 9, background: 'rgba(255,255,255,0.2)', padding: '2px 8px', borderRadius: 20, fontWeight: 900, color: '#FCD34D', marginLeft: 4 }}>
+            1 FREE BOX!
+          </span>
+        </button>
       </div>
 
 
@@ -757,7 +711,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           isSuccess={isSuccess}
           error={writeError}
           onConfirm={txModal === 'single' ? handleSinglePayment : handleBundlePayment}
-          onCancel={() => { setTxModal(false); reset() }}
+          onCancel={() => { setTxModal(false); reset(); setClickedBoxIndex(null) }}
         />
       )}
 
