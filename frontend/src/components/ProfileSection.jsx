@@ -790,7 +790,7 @@ export function ProfileSection({ address, basename }) {
 
             {/* Subtext */}
             <div style={{ fontSize: 9, color: '#717886', fontWeight: 500, marginBottom: 14, lineHeight: 1.3 }}>
-              Permanent boost<br />on all <strong style={{ color: '#0000FF' }}>HP</strong> earned
+              Permanent boost<br />on all <strong style={{ color: '#0000FF' }}>Happy Points</strong> earned
             </div>
 
             {/* Sleek pill progress bar (5 segments) */}
