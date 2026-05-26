@@ -136,15 +136,14 @@ export function DailyRewardsSection({ address }) {
           backgroundImage: 'url(/banner.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          filter: 'hue-rotate(100deg) brightness(0.4) contrast(1.1)',
-          opacity: 0.6,
+          filter: 'hue-rotate(110deg) brightness(0.65) contrast(1.15)',
           zIndex: 0,
           pointerEvents: 'none'
         }} />
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(135deg, rgba(13, 21, 39, 0.45) 0%, rgba(5, 46, 22, 0.9) 100%)',
+          background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.5) 100%)',
           zIndex: 0,
           pointerEvents: 'none'
         }} />
