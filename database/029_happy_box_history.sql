@@ -120,7 +120,8 @@ SELECT
   'Reward' AS action,
   CASE 
     WHEN box_type IN ('standard_bundle', 'happy_bundle') THEN 'Happy Boxes (6)'
-    ELSE 'Happy Box'
+    WHEN box_type IN ('standard', 'happy', 'standard_all', 'happy_all') THEN 'Happy Box'
+    ELSE initcap(box_type) || ' Box'
   END AS badge,
   '+' || CASE WHEN created_at < '2026-05-07 12:00:00+00' THEN ROUND(hp_won * applied_multiplier * 100, 2) ELSE ROUND(hp_won * applied_multiplier, 2) END || ' HP' AS value,
   'box' AS type,
