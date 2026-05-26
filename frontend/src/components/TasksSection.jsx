@@ -584,8 +584,23 @@ export function TasksSection({ address }) {
           backgroundSize: '20px 20px',
         }} />
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ fontSize: 16, fontWeight: 800, color: '#fff', marginBottom: 4 }}>
-            ✍️ Post about us and get <span style={{ color: '#A5B4FC' }}>+2 HP</span>
+          <div style={{ fontSize: 16, fontWeight: 800, color: '#fff', marginBottom: 6, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
+            <span>✍️ Post about us and get</span>
+            <span style={{
+              background: 'linear-gradient(135deg, #FFFFFF 0%, #EEF2FF 100%)',
+              color: '#0000FF',
+              padding: '2px 8px',
+              borderRadius: 8,
+              fontSize: 12,
+              fontWeight: 900,
+              display: 'inline-flex',
+              alignItems: 'center',
+              boxShadow: '0 4px 12px rgba(0,0,255,0.15)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.3px'
+            }}>
+              +2 HP
+            </span>
           </div>
           <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', marginBottom: 14, lineHeight: 1.5, fontWeight: 500 }}>
             We value creators on Base. Post about our app or share useful content about Base and submit your link below.
