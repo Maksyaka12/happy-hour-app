@@ -303,26 +303,23 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
 
         <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'flex-start' }}>
           <div style={{
-            fontSize: '32px',
-            fontWeight: 700,
+            fontSize: '18px',
+            fontWeight: 800,
             color: '#fff',
             textTransform: 'uppercase',
             letterSpacing: '0.5px',
-            marginBottom: '4px',
-            lineHeight: 1.1,
-            textShadow: '0 2px 10px rgba(0,0,0,0.5)'
+            marginBottom: '4px'
           }}>
             HAPPY BOXES
           </div>
           
           <div style={{
-            fontSize: '13px',
-            color: 'rgba(255,255,255,0.7)',
-            marginTop: '8px',
+            fontSize: '7px',
+            color: 'rgba(255,255,255,0.5)',
+            marginTop: '6px',
             letterSpacing: '0.1px',
-            fontWeight: 500,
-            lineHeight: 1.5,
-            textAlign: 'left'
+            fontWeight: 400,
+            lineHeight: 1.4
           }}>
             * Each box contains from 2 to 20 HP.<br />
             * Your boost is automatically applied.
