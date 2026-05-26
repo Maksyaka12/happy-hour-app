@@ -322,12 +322,12 @@ export function RaffleSection({ address }) {
           ['How is the winner selected?',       'Secure random selection, lucky-based. Anyone with 1+ ticket can win. More tickets = more chances.'],
           ['How many points do I get for playing?', (
             <>
-              You get <strong style={{ color: '#10B981' }}>Activity Points</strong> for every bet. Winner receives <strong style={{ color: '#0000FF' }}>2 HP</strong>.
+              You get <strong style={{ color: '#10B981' }}>Activity Points</strong> for every bet. Winner receives <strong style={{ color: '#0000FF' }}>1 HP</strong>.
             </>
           )],
           ['What happens if I’m the only player in a round?', (
             <>
-              You will receive a 100% refund and <strong style={{ color: '#0000FF' }}>2 HP</strong> as the winner.
+              You will receive a 100% refund and <strong style={{ color: '#0000FF' }}>1 HP</strong> as the winner.
             </>
           )],
           ['How much does the winner receive?', 'Winner takes 85% of the total pot. The remaining 15% goes to the foundation for future rewards.'],
