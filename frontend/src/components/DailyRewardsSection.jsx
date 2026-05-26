@@ -120,7 +120,7 @@ export function DailyRewardsSection({ address }) {
         padding: '32px 20px',
         marginBottom: 16,
         position: 'relative',
-        minHeight: 155,
+        minHeight: 160,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -228,7 +228,7 @@ export function DailyRewardsSection({ address }) {
           right: 0,
           background: 'rgba(0,0,0,0.5)',
           backdropFilter: 'blur(12px)',
-          padding: '11px 0',
+          padding: '8px 0',
           textAlign: 'center',
           borderTop: '1px solid rgba(255,255,255,0.1)',
           zIndex: 2
@@ -249,12 +249,12 @@ export function DailyRewardsSection({ address }) {
               color: '#10B981', 
               textShadow: '0 0 10px rgba(16,185,129,0.4)',
               background: 'rgba(16,185,129,0.1)',
-              padding: '2px 8px',
+              padding: '1px 6px',
               borderRadius: 6,
               border: '1px solid rgba(16,185,129,0.2)',
               fontWeight: 900, 
               fontFamily: "'DM Mono', monospace",
-              fontSize: 14,
+              fontSize: 13,
               letterSpacing: '0.5px'
             }}>{timeLeft}</span>
           </div>

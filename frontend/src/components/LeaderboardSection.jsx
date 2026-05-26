@@ -99,7 +99,7 @@ export function LeaderboardSection({ address }) {
         padding: '32px 20px',
         marginBottom: 16,
         position: 'relative',
-        minHeight: 155,
+        minHeight: 160,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -148,7 +148,7 @@ export function LeaderboardSection({ address }) {
           right: 0,
           background: 'rgba(0,0,0,0.45)',
           backdropFilter: 'blur(12px)',
-          padding: '11px 0',
+          padding: '8px 0',
           textAlign: 'center',
           borderTop: '1px solid rgba(255,255,255,0.1)',
           zIndex: 2
