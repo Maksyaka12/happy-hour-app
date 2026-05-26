@@ -115,7 +115,7 @@ export function DailyRewardsSection({ address }) {
     <div style={{ paddingBottom: 120, padding: '0 12px 120px' }}>
       {/* Premium Glassmorphic Daily Rewards Banner */}
       <div style={{
-        background: 'linear-gradient(135deg, #0D1527 0%, #052E16 100%)',
+        background: '#0D1527',
         borderRadius: 24,
         padding: '32px 20px',
         marginBottom: 16,
@@ -129,6 +129,26 @@ export function DailyRewardsSection({ address }) {
         overflow: 'hidden',
         border: '1px solid rgba(16,185,129,0.2)'
       }}>
+        {/* Branded background banner in green tones */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'url(/banner.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          filter: 'hue-rotate(100deg) brightness(0.4) contrast(1.1)',
+          opacity: 0.6,
+          zIndex: 0,
+          pointerEvents: 'none'
+        }} />
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(135deg, rgba(13, 21, 39, 0.45) 0%, rgba(5, 46, 22, 0.9) 100%)',
+          zIndex: 0,
+          pointerEvents: 'none'
+        }} />
+
         {/* Glow overlay */}
         <div style={{
           position: 'absolute',
