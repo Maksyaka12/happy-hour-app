@@ -622,7 +622,7 @@ export function TasksSection({ address }) {
               alignItems: 'center',
               border: '1px solid rgba(255,255,255,0.1)'
             }}>
-              Available in {getWaitTime()}h
+              Next post submission available in {getWaitTime()}h
             </div>
           ) : postStatus === 'success' ? (
             <div style={{ background: 'rgba(5,150,105,0.25)', borderRadius: 14, padding: '10px 14px', fontSize: 12, color: '#6EE7B7', fontWeight: 800 }}>
