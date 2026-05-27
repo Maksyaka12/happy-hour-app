@@ -4,7 +4,6 @@ import { base } from 'wagmi/chains'
 import { db } from '../config/supabase'
 import { USDC_ADDRESS, USDC_ABI, CHECKIN_TARGET } from '../config/constants'
 import { useBuilderWrite } from '../hooks/useBuilderWrite'
-import { TxModal } from './TxModal'
 
 const taskIcons = { retweet: '🔁', like: '❤️', comment: '💬', bookmark: '🔖', follow: '👤' }
 
@@ -705,7 +704,7 @@ export function TasksSection({ address }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {pendingPosts.map(p => (
                 <div key={p.id} style={{ background: '#fff', borderRadius: 12, padding: '12px 14px', border: '1px solid #FED7AA' }}>
-                  <div style={{ fontSize: 11, color: '#717886', marginBottom: 4, fontFamily: "'DM Mono',monospace" }}>
+                  <div style={{ fontSize: 11, color: '#717886', marginBottom: 4, fontFamily: "'Montserrat', sans-serif" }}>
                     {p.address.slice(0, 6)}...{p.address.slice(-4)}
                   </div>
                   <a href={p.url} target="_blank" rel="noopener noreferrer"
