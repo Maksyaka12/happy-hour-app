@@ -488,29 +488,29 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       <div style={{
         background: '#fff',
         border: '1px solid #DEE1E7',
-        borderRadius: 20,
-        padding: '16px 20px',
+        borderRadius: 18,
+        padding: '14px 18px',
         marginBottom: 16,
-        boxShadow: '0 4px 16px rgba(10,11,13,0.02)',
+        boxShadow: '0 4px 16px rgba(10,11,13,0.015)',
         display: 'flex',
         flexDirection: 'column',
-        gap: 12
+        gap: 10
       }}>
         {/* Scale Row */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <div style={{ fontSize: 13, fontWeight: 900, color: '#0A0B0D' }}>🎁 Daily Box Limits</div>
-            <div style={{ fontSize: 9, color: '#717886', marginTop: 2, fontWeight: 500 }}>
+            <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>
               Remaining opens for today
             </div>
           </div>
           <div style={{ 
             background: remainingOpens === 0 ? '#FEF2F2' : '#F5F3FF', 
             color: remainingOpens === 0 ? '#DC2626' : '#8B5CF6', 
-            padding: '4px 12px', 
-            borderRadius: 14, 
-            fontSize: 12, 
-            fontWeight: 900,
+            padding: '3px 10px', 
+            borderRadius: 12, 
+            fontSize: 11, 
+            fontWeight: 800,
             border: `1px solid ${remainingOpens === 0 ? '#FCA5A5' : '#DDD6FE'}`
           }}>
             {remainingOpens} / {maxDailyOpens} left
@@ -518,11 +518,11 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         </div>
 
         {/* Progress bar scale visual segment */}
-        <div style={{ background: '#F1F5F9', height: 6, borderRadius: 3, overflow: 'hidden', position: 'relative' }}>
+        <div style={{ background: '#F1F5F9', height: 4, borderRadius: 2, overflow: 'hidden', position: 'relative' }}>
           <div style={{
             background: remainingOpens === 0 
               ? '#EF4444' 
-              : 'linear-gradient(90deg, #8B5CF6 0%, #6D28D9 100%)',
+              : 'linear-gradient(90deg, #8B5CF6 0%, #D946EF 100%)',
             height: '100%',
             width: `${(remainingOpens / maxDailyOpens) * 100}%`,
             transition: 'width 0.4s ease'
@@ -534,13 +534,15 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'space-between', 
-          paddingTop: 10, 
+          paddingTop: 8, 
           borderTop: '1px solid #F1F5F9',
           gap: 12
         }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            <span style={{ fontSize: 10, color: '#4B5563', fontWeight: 600 }}>Daily Activity Points</span>
-            <span style={{ fontSize: 13, fontWeight: 900, color: '#8B5CF6' }}>✨ {dailyStats.score} Points</span>
+            <span style={{ fontSize: 9, color: '#717886', fontWeight: 600 }}>Your Activity Points</span>
+            <span style={{ fontSize: 13, fontWeight: 900, color: '#0A0B0D', display: 'flex', alignItems: 'center', gap: 2 }}>
+              ⚡ {dailyStats.score} Points
+            </span>
           </div>
 
           <button
@@ -550,22 +552,26 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             style={{
               background: apBurnSuccess
                 ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
-                : 'linear-gradient(135deg, #EF4444 0%, #D97706 100%)',
-              color: '#fff',
-              border: 'none',
-              borderRadius: 14,
-              padding: '8px 14px',
-              fontSize: 10,
+                : (dailyStats.score < 100 
+                    ? '#F1F5F9' 
+                    : 'linear-gradient(135deg, #F97316 0%, #EA580C 100%)'),
+              color: apBurnSuccess
+                ? '#fff'
+                : (dailyStats.score < 100 ? '#94A3B8' : '#fff'),
+              border: (apBurnSuccess || dailyStats.score >= 100) ? 'none' : '1px solid #E2E8F0',
+              borderRadius: 12,
+              padding: '7px 12px',
+              fontSize: 9.5,
               fontWeight: 800,
               cursor: (isBurningAp || dailyStats.score < 100) ? 'not-allowed' : 'pointer',
               display: 'flex',
               alignItems: 'center',
               gap: 4,
-              boxShadow: '0 4px 12px rgba(239,68,68,0.2)',
-              opacity: (isBurningAp || dailyStats.score < 100) ? 0.4 : 1,
+              boxShadow: (isBurningAp || dailyStats.score < 100) ? 'none' : '0 4px 12px rgba(249,115,22,0.2)',
+              opacity: isBurningAp ? 0.6 : 1,
             }}
           >
-            <span>{isBurningAp ? 'Burning...' : (apBurnSuccess ? '🔥 +6 Opens Activated!' : '🔥 Burn 100 Activity Points for +6 Opens')}</span>
+            <span>{isBurningAp ? 'Burning...' : (apBurnSuccess ? '🔥 +6 Opens Activated!' : '🔥 Burn 100 points to get +6 opens')}</span>
           </button>
         </div>
 
