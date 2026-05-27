@@ -480,6 +480,14 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
               <span style={{ fontSize: '6px', color: '#8B5CF6' }}>●</span>
               <span>Your boost is automatically applied.</span>
             </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '6px', color: '#8B5CF6' }}>●</span>
+              <span>Each user can open up to 12 boxes per day.</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '6px', color: '#8B5CF6' }}>●</span>
+              <span>Burn Activity Points to unlock extra openings.</span>
+            </div>
           </div>
         </div>
       </div>
