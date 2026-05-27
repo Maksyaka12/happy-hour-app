@@ -840,7 +840,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
                 }}
               >
                 <span>Upgrade</span>
-                <span style={{ color: '#A5B4FC', fontWeight: 900, marginLeft: 4 }}>{LEVELS.find(l => l.level === accountLevel + 1)?.price.toFixed(2)}</span>
+                <span style={{ color: '#A5B4FC', fontWeight: 900 }}>{LEVELS.find(l => l.level === accountLevel + 1)?.price.toFixed(2)}</span>
                 <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12 }} />
               </button>
             ) : (
@@ -948,7 +948,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
                 }}
               >
                 <span>Upgrade</span>
-                <span style={{ color: '#064E3B', fontWeight: 900, marginLeft: 4 }}>{ACTIVITY_LEVELS.find(l => l.level === activityLevel + 1)?.price.toFixed(2)}</span>
+                <span style={{ color: '#fff', fontWeight: 900 }}>{ACTIVITY_LEVELS.find(l => l.level === activityLevel + 1)?.price.toFixed(2)}</span>
                 <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12 }} />
               </button>
             ) : (
