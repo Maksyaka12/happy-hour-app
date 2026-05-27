@@ -499,7 +499,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         {/* Scale Row */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 900, color: '#0A0B0D' }}>📦 Daily Box Limits</div>
+            <div style={{ fontSize: 13, fontWeight: 900, color: '#0A0B0D' }}>🎁 Daily Box Limits</div>
             <div style={{ fontSize: 9, color: '#717886', marginTop: 2, fontWeight: 500 }}>
               Remaining opens for today
             </div>
@@ -539,8 +539,8 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           gap: 12
         }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            <span style={{ fontSize: 10, color: '#4B5563', fontWeight: 600 }}>Your Daily AP Score</span>
-            <span style={{ fontSize: 13, fontWeight: 900, color: '#8B5CF6' }}>✨ {dailyStats.score} AP</span>
+            <span style={{ fontSize: 10, color: '#4B5563', fontWeight: 600 }}>Daily Activity Points</span>
+            <span style={{ fontSize: 13, fontWeight: 900, color: '#8B5CF6' }}>✨ {dailyStats.score} Points</span>
           </div>
 
           <button
@@ -565,7 +565,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
               opacity: (isBurningAp || dailyStats.score < 100) ? 0.4 : 1,
             }}
           >
-            <span>{isBurningAp ? 'Burning...' : (apBurnSuccess ? '🔥 +6 Opens Activated!' : '🔥 Burn 100 AP for +6 Opens')}</span>
+            <span>{isBurningAp ? 'Burning...' : (apBurnSuccess ? '🔥 +6 Opens Activated!' : '🔥 Burn 100 Activity Points for +6 Opens')}</span>
           </button>
         </div>
 

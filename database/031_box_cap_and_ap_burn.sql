@@ -63,7 +63,7 @@ BEGIN
 
   -- Validate score >= 100
   IF v_score IS NULL OR v_score < 100 THEN
-    RETURN jsonb_build_object('ok', false, 'error', 'Insufficient Activity Points. You need at least 100 AP.');
+    RETURN jsonb_build_object('ok', false, 'error', 'Insufficient Activity Points. You need at least 100 Activity Points.');
   END IF;
 
   -- Update daily stats
@@ -133,7 +133,7 @@ BEGIN
 
   -- Verify daily cap
   IF v_opened_today >= (12 + v_bonus_today) THEN
-    RETURN jsonb_build_object('ok', false, 'error', 'Daily box open limit reached. Burn 100 AP to get +6 box openings!');
+    RETURN jsonb_build_object('ok', false, 'error', 'Daily box open limit reached. Burn 100 Activity Points to get +6 box openings!');
   END IF;
 
   -- Generate random reward between 2.0 and 15.0, rounded to 1 decimal place
@@ -218,7 +218,7 @@ BEGIN
 
   -- Verify daily cap (needs at least 6 spots)
   IF (12 + v_bonus_today) - v_opened_today < 6 THEN
-    RETURN jsonb_build_object('ok', false, 'error', 'Not enough daily limits remaining. Burn 100 AP to get +6 box openings!');
+    RETURN jsonb_build_object('ok', false, 'error', 'Not enough daily limits remaining. Burn 100 Activity Points to get +6 box openings!');
   END IF;
 
   -- Open 6 chests
