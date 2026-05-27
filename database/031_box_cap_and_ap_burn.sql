@@ -83,7 +83,7 @@ BEGIN
 
   RETURN jsonb_build_object(
     'ok', true,
-    'newLimit', 12 + (v_bonus_opens * 6),
+    'newLimit', 12 + v_bonus_opens,
     'apBurned', v_ap_burned,
     'currentScore', v_score
   );
@@ -132,7 +132,7 @@ BEGIN
   WHERE address = v_address AND day = CURRENT_DATE;
 
   -- Verify daily cap
-  IF v_opened_today >= (12 + (v_bonus_today * 6)) THEN
+  IF v_opened_today >= (12 + v_bonus_today) THEN
     RETURN jsonb_build_object('ok', false, 'error', 'Daily box open limit reached. Burn 100 AP to get +6 box openings!');
   END IF;
 
@@ -217,7 +217,7 @@ BEGIN
   WHERE address = v_address AND day = CURRENT_DATE;
 
   -- Verify daily cap (needs at least 6 spots)
-  IF (12 + (v_bonus_today * 6)) - v_opened_today < 6 THEN
+  IF (12 + v_bonus_today) - v_opened_today < 6 THEN
     RETURN jsonb_build_object('ok', false, 'error', 'Not enough daily limits remaining. Burn 100 AP to get +6 box openings!');
   END IF;
 

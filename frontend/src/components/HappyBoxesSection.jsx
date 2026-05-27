@@ -123,7 +123,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
     }
   }
 
-  const maxDailyOpens = 12 + (dailyStats.bonus_opens * 6)
+  const maxDailyOpens = 12 + dailyStats.bonus_opens
   const remainingOpens = Math.max(0, maxDailyOpens - dailyStats.boxes_opened)
 
   // Recovery of pending choice across tab unmounts (Option 2)
