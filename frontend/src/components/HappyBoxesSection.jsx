@@ -675,21 +675,23 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             background: '#0000FF',
             color: '#fff',
             border: 'none',
-            borderRadius: 50,
-            padding: '10px 10px',
-            fontSize: 11,
+            borderRadius: 20,
+            padding: '12px 18px',
+            fontSize: 13,
             fontWeight: 800,
-            cursor: 'pointer',
+            cursor: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || allOpened) ? 'not-allowed' : 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             gap: 4,
-            boxShadow: '0 4px 12px rgba(0,0,255,0.2)',
-            opacity: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || allOpened) ? 0.5 : 1
+            boxShadow: '0 8px 24px rgba(0,0,255,0.2)',
+            opacity: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || allOpened) ? 0.5 : 1,
+            transition: 'transform 0.2s, box-shadow 0.2s'
           }}
         >
-          <span>Open Box · 0.30</span>
-          <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, flexShrink: 0 }} />
+          <span>Open Box</span>
+          <span style={{ color: '#A5B4FC', fontWeight: 900, marginLeft: 4 }}>0.30</span>
+          <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14, flexShrink: 0 }} />
         </button>
 
         {/* Bundle Open All Button */}
