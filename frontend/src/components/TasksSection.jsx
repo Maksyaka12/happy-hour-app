@@ -57,7 +57,7 @@ function TaskCard({ task, taskState, onVisit, onCheck, onClaim, isClaiming }) {
 
         {/* Content */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 12, fontWeight: 800, color: '#0A0B0D', lineHeight: 1.3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: '#0A0B0D', lineHeight: 1.3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {task.text}
           </div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 2 }}>
@@ -941,7 +941,7 @@ export function TasksSection({ address }) {
                         )}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 11, fontWeight: 800, color: '#0A0B0D', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        <div style={{ fontSize: 11, fontWeight: 600, color: '#0A0B0D', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {t.text}
                         </div>
                         <div style={{ fontSize: 9, color: '#717886', display: 'flex', gap: 6, marginTop: 2 }}>
