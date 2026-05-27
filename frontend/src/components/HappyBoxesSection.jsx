@@ -702,24 +702,85 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             background: 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)',
             color: '#fff',
             border: 'none',
-            borderRadius: 50,
-            padding: '10px 10px',
-            fontSize: 11,
-            fontWeight: 800,
-            cursor: 'pointer',
+            borderRadius: 20,
+            padding: '12px 18px',
+            cursor: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened) ? 'not-allowed' : 'pointer',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
-            gap: 4,
-            boxShadow: '0 4px 12px rgba(139,92,246,0.2)',
-            opacity: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened) ? 0.4 : 1
+            justifyContent: 'space-between',
+            boxShadow: '0 8px 24px rgba(139,92,246,0.3)',
+            opacity: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened) ? 0.4 : 1,
+            position: 'relative',
+            overflow: 'hidden',
+            transition: 'transform 0.2s, box-shadow 0.2s',
           }}
         >
-          <span>Open All 6 · 1.50</span>
-          <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, flexShrink: 0 }} />
-          <span style={{ fontSize: 9, background: 'rgba(255,255,255,0.2)', padding: '2px 8px', borderRadius: 20, fontWeight: 900, color: '#FCD34D', marginLeft: 4 }}>
-            1 FREE BOX!
-          </span>
+          {/* Shine effect reflect line */}
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: '-100%',
+            width: '50%',
+            height: '100%',
+            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent)',
+            transform: 'skewX(-25deg)',
+            animation: 'shine 4s infinite ease-in-out',
+            pointerEvents: 'none'
+          }} />
+
+          {/* Left Block: Offer Title & Subtitle */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2, textAlign: 'left' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 13, fontWeight: 900, letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+                Open All 6
+              </span>
+              <span style={{ 
+                fontSize: 8, 
+                background: '#FCD34D', 
+                color: '#1E1B4B', 
+                padding: '2px 8px', 
+                borderRadius: 20, 
+                fontWeight: 900,
+                letterSpacing: '0.3px',
+                boxShadow: '0 2px 6px rgba(252,211,77,0.3)',
+                whiteSpace: 'nowrap'
+              }}>
+                1 BOX FREE!
+              </span>
+            </div>
+            <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.85)', fontWeight: 500 }}>
+              Unlock all rewards in one click!
+            </span>
+          </div>
+
+          {/* Right Block: Price Tag with Sale Indicator */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+            {/* Crossed Out Original Price */}
+            <span style={{ 
+              fontSize: 11, 
+              color: 'rgba(255,255,255,0.5)', 
+              textDecoration: 'line-through', 
+              fontWeight: 600,
+              letterSpacing: '0.2px'
+            }}>
+              1.80
+            </span>
+            {/* Promo Price */}
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: 4, 
+              background: 'rgba(255, 255, 255, 0.12)', 
+              padding: '6px 12px', 
+              borderRadius: 12,
+              border: '1px solid rgba(255,255,255,0.2)'
+            }}>
+              <span style={{ fontSize: 14, fontWeight: 900, color: '#fff' }}>
+                1.50
+              </span>
+              <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14, flexShrink: 0 }} />
+            </div>
+          </div>
         </button>
       </div>
 
@@ -740,9 +801,14 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         />
       )}
 
-      {/* Spin style */}
+      {/* Spin and Shine styles */}
       <style>{`
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes shine {
+          0% { left: -100%; }
+          15% { left: 100%; }
+          100% { left: 100%; }
+        }
       `}</style>
     </div>
   )
