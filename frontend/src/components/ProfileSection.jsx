@@ -163,6 +163,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
   const [checkinError, setCheckinError] = useState('')
   const [boostError, setBoostError] = useState('')
   const [upgradeError, setUpgradeError] = useState('')
+  const [apUpgradeError, setApUpgradeError] = useState('')
 
   const [activityLevel, setActivityLevel] = useState(1)
   const [selectedApLevel, setSelectedApLevel] = useState(null)
@@ -326,7 +327,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
   const { data: txHash, writeContract, isPending, isConfirming, isSuccess, error: writeError, reset } = useBuilderWrite()
   const { data: boostTxHash, writeContract: writeBoost, isPending: isPendingBoost, isConfirming: isConfirmingBoost, isSuccess: isSuccessBoost, error: boostWriteError, reset: resetBoost } = useBuilderWrite()
   const { data: upgradeTxHash, writeContract: writeUpgrade, isPending: isPendingUpgrade, isConfirming: isConfirmingUpgrade, isSuccess: isSuccessUpgrade, error: upgradeWriteError, reset: resetUpgrade } = useBuilderWrite()
-  const { data: apUpgradeTxHash, writeContract: writeApUpgrade, isPending: isPendingApUpgrade, isConfirming: isConfirmingApUpgrade, isSuccess: isSuccessApUpgrade, error: apUpgradeError, reset: resetApUpgrade } = useBuilderWrite()
+  const { data: apUpgradeTxHash, writeContract: writeApUpgrade, isPending: isPendingApUpgrade, isConfirming: isConfirmingApUpgrade, isSuccess: isSuccessApUpgrade, error: apUpgradeWriteError, reset: resetApUpgrade } = useBuilderWrite()
 
   const [selectedLevel, setSelectedLevel] = useState(null)
 
@@ -1482,7 +1483,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
           isPending={isPendingApUpgrade}
           isConfirming={isConfirmingApUpgrade}
           isSuccess={isSuccessApUpgrade}
-          error={apUpgradeError}
+          error={apUpgradeError || apUpgradeWriteError}
           onConfirm={confirmApUpgrade}
           onCancel={() => {
             setTxModal(false)
