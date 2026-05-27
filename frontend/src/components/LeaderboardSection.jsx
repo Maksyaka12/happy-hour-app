@@ -263,8 +263,8 @@ export function LeaderboardSection({ address }) {
               </div>
             </div>
 
-            {/* Right: Est. Reward Gold/Glass Ticket */}
-            {myReward && (
+            {/* Right: Est. Reward or Reach Top 30 Badge */}
+            {myReward ? (
               <div style={{
                 background: 'rgba(255, 255, 255, 0.15)',
                 backdropFilter: 'blur(10px)',
@@ -317,6 +317,48 @@ export function LeaderboardSection({ address }) {
                     </span>
                   )}
                 </div>
+              </div>
+            ) : (
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.12)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+                color: '#fff',
+                borderRadius: 14,
+                padding: '8px 12px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                marginLeft: 12,
+                flexShrink: 0,
+                boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
+                maxWidth: 130,
+                textAlign: 'center'
+              }}>
+                <span style={{ 
+                  fontFamily: "'Montserrat', sans-serif",
+                  fontSize: 8, 
+                  fontWeight: 800, 
+                  color: '#FFE4E6',
+                  textTransform: 'uppercase', 
+                  letterSpacing: '0.5px',
+                  lineHeight: 1.2
+                }}>
+                  REACH TOP 30
+                </span>
+                <span style={{ 
+                  fontFamily: "'Montserrat', sans-serif",
+                  fontSize: 7.5, 
+                  fontWeight: 600, 
+                  color: 'rgba(255, 255, 255, 0.85)', 
+                  marginTop: 2,
+                  letterSpacing: '0.2px',
+                  lineHeight: 1.1
+                }}>
+                  To Get Rewards
+                </span>
               </div>
             )}
           </div>
