@@ -14,7 +14,6 @@ import { ProfileSection } from './components/ProfileSection'
 import { BottomNav } from './components/BottomNav'
 import { HappyHourLogo } from './components/HappyHourLogo'
 import { EventBanner } from './components/EventBanner'
-import { DocsSection } from './components/DocsSection'
 import { CSS } from './styles'
 import { HAS_SUPABASE_CONFIG, USDC_ADDRESS, USDC_ABI } from './config/constants'
 
@@ -29,7 +28,6 @@ export default function App() {
   const [tab, setTab] = useState(() => {
     try { return localStorage.getItem('happy_tab') || 'raffle' } catch { return 'raffle' }
   })
-  const [showDocs, setShowDocs] = useState(false)
 
   useEffect(() => {
     try { localStorage.setItem('happy_tab', tab) } catch { }
@@ -282,23 +280,6 @@ export default function App() {
               </svg>
             </a>
 
-            {/* Docs Link */}
-            <button
-              onClick={() => setShowDocs(true)}
-              style={{
-                background: 'rgba(0,82,255,0.08)',
-                border: '1px solid rgba(0,82,255,0.2)',
-                borderRadius: 20,
-                padding: '4px 8px',
-                display: 'flex', alignItems: 'center', gap: 4,
-                cursor: 'pointer', transition: 'all 0.2s',
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,82,255,0.16)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'rgba(0,82,255,0.08)'}
-            >
-              <span style={{ fontSize: 11 }}>📃</span>
-              <span style={{ fontSize: 10, fontWeight: 700, color: '#0052FF' }}>Docs</span>
-            </button>
             <div style={{
               background: 'var(--blue-bg)',
               border: '1px solid rgba(0,0,255,0.15)',
@@ -331,8 +312,6 @@ export default function App() {
         <BottomNav tab={tab} setTab={setTab} />
       </div>
 
-      {/* Docs Overlay */}
-      {showDocs && <DocsSection onClose={() => setShowDocs(false)} />}
     </>
   )
 }
