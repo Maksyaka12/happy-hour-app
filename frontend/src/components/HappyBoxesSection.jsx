@@ -56,6 +56,76 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
 
   const [clickedBoxIndex, setClickedBoxIndex] = useState(null)
 
+  const [dailyStats, setDailyStats] = useState({
+    boxes_opened: 0,
+    bonus_opens: 0,
+    ap_burned: 0,
+    score: 0
+  })
+  const [isBurningAp, setIsBurningAp] = useState(false)
+  const [apBurnError, setApBurnError] = useState('')
+  const [apBurnSuccess, setApBurnSuccess] = useState(false)
+
+  const loadDailyStats = async () => {
+    if (!address) return
+    const todayStr = new Date().toISOString().split('T')[0]
+    const { data, error } = await db
+      .from('daily_stats')
+      .select('boxes_opened, bonus_opens, ap_burned, score')
+      .eq('address', address.toLowerCase())
+      .eq('day', todayStr)
+      .maybeSingle()
+
+    if (!error && data) {
+      setDailyStats({
+        boxes_opened: data.boxes_opened || 0,
+        bonus_opens: data.bonus_opens || 0,
+        ap_burned: data.ap_burned || 0,
+        score: data.score || 0
+      })
+    } else {
+      setDailyStats({
+        boxes_opened: 0,
+        bonus_opens: 0,
+        ap_burned: 0,
+        score: 0
+      })
+    }
+  }
+
+  useEffect(() => {
+    loadDailyStats()
+  }, [address])
+
+  const handleBurnAp = async () => {
+    if (!address) return
+    setIsBurningAp(true)
+    setApBurnError('')
+    setApBurnSuccess(false)
+    try {
+      const { data, error } = await db.rpc('burn_ap_for_boxes', {
+        p_address: address.toLowerCase()
+      })
+      if (error) throw error
+      if (data?.ok) {
+        setApBurnSuccess(true)
+        await loadDailyStats()
+        if (onUpdate) onUpdate()
+        setTimeout(() => setApBurnSuccess(false), 3000)
+      } else {
+        setApBurnError(data?.error || 'Failed to burn AP.')
+      }
+    } catch (e) {
+      console.error(e)
+      setApBurnError('Failed to execute AP burn.')
+    } finally {
+      setIsBurningAp(false)
+    }
+  }
+
+  const maxDailyOpens = 12 + (dailyStats.bonus_opens * 6)
+  const remainingOpens = Math.max(0, maxDailyOpens - dailyStats.boxes_opened)
+
   // Recovery of pending choice across tab unmounts (Option 2)
   useEffect(() => {
     const pendingHash = localStorage.getItem('happy_boxes_pending')
@@ -194,6 +264,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           return nextChests
         })
         if (onUpdate) onUpdate()
+        loadDailyStats()
       } else {
         setErrorMessage(data?.error || 'Failed to open box')
         setChests(prev => prev.map(c => c.status === 'active' ? { ...c, status: 'locked' } : c))
@@ -243,6 +314,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         }
 
         if (onUpdate) onUpdate()
+        loadDailyStats()
 
         // Auto reset for Option 3!
         setTimeout(() => {
@@ -402,7 +474,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '6px', color: '#8B5CF6' }}>●</span>
-              <span>Each box contains from 2 to 20 HP.</span>
+              <span>Each box contains from 2 to 15 HP.</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '6px', color: '#8B5CF6' }}>●</span>
@@ -410,6 +482,99 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* ═══ DAILY LIMITS & AP BURN CARD ═══ */}
+      <div style={{
+        background: '#fff',
+        border: '1px solid #DEE1E7',
+        borderRadius: 20,
+        padding: '16px 20px',
+        marginBottom: 16,
+        boxShadow: '0 4px 16px rgba(10,11,13,0.02)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 12
+      }}>
+        {/* Scale Row */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 900, color: '#0A0B0D' }}>📦 Daily Box Limits</div>
+            <div style={{ fontSize: 9, color: '#717886', marginTop: 2, fontWeight: 500 }}>
+              Remaining opens for today
+            </div>
+          </div>
+          <div style={{ 
+            background: remainingOpens === 0 ? '#FEF2F2' : '#F5F3FF', 
+            color: remainingOpens === 0 ? '#DC2626' : '#8B5CF6', 
+            padding: '4px 12px', 
+            borderRadius: 14, 
+            fontSize: 12, 
+            fontWeight: 900,
+            border: `1px solid ${remainingOpens === 0 ? '#FCA5A5' : '#DDD6FE'}`
+          }}>
+            {remainingOpens} / {maxDailyOpens} left
+          </div>
+        </div>
+
+        {/* Progress bar scale visual segment */}
+        <div style={{ background: '#F1F5F9', height: 6, borderRadius: 3, overflow: 'hidden', position: 'relative' }}>
+          <div style={{
+            background: remainingOpens === 0 
+              ? '#EF4444' 
+              : 'linear-gradient(90deg, #8B5CF6 0%, #6D28D9 100%)',
+            height: '100%',
+            width: `${(remainingOpens / maxDailyOpens) * 100}%`,
+            transition: 'width 0.4s ease'
+          }} />
+        </div>
+
+        {/* AP Burn Controller Row */}
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between', 
+          paddingTop: 10, 
+          borderTop: '1px solid #F1F5F9',
+          gap: 12
+        }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <span style={{ fontSize: 10, color: '#4B5563', fontWeight: 600 }}>Your Daily AP Score</span>
+            <span style={{ fontSize: 13, fontWeight: 900, color: '#8B5CF6' }}>✨ {dailyStats.score} AP</span>
+          </div>
+
+          <button
+            onClick={handleBurnAp}
+            disabled={isBurningAp || dailyStats.score < 100}
+            className="chest-btn"
+            style={{
+              background: apBurnSuccess
+                ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
+                : 'linear-gradient(135deg, #EF4444 0%, #D97706 100%)',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 14,
+              padding: '8px 14px',
+              fontSize: 10,
+              fontWeight: 800,
+              cursor: (isBurningAp || dailyStats.score < 100) ? 'not-allowed' : 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4,
+              boxShadow: '0 4px 12px rgba(239,68,68,0.2)',
+              opacity: (isBurningAp || dailyStats.score < 100) ? 0.4 : 1,
+            }}
+          >
+            <span>{isBurningAp ? 'Burning...' : (apBurnSuccess ? '🔥 +6 Opens Activated!' : '🔥 Burn 100 AP for +6 Opens')}</span>
+          </button>
+        </div>
+
+        {/* AP Burn Error Msg */}
+        {apBurnError && (
+          <div style={{ fontSize: 9, color: '#DC2626', fontWeight: 700, textAlign: 'right' }}>
+            ⚠️ {apBurnError}
+          </div>
+        )}
       </div>
 
       {/* Status Banner */}
@@ -669,7 +834,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         <button
           className="chest-btn"
           onClick={() => setTxModal('single')}
-          disabled={isPending || isConfirming || hasActiveChoice || revealingIndex !== null || allOpened}
+          disabled={isPending || isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0}
           style={{
             width: '100%',
             background: '#0000FF',
@@ -679,26 +844,26 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             padding: '12px 18px',
             fontSize: 13,
             fontWeight: 800,
-            cursor: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || allOpened) ? 'not-allowed' : 'pointer',
+            cursor: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0) ? 'not-allowed' : 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             gap: 4,
             boxShadow: '0 8px 24px rgba(0,0,255,0.2)',
-            opacity: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || allOpened) ? 0.5 : 1,
+            opacity: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0) ? 0.5 : 1,
             transition: 'transform 0.2s, box-shadow 0.2s'
           }}
         >
-          <span>Open Box</span>
-          <span style={{ color: '#A5B4FC', fontWeight: 900, marginLeft: 4 }}>0.30</span>
-          <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14, flexShrink: 0 }} />
+          <span>{remainingOpens === 0 ? 'Daily Limit Reached' : 'Open Box'}</span>
+          {remainingOpens > 0 && <span style={{ color: '#A5B4FC', fontWeight: 900, marginLeft: 4 }}>0.30</span>}
+          {remainingOpens > 0 && <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14, flexShrink: 0 }} />}
         </button>
 
         {/* Bundle Open All Button */}
         <button
           className="chest-btn"
           onClick={() => setTxModal('bundle')}
-          disabled={isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened}
+          disabled={isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6}
           style={{
             width: '100%',
             background: 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)',
@@ -706,12 +871,12 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             border: 'none',
             borderRadius: 20,
             padding: '12px 18px',
-            cursor: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened) ? 'not-allowed' : 'pointer',
+            cursor: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6) ? 'not-allowed' : 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             boxShadow: '0 8px 24px rgba(139,92,246,0.3)',
-            opacity: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened) ? 0.4 : 1,
+            opacity: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6) ? 0.4 : 1,
             position: 'relative',
             overflow: 'hidden',
             transition: 'transform 0.2s, box-shadow 0.2s',
@@ -751,7 +916,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
               </span>
             </div>
             <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.85)', fontWeight: 500 }}>
-              Unlock all rewards in one click!
+              {remainingOpens < 6 ? 'Requires at least 6 daily opens remaining' : 'Unlock all rewards in one click!'}
             </span>
           </div>
 
