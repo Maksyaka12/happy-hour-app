@@ -570,6 +570,12 @@ export function TasksSection({ address }) {
 
   return (
     <div style={{ paddingBottom: 120, padding: '0 12px 120px' }}>
+      <style>{`
+        .tasks-content-wrapper,
+        .tasks-content-wrapper * {
+          font-family: 'Montserrat', sans-serif !important;
+        }
+      `}</style>
 
       {/* Promo Banner — Post about us */}
       <div style={{
@@ -663,7 +669,8 @@ export function TasksSection({ address }) {
         </div>
       </div>
 
-      {/* Admin controls */}
+      <div className="tasks-content-wrapper" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+        {/* Admin controls */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
         <div style={{ fontSize: 12, color: '#717886', fontWeight: 600 }}>
           {visible.length} active task{visible.length !== 1 ? 's' : ''}
@@ -978,7 +985,7 @@ export function TasksSection({ address }) {
       {visible.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '60px 20px', background: '#EEF0F3', borderRadius: 20 }}>
           <div style={{ fontSize: 36, marginBottom: 12 }}>✓</div>
-          <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 22, fontWeight: 900, marginBottom: 6, color: '#0A0B0D' }}>All Done!</div>
+          <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 22, fontWeight: 900, marginBottom: 6, color: '#0A0B0D' }}>All Done!</div>
           <div style={{ fontSize: 13, color: '#717886' }}>Check back soon for new tasks</div>
         </div>
       ) : (
@@ -996,6 +1003,7 @@ export function TasksSection({ address }) {
           ))}
         </div>
       )}
+      </div>
 
     </div>
   )
