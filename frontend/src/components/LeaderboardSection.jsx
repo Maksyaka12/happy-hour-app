@@ -12,7 +12,7 @@ const getUsdcReward = (rank) => {
   if (rank === 3) return { value: '100', type: 'usdc' }
   if (rank >= 4 && rank <= 10) return { value: '50', type: 'usdc' }
   if (rank >= 11 && rank <= 20) return { value: '30', type: 'usdc' }
-  if (rank >= 21 && rank <= 30) return { value: '🎁', type: 'special' }
+  if (rank >= 21 && rank <= 30) return { value: '🎁', type: 'usdc' }
   return null
 }
 
