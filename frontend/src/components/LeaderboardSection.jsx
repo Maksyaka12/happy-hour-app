@@ -4,6 +4,18 @@ import { UserAvatar } from './UserAvatar'
 
 const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
 
+
+
+const getUsdcReward = (rank) => {
+  if (rank === 1) return { value: '200', type: 'usdc' }
+  if (rank === 2) return { value: '150', type: 'usdc' }
+  if (rank === 3) return { value: '100', type: 'usdc' }
+  if (rank >= 4 && rank <= 10) return { value: '50', type: 'usdc' }
+  if (rank >= 11 && rank <= 20) return { value: '30', type: 'usdc' }
+  if (rank >= 21 && rank <= 30) return { value: '🎁', type: 'usdc' }
+  return null
+}
+
 export function LeaderboardSection({ address }) {
   const [leaders, setLeaders] = useState([])
   const [loading, setLoading] = useState(true)
@@ -87,7 +99,7 @@ export function LeaderboardSection({ address }) {
         padding: '32px 20px',
         marginBottom: 16,
         position: 'relative',
-        minHeight: 140,
+        minHeight: 160,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -98,7 +110,45 @@ export function LeaderboardSection({ address }) {
       }}>
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 0 }} />
 
-        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', paddingTop: 0, paddingBottom: 20 }}>
+        {/* Floating trophy background decorations */}
+        {[
+          { top: -10, right: '8%', size: 54, opacity: 0.14, r: '-12deg', blur: 0.5, dur: 4.2 },
+          { top: 45, right: '18%', size: 32, opacity: 0.11, r: '14deg', blur: 0, dur: 4.8 },
+          { top: -20, left: '12%', size: 48, opacity: 0.12, r: '22deg', blur: 1, dur: 5.4 },
+          { bottom: -8, left: '26%', size: 40, opacity: 0.13, r: '-15deg', blur: 0.8, dur: 4.0 },
+          { bottom: 10, right: '3%', size: 62, opacity: 0.16, r: '8deg', blur: 1.2, dur: 4.6 }
+        ].map((s, i) => (
+          <div key={i} style={{
+            position: 'absolute',
+            top: s.top,
+            right: s.right,
+            left: s.left,
+            bottom: s.bottom,
+            zIndex: 1,
+            pointerEvents: 'none',
+            userSelect: 'none',
+            animation: `seasonalTrophyFloat ${s.dur}s ease-in-out infinite`,
+          }}>
+            <div style={{
+              fontSize: `${s.size}px`,
+              opacity: s.opacity,
+              filter: s.blur > 0 ? `blur(${s.blur}px) drop-shadow(0 0 10px rgba(60,138,255,0.25))` : 'drop-shadow(0 0 10px rgba(60,138,255,0.25))',
+              transform: `rotate(${s.r})`,
+            }}>
+              🏆
+            </div>
+          </div>
+        ))}
+
+        <style dangerouslySetInnerHTML={{ __html: `
+          @keyframes seasonalTrophyFloat {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+          }
+        ` }} />
+
+        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', paddingTop: 0, paddingBottom: 32 }}>
           <div style={{
             fontFamily: "'Barlow Condensed', sans-serif",
             fontSize: 52,
@@ -115,8 +165,8 @@ export function LeaderboardSection({ address }) {
             background: 'rgba(255,255,255,0.2)',
             backdropFilter: 'blur(10px)',
             borderRadius: 50,
-            padding: '6px 20px',
-            fontSize: 11,
+            padding: '4px 12px',
+            fontSize: 9,
             fontWeight: 800,
             color: '#fff',
             border: '1px solid rgba(255,255,255,0.3)',
@@ -124,7 +174,7 @@ export function LeaderboardSection({ address }) {
             textTransform: 'uppercase',
             letterSpacing: '0.8px',
           }}>
-            🏆 TOP USERS WILL GET USDC REWARDS
+            🏆 TOP-30 USERS WILL GET USDC REWARDS
           </div>
         </div>
 
@@ -142,61 +192,178 @@ export function LeaderboardSection({ address }) {
           zIndex: 2
         }}>
           <div style={{
-            fontSize: 11,
+            fontSize: 12,
             fontWeight: 800,
-            color: 'rgba(255,255,255,0.7)',
+            color: 'rgba(255,255,255,0.75)',
             textTransform: 'uppercase',
             letterSpacing: '1px'
           }}>
-            Ends in: <span style={{ color: '#F4C81B', fontWeight: 900 }}>Countdown Coming Soon</span>
+            Ends in: <span style={{ color: '#fff', fontWeight: 900 }}>Countdown Coming Soon</span>
           </div>
         </div>
       </div>
 
       {/* User Rank Card */}
-      {displayRank > 0 && (
-        <div
-          style={{
-            background: 'linear-gradient(135deg,#0000FF,#3C8AFF)',
-            borderRadius: 18,
-            padding: '10px 16px',
-            marginBottom: 16,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 14,
-            boxShadow: '0 6px 20px rgba(0,0,255,0.25)',
-            color: '#fff'
-          }}
-        >
-          <div style={{ 
-            fontFamily: "'Barlow Condensed', sans-serif", 
-            fontSize: 28, 
-            fontWeight: 900, 
-            lineHeight: 1,
-            minWidth: 38 
-          }}>
-            #{displayRank}
-          </div>
-          
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 0 }}>
-            {/* Labels Row */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Your Position</div>
-              <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Current HP</div>
-            </div>
-            
-            {/* Values Row */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-              <div style={{ fontSize: 13, fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 140 }}>
-                {displayEntry?.basename || short(address)}
+      {displayRank > 0 && (() => {
+        const myReward = getUsdcReward(displayRank);
+        return (
+          <div
+            style={{
+              background: 'linear-gradient(135deg, #0000FF 0%, #3C8AFF 100%)',
+              borderRadius: 20,
+              padding: '12px 16px',
+              marginBottom: 16,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              boxShadow: '0 8px 24px rgba(0,0,255,0.25)',
+              color: '#fff',
+              border: '1px solid rgba(255,255,255,0.1)'
+            }}
+          >
+            {/* Left: Rank & User Info */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0, flex: 1 }}>
+              {/* Rank */}
+              <div style={{ 
+                fontFamily: "'Barlow Condensed', sans-serif", 
+                fontSize: 32, 
+                fontWeight: 900, 
+                lineHeight: 1,
+                minWidth: 40,
+                textAlign: 'center',
+                borderRight: '1px solid rgba(255,255,255,0.2)',
+                paddingRight: 10
+              }}>
+                #{displayRank}
               </div>
-              <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 15, fontWeight: 900 }}>
-                {(displayEntry?.points ?? 0).toLocaleString()}
+              
+              {/* User Details */}
+              <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <div style={{
+                  fontFamily: "'Montserrat', sans-serif",
+                  fontSize: 10,
+                  fontWeight: 600,
+                  color: 'rgba(255,255,255,0.75)',
+                  letterSpacing: '0.3px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
+                }}>
+                  {displayEntry?.basename || short(address)}
+                </div>
+                <div style={{
+                  fontFamily: "'Montserrat', sans-serif",
+                  fontSize: 15,
+                  fontWeight: 700,
+                  color: '#fff',
+                  lineHeight: 1.2
+                }}>
+                  {(displayEntry?.points ?? 0).toLocaleString()} HP
+                </div>
               </div>
             </div>
+
+            {/* Right: Est. Reward or Reach Top 30 Badge */}
+            {myReward ? (
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.15)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+                color: '#fff',
+                borderRadius: 14,
+                padding: '6px 12px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                marginLeft: 12,
+                flexShrink: 0,
+                boxShadow: '0 4px 15px rgba(0,0,0,0.05)'
+              }}>
+                <span style={{ 
+                  fontFamily: "'Montserrat', sans-serif",
+                  fontSize: 8, 
+                  fontWeight: 700, 
+                  color: 'rgba(255, 255, 255, 0.75)', 
+                  textTransform: 'uppercase', 
+                  letterSpacing: '0.6px' 
+                }}>
+                  Est. Reward
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
+                  {myReward.type === 'usdc' ? (
+                    <>
+                      <span style={{ 
+                        fontFamily: "'Montserrat', sans-serif", 
+                        fontSize: 14, 
+                        fontWeight: 700, 
+                        color: '#fff', 
+                        lineHeight: 1 
+                      }}>
+                        {myReward.value}
+                      </span>
+                      <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14, borderRadius: '50%' }} />
+                    </>
+                  ) : (
+                    <span style={{ 
+                      fontFamily: "'Montserrat', sans-serif", 
+                      fontSize: 13, 
+                      fontWeight: 700, 
+                      color: '#FFF', 
+                      lineHeight: 1 
+                    }}>
+                      {myReward.value}
+                    </span>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.12)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+                color: '#fff',
+                borderRadius: 14,
+                padding: '8px 12px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                marginLeft: 12,
+                flexShrink: 0,
+                boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
+                maxWidth: 130,
+                textAlign: 'center'
+              }}>
+                <span style={{ 
+                  fontFamily: "'Montserrat', sans-serif",
+                  fontSize: 8, 
+                  fontWeight: 800, 
+                  color: '#FFE4E6',
+                  textTransform: 'uppercase', 
+                  letterSpacing: '0.5px',
+                  lineHeight: 1.2
+                }}>
+                  REACH TOP 30
+                </span>
+                <span style={{ 
+                  fontFamily: "'Montserrat', sans-serif",
+                  fontSize: 7.5, 
+                  fontWeight: 600, 
+                  color: 'rgba(255, 255, 255, 0.85)', 
+                  marginTop: 2,
+                  letterSpacing: '0.2px',
+                  lineHeight: 1.1
+                }}>
+                  To Get Rewards
+                </span>
+              </div>
+            )}
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Leaders List */}
       {leaders.length === 0 ? (
@@ -208,18 +375,13 @@ export function LeaderboardSection({ address }) {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {leaders.map((entry, idx) => {
-            const isTop3 = idx < 3
-            const rowBorder = idx === 0 ? 'rgba(252, 211, 77, 1)' // Gold
-                           : idx === 1 ? 'rgba(148, 163, 184, 0.8)' // Silver
-                           : idx === 2 ? 'rgba(253, 186, 116, 1)' // Bronze
-                           : '#DEE1E7'
-
+            const reward = getUsdcReward(idx + 1)
             return (
               <div
                 key={entry.address}
                 style={{
                   background: '#fff',
-                  border: `1.5px solid ${rowBorder}`,
+                  border: '1px solid #DEE1E7',
                   borderRadius: 14,
                   padding: '8px 12px',
                   display: 'flex',
@@ -228,42 +390,108 @@ export function LeaderboardSection({ address }) {
                   boxShadow: '0 2px 6px rgba(10,11,13,0.02)',
                 }}
               >
-                <div style={{
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: 14,
-                  fontWeight: 900,
-                  color: '#32353D',
-                  minWidth: 24,
-                  textAlign: 'center'
-                }}>
-                  {idx + 1}
-                </div>
+                {/* Unified Rank + Reward Pill */}
+                {(() => {
+                  const capsuleStyle = (() => {
+                    const rank = idx + 1;
+                    if (rank >= 1 && rank <= 30) {
+                      return { bg: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', color: '#fff', border: 'none', shadow: 'none', div: 'rgba(255,255,255,0.25)' }
+                    }
+                    return { bg: '#F1F5F9', color: '#64748B', border: 'none', shadow: 'none', div: 'transparent' }
+                  })();
 
-                <div style={{ position: 'relative', flexShrink: 0 }}>
-                  <UserAvatar address={entry.address} size={28} />
-                  {isTop3 && (
+                  return (
                     <div style={{
-                      position: 'absolute',
-                      top: -6,
-                      right: -6,
-                      fontSize: 12,
-                      filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: capsuleStyle.bg,
+                      color: capsuleStyle.color,
+                      border: capsuleStyle.border,
+                      boxShadow: capsuleStyle.shadow,
+                      borderRadius: 12,
+                      padding: '4px 6px',
+                      gap: 6,
+                      minHeight: 28,
+                      width: 84, // Uniform fixed width for perfect vertical alignment
+                      flexShrink: 0
                     }}>
-                      {idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉'}
+                      <span style={{
+                        fontFamily: "'Montserrat', sans-serif",
+                        fontSize: 13,
+                        fontWeight: 600,
+                        letterSpacing: '-0.3px'
+                      }}>
+                        #{idx + 1}
+                      </span>
+                      
+                      {reward && (
+                        <>
+                          <div style={{ width: 1, height: 12, background: capsuleStyle.div }} />
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                            {reward.type === 'usdc' ? (
+                              <>
+                                <span style={{
+                                  fontFamily: "'Montserrat', sans-serif",
+                                  fontSize: 12,
+                                  fontWeight: 600,
+                                  letterSpacing: '-0.2px'
+                                }}>
+                                  {reward.value}
+                                </span>
+                                <img src="/usdc-logo.png" alt="" style={{ width: 13, height: 13, borderRadius: '50%', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
+                              </>
+                            ) : (
+                              <span style={{
+                                fontFamily: "'Montserrat', sans-serif",
+                                fontSize: 11,
+                                fontWeight: 600,
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.2px'
+                              }}>
+                                {reward.value}
+                              </span>
+                            )}
+                          </div>
+                        </>
+                      )}
                     </div>
-                  )}
+                  );
+                })()}
+
+                <div style={{ position: 'relative', flexShrink: 0, marginLeft: 2 }}>
+                  <UserAvatar address={entry.address} size={28} />
                 </div>
 
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{
+                    fontFamily: "'Montserrat', sans-serif",
                     fontSize: 13,
-                    fontWeight: 700,
+                    fontWeight: 600,
                     color: '#0A0B0D',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap'
+                    whiteSpace: 'nowrap',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4
                   }}>
-                    {entry.basename || short(entry.address)}
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {entry.basename || short(entry.address)}
+                    </span>
+                    {address && entry.address?.toLowerCase() === address.toLowerCase() && (
+                      <span style={{
+                        fontSize: 10,
+                        fontWeight: 800,
+                        color: '#0000FF',
+                        background: 'rgba(0,0,255,0.06)',
+                        padding: '1px 6px',
+                        borderRadius: 6,
+                        flexShrink: 0
+                      }}>
+                        (you)
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -280,9 +508,9 @@ export function LeaderboardSection({ address }) {
                   flexShrink: 0
                 }}>
                   <div style={{
-                    fontFamily: "'Barlow Condensed', sans-serif",
-                    fontSize: 14,
-                    fontWeight: 800,
+                    fontFamily: "'Montserrat', sans-serif",
+                    fontSize: 12,
+                    fontWeight: 600,
                     color: '#32353D'
                   }}>
                     {entry.points.toLocaleString()}

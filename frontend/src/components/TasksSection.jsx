@@ -4,7 +4,6 @@ import { base } from 'wagmi/chains'
 import { db } from '../config/supabase'
 import { USDC_ADDRESS, USDC_ABI, CHECKIN_TARGET } from '../config/constants'
 import { useBuilderWrite } from '../hooks/useBuilderWrite'
-import { TxModal } from './TxModal'
 
 const taskIcons = { retweet: '🔁', like: '❤️', comment: '💬', bookmark: '🔖', follow: '👤' }
 
@@ -58,12 +57,12 @@ function TaskCard({ task, taskState, onVisit, onCheck, onClaim, isClaiming }) {
 
         {/* Content */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 12, fontWeight: 800, color: '#0A0B0D', lineHeight: 1.3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: '#0A0B0D', lineHeight: 1.3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {task.text}
           </div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 2 }}>
-            <span style={{ fontSize: 9, color: '#D97706', fontWeight: 800, background: 'rgba(217,119,6,0.1)', borderRadius: 6, padding: '1px 6px', textTransform: 'uppercase' }}>
-              +{task.points} HP
+            <span style={{ fontSize: 9, color: '#fff', fontWeight: 800, background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', borderRadius: 6, padding: '2px 8px' }}>
+              +20 Activity Points
             </span>
             <span style={{ fontSize: 9, color: '#64748B', fontWeight: 600 }}>⏰ {fmt(left)} left</span>
           </div>
@@ -172,8 +171,8 @@ export function TasksSection({ address }) {
   const [adminTab, setAdminTab] = useState('create') // 'create' | 'manage'
   const [allTasks, setAllTasks] = useState([])
   const [editingTaskId, setEditingTaskId] = useState(null)
-  const [editTaskState, setEditTaskState] = useState({ type: 'retweet', text: '', url: '', points: 1, icon_url: '', expires_at: '' })
-  const [newTasks, setNewTasks] = useState([{ type: 'retweet', text: '', url: '', points: 1, icon_url: '', expires_hours: 24 }])
+  const [editTaskState, setEditTaskState] = useState({ type: 'retweet', text: '', url: '', points: 10, icon_url: '', expires_at: '' })
+  const [newTasks, setNewTasks] = useState([{ type: 'retweet', text: '', url: '', points: 10, icon_url: '', expires_hours: 24 }])
   const [isCreating, setIsCreating] = useState(false)
 
   const ADMIN_WALLET = '0x4c91d3bed372c11795b9ce9a9017dfe447bf050a'
@@ -239,15 +238,13 @@ export function TasksSection({ address }) {
 
   const startEditing = (task) => {
     setEditingTaskId(task.id)
-    const leftMs = new Date(task.expires_at).getTime() - Date.now()
-    const leftHours = Math.max(1, Math.round(leftMs / 3600000))
     setEditTaskState({
       type: task.type,
       text: task.text,
       url: task.url,
       points: task.points,
       icon_url: task.icon_url || '',
-      expires_hours: leftHours
+      expires_hours: 24
     })
   }
 
@@ -321,7 +318,7 @@ export function TasksSection({ address }) {
 
     if (successCount > 0) {
       setShowAdmin(false)
-      setNewTasks([{ type: 'retweet', text: '', url: '', points: 1, icon_url: '', expires_hours: 24 }])
+      setNewTasks([{ type: 'retweet', text: '', url: '', points: 10, icon_url: '', expires_hours: 24 }])
       loadTasks()
       loadAllTasks()
       if (successCount < validTasks.length) {
@@ -334,7 +331,7 @@ export function TasksSection({ address }) {
   }
 
   const addTaskRow = () => {
-    setNewTasks([...newTasks, { type: 'retweet', text: '', url: '', points: 1, icon_url: '', expires_hours: 24 }])
+    setNewTasks([...newTasks, { type: 'retweet', text: '', url: '', points: 10, icon_url: '', expires_hours: 24 }])
   }
 
   const removeTaskRow = (index) => {
@@ -572,6 +569,12 @@ export function TasksSection({ address }) {
 
   return (
     <div style={{ paddingBottom: 120, padding: '0 12px 120px' }}>
+      <style>{`
+        .tasks-content-wrapper,
+        .tasks-content-wrapper * {
+          font-family: 'Montserrat', sans-serif !important;
+        }
+      `}</style>
 
       {/* Promo Banner — Post about us */}
       <div style={{
@@ -586,8 +589,23 @@ export function TasksSection({ address }) {
           backgroundSize: '20px 20px',
         }} />
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ fontSize: 16, fontWeight: 800, color: '#fff', marginBottom: 4 }}>
-            ✍️ Post about us and get <span style={{ color: '#A5B4FC' }}>+5 HP</span>
+          <div style={{ fontSize: 16, fontWeight: 800, color: '#fff', marginBottom: 6, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
+            <span>✍️ Post about us and get</span>
+            <span style={{
+              background: 'linear-gradient(135deg, #FFFFFF 0%, #EEF2FF 100%)',
+              color: '#0000FF',
+              padding: '2px 8px',
+              borderRadius: 8,
+              fontSize: 12,
+              fontWeight: 900,
+              display: 'inline-flex',
+              alignItems: 'center',
+              boxShadow: '0 4px 12px rgba(0,0,255,0.15)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.3px'
+            }}>
+              +2 HP
+            </span>
           </div>
           <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', marginBottom: 14, lineHeight: 1.5, fontWeight: 500 }}>
             We value creators on Base. Post about our app or share useful content about Base and submit your link below.
@@ -609,7 +627,7 @@ export function TasksSection({ address }) {
               alignItems: 'center',
               border: '1px solid rgba(255,255,255,0.1)'
             }}>
-              Available in {getWaitTime()}h
+              Next post submission available in {getWaitTime()}h
             </div>
           ) : postStatus === 'success' ? (
             <div style={{ background: 'rgba(5,150,105,0.25)', borderRadius: 14, padding: '10px 14px', fontSize: 12, color: '#6EE7B7', fontWeight: 800 }}>
@@ -650,7 +668,8 @@ export function TasksSection({ address }) {
         </div>
       </div>
 
-      {/* Admin controls */}
+      <div className="tasks-content-wrapper" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+        {/* Admin controls */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
         <div style={{ fontSize: 12, color: '#717886', fontWeight: 600 }}>
           {visible.length} active task{visible.length !== 1 ? 's' : ''}
@@ -685,7 +704,7 @@ export function TasksSection({ address }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {pendingPosts.map(p => (
                 <div key={p.id} style={{ background: '#fff', borderRadius: 12, padding: '12px 14px', border: '1px solid #FED7AA' }}>
-                  <div style={{ fontSize: 11, color: '#717886', marginBottom: 4, fontFamily: "'DM Mono',monospace" }}>
+                  <div style={{ fontSize: 11, color: '#717886', marginBottom: 4, fontFamily: "'Montserrat', sans-serif" }}>
                     {p.address.slice(0, 6)}...{p.address.slice(-4)}
                   </div>
                   <a href={p.url} target="_blank" rel="noopener noreferrer"
@@ -811,16 +830,7 @@ export function TasksSection({ address }) {
                     </div>
                   </div>
                   
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: '#717886' }}>HP:</span>
-                      <input type="number" min="1" max="1000" value={task.points} onChange={e => updateTaskRow(idx, 'points', e.target.value)} style={{ width: 60, padding: 8, borderRadius: 8, border: '1px solid #ccc', background: '#fff', fontSize: 13 }} />
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: '#717886' }}>Hours:</span>
-                      <input type="number" min="1" max="8760" value={task.expires_hours || 24} onChange={e => updateTaskRow(idx, 'expires_hours', e.target.value)} style={{ width: 60, padding: 8, borderRadius: 8, border: '1px solid #ccc', background: '#fff', fontSize: 13 }} />
-                    </div>
-                  </div>
+
                 </div>
               ))}
 
@@ -901,24 +911,7 @@ export function TasksSection({ address }) {
                           </label>
                         </div>
 
-                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                          <span style={{ fontSize: 12, fontWeight: 600, color: '#717886' }}>HP:</span>
-                          <input
-                            type="number"
-                            value={editTaskState.points}
-                            onChange={e => setEditTaskState({ ...editTaskState, points: Number(e.target.value) })}
-                            style={{ width: 60, padding: 6, borderRadius: 8, border: '1px solid #ccc', fontSize: 13 }}
-                          />
-                          
-                          <span style={{ fontSize: 12, fontWeight: 600, color: '#717886', marginLeft: 8 }}>Hours Left:</span>
-                          <input
-                            type="number"
-                            min="1"
-                            value={editTaskState.expires_hours || 24}
-                            onChange={e => setEditTaskState({ ...editTaskState, expires_hours: Number(e.target.value) })}
-                            style={{ flex: 1, padding: 6, borderRadius: 8, border: '1px solid #ccc', fontSize: 13 }}
-                          />
-                        </div>
+
 
                         <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
                           <button
@@ -948,11 +941,13 @@ export function TasksSection({ address }) {
                         )}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 11, fontWeight: 800, color: '#0A0B0D', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        <div style={{ fontSize: 11, fontWeight: 600, color: '#0A0B0D', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {t.text}
                         </div>
                         <div style={{ fontSize: 9, color: '#717886', display: 'flex', gap: 6, marginTop: 2 }}>
-                          <span style={{ color: '#D97706', fontWeight: 800 }}>+{t.points} HP</span>
+                          <span style={{ fontSize: 9, color: '#fff', fontWeight: 800, background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', borderRadius: 6, padding: '2px 8px' }}>
+                            +20 Activity Points
+                          </span>
                           <span>•</span>
                           <span style={{ color: isExpired ? '#DC2626' : '#059669', fontWeight: 600 }}>{isExpired ? 'Expired' : 'Active'}</span>
                         </div>
@@ -989,7 +984,7 @@ export function TasksSection({ address }) {
       {visible.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '60px 20px', background: '#EEF0F3', borderRadius: 20 }}>
           <div style={{ fontSize: 36, marginBottom: 12 }}>✓</div>
-          <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 22, fontWeight: 900, marginBottom: 6, color: '#0A0B0D' }}>All Done!</div>
+          <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 22, fontWeight: 900, marginBottom: 6, color: '#0A0B0D' }}>All Done!</div>
           <div style={{ fontSize: 13, color: '#717886' }}>Check back soon for new tasks</div>
         </div>
       ) : (
@@ -1007,6 +1002,7 @@ export function TasksSection({ address }) {
           ))}
         </div>
       )}
+      </div>
 
     </div>
   )

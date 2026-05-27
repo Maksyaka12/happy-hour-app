@@ -320,10 +320,18 @@ export function RaffleSection({ address }) {
           ['How long does each round last?',   'Each round runs exactly 60 minutes.'],
           ['When do deposits close?',           'Deposits close 3 minutes before the draw.'],
           ['How is the winner selected?',       'Secure random selection, lucky-based. Anyone with 1+ ticket can win. More tickets = more chances.'],
-          ['How many points do I get for playing?', '1 ticket = 1 HP. The winner receives 5 HP.'],
-          ['What happens if I’m the only player in a round?', 'You will receive a 100% refund and 5 HP as the winner.'],
+          ['How many points do I get for playing?', (
+            <>
+              You get <strong style={{ color: '#10B981' }}>Activity Points</strong> for every bet. Winner receives <strong style={{ color: '#0000FF' }}>1 HP</strong>.
+            </>
+          )],
+          ['What happens if I’m the only player in a round?', (
+            <>
+              You will receive a 100% refund and <strong style={{ color: '#0000FF' }}>1 HP</strong> as the winner.
+            </>
+          )],
           ['How much does the winner receive?', 'Winner takes 85% of the total pot. The remaining 15% goes to the foundation for future rewards.'],
-          ['When are winnings paid?',           'Automatically after the draw, directly to the winner\'s wallet via the smart contract.'],
+          ['When are winnings paid?',           'Automatically after the draw, directly to the winner\'s wallet.'],
           ['Can I deposit multiple times?',     'Yes! Multiple deposits per round are allowed and all contribute to your ticket count.'],
         ].map(([q, a], i, arr) => (
           <div key={i} style={{ marginBottom: i < arr.length - 1 ? 14 : 0 }}>
@@ -337,7 +345,7 @@ export function RaffleSection({ address }) {
       {txModal && (
         <TxModal
           title="Place Raffle Bet"
-          subtitle={`+${Math.round(txModal.amount / TICKET_UNIT)} tickets · +${Math.round(txModal.amount / TICKET_UNIT)} HP`}
+          subtitle={`+${Math.round(txModal.amount / TICKET_UNIT)} ${Math.round(txModal.amount / TICKET_UNIT) === 1 ? 'ticket' : 'tickets'} · + Activity Points`}
           amount={txModal.amount}
           isPending={isPending}
           isConfirming={isConfirming}

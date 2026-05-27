@@ -39,7 +39,15 @@ const LEVELS = [
   { level: 5, name: 'MAX', mult: 2.0, price: 5.00 },
 ]
 
-export function ProfileSection({ address, basename }) {
+const ACTIVITY_LEVELS = [
+  { level: 1, name: 'Basic', mult: 1.0, price: 0.00 },
+  { level: 2, name: 'Bronze', mult: 1.2, price: 0.10 },
+  { level: 3, name: 'Silver', mult: 1.5, price: 0.25 },
+  { level: 4, name: 'Gold', mult: 1.7, price: 0.50 },
+  { level: 5, name: 'MAX', mult: 2.0, price: 1.00 },
+]
+
+export function ProfileSection({ address, basename, totalUsers }) {
   const { disconnect } = useDisconnect()
   const { writeContract: wagmiWriteContract } = useWriteContract()
 
@@ -154,6 +162,32 @@ export function ProfileSection({ address, basename }) {
   const [checkinError, setCheckinError] = useState('')
   const [boostError, setBoostError] = useState('')
   const [upgradeError, setUpgradeError] = useState('')
+
+  const [activityLevel, setActivityLevel] = useState(1)
+  const [selectedApLevel, setSelectedApLevel] = useState(null)
+  const [isPendingApUpgrade, setIsPendingApUpgrade] = useState(false)
+  const [isConfirmingApUpgrade, setIsConfirmingApUpgrade] = useState(false)
+  const [isSuccessApUpgrade, setIsSuccessApUpgrade] = useState(false)
+  const [apUpgradeError, setApUpgradeError] = useState(null)
+
+  const confirmApUpgrade = () => {
+    setIsPendingApUpgrade(true)
+    setApUpgradeError(null)
+    setTimeout(() => {
+      setIsConfirmingApUpgrade(true)
+      setTimeout(() => {
+        setIsSuccessApUpgrade(true)
+        setActivityLevel(prev => Math.min(5, prev + 1))
+        setTimeout(() => {
+          setTxModal(false)
+          setSelectedApLevel(null)
+          setIsPendingApUpgrade(false)
+          setIsConfirmingApUpgrade(false)
+          setIsSuccessApUpgrade(false)
+        }, 1200)
+      }, 1200)
+    }, 1200)
+  }
 
   // Bot Management State
   const [bots, setBots] = useState([])
@@ -621,9 +655,9 @@ export function ProfileSection({ address, basename }) {
         {/* Progression Status Area */}
         <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
 
-          {/* Left: Multiplier Status */}
+          {/* Left: HP Multiplier Status */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>Multiplier</div>
+            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>HP BOOST</div>
             <div style={{
               display: 'flex',
               alignItems: 'center',
@@ -640,9 +674,9 @@ export function ProfileSection({ address, basename }) {
             }}>
               <div style={{ fontSize: 16, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>{LEVELS.find(l => l.level === accountLevel)?.name}</div>
               <div style={{
-                background: (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 1.0
+                background: (LEVELS.find(l => l.level === accountLevel)?.mult || 1.0) === 1.0
                   ? 'linear-gradient(135deg, #94A3B8, #64748B)'
-                  : (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 5.0 || (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 2.0
+                  : (LEVELS.find(l => l.level === accountLevel)?.mult || 1.0) === 2.0
                     ? 'linear-gradient(135deg, #34D399, #059669)'
                     : 'linear-gradient(135deg, #F4C81B, #F97316)',
                 color: '#000',
@@ -656,11 +690,13 @@ export function ProfileSection({ address, basename }) {
             </div>
           </div>
 
-          {/* Center: Active Boost */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
-            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>Boost</div>
-
+          {/* Center: Activity Multiplier Status */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>ACTIVITY BOOST</div>
             <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
               background: 'rgba(255, 255, 255, 0.08)',
               backdropFilter: 'blur(12px)',
               padding: '8px 12px',
@@ -668,39 +704,24 @@ export function ProfileSection({ address, basename }) {
               border: '1px solid rgba(255,255,255,0.1)',
               minWidth: 95,
               height: 38,
-              textAlign: 'center',
-              position: 'relative',
-              display: 'flex',
-              alignItems: 'center',
               justifyContent: 'center',
               boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
             }}>
-              {activeMultiplier > (LEVELS.find(l => l.level === accountLevel)?.mult || 1) ? (
-                <>
-                  <div style={{
-                    position: 'absolute',
-                    top: -6,
-                    right: -8,
-                    background: '#0000FF',
-                    border: '1px solid rgba(255,255,255,0.3)',
-                    padding: '1px 6px',
-                    borderRadius: 5,
-                    fontSize: 7,
-                    fontWeight: 900,
-                    color: '#fff',
-                    boxShadow: '0 4px 10px rgba(0,0,0,0.4)',
-                    whiteSpace: 'nowrap',
-                    zIndex: 2
-                  }}>
-                    {timeLeft}
-                  </div>
-                  <div style={{ fontSize: 16, fontWeight: 900, color: '#F4C81B', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
-                    ⚡ {activeMultiplier}x
-                  </div>
-                </>
-              ) : (
-                <div style={{ fontSize: 16, fontWeight: 900, color: 'rgba(255,255,255,0.15)' }}>—</div>
-              )}
+              <div style={{ fontSize: 16, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>{ACTIVITY_LEVELS.find(l => l.level === activityLevel)?.name}</div>
+              <div style={{
+                background: (ACTIVITY_LEVELS.find(l => l.level === activityLevel)?.mult || 1.0) === 1.0
+                  ? 'linear-gradient(135deg, #94A3B8, #64748B)'
+                  : (ACTIVITY_LEVELS.find(l => l.level === activityLevel)?.mult || 1.0) === 2.0
+                    ? 'linear-gradient(135deg, #34D399, #059669)'
+                    : 'linear-gradient(135deg, #F4C81B, #F97316)',
+                color: '#000',
+                padding: '1px 5px',
+                borderRadius: 4,
+                fontSize: 9,
+                fontWeight: 900
+              }}>
+                {ACTIVITY_LEVELS.find(l => l.level === activityLevel)?.mult}x
+              </div>
             </div>
           </div>
 
@@ -729,95 +750,225 @@ export function ProfileSection({ address, basename }) {
         </div>
       </div>
 
-      {/* Account Progression: Multiplier Roadmap */}
-      <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, marginBottom: 12 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+      {/* 2-Column Grid: HP Boost & Activity Boost (Senior Dev Premium Overhaul) */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+        
+        {/* HP Boost Card */}
+        <div style={{
+          background: '#fff',
+          border: '1px solid #DEE1E7',
+          borderRadius: 24,
+          padding: 16,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          boxShadow: '0 4px 20px rgba(0,0,255,0.02)',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Profile Multiplier</div>
-            <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>Permanent multiplier for all earned HP.</div>
-          </div>
-          <div style={{
-            background: (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 1.0
-              ? '#94A3B8'
-              : (LEVELS.find(l => l.level === accountLevel)?.mult || 1) === 2.0
-                ? '#059669'
-                : '#F97316',
-            color: '#fff',
-            padding: '2px 10px',
-            borderRadius: 50,
-            fontSize: 9,
-            fontWeight: 900,
-            marginTop: 1
-          }}>
-            {LEVELS.find(l => l.level === accountLevel)?.mult}x
-          </div>
-        </div>
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>HP Boost</div>
+              </div>
+              <div style={{
+                background: (LEVELS.find(l => l.level === accountLevel)?.mult || 1.0) === 1.0
+                  ? 'linear-gradient(135deg, #94A3B8, #64748B)'
+                  : (LEVELS.find(l => l.level === accountLevel)?.mult || 1.0) === 2.0
+                    ? 'linear-gradient(135deg, #34D399, #059669)'
+                    : 'linear-gradient(135deg, #F4C81B, #F97316)',
+                color: '#000',
+                padding: '2px 8px',
+                borderRadius: 50,
+                fontSize: 10,
+                fontWeight: 900,
+              }}>
+                {LEVELS.find(l => l.level === accountLevel)?.mult}x
+              </div>
+            </div>
 
-        {/* Level Roadmap */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, position: 'relative', padding: '0 10px' }}>
-          <div style={{ position: 'absolute', top: 27, left: 20, right: 20, height: 2, background: '#F1F5F9', zIndex: 0 }} />
-          {LEVELS.map(l => {
-            const isActive = l.level <= accountLevel
-            const isCurrent = l.level === accountLevel
-            const nameColor = isActive ? '#059669' : '#94A3B8'
+            {/* Subtext */}
+            <div style={{ fontSize: 9, color: '#717886', fontWeight: 500, marginBottom: 14, lineHeight: 1.3 }}>
+              Permanent boost<br />on all <strong style={{ color: '#0000FF' }}>Happy Points</strong> earned
+            </div>
 
-            return (
-              <div key={l.level} style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-                <div style={{ fontSize: 7, fontWeight: 900, color: nameColor, textTransform: 'uppercase' }}>{l.name}</div>
-                <div style={{
-                  width: 26,
-                  height: 26,
-                  borderRadius: '50%',
-                  background: isCurrent || isActive
-                    ? (l.mult === 1.0 ? '#94A3B8' : l.mult === 2.0 ? '#34D399' : '#F97316')
-                    : '#fff',
-                  border: isCurrent ? '4px solid #DBEAFE' : '2px solid #E2E8F0',
+            {/* Sleek pill progress bar (5 segments) */}
+            <div style={{ display: 'flex', gap: 3, marginBottom: 16 }}>
+              {[1, 2, 3, 4, 5].map((lvl) => {
+                const active = lvl <= accountLevel;
+                return (
+                  <div
+                    key={lvl}
+                    style={{
+                      flex: 1,
+                      height: 4,
+                      borderRadius: 2,
+                      background: active ? '#0000FF' : '#E2E8F0',
+                      transition: 'background 0.3s ease'
+                    }}
+                  />
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Upgrade Button / Max Level Badge */}
+          <div>
+            {accountLevel < 5 ? (
+              <button
+                onClick={() => {
+                  const next = LEVELS.find(l => l.level === accountLevel + 1)
+                  setSelectedLevel(next)
+                  setTxModal('upgrade')
+                }}
+                style={{
+                  width: '100%',
+                  background: '#0000FF',
+                  color: '#fff',
+                  borderRadius: 50,
+                  padding: '10px 10px',
+                  fontSize: 11,
+                  fontWeight: 800,
+                  border: 'none',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(0,0,255,0.2)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  boxShadow: isCurrent ? `0 0 15px ${l.mult === 2.0 ? 'rgba(52,211,153,0.3)' : 'rgba(249,115,22,0.3)'}` : 'none'
-                }}>
-                  <span style={{ fontSize: 9, color: isCurrent || isActive ? '#fff' : '#94A3B8', fontWeight: 900 }}>{l.mult}x</span>
-                </div>
+                  gap: 4
+                }}
+              >
+                <span>Upgrade</span>
+                <span style={{ color: '#A5B4FC', fontWeight: 900 }}>{LEVELS.find(l => l.level === accountLevel + 1)?.price.toFixed(2)}</span>
+                <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12 }} />
+              </button>
+            ) : (
+              <div style={{
+                textAlign: 'center',
+                padding: '9px',
+                background: '#ECFDF5',
+                borderRadius: 50,
+                border: '1px solid #D1FAE5',
+                fontSize: 9,
+                color: '#059669',
+                fontWeight: 800,
+                letterSpacing: 0.5
+              }}>
+                ✓ MAX BOOST
               </div>
-            )
-          })}
+            )}
+          </div>
         </div>
 
-        {accountLevel < 5 && (
-          <button
-            onClick={() => {
-              const next = LEVELS.find(l => l.level === accountLevel + 1)
-              setSelectedLevel(next)
-              setTxModal('upgrade')
-            }}
-            style={{ width: '100%', background: '#0000FF', color: '#fff', borderRadius: 50, padding: '10px 12px', fontSize: 11, fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, boxShadow: '0 4px 12px rgba(0,0,255,0.2)' }}
-          >
-            {LEVELS.find(l => l.level === accountLevel)?.name.toUpperCase()} → {LEVELS.find(l => l.level === accountLevel + 1)?.name.toUpperCase()}
-            <span style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: 20, fontSize: 11, display: 'flex', alignItems: 'center', gap: 4, color: '#A5B4FC' }}>
-              {LEVELS.find(l => l.level === accountLevel + 1)?.price.toFixed(2)}<img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14 }} />
-            </span>
-          </button>
-        )}
-        {accountLevel === 5 && (
-          <div style={{
-            textAlign: 'center',
-            padding: '12px',
-            background: '#ECFDF5',
-            borderRadius: 50,
-            border: '1px solid #D1FAE5',
-            fontSize: 10,
-            color: '#059669',
-            fontWeight: 800,
-            textTransform: 'uppercase',
-            letterSpacing: 0.5
-          }}>
-            YOU REACHED MAX MULTIPLIER
+        {/* Activity Boost Card */}
+        <div style={{
+          background: '#fff',
+          border: '1px solid #DEE1E7',
+          borderRadius: 24,
+          padding: 16,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          boxShadow: '0 4px 20px rgba(16,185,129,0.02)',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          <div>
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Activity Boost</div>
+              </div>
+              <div style={{
+                background: (ACTIVITY_LEVELS.find(l => l.level === activityLevel)?.mult || 1.0) === 1.0
+                  ? 'linear-gradient(135deg, #94A3B8, #64748B)'
+                  : (ACTIVITY_LEVELS.find(l => l.level === activityLevel)?.mult || 1.0) === 2.0
+                    ? 'linear-gradient(135deg, #34D399, #059669)'
+                    : 'linear-gradient(135deg, #F4C81B, #F97316)',
+                color: '#000',
+                padding: '2px 8px',
+                borderRadius: 50,
+                fontSize: 10,
+                fontWeight: 900,
+              }}>
+                {ACTIVITY_LEVELS.find(l => l.level === activityLevel)?.mult}x
+              </div>
+            </div>
+
+            {/* Subtext */}
+            <div style={{ fontSize: 9, color: '#717886', fontWeight: 500, marginBottom: 14, lineHeight: 1.3 }}>
+              Permanent boost<br />on all <strong style={{ color: '#10B981' }}>Activity Points</strong> earned
+            </div>
+
+            {/* Sleek pill progress bar (5 segments) */}
+            <div style={{ display: 'flex', gap: 3, marginBottom: 16 }}>
+              {[1, 2, 3, 4, 5].map((lvl) => {
+                const active = lvl <= activityLevel;
+                return (
+                  <div
+                    key={lvl}
+                    style={{
+                      flex: 1,
+                      height: 4,
+                      borderRadius: 2,
+                      background: active ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' : '#E2E8F0',
+                      transition: 'background 0.3s ease'
+                    }}
+                  />
+                );
+              })}
+            </div>
           </div>
-        )}
-        {upgradeError && (
-          <div style={{ color: '#DC2626', fontSize: 12, marginTop: 12, textAlign: 'center', fontWeight: 600 }}>⚠️ {upgradeError}</div>
-        )}
+
+          {/* Upgrade Button / Max Level Badge */}
+          <div>
+            {activityLevel < 5 ? (
+              <button
+                onClick={() => {
+                  const next = ACTIVITY_LEVELS.find(l => l.level === activityLevel + 1)
+                  setSelectedApLevel(next)
+                  setTxModal('upgrade_ap')
+                }}
+                style={{
+                  width: '100%',
+                  background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                  color: '#fff',
+                  borderRadius: 50,
+                  padding: '10px 10px',
+                  fontSize: 11,
+                  fontWeight: 800,
+                  border: 'none',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(16,185,129,0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 4
+                }}
+              >
+                <span>Upgrade</span>
+                <span style={{ color: '#fff', fontWeight: 900 }}>{ACTIVITY_LEVELS.find(l => l.level === activityLevel + 1)?.price.toFixed(2)}</span>
+                <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12 }} />
+              </button>
+            ) : (
+              <div style={{
+                textAlign: 'center',
+                padding: '9px',
+                background: '#ECFDF5',
+                borderRadius: 50,
+                border: '1px solid #D1FAE5',
+                fontSize: 9,
+                color: '#059669',
+                fontWeight: 800,
+                letterSpacing: 0.5
+              }}>
+                ✓ MAX BOOST
+              </div>
+            )}
+          </div>
+        </div>
+
       </div>
 
       {/* 2-Column Action Grid: Daily Rewards */}
@@ -829,7 +980,7 @@ export function ProfileSection({ address, basename }) {
               <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Daily Check-in</div>
               <div style={{ background: '#0000FF', color: '#fff', padding: '1px 6px', borderRadius: 50, fontSize: 8, fontWeight: 900 }}>+1 HP</div>
             </div>
-            <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>Build your streak.</div>
+            <div style={{ fontSize: 9, color: '#717886', marginTop: 4, fontWeight: 500 }}>Build your streak</div>
           </div>
           <div style={{ marginTop: 14 }}>
             {canCheckin ? (
@@ -847,14 +998,14 @@ export function ProfileSection({ address, basename }) {
           </div>
         </div>
 
-        {/* Boost Tile */}
+        {/* Daily Claim Tile */}
         <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Daily Claim</div>
               <div style={{ background: '#0000FF', color: '#fff', padding: '1px 6px', borderRadius: 50, fontSize: 8, fontWeight: 900 }}>+2 HP</div>
             </div>
-            <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>Climb to the top.</div>
+            <div style={{ fontSize: 9, color: '#717886', marginTop: 4, fontWeight: 500 }}>Climb the top</div>
           </div>
           <div style={{ marginTop: 14 }}>
             {canBoost ? (
@@ -964,7 +1115,7 @@ export function ProfileSection({ address, basename }) {
           <div>
             <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Referral Hub</div>
             <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>
-              Invite friends and <span style={{ color: '#EA580C', fontWeight: 700 }}>earn 50% of their HP</span> forever.
+              Invite friends and <span style={{ color: '#0000FF', fontWeight: 700 }}>earn 50% of their HP</span> forever.
             </div>
           </div>
         </div>
@@ -979,7 +1130,7 @@ export function ProfileSection({ address, basename }) {
               setLinkCopied(true)
               setTimeout(() => setLinkCopied(false), 2000)
             }}
-            style={{ flex: 1, background: '#F0F3FF', color: '#0000FF', border: '1px solid #0000FF', borderRadius: 12, fontSize: 10, fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap' }}
+            style={{ flex: 1, background: '#0000FF', color: '#fff', border: 'none', borderRadius: 12, fontSize: 10, fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap', boxShadow: '0 2px 8px rgba(0,0,255,0.15)' }}
           >
             {linkCopied ? '✓' : 'Copy Link'}
           </button>
@@ -989,7 +1140,7 @@ export function ProfileSection({ address, basename }) {
               setCodeCopied(true)
               setTimeout(() => setCodeCopied(false), 2000)
             }}
-            style={{ flex: 1, background: '#FFF7ED', color: '#EA580C', border: '1px solid #EA580C', borderRadius: 12, fontSize: 10, fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap' }}
+            style={{ flex: 1, background: '#10B981', color: '#fff', border: 'none', borderRadius: 12, fontSize: 10, fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap', boxShadow: '0 2px 8px rgba(16,185,129,0.15)' }}
           >
             {codeCopied ? '✓' : 'Copy Code'}
           </button>
@@ -1168,6 +1319,16 @@ export function ProfileSection({ address, basename }) {
             </div>
           </div>
 
+          {/* Total Registered Users */}
+          <div style={{ marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid rgba(252, 165, 165, 0.4)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ fontSize: 10, fontWeight: 800, color: '#B91C1C', letterSpacing: '0.5px' }}>Total Registered Users</div>
+              <div style={{ fontSize: 12, fontWeight: 900, color: '#991B1B', fontFamily: "'DM Mono', monospace" }}>
+                {totalUsers}
+              </div>
+            </div>
+          </div>
+
           {/* Bot Management */}
           <div style={{ color: '#000' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
@@ -1282,10 +1443,27 @@ export function ProfileSection({ address, basename }) {
         />
       )}
 
+      {txModal === 'upgrade_ap' && selectedApLevel && (
+        <TxModal
+          title={`Upgrade to AP ${selectedApLevel.name}`}
+          subtitle={`Permanent ${selectedApLevel.mult}x boost for all Activity Points you earn.`}
+          amount={selectedApLevel.price}
+          isPending={isPendingApUpgrade}
+          isConfirming={isConfirmingApUpgrade}
+          isSuccess={isSuccessApUpgrade}
+          error={apUpgradeError}
+          onConfirm={confirmApUpgrade}
+          onCancel={() => {
+            setTxModal(false)
+            setSelectedApLevel(null)
+          }}
+        />
+      )}
+
       {txModal === 'upgrade' && selectedLevel && (
         <TxModal
           title={`Upgrade to ${selectedLevel.name}`}
-          subtitle={`Permanent ${selectedLevel.mult}x multiplier for all HP you earn.`}
+          subtitle={`Permanent ${selectedLevel.mult}x boost for all HP you earn.`}
           amount={selectedLevel.price}
           isPending={isPendingUpgrade}
           isConfirming={isConfirmingUpgrade}
