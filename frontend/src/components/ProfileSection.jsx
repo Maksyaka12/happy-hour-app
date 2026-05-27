@@ -28,6 +28,7 @@ function normalizeUserRow(data) {
     active_multiplier: data?.active_multiplier ?? 1.0,
     multiplier_expires_at: data?.multiplier_expires_at ?? null,
     account_level: data?.account_level ?? 1,
+    activity_level: data?.activity_level ?? 1,
   }
 }
 
@@ -165,28 +166,21 @@ export function ProfileSection({ address, basename, totalUsers }) {
 
   const [activityLevel, setActivityLevel] = useState(1)
   const [selectedApLevel, setSelectedApLevel] = useState(null)
-  const [isPendingApUpgrade, setIsPendingApUpgrade] = useState(false)
-  const [isConfirmingApUpgrade, setIsConfirmingApUpgrade] = useState(false)
-  const [isSuccessApUpgrade, setIsSuccessApUpgrade] = useState(false)
-  const [apUpgradeError, setApUpgradeError] = useState(null)
-
   const confirmApUpgrade = () => {
-    setIsPendingApUpgrade(true)
+    if (!selectedApLevel) return
     setApUpgradeError(null)
-    setTimeout(() => {
-      setIsConfirmingApUpgrade(true)
-      setTimeout(() => {
-        setIsSuccessApUpgrade(true)
-        setActivityLevel(prev => Math.min(5, prev + 1))
-        setTimeout(() => {
-          setTxModal(false)
-          setSelectedApLevel(null)
-          setIsPendingApUpgrade(false)
-          setIsConfirmingApUpgrade(false)
-          setIsSuccessApUpgrade(false)
-        }, 1200)
-      }, 1200)
-    }, 1200)
+    if (chainId !== base.id) {
+      switchChain({ chainId: base.id })
+      return
+    }
+
+    writeApUpgrade({
+      address: USDC_ADDRESS,
+      abi: USDC_ABI,
+      functionName: 'transfer',
+      args: [CHECKIN_TARGET, parseUnits(selectedApLevel.price.toFixed(6), 6)],
+      chainId: base.id,
+    })
   }
 
   // Bot Management State
@@ -215,7 +209,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
     if (!address) return
     const { data, error } = await db
       .from('users')
-      .select('streak, streak_last, boost_last, points, wins, entries, referral_count, referral_points, ref_code, active_multiplier, multiplier_expires_at, referrer, account_level')
+      .select('streak, streak_last, boost_last, points, wins, entries, referral_count, referral_points, ref_code, active_multiplier, multiplier_expires_at, referrer, account_level, activity_level')
       .eq('address', address.toLowerCase())
       .maybeSingle()
 
@@ -231,6 +225,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
     setActiveMultiplier(user.active_multiplier)
     setMultiplierExpiresAt(user.multiplier_expires_at)
     setAccountLevel(user.account_level)
+    setActivityLevel(user.activity_level)
     setUserStats({
       points: user.points,
       wins: user.wins,
@@ -331,6 +326,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
   const { data: txHash, writeContract, isPending, isConfirming, isSuccess, error: writeError, reset } = useBuilderWrite()
   const { data: boostTxHash, writeContract: writeBoost, isPending: isPendingBoost, isConfirming: isConfirmingBoost, isSuccess: isSuccessBoost, error: boostWriteError, reset: resetBoost } = useBuilderWrite()
   const { data: upgradeTxHash, writeContract: writeUpgrade, isPending: isPendingUpgrade, isConfirming: isConfirmingUpgrade, isSuccess: isSuccessUpgrade, error: upgradeWriteError, reset: resetUpgrade } = useBuilderWrite()
+  const { data: apUpgradeTxHash, writeContract: writeApUpgrade, isPending: isPendingApUpgrade, isConfirming: isConfirmingApUpgrade, isSuccess: isSuccessApUpgrade, error: apUpgradeError, reset: resetApUpgrade } = useBuilderWrite()
 
   const [selectedLevel, setSelectedLevel] = useState(null)
 
@@ -430,6 +426,41 @@ export function ProfileSection({ address, basename, totalUsers }) {
       resetUpgrade()
     })
   }, [address, isSuccessUpgrade, upgradeTxHash, selectedLevel, resetUpgrade])
+
+  const processedApMultTxRef = useRef(null)
+
+  // --- Activity Upgrade Effect ---
+  useEffect(() => {
+    if (!isSuccessApUpgrade || !apUpgradeTxHash || processedApMultTxRef.current === apUpgradeTxHash || !address || !selectedApLevel) return
+
+    processedApMultTxRef.current = apUpgradeTxHash
+    setApUpgradeError('')
+
+    db.rpc('buy_activity_level', {
+      p_address: address.toLowerCase(),
+      p_tx_hash: apUpgradeTxHash,
+      p_target_level: selectedApLevel.level,
+    }).then(async ({ data, error }) => {
+      if (error) {
+        console.error('buy_activity_level:', error)
+        setApUpgradeError('Transaction saved onchain, but database sync failed.')
+        await loadProfile()
+        return
+      }
+
+      if (!data?.ok) {
+        setApUpgradeError(data?.error || 'Upgrade was not accepted.')
+        await loadProfile()
+        return
+      }
+
+      await loadProfile()
+      setTxModal(false)
+      setSelectedApLevel(null)
+    }).finally(() => {
+      resetApUpgrade()
+    })
+  }, [address, isSuccessApUpgrade, apUpgradeTxHash, selectedApLevel, resetApUpgrade])
 
   const sendCheckin = () => {
     setCheckinError('')
