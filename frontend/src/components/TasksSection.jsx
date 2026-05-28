@@ -608,7 +608,7 @@ export function TasksSection({ address }) {
             </span>
           </div>
           <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', marginBottom: 14, lineHeight: 1.5, fontWeight: 500 }}>
-            We value creators on Base. Post <strong style={{ color: '#fff', fontWeight: 800 }}>quality content</strong> about our app and submit your link below to <strong style={{ color: '#fff', fontWeight: 800 }}>get 2 HP per day</strong>.
+            We value creators on Base. Post <strong style={{ color: '#fff', fontWeight: 700 }}>quality content</strong> about our app and submit your link below to <strong style={{ color: '#fff', fontWeight: 700 }}>get 2 HP per day</strong>.
           </div>
           {isCheckingPost ? (
             <div style={{ height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
