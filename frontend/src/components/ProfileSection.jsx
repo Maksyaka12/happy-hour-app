@@ -1147,7 +1147,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
           <div>
             <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Referral Hub</div>
             <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>
-              Invite friends and <span style={{ color: '#0000FF', fontWeight: 700 }}>earn 50% of their HP</span> forever.
+              Invite friends and <span style={{ color: '#0000FF', fontWeight: 700 }}>earn 20% of their HP</span> forever.
             </div>
           </div>
         </div>
