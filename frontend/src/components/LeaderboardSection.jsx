@@ -4,7 +4,21 @@ import { UserAvatar } from './UserAvatar'
 
 const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
 
-
+const calculateSeasonTimeLeft = () => {
+  // Target date: 21 days from May 29, 2026 at 10:00:00 UTC (June 19, 2026)
+  const target = new Date('2026-06-19T10:00:00Z')
+  const now = new Date()
+  const diff = target - now
+  
+  if (diff <= 0) return '00d 00h 00m 00s'
+  
+  const d = Math.floor(diff / 86400000)
+  const h = Math.floor((diff % 86400000) / 3600000)
+  const m = Math.floor((diff % 3600000) / 60000)
+  const s = Math.floor((diff % 60000) / 1000)
+  
+  return `${d}d ${h.toString().padStart(2, '0')}h ${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`
+}
 
 const getUsdcReward = (rank) => {
   if (rank === 1) return { value: '200', type: 'usdc' }
@@ -20,6 +34,15 @@ export function LeaderboardSection({ address }) {
   const [leaders, setLeaders] = useState([])
   const [loading, setLoading] = useState(true)
   const [outsideRank, setOutsideRank] = useState(null)
+  const [seasonTimeLeft, setSeasonTimeLeft] = useState(calculateSeasonTimeLeft())
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSeasonTimeLeft(calculateSeasonTimeLeft())
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [])
+
 
   useEffect(() => {
     if (!address) return
@@ -184,7 +207,7 @@ export function LeaderboardSection({ address }) {
           bottom: 0,
           left: 0,
           right: 0,
-          background: 'rgba(0,0,0,0.45)',
+          background: 'rgba(0,0,0,0.5)',
           backdropFilter: 'blur(12px)',
           padding: '8px 0',
           textAlign: 'center',
@@ -196,11 +219,28 @@ export function LeaderboardSection({ address }) {
             fontWeight: 800,
             color: 'rgba(255,255,255,0.75)',
             textTransform: 'uppercase',
-            letterSpacing: '1px'
+            letterSpacing: '1px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8
           }}>
-            Ends in: <span style={{ color: '#fff', fontWeight: 900 }}>Countdown Coming Soon</span>
+            <span>DISTRIBUTE IN:</span>
+            <span style={{ 
+              color: '#3C8AFF', 
+              textShadow: '0 0 10px rgba(60,138,255,0.4)',
+              background: 'rgba(60,138,255,0.1)',
+              padding: '1px 6px',
+              borderRadius: 6,
+              border: '1px solid rgba(60,138,255,0.2)',
+              fontWeight: 900, 
+              fontFamily: "'DM Mono', monospace",
+              fontSize: 13,
+              letterSpacing: '0.5px'
+            }}>{seasonTimeLeft}</span>
           </div>
         </div>
+
       </div>
 
       {/* User Rank Card */}
