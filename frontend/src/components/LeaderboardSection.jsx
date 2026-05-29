@@ -5,12 +5,13 @@ import { UserAvatar } from './UserAvatar'
 const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
 
 const calculateSeasonTimeLeft = () => {
-  // Target date: 21 days from May 29, 2026 at 10:00:00 UTC (June 19, 2026)
-  const target = new Date('2026-06-19T10:00:00Z')
+  // Target date: June 19, 2026 at 10:00:00 UTC (exactly 21 days from May 29, 2026)
+  // Month index 5 is June
+  const target = new Date(Date.UTC(2026, 5, 19, 10, 0, 0))
   const now = new Date()
-  const diff = target - now
+  const diff = target.getTime() - now.getTime()
   
-  if (diff <= 0) return '00d 00h 00m 00s'
+  if (isNaN(diff) || diff <= 0) return '00d 00h 00m 00s'
   
   const d = Math.floor(diff / 86400000)
   const h = Math.floor((diff % 86400000) / 3600000)
@@ -19,6 +20,7 @@ const calculateSeasonTimeLeft = () => {
   
   return `${d}d ${h.toString().padStart(2, '0')}h ${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`
 }
+
 
 const getUsdcReward = (rank) => {
   if (rank === 1) return { value: '200', type: 'usdc' }
