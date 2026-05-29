@@ -17,3 +17,8 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
+# Supabase database & backend (Edge Functions) - kept strictly local
+database/
+backend/
+
