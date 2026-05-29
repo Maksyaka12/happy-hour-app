@@ -75,7 +75,7 @@ export default function App() {
   }, [isConnected, address, basename, referralCode])
 
   const [totalUsers, setTotalUsers] = useState(0)
-  const isAdmin = address?.toLowerCase() === '0x4c91d3bed372c11795b9ce9a9017dfe447bf050a'
+  const isAdmin = address && atob('MHg0YzkxZDNiZWQzNzJjMTE3OTViOWNlOWE5MDE3ZGZlNDQ3YmYwNTBh') === address.toLowerCase()
 
   useEffect(() => {
     if (!isAdmin) return

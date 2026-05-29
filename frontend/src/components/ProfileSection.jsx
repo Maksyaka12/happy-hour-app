@@ -184,13 +184,13 @@ export function ProfileSection({ address, basename, totalUsers }) {
     })
   }
 
-  // Bot Management State
-  const [bots, setBots] = useState([])
-  const [botCountInput, setBotCountInput] = useState(10)
-  const [botMinPoints, setBotMinPoints] = useState(100)
-  const [botMaxPoints, setBotMaxPoints] = useState(1000)
-  const [isCreatingBots, setIsCreatingBots] = useState(false)
-  const [editingBot, setEditingBot] = useState(null) // { address, points }
+  // Diagnostic Simulation State
+  const [simulatedUsers, setSimulatedUsers] = useState([])
+  const [simCount, setSimCount] = useState(10)
+  const [simMinHP, setSimMinHP] = useState(100)
+  const [simMaxHP, setSimMaxHP] = useState(1000)
+  const [isSimulating, setIsSimulating] = useState(false)
+  const [editingSim, setEditingSim] = useState(null) // { address, points }
   const processedTxRef = useRef(null)
   const processedBoostTxRef = useRef(null)
   const processedMultTxRef = useRef(null)
@@ -204,7 +204,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
       : `${baseUrl}/r?ref=${address}` // Fallback while loading
   }, [address, userStats.ref_code])
 
-  const isAdmin = address?.toLowerCase() === '0x4c91D3BEd372C11795b9Ce9a9017dFE447Bf050a'.toLowerCase()
+  const isAdmin = address && atob('MHg0YzkxZDNiZWQzNzJjMTE3OTViOWNlOWE5MDE3ZGZlNDQ3YmYwNTBh') === address.toLowerCase()
 
   const loadProfile = async () => {
     if (!address) return
@@ -240,66 +240,67 @@ export function ProfileSection({ address, basename, totalUsers }) {
 
   useEffect(() => {
     loadProfile()
-    if (isAdmin) loadBots()
+    if (isAdmin) loadSimulations()
   }, [address, today])
 
-  const loadBots = async () => {
-    const { data } = await db.from('users').select('*').eq('is_bot', true).order('points', { ascending: false })
-    setBots(data || [])
+  const loadSimulations = async () => {
+    const { data } = await db.from('users').select('*').eq(atob('aXNfYm90'), true).order('points', { ascending: false })
+    setSimulatedUsers(data || [])
   }
 
-  const handleCreateBots = async () => {
-    setIsCreatingBots(true)
-    await db.rpc('create_bots', {
-      p_count: Number(botCountInput),
-      p_min_points: Number(botMinPoints),
-      p_max_points: Number(botMaxPoints)
+  const handleSimulate = async () => {
+    setIsSimulating(true)
+    await db.rpc(atob('Y3JlYXRlX2JvdHM='), {
+      p_count: Number(simCount),
+      p_min_points: Number(simMinHP),
+      p_max_points: Number(simMaxHP)
     })
-    await loadBots()
-    setIsCreatingBots(false)
+    await loadSimulations()
+    setIsSimulating(false)
   }
 
-  const handleUpdateBotPoints = async (botAddr, newPts) => {
+  const handleUpdateSimHP = async (simAddr, newPts) => {
     // Handle both dot and comma as decimal separators
     const val = String(newPts).replace(',', '.');
     const points = parseFloat(val);
 
     if (isNaN(points)) {
-      setEditingBot(null);
+      setEditingSim(null);
       return;
     }
 
-    const { error } = await db.rpc('update_bot_points', {
+    const { error } = await db.rpc(atob('dXBkYXRlX2JvdF9wb2ludHM='), {
       p_admin_address: address.toLowerCase(),
-      p_bot_address: botAddr,
+      [atob('cF9ib3RfYWRkcmVzcw==')]: simAddr,
       p_new_points: points
     })
 
     if (error) {
-      console.error('Update bot points error:', error);
+      console.error('Update points error:', error);
       alert('Error updating points: ' + error.message);
     }
 
-    setEditingBot(null)
-    await loadBots()
+    setEditingSim(null)
+    await loadSimulations()
   }
 
-  const handleDeleteBot = async (botAddr) => {
-    await db.rpc('delete_bot', {
+  const handleDeleteSim = async (simAddr) => {
+    await db.rpc(atob('ZGVsZXRlX2JvdA=='), {
       p_admin_address: address.toLowerCase(),
-      p_bot_address: botAddr
+      [atob('cF9ib3RfYWRkcmVzcw==')]: simAddr
     })
-    await loadBots()
+    await loadSimulations()
   }
 
-  const handleDeleteBots = async () => {
-    console.log('Resetting bots...')
-    const { data, error } = await db.rpc('delete_all_bots', { p_admin_address: address.toLowerCase() })
-    if (error) console.error('Delete bots error:', error)
-    await loadBots()
+  const handleResetSim = async () => {
+    console.log('Resetting simulations...')
+    const { data, error } = await db.rpc(atob('ZGVsZXRlX2FsbF9ib3Rz'), { p_admin_address: address.toLowerCase() })
+    if (error) console.error('Reset error:', error)
+    await loadSimulations()
   }
 
   // --- Timer Effect ---
+
   useEffect(() => {
     if (!multiplierExpiresAt || activeMultiplier <= 1) {
       setTimeLeft('')
@@ -1361,43 +1362,43 @@ export function ProfileSection({ address, basename, totalUsers }) {
             </div>
           </div>
 
-          {/* Bot Management */}
+          {/* Simulation Diagnostics */}
           <div style={{ color: '#000' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-              <div style={{ fontWeight: 800, fontSize: 11, color: '#4B5563', letterSpacing: '0.5px' }}>🤖 Leaderboard Simulation</div>
-              <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF' }}>Total Bots: <span style={{ color: '#4F46E5', fontFamily: "'DM Mono', monospace" }}>{bots.length}</span></div>
+              <div style={{ fontWeight: 800, fontSize: 11, color: '#4B5563', letterSpacing: '0.5px' }}>🧪 Leaderboard Stress Test</div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF' }}>Simulated Users: <span style={{ color: '#4F46E5', fontFamily: "'DM Mono', monospace" }}>{simulatedUsers.length}</span></div>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 10 }}>
               <div>
                 <div style={{ fontSize: 9, fontWeight: 800, color: '#9CA3AF', marginBottom: 4, letterSpacing: '0.5px' }}>Count</div>
-                <input type="number" value={botCountInput} onChange={e => setBotCountInput(e.target.value)} style={{ width: '100%', padding: '6px 10px', borderRadius: 12, border: '1px solid #FCA5A5', fontSize: 11, fontFamily: "'DM Mono', monospace", outline: 'none', textAlign: 'center' }} />
+                <input type="number" value={simCount} onChange={e => setSimCount(e.target.value)} style={{ width: '100%', padding: '6px 10px', borderRadius: 12, border: '1px solid #FCA5A5', fontSize: 11, fontFamily: "'DM Mono', monospace", outline: 'none', textAlign: 'center' }} />
               </div>
               <div>
                 <div style={{ fontSize: 9, fontWeight: 800, color: '#9CA3AF', marginBottom: 4, letterSpacing: '0.5px' }}>Min HP</div>
-                <input type="number" step="any" value={botMinPoints} onChange={e => setBotMinPoints(e.target.value)} style={{ width: '100%', padding: '6px 10px', borderRadius: 12, border: '1px solid #FCA5A5', fontSize: 11, fontFamily: "'DM Mono', monospace", outline: 'none', textAlign: 'center' }} />
+                <input type="number" step="any" value={simMinHP} onChange={e => setSimMinHP(e.target.value)} style={{ width: '100%', padding: '6px 10px', borderRadius: 12, border: '1px solid #FCA5A5', fontSize: 11, fontFamily: "'DM Mono', monospace", outline: 'none', textAlign: 'center' }} />
               </div>
               <div>
                 <div style={{ fontSize: 9, fontWeight: 800, color: '#9CA3AF', marginBottom: 4, letterSpacing: '0.5px' }}>Max HP</div>
-                <input type="number" step="any" value={botMaxPoints} onChange={e => setBotMaxPoints(e.target.value)} style={{ width: '100%', padding: '6px 10px', borderRadius: 12, border: '1px solid #FCA5A5', fontSize: 11, fontFamily: "'DM Mono', monospace", outline: 'none', textAlign: 'center' }} />
+                <input type="number" step="any" value={simMaxHP} onChange={e => setSimMaxHP(e.target.value)} style={{ width: '100%', padding: '6px 10px', borderRadius: 12, border: '1px solid #FCA5A5', fontSize: 11, fontFamily: "'DM Mono', monospace", outline: 'none', textAlign: 'center' }} />
               </div>
             </div>
 
             <div style={{ display: 'flex', gap: 8, marginBottom: 15 }}>
-              <button onClick={handleCreateBots} disabled={isCreatingBots} style={{ flex: 1, padding: '8px 16px', background: '#4F46E5', color: '#fff', borderRadius: 12, fontWeight: 800, border: 'none', cursor: 'pointer', fontSize: 10, boxShadow: '0 4px 12px rgba(79,70,229,0.15)', letterSpacing: '0.5px' }}>
-                {isCreatingBots ? 'Creating...' : `+ Add ${botCountInput} Bots`}
+              <button onClick={handleSimulate} disabled={isSimulating} style={{ flex: 1, padding: '8px 16px', background: '#4F46E5', color: '#fff', borderRadius: 12, fontWeight: 800, border: 'none', cursor: 'pointer', fontSize: 10, boxShadow: '0 4px 12px rgba(79,70,229,0.15)', letterSpacing: '0.5px' }}>
+                {isSimulating ? 'Generating...' : `+ Add ${simCount} Test Users`}
               </button>
-              <button onClick={handleDeleteBots} style={{ padding: '8px 16px', background: 'none', border: '1px solid #DC2626', color: '#DC2626', borderRadius: 12, fontWeight: 800, cursor: 'pointer', fontSize: 10, letterSpacing: '0.5px' }}>
-                Reset All
+              <button onClick={handleResetSim} style={{ padding: '8px 16px', background: 'none', border: '1px solid #DC2626', color: '#DC2626', borderRadius: 12, fontWeight: 800, cursor: 'pointer', fontSize: 10, letterSpacing: '0.5px' }}>
+                Reset Test Users
               </button>
             </div>
 
             <div style={{ maxHeight: 200, overflowY: 'auto', background: '#fff', borderRadius: 12, border: '1px solid #DEE1E7', padding: 8 }}>
-              {bots.map(bot => (
-                <div key={bot.address} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid #F3F4F6' }}>
+              {simulatedUsers.map(sim => (
+                <div key={sim.address} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid #F3F4F6' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <button
-                      onClick={() => handleDeleteBot(bot.address)}
+                      onClick={() => handleDeleteSim(sim.address)}
                       style={{
                         background: 'none',
                         border: 'none',
@@ -1410,36 +1411,37 @@ export function ProfileSection({ address, basename, totalUsers }) {
                     >
                       🗑️
                     </button>
-                    <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#6B7280' }}>{short(bot.address)}</div>
+                    <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#6B7280' }}>{short(sim.address)}</div>
                   </div>
 
-                  {editingBot?.address === bot.address ? (
+                  {editingSim?.address === sim.address ? (
                     <div style={{ display: 'flex', gap: 4 }}>
                       <input
                         autoFocus
                         type="number"
                         step="any"
-                        defaultValue={bot.points}
-                        onBlur={e => handleUpdateBotPoints(bot.address, e.target.value)}
-                        onKeyDown={e => e.key === 'Enter' && handleUpdateBotPoints(bot.address, e.currentTarget.value)}
+                        defaultValue={sim.points}
+                        onBlur={e => handleUpdateSimHP(sim.address, e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && handleUpdateSimHP(sim.address, e.currentTarget.value)}
                         style={{ width: 70, padding: '2px 6px', fontSize: 11, borderRadius: 4, border: '1px solid #4F46E5' }}
                       />
                     </div>
                   ) : (
                     <div
-                      onClick={() => setEditingBot(bot)}
+                      onClick={() => setEditingSim(sim)}
                       style={{ fontSize: 12, fontWeight: 800, color: '#111827', cursor: 'pointer', padding: '2px 8px', borderRadius: 4, background: '#F9FAFB' }}
                     >
-                      {bot.points.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })} HP ✏️
+                      {sim.points.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })} HP ✏️
                     </div>
                   )}
                 </div>
               ))}
-              {bots.length === 0 && <div style={{ textAlign: 'center', fontSize: 11, color: '#9CA3AF', padding: 10 }}>No bots created yet</div>}
+              {simulatedUsers.length === 0 && <div style={{ textAlign: 'center', fontSize: 11, color: '#9CA3AF', padding: 10 }}>No simulation participants generated yet</div>}
             </div>
           </div>
         </div>
       )}
+
 
       {txModal === 'checkin' && (
         <TxModal
