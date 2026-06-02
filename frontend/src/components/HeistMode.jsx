@@ -293,17 +293,17 @@ export function HeistMode({ address }) {
   }
 
   return (
-    <div style={{ padding: '16px 20px', color: '#fff', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+    <div style={{ padding: '0 12px 120px', color: '#0A0B0D', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       
-      {/* Top Header Selector: Switch between Boxes and Heist (or group under Boxes & Heists) */}
+      {/* Top Header Tab Selector Switcher */}
       <div style={{
         display: 'flex',
-        background: 'rgba(0, 0, 0, 0.25)',
-        border: '1px solid rgba(255,255,255,0.08)',
+        background: 'rgba(0, 0, 0, 0.04)',
+        border: '1px solid rgba(0, 0, 0, 0.06)',
         borderRadius: 14,
         padding: 4,
         marginBottom: 20,
-        maxWidth: 400,
+        maxWidth: 380,
         margin: '0 auto 20px'
       }}>
         <button
@@ -313,12 +313,13 @@ export function HeistMode({ address }) {
             padding: '10px 16px',
             borderRadius: 10,
             border: 'none',
-            background: activeTab === 'heist' ? 'rgba(0, 82, 255, 0.85)' : 'transparent',
-            color: '#fff',
-            fontWeight: 700,
-            fontSize: 14,
+            background: activeTab === 'heist' ? '#0052FF' : 'transparent',
+            color: activeTab === 'heist' ? '#fff' : '#717886',
+            fontWeight: 800,
+            fontSize: 13,
             cursor: 'pointer',
-            transition: 'all 0.2s'
+            transition: 'all 0.2s',
+            boxShadow: activeTab === 'heist' ? '0 4px 12px rgba(0, 82, 255, 0.2)' : 'none'
           }}
         >
           🕵️ Heist Mode
@@ -330,12 +331,13 @@ export function HeistMode({ address }) {
             padding: '10px 16px',
             borderRadius: 10,
             border: 'none',
-            background: activeTab === 'history' ? 'rgba(0, 82, 255, 0.85)' : 'transparent',
-            color: '#fff',
-            fontWeight: 700,
-            fontSize: 14,
+            background: activeTab === 'history' ? '#0052FF' : 'transparent',
+            color: activeTab === 'history' ? '#fff' : '#717886',
+            fontWeight: 800,
+            fontSize: 13,
             cursor: 'pointer',
-            transition: 'all 0.2s'
+            transition: 'all 0.2s',
+            boxShadow: activeTab === 'history' ? '0 4px 12px rgba(0, 82, 255, 0.2)' : 'none'
           }}
         >
           🔥 Raid History
@@ -344,82 +346,79 @@ export function HeistMode({ address }) {
 
       {activeTab === 'heist' ? (
         <div>
-          {/* Shield Status Panel */}
+          {/* Shield Status Panel - Legible Premium Light Theme */}
           <div style={{
             background: isShieldActive 
-              ? 'linear-gradient(135deg, rgba(0, 82, 255, 0.15) 0%, rgba(0, 198, 251, 0.08) 100%)' 
-              : 'rgba(255, 255, 255, 0.03)',
+              ? 'linear-gradient(135deg, rgba(0, 82, 255, 0.06) 0%, rgba(0, 198, 251, 0.03) 100%)' 
+              : '#ffffff',
             border: isShieldActive 
-              ? '1px solid rgba(0, 82, 255, 0.4)' 
-              : '1px solid rgba(255, 255, 255, 0.08)',
+              ? '1px solid rgba(0, 82, 255, 0.25)' 
+              : '1px solid #DEE1E7',
             boxShadow: isShieldActive 
-              ? '0 8px 32px rgba(0, 82, 255, 0.15), inset 0 0 12px rgba(0, 198, 251, 0.05)'
-              : 'none',
+              ? '0 8px 24px rgba(0, 82, 255, 0.05)'
+              : '0 4px 12px rgba(10,11,13,0.02)',
             borderRadius: 20,
-            padding: 20,
+            padding: '16px 20px',
             marginBottom: 20,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             gap: 16,
-            backdropFilter: 'blur(10px)',
             transition: 'all 0.3s ease'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
               <div style={{
-                width: 48,
-                height: 48,
+                width: 44,
+                height: 44,
                 borderRadius: '50%',
-                background: isShieldActive ? 'rgba(0, 82, 255, 0.15)' : 'rgba(255,255,255,0.05)',
+                background: isShieldActive ? 'rgba(0, 82, 255, 0.1)' : '#F1F5F9',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: 24,
-                boxShadow: isShieldActive ? '0 0 12px rgba(0, 82, 255, 0.5)' : 'none',
-                animation: isShieldActive ? 'pulse 2s infinite' : 'none'
+                fontSize: 20,
+                boxShadow: isShieldActive ? '0 0 10px rgba(0, 82, 255, 0.2)' : 'none',
               }}>
                 🛡️
               </div>
-              <div>
-                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: isShieldActive ? '#00C6FB' : '#fff' }}>
+              <div style={{ minWidth: 0 }}>
+                <h3 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: isShieldActive ? '#0052FF' : '#0A0B0D' }}>
                   {isShieldActive ? 'Heist Shield Active' : 'Heist Shield Inactive'}
                 </h3>
-                <p style={{ margin: '4px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>
+                <p style={{ margin: '3px 0 0', fontSize: 11, color: '#717886', lineHeight: 1.3 }}>
                   {isShieldActive 
-                    ? 'You are protected! Flying out of potential victim pool.' 
+                    ? 'You are protected! Excluded from victim pool.' 
                     : 'Get 24h protection from all HP stealing raids.'}
                 </p>
               </div>
             </div>
 
-            <div>
+            <div style={{ flexShrink: 0 }}>
               {isShieldActive ? (
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ 
-                    fontFamily: 'monospace', 
-                    fontSize: 18, 
+                    fontFamily: "'DM Mono', monospace", 
+                    fontSize: 16, 
                     fontWeight: 900, 
-                    color: '#00C6FB',
-                    textShadow: '0 0 8px rgba(0, 198, 251, 0.4)'
+                    color: '#0052FF'
                   }}>
                     {shieldTimeLeft}
                   </div>
                   <button
                     onClick={handlePurchaseShieldClick}
                     style={{
-                      marginTop: 6,
-                      background: 'rgba(255,255,255,0.06)',
-                      border: '1px solid rgba(255,255,255,0.1)',
+                      marginTop: 4,
+                      background: '#F1F5F9',
+                      border: '1px solid #DEE1E7',
                       borderRadius: 8,
-                      padding: '4px 10px',
-                      color: '#fff',
-                      fontSize: 10,
-                      fontWeight: 700,
+                      padding: '4px 8px',
+                      color: '#32353D',
+                      fontSize: 9,
+                      fontWeight: 800,
                       cursor: 'pointer',
                       transition: 'all 0.2s'
                     }}
-                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-                    onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+                    onMouseEnter={e => e.currentTarget.style.background = '#EEF2F6'}
+                    onMouseLeave={e => e.currentTarget.style.background = '#F1F5F9'}
                   >
                     Extend (+24h) $0.15
                   </button>
@@ -429,13 +428,13 @@ export function HeistMode({ address }) {
                   onClick={handlePurchaseShieldClick}
                   style={{
                     background: 'linear-gradient(135deg, #0052FF 0%, #00C6FB 100%)',
-                    boxShadow: '0 4px 15px rgba(0, 82, 255, 0.3)',
+                    boxShadow: '0 4px 12px rgba(0, 82, 255, 0.2)',
                     border: 'none',
                     borderRadius: 12,
-                    padding: '10px 16px',
+                    padding: '10px 14px',
                     color: '#fff',
-                    fontWeight: 700,
-                    fontSize: 13,
+                    fontWeight: 800,
+                    fontSize: 12,
                     cursor: 'pointer',
                     transition: 'all 0.2s'
                   }}
@@ -448,12 +447,12 @@ export function HeistMode({ address }) {
             </div>
           </div>
 
-          {/* Main Heist Interactive Board */}
+          {/* Main Heist Interactive Board - Legible Premium Light Theme */}
           <div style={{
-            background: 'rgba(255, 255, 255, 0.02)',
-            border: '1px solid rgba(255, 255, 255, 0.06)',
+            background: 'linear-gradient(135deg, #F8F9FC 0%, #ffffff 100%)',
+            border: '1px solid #DEE1E7',
             borderRadius: 24,
-            padding: '24px 20px',
+            padding: '32px 20px',
             textAlign: 'center',
             minHeight: 340,
             display: 'flex',
@@ -461,18 +460,19 @@ export function HeistMode({ address }) {
             justifyContent: 'center',
             alignItems: 'center',
             position: 'relative',
+            boxShadow: '0 8px 32px rgba(10,11,13,0.04)',
             overflow: 'hidden'
           }}>
 
             {errorMessage && (
               <div style={{
-                background: 'rgba(252, 64, 31, 0.12)',
-                border: '1px solid rgba(252, 64, 31, 0.3)',
+                background: 'rgba(252, 64, 31, 0.08)',
+                border: '1px solid rgba(252, 64, 31, 0.2)',
                 borderRadius: 12,
                 padding: '10px 14px',
                 color: '#FC401F',
                 fontSize: 13,
-                fontWeight: 600,
+                fontWeight: 700,
                 marginBottom: 16,
                 maxWidth: '90%'
               }}>
@@ -484,27 +484,27 @@ export function HeistMode({ address }) {
             {gameState === 'idle' && (
               <div style={{ maxWidth: 420 }}>
                 <div style={{ fontSize: 60, marginBottom: 12, animation: 'float 3s ease-in-out infinite' }}>🕵️‍♂️</div>
-                <h2 style={{ margin: '0 0 8px', fontSize: 24, fontWeight: 900, letterSpacing: -0.5 }}>
+                <h2 style={{ margin: '0 0 8px', fontSize: 22, fontWeight: 900, color: '#0A0B0D', letterSpacing: -0.5 }}>
                   Launch a Happy Heist
                 </h2>
-                <p style={{ margin: '0 0 24px', fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.6)' }}>
+                <p style={{ margin: '0 0 24px', fontSize: 13, lineHeight: 1.6, color: '#717886' }}>
                   For just **$0.25 USDC**, raid an active user with 300+ HP. Try your luck in a 50/50 card game to steal 10 HP or up to 5% of their total points!
                 </p>
                 <button
                   onClick={handleInitiateHeistClick}
                   style={{
                     background: 'linear-gradient(135deg, #FF9900 0%, #FF5E62 100%)',
-                    boxShadow: '0 6px 20px rgba(255, 94, 98, 0.4)',
+                    boxShadow: '0 6px 20px rgba(255, 94, 98, 0.25)',
                     border: 'none',
                     borderRadius: 16,
                     padding: '14px 32px',
                     color: '#fff',
                     fontWeight: 800,
-                    fontSize: 16,
+                    fontSize: 15,
                     cursor: 'pointer',
                     transition: 'all 0.2s'
                   }}
-                  onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.03)'}
+                  onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
                   onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
                 >
                   Initiate Heist ($0.25)
@@ -516,19 +516,19 @@ export function HeistMode({ address }) {
             {gameState === 'scanning' && potentialVictims.length > 0 && (
               <div>
                 <div style={{ fontSize: 44, animation: 'spin 2s linear infinite', marginBottom: 16 }}>🔍</div>
-                <h3 style={{ margin: '0 0 6px', fontSize: 18, fontWeight: 800 }}>Scanning Active Targets...</h3>
-                <p style={{ margin: '0 0 24px', fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>
+                <h3 style={{ margin: '0 0 6px', fontSize: 17, fontWeight: 800, color: '#0A0B0D' }}>Scanning Active Targets...</h3>
+                <p style={{ margin: '0 0 24px', fontSize: 12, color: '#717886' }}>
                   Looking for active vaults containing 300+ HP on Base...
                 </p>
                 
                 {/* Visual slot-drum effect */}
                 <div style={{
-                  background: 'rgba(0,0,0,0.3)',
-                  border: '1px solid rgba(255,255,255,0.1)',
+                  background: '#F1F5F9',
+                  border: '1px solid #DEE1E7',
                   borderRadius: 16,
                   padding: '16px 24px',
-                  width: 280,
-                  height: 60,
+                  width: 260,
+                  height: 56,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -536,8 +536,8 @@ export function HeistMode({ address }) {
                   position: 'relative'
                 }}>
                   <div style={{
-                    fontSize: 16,
-                    fontWeight: 700,
+                    fontSize: 15,
+                    fontWeight: 800,
                     color: '#FF9900',
                     transition: 'transform 0.1s ease'
                   }}>
@@ -550,47 +550,47 @@ export function HeistMode({ address }) {
             {/* STAGE 3: CARD SELECTION */}
             {gameState === 'choose_card' && (
               <div>
-                <h3 style={{ margin: '0 0 6px', fontSize: 20, fontWeight: 900 }}>Target Vault Located!</h3>
-                <p style={{ margin: '0 0 20px', fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>
-                  Locked vault belongs to: <strong style={{ color: '#FF9900' }}>{finalVictim?.basename || short(finalVictim?.address)}</strong>
+                <h3 style={{ margin: '0 0 6px', fontSize: 18, fontWeight: 900, color: '#0A0B0D' }}>Target Vault Located!</h3>
+                <p style={{ margin: '0 0 16px', fontSize: 13, color: '#717886' }}>
+                  Locked vault belongs to: <strong style={{ color: '#0052FF' }}>{finalVictim?.basename || short(finalVictim?.address)}</strong>
                 </p>
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#00C6FB', marginBottom: 16 }}>
+                <div style={{ fontSize: 12, fontWeight: 800, color: '#FF9900', marginBottom: 16 }}>
                   Choose one of the cards to break the lock! (50/50 Chance)
                 </div>
 
-                <div style={{ display: 'flex', gap: 20, justifyContent: 'center', marginTop: 10 }}>
+                <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginTop: 10 }}>
                   {[0, 1].map(idx => (
                     <button
                       key={idx}
                       onClick={() => handleCardSelection(idx)}
                       style={{
-                        width: 110,
-                        height: 150,
-                        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%)',
-                        border: '2px solid rgba(0, 198, 251, 0.3)',
+                        width: 104,
+                        height: 140,
+                        background: '#ffffff',
+                        border: '2px solid #DEE1E7',
                         borderRadius: 16,
                         cursor: 'pointer',
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        gap: 12,
+                        gap: 10,
                         transition: 'all 0.2s',
-                        boxShadow: '0 4px 15px rgba(0, 198, 251, 0.1)'
+                        boxShadow: '0 4px 12px rgba(10,11,13,0.03)'
                       }}
                       onMouseEnter={e => {
                         e.currentTarget.style.transform = 'translateY(-4px)'
-                        e.currentTarget.style.borderColor = '#00C6FB'
-                        e.currentTarget.style.boxShadow = '0 8px 25px rgba(0, 198, 251, 0.3)'
+                        e.currentTarget.style.borderColor = '#0052FF'
+                        e.currentTarget.style.boxShadow = '0 6px 16px rgba(0, 82, 255, 0.15)'
                       }}
                       onMouseLeave={e => {
                         e.currentTarget.style.transform = 'translateY(0)'
-                        e.currentTarget.style.borderColor = 'rgba(0, 198, 251, 0.3)'
-                        e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 198, 251, 0.1)'
+                        e.currentTarget.style.borderColor = '#DEE1E7'
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(10,11,13,0.03)'
                       }}
                     >
-                      <div style={{ fontSize: 32 }}>❓</div>
-                      <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.7)' }}>Card {idx === 0 ? 'A' : 'B'}</div>
+                      <div style={{ fontSize: 28 }}>❓</div>
+                      <div style={{ fontSize: 11, fontWeight: 800, color: '#717886' }}>Card {idx === 0 ? 'A' : 'B'}</div>
                     </button>
                   ))}
                 </div>
@@ -601,20 +601,20 @@ export function HeistMode({ address }) {
             {gameState === 'flipping' && (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <div style={{
-                  width: 110,
-                  height: 150,
+                  width: 104,
+                  height: 140,
                   borderRadius: 16,
                   border: '2px solid #FF9900',
-                  background: 'rgba(255, 255, 255, 0.05)',
+                  background: '#ffffff',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: 44,
+                  fontSize: 36,
                   animation: 'flip 1.2s ease-in-out infinite'
                 }}>
                   🃏
                 </div>
-                <h3 style={{ marginTop: 24, fontSize: 16, fontWeight: 700 }}>Flipping Card...</h3>
+                <h3 style={{ marginTop: 20, fontSize: 15, fontWeight: 800, color: '#0A0B0D' }}>Flipping Card...</h3>
               </div>
             )}
 
@@ -624,26 +624,26 @@ export function HeistMode({ address }) {
                 {gameOutcome.success ? (
                   <div>
                     <div style={{ fontSize: 60, marginBottom: 12 }}>🎉🏆</div>
-                    <h2 style={{ margin: '0 0 8px', fontSize: 24, fontWeight: 900, color: '#00FF66' }}>
+                    <h2 style={{ margin: '0 0 8px', fontSize: 22, fontWeight: 900, color: '#00C853' }}>
                       Successful Heist!
                     </h2>
-                    <p style={{ margin: '0 0 16px', fontSize: 14, color: 'rgba(255,255,255,0.8)' }}>
+                    <p style={{ margin: '0 0 16px', fontSize: 13, color: '#717886' }}>
                       You successfully broke the vault lock and stole points!
                     </p>
 
                     <div style={{
-                      background: 'rgba(0, 255, 102, 0.08)',
-                      border: '1px solid rgba(0, 255, 102, 0.3)',
+                      background: 'rgba(0, 200, 83, 0.05)',
+                      border: '1px solid rgba(0, 200, 83, 0.2)',
                       borderRadius: 18,
                       padding: '16px 20px',
                       marginBottom: 24
                     }}>
-                      <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>Stolen Points:</div>
-                      <div style={{ fontSize: 32, fontWeight: 900, color: '#00FF66', margin: '4px 0' }}>
+                      <div style={{ fontSize: 11, color: '#717886', fontWeight: 600 }}>Stolen Points:</div>
+                      <div style={{ fontSize: 32, fontWeight: 900, color: '#00C853', margin: '4px 0' }}>
                         +{gameOutcome.stolen_amount} HP
                       </div>
-                      <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>
-                        Victim: <strong style={{ color: '#fff' }}>{gameOutcome.victim_name || short(gameOutcome.victim_address)}</strong>
+                      <div style={{ fontSize: 12, color: '#32353D', fontWeight: 600 }}>
+                        Victim: <strong style={{ color: '#0A0B0D' }}>{gameOutcome.victim_name || short(gameOutcome.victim_address)}</strong>
                         {gameOutcome.percentage && ` (${gameOutcome.percentage}% of their balance)`}
                       </div>
                     </div>
@@ -651,10 +651,10 @@ export function HeistMode({ address }) {
                 ) : (
                   <div>
                     <div style={{ fontSize: 60, marginBottom: 12 }}>💥💀</div>
-                    <h2 style={{ margin: '0 0 8px', fontSize: 24, fontWeight: 900, color: '#FF5E62' }}>
+                    <h2 style={{ margin: '0 0 8px', fontSize: 22, fontWeight: 900, color: '#FF5E62' }}>
                       Vault Lock Jammed!
                     </h2>
-                    <p style={{ margin: '0 0 24px', fontSize: 14, color: 'rgba(255,255,255,0.8)' }}>
+                    <p style={{ margin: '0 0 24px', fontSize: 13, lineHeight: 1.6, color: '#717886' }}>
                       The alarm was triggered and the vault locked down! You missed the prize card, but you gave it a good try. Better luck on the next run!
                     </p>
                   </div>
@@ -663,18 +663,18 @@ export function HeistMode({ address }) {
                 <button
                   onClick={handlePlayAgain}
                   style={{
-                    background: 'rgba(255, 255, 255, 0.08)',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    background: '#F1F5F9',
+                    border: '1px solid #DEE1E7',
                     borderRadius: 12,
                     padding: '12px 28px',
-                    color: '#fff',
-                    fontWeight: 700,
-                    fontSize: 14,
+                    color: '#32353D',
+                    fontWeight: 800,
+                    fontSize: 13,
                     cursor: 'pointer',
                     transition: 'all 0.2s'
                   }}
-                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'}
-                  onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'}
+                  onMouseEnter={e => e.currentTarget.style.background = '#EEF2F6'}
+                  onMouseLeave={e => e.currentTarget.style.background = '#F1F5F9'}
                 >
                   Play Again
                 </button>
@@ -684,25 +684,25 @@ export function HeistMode({ address }) {
           </div>
         </div>
       ) : (
-        /* RAID HISTORY FEED (Successful Raids Only) */
+        /* RAID HISTORY FEED (Successful Raids Only) - Legible Premium Light Theme */
         <div>
-          <h2 style={{ margin: '0 0 8px', fontSize: 20, fontWeight: 900, letterSpacing: -0.5 }}>
+          <h2 style={{ margin: '0 0 6px', fontSize: 18, fontWeight: 900, color: '#0A0B0D', letterSpacing: -0.5 }}>
             Successful Raids
           </h2>
-          <p style={{ margin: '0 0 20px', fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>
+          <p style={{ margin: '0 0 16px', fontSize: 12, color: '#717886' }}>
             Real-time feed of the most daring successful bank-raids on Base!
           </p>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {history.length === 0 ? (
               <div style={{
-                background: 'rgba(255,255,255,0.02)',
-                border: '1px solid rgba(255,255,255,0.06)',
+                background: '#ffffff',
+                border: '1px solid #DEE1E7',
                 borderRadius: 16,
                 padding: '24px 16px',
                 textAlign: 'center',
-                color: 'rgba(255,255,255,0.4)',
-                fontSize: 13
+                color: '#717886',
+                fontSize: 12
               }}>
                 No successful raids logged yet. Be the first one to pull off a heist!
               </div>
@@ -716,28 +716,29 @@ export function HeistMode({ address }) {
                   <div
                     key={item.id}
                     style={{
-                      background: 'rgba(255,255,255,0.03)',
-                      border: '1px solid rgba(255,255,255,0.06)',
+                      background: '#ffffff',
+                      border: '1px solid #DEE1E7',
                       borderRadius: 16,
                       padding: '12px 16px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      gap: 12
+                      gap: 12,
+                      boxShadow: '0 2px 6px rgba(10,11,13,0.01)'
                     }}
                   >
                     <div>
-                      <div style={{ fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6, color: '#0A0B0D' }}>
                         <span style={{ color: '#FF9900' }}>🕵️‍♂️ {thiefName}</span>
-                        <span style={{ color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>raided</span>
-                        <span style={{ color: '#00C6FB' }}>🛡️ {victimName}</span>
+                        <span style={{ color: '#717886', fontWeight: 500 }}>raided</span>
+                        <span style={{ color: '#0052FF' }}>🛡️ {victimName}</span>
                       </div>
-                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginTop: 4 }}>
+                      <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 4 }}>
                         Time: {timeStr} | tx: <a 
                           href={`https://basescan.org/tx/${item.tx_hash}`} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          style={{ color: '#0052FF', textDecoration: 'none' }}
+                          style={{ color: '#0052FF', textDecoration: 'none', fontWeight: 600 }}
                         >
                           {item.tx_hash.slice(0, 10)}...
                         </a>
@@ -745,18 +746,19 @@ export function HeistMode({ address }) {
                     </div>
 
                     <div style={{
-                      background: 'rgba(0, 255, 102, 0.08)',
-                      border: '1px solid rgba(0, 255, 102, 0.2)',
+                      background: 'rgba(0, 200, 83, 0.06)',
+                      border: '1px solid rgba(0, 200, 83, 0.2)',
                       borderRadius: 10,
                       padding: '6px 12px',
-                      fontSize: 13,
+                      fontSize: 12,
                       fontWeight: 800,
-                      color: '#00FF66',
-                      textAlign: 'right'
+                      color: '#00C853',
+                      textAlign: 'right',
+                      flexShrink: 0
                     }}>
                       +{item.stolen_amount} HP
                       {item.percentage && (
-                        <div style={{ fontSize: 8, fontWeight: 500, color: 'rgba(0, 255, 102, 0.7)' }}>
+                        <div style={{ fontSize: 8, fontWeight: 600, color: 'rgba(0, 200, 83, 0.7)' }}>
                           ({item.percentage}% stolen)
                         </div>
                       )}
@@ -792,11 +794,6 @@ export function HeistMode({ address }) {
 
       {/* Global CSS animation injections */}
       <style>{`
-        @keyframes pulse {
-          0% { box-shadow: 0 0 0 0 rgba(0, 82, 255, 0.4); }
-          70% { box-shadow: 0 0 0 10px rgba(0, 82, 255, 0); }
-          100% { box-shadow: 0 0 0 0 rgba(0, 82, 255, 0); }
-        }
         @keyframes float {
           0% { transform: translateY(0px); }
           50% { transform: translateY(-8px); }
