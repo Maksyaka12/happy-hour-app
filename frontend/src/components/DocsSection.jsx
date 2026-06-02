@@ -9,7 +9,7 @@ const ARTICLES = [
     subtitle: 'Learn the core loop of Happy Hour on Base',
     content: (
       <div>
-        <p>Welcome to <strong>Happy Hour</strong>, the ultimate on-chain social gaming hub built on the <strong>Base</strong> network. Happy Hour blends daily check-ins, puzzle boxes, high-stakes Player-vs-Player (PvP) raids, and weekly raffles into an immersive ecosystem where your activity translates directly into real rewards.</p>
+        <p>Welcome to <strong>Happy Hour</strong>, the ultimate on-chain social gaming hub built on the <strong>Base</strong> network. Happy Hour blends daily check-ins, chest openings, high-stakes Player-vs-Player (PvP) raids, and weekly raffles into an immersive ecosystem where your activity translates directly into real rewards.</p>
 
         <div className="docs-alert docs-alert-info">
           <strong>ℹ️ Network Information</strong>
@@ -19,8 +19,8 @@ const ARTICLES = [
         <h3>The Core Gameplay Cycle</h3>
         <p>To maximize your rewards and climb to the top of the leaderboards, follow the daily gameplay loop:</p>
         <ol>
-          <li><strong>Check-in Daily:</strong> Perform your check-in to claim free Keys and start your activity streak.</li>
-          <li><strong>Unlock Happy Boxes:</strong> Spend your keys to open mystery boxes and win randomly distributed rewards: Health Points (HP), USDC, or Raffle Tickets.</li>
+          <li><strong>Check-in Daily:</strong> Complete your daily check-in to claim your key and start your activity streak.</li>
+          <li><strong>Unlock Happy Boxes:</strong> Open chests on your grid board to win randomly distributed HP. You can buy individual box openings for 0.30 USDC or bundle-open all 6 chests for 1.50 USDC.</li>
           <li><strong>PvP Raiding:</strong> Raid other players with 300+ HP to steal up to 5% of their HP balance.</li>
           <li><strong>Defend Your Stash:</strong> Buy a 24h Raid Shield to absolute-protect your HP from other players' raids.</li>
           <li><strong>Climb the Leaderboards:</strong> Climb the Seasonal USDC Leaderboard (based on activity points) and the Daily HP Leaderboard to earn direct USDC rewards.</li>
@@ -28,7 +28,7 @@ const ARTICLES = [
 
         <div className="docs-alert docs-alert-tip">
           <strong>💡 Pro Tip</strong>
-          <p>Your daily activity streak is your most powerful multiplier. Checking in consecutive days significantly increases your activity points and keys received.</p>
+          <p>Your daily activity streak is your most powerful multiplier. Checking in consecutive days significantly increases your activity points and key multiplier.</p>
         </div>
       </div>
     )
@@ -68,56 +68,36 @@ const ARTICLES = [
   {
     id: 'boxes',
     category: 'Core Gameplay',
-    title: 'Happy Boxes & Keys',
-    subtitle: 'Daily check-ins, key rarities, and box rewards',
+    title: 'Happy Boxes & Openings',
+    subtitle: 'Chest slot grids, pricing, daily limits, and AP burning',
     content: (
       <div>
-        <p>Happy Boxes represent the primary progression mechanic in Happy Hour. Inside each box lies a variety of randomized prizes that can boost your standings or pay out cash.</p>
+        <p>Happy Boxes are the primary progression mechanic in Happy Hour. Opening chests on your grid board grants you Health Points (HP) which help you climb the daily rewards leaderboard.</p>
 
-        <h3>Obtaining Keys</h3>
-        <p>Keys are the currency required to open Happy Boxes. You can obtain keys through:</p>
+        <h3>Opening Options & Pricing</h3>
+        <p>Your boxes screen features a 6-chest grid. You can choose how to unlock slots:</p>
         <ul>
-          <li><strong>Daily Check-in:</strong> Claiming your check-in rewards you with keys.</li>
-          <li><strong>Streaks:</strong> Multi-day streaks reward you with additional and rarer keys.</li>
-          <li><strong>Tasks:</strong> Special quests on the Tasks tab reward keys upon verification.</li>
+          <li><strong>Single Box Opening:</strong> Pay <strong>0.30 USDC</strong> to activate and choose a single chest to reveal.</li>
+          <li><strong>Bundle Opening (Open All):</strong> Pay <strong>1.50 USDC</strong> to automatically unlock and reveal all 6 chests on the board at once. This saves you 0.30 USDC (getting 6 chests for the price of 5).</li>
         </ul>
 
-        <h3>Key Rarities & Probabilities</h3>
-        <p>Keys are categorized into three rarity tiers, determining the potential rewards of the box opened:</p>
-        <table className="docs-table">
-          <thead>
-            <tr>
-              <th>Key Rarity</th>
-              <th>How to Get</th>
-              <th>Box Rewards Tier</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Common (Gray)</strong></td>
-              <td>Daily Check-in</td>
-              <td>Standard HP and occasional tickets</td>
-            </tr>
-            <tr>
-              <td><strong style={{ color: '#0052FF' }}>Rare (Blue)</strong></td>
-              <td>3+ Day Streak / Hard Tasks</td>
-              <td>Boosted HP, higher USDC odds, and more tickets</td>
-            </tr>
-            <tr>
-              <td><strong style={{ color: '#8B5CF6' }}>Epic (Purple)</strong></td>
-              <td>7+ Day Streak / Special Events</td>
-              <td>Massive HP amounts, guaranteed USDC, or Raid Shields</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <h3>Box Contents</h3>
-        <p>When you spend a key to open a Happy Box, the rewards are instantly drawn from the smart contract:</p>
+        <h3>HP Rewards & Multipliers</h3>
+        <p>When you reveal a chest, it yields a randomized reward amount:</p>
         <ul>
-          <li><strong>Health Points (HP):</strong> Standard drops (typically 10 to 150 HP).</li>
-          <li><strong>USDC Rewards:</strong> Cash amounts sent straight to your wallet balance.</li>
-          <li><strong>Raffle Tickets:</strong> Automatic ticket entries into the active Weekly Raffle drawing.</li>
-          <li><strong>Raid Shields:</strong> Instantly activates a 24-hour shield protection.</li>
+          <li><strong>Base Prize:</strong> Each chest contains between <strong>2 to 15 HP</strong>.</li>
+          <li><strong>Streak Boost Multiplier:</strong> Your active streak multiplier (e.g. <code>1.0x</code>, <code>1.2x</code>, <code>1.5x</code>, or <code>2.0x</code>) is automatically applied to the HP reward, magnifying your score.</li>
+        </ul>
+
+        <div className="docs-alert docs-alert-info">
+          <strong>ℹ️ Auto-Reset Board</strong>
+          <p>Once you successfully reveal all 6 chest slots on your board, the grid will automatically reset to a fresh locked state after a brief delay, allowing you to start opening boxes again.</p>
+        </div>
+
+        <h3>Daily Limits & AP Burning</h3>
+        <p>To keep the economy balanced, there are daily rules on chest openings:</p>
+        <ul>
+          <li><strong>Daily Openings Limit:</strong> By default, each player can open up to <strong>12 boxes per day</strong>.</li>
+          <li><strong>Burn Activity Points for Extras:</strong> If you reach your daily limit but want to keep playing, you can <strong>burn 100 Activity Points to activate +6 extra box openings</strong> for that day. This allows highly active players to continue climbing the ranks.</li>
         </ul>
       </div>
     )
@@ -165,17 +145,17 @@ const ARTICLES = [
         <p>The Happy Raffle is a periodic drawing where ticket holders compete for substantial cash prizes. The more tickets you hold, the higher your odds of winning.</p>
 
         <h3>Getting Raffle Tickets</h3>
-        <p>Raffle tickets can be obtained in two ways:</p>
-        <ol>
-          <li><strong>Happy Boxes:</strong> Opening boxes has a high chance of dropping 1 to 5 raffle tickets.</li>
-          <li><strong>Direct Purchase:</strong> You can buy tickets using USDC.</li>
-        </ol>
+        <p>Raffle tickets can be purchased directly in the Raffle tab:</p>
+        <ul>
+          <li><strong>Pricing:</strong> Tickets are purchased using USDC (options like 0.50, 1.00, 2.00 USDC, etc., where 1 USDC = 1 Ticket).</li>
+          <li><strong>AP Rewards:</strong> Every bet you place awards you Activity Points to boost your Seasonal Leaderboard rank.</li>
+        </ul>
 
         <h3>Draw Process & Prizes</h3>
         <ul>
-          <li><strong>Automated Drawings:</strong> Draws occur at the end of each raffle cycle.</li>
-          <li><strong>Winner Selection:</strong> The smart contract randomly selects winning ticket numbers.</li>
-          <li><strong>Prizes:</strong> Direct USDC transfers to the winners' wallets.</li>
+          <li><strong>Automated Drawings:</strong> Each round runs for exactly 60 minutes. Deposits close 3 minutes before the draw.</li>
+          <li><strong>Winner Payouts:</strong> The winner takes **85% of the total round pot** (15% goes to the foundation for future rewards). Winnings are paid out instantly to the winner's wallet.</li>
+          <li><strong>HP Prize:</strong> In addition to the USDC pot, the winner of the round receives **1 HP** (or if you are the only player in a round, you get a 100% refund and 1 HP).</li>
         </ul>
 
         <div className="docs-alert docs-alert-info">
