@@ -14,6 +14,7 @@ import { DailyRewardsSection } from './components/DailyRewardsSection'
 import { ProfileSection } from './components/ProfileSection'
 import { BottomNav } from './components/BottomNav'
 import { HappyHourLogo } from './components/HappyHourLogo'
+import { DocsSection } from './components/DocsSection'
 import { EventBanner } from './components/EventBanner'
 import { CSS } from './styles'
 import { HAS_SUPABASE_CONFIG, USDC_ADDRESS, USDC_ABI } from './config/constants'
@@ -68,6 +69,7 @@ export default function App() {
     tasks: 'Tasks',
     leaderboard: 'Leaderboard',
     profile: 'Profile',
+    docs: 'Documentation',
   }
 
   useEffect(() => {
@@ -288,6 +290,35 @@ export default function App() {
               </svg>
             </a>
 
+            {/* Docs Button */}
+            <button 
+              onClick={() => setTab('docs')}
+              title="Documentation"
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: '50%',
+                background: tab === 'docs' ? 'rgba(0, 82, 255, 0.15)' : 'rgba(0, 82, 255, 0.06)',
+                border: tab === 'docs' ? '1px solid rgba(0, 82, 255, 0.4)' : '1px solid rgba(0, 82, 255, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                outline: 'none'
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(0, 82, 255, 0.12)'}
+              onMouseLeave={e => e.currentTarget.style.background = tab === 'docs' ? 'rgba(0, 82, 255, 0.15)' : 'rgba(0, 82, 255, 0.06)'}
+            >
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#0052FF' }}>
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+                <polyline points="10 9 9 9 8 9" />
+              </svg>
+            </button>
+
             <div style={{
               background: 'var(--blue-bg)',
               border: '1px solid rgba(0,0,255,0.15)',
@@ -383,6 +414,7 @@ export default function App() {
               )}
             </>
           )}
+          {tab === 'docs' && <DocsSection />}
           {tab === 'profile' && <ProfileSection address={address} basename={basename} totalUsers={totalUsers} />}
         </div>
 
