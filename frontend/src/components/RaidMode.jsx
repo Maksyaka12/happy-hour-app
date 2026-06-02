@@ -467,7 +467,7 @@ export function RaidMode({ address }) {
           <div>
             <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>🛡️ Raid Shield Status</div>
             <div style={{ fontSize: 9.5, color: '#717886', marginTop: 1, fontWeight: 500 }}>
-              Protects your HP from being stolen by other players
+              Protects your <span style={{ color: '#0052FF', fontWeight: 600 }}>HP</span> from raids for 24h
             </div>
           </div>
           <div style={{ 
@@ -508,8 +508,16 @@ export function RaidMode({ address }) {
             <span style={{ fontSize: 9, color: '#717886', fontWeight: 600 }}>
               {isShieldActive ? 'Remaining Protection' : 'Protection Cost'}
             </span>
-            <span style={{ fontSize: 13, fontWeight: 900, color: '#0A0B0D' }}>
-              {isShieldActive ? shieldTimeLeft : '0.15 USDC / 24 hours'}
+            <span style={{ fontSize: 13, fontWeight: 900, color: '#0A0B0D', display: 'flex', alignItems: 'center', gap: 4 }}>
+              {isShieldActive ? (
+                shieldTimeLeft
+              ) : (
+                <>
+                  <span>0.15</span>
+                  <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, display: 'inline-block', verticalAlign: 'middle' }} />
+                  <span style={{ color: '#717886', fontWeight: 600, fontSize: 11 }}>/ 24h</span>
+                </>
+              )}
             </span>
           </div>
 
@@ -520,7 +528,7 @@ export function RaidMode({ address }) {
             style={{
               background: isShieldActive 
                 ? '#EEF0F3' 
-                : 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)',
+                : '#0000FF',
               color: isShieldActive ? '#94A3B8' : '#fff',
               border: isShieldActive ? '1px solid #DEE1E7' : 'none',
               borderRadius: 12,
@@ -531,11 +539,19 @@ export function RaidMode({ address }) {
               display: 'flex',
               alignItems: 'center',
               gap: 4,
-              boxShadow: (isPending || isShieldActive) ? 'none' : '0 4px 12px rgba(0,82,255,0.15)',
+              boxShadow: (isPending || isShieldActive) ? 'none' : '0 4px 12px rgba(0,0,255,0.15)',
               opacity: isPending ? 0.6 : 1,
             }}
           >
-            <span>{isShieldActive ? '🛡️ Shield Active' : '🛡️ Buy Raid Shield'}</span>
+            {isShieldActive ? (
+              <span>🛡️ Shield Active</span>
+            ) : (
+              <>
+                <span>Buy</span>
+                <span style={{ color: '#A5B4FC', fontWeight: 900, marginLeft: 2 }}>0.15</span>
+                <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, flexShrink: 0 }} />
+              </>
+            )}
           </button>
         </div>
       </div>
@@ -835,7 +851,7 @@ export function RaidMode({ address }) {
 
       {/* ═══ RAID HISTORY (Displayed directly below interactive board) ═══ */}
       <div style={{ marginTop: 24 }}>
-        <div style={{ fontSize: 9, color: '#717886', fontWeight: 800, letterSpacing: 0.5, marginBottom: 10, textTransform: 'uppercase' }}>
+        <div style={{ fontSize: 14, fontWeight: 700, color: '#0A0B0D', marginBottom: 12 }}>
           Raids History
         </div>
 
