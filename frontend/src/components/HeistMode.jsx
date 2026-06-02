@@ -1,12 +1,13 @@
 // src/components/HeistMode.jsx
 import React, { useState, useEffect, useRef } from 'react'
-import { useSwitchChain } from 'wagmi'
+import { useChainId, useSwitchChain } from 'wagmi'
 import { parseUnits } from 'viem'
 import { base } from 'wagmi/chains'
 import { CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI } from '../config/constants'
 import { db } from '../config/supabase'
 import { useBuilderWrite } from '../hooks/useBuilderWrite'
 import { TxModal } from './TxModal'
+import { UserAvatar } from './UserAvatar'
 
 const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
 
@@ -23,8 +24,10 @@ export function HeistMode({ address }) {
   const [finalVictim, setFinalVictim] = useState(null)
   const [gameOutcome, setGameOutcome] = useState(null)
   const [selectedCardIdx, setSelectedCardIdx] = useState(null)
-  const [wrongChain, setWrongChain] = useState(false)
-  const { switchChain } = useSwitchChain()
+  
+  const chainId = useChainId()
+  const { switchChain, isPending: isSwitching } = useSwitchChain()
+  const wrongChain = chainId !== base.id
 
   const [errorMessage, setErrorMessage] = useState('')
   const [showTxModal, setShowTxModal] = useState(false)
@@ -174,6 +177,17 @@ export function HeistMode({ address }) {
     setErrorMessage('')
     setTxType('shield')
     setShowTxModal(true)
+  }
+
+  const handleInitiateHeistClick = () => {
+    setErrorMessage('')
+    setTxType('heist')
+    setShowTxModal(true)
+  }
+
+  const handlePurchaseShieldPayment = () => {
+    if (wrongChain) { switchChain({ chainId: base.id }); return }
+    setErrorMessage('')
     writeContract({
       address: USDC_ADDRESS,
       abi: USDC_ABI,
@@ -183,10 +197,9 @@ export function HeistMode({ address }) {
     })
   }
 
-  const handleInitiateHeistClick = () => {
+  const handleInitiateHeistPayment = () => {
+    if (wrongChain) { switchChain({ chainId: base.id }); return }
     setErrorMessage('')
-    setTxType('heist')
-    setShowTxModal(true)
     writeContract({
       address: USDC_ADDRESS,
       abi: USDC_ABI,
@@ -287,8 +300,21 @@ export function HeistMode({ address }) {
   }
 
   return (
-    <div style={{ padding: '0 8px 120px', color: '#0A0B0D', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-      
+    <div style={{ padding: '0 16px 120px', color: '#0A0B0D', fontFamily: "'Outfit', 'Inter', sans-serif", animation: 'heistFadeIn 0.4s ease' }}>
+      <style>{`
+        @keyframes heistFadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+      `}</style>
+
+      {/* Wrong Chain Banner */}
+      {wrongChain && (
+        <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 14, padding: '10px 16px', marginBottom: 14, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 12, color: '#D97706', fontWeight: 700 }}>⚠ Switch to Base Mainnet</span>
+          <button onClick={() => switchChain({ chainId: base.id })} style={{ background: '#D97706', color: '#fff', borderRadius: 50, padding: '5px 14px', fontSize: 11, fontWeight: 800, border: 'none', cursor: 'pointer' }}>
+            {isSwitching ? 'Switching…' : 'Switch'}
+          </button>
+        </div>
+      )}
+
       {/* ═══ HERO BANNER (Matches Boxes Layout but themed in Dark Red/Orange Heist tones) ═══ */}
       <div style={{
         background: '#140505',
@@ -479,19 +505,20 @@ export function HeistMode({ address }) {
           <button
             onClick={handlePurchaseShieldClick}
             disabled={isPending}
+            className="heist-btn"
             style={{
-              background: 'linear-gradient(135deg, #0052FF 0%, #00C6FB 100%)',
+              background: 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)',
               color: '#fff',
               border: 'none',
               borderRadius: 12,
-              padding: '7px 14px',
+              padding: '7px 12px',
               fontSize: 9.5,
               fontWeight: 800,
               cursor: isPending ? 'not-allowed' : 'pointer',
               display: 'flex',
               alignItems: 'center',
               gap: 4,
-              boxShadow: '0 4px 12px rgba(0,82,255,0.2)',
+              boxShadow: isPending ? 'none' : '0 4px 12px rgba(0,82,255,0.15)',
               opacity: isPending ? 0.6 : 1,
             }}
           >
@@ -535,16 +562,8 @@ export function HeistMode({ address }) {
 
         {/* GAMESTATE: IDLE */}
         {gameState === 'idle' && (
-          <div style={{ maxWidth: 420 }}>
-            <div style={{ fontSize: 50, marginBottom: 12, animation: 'boardFloat 3s ease-in-out infinite' }}>🕵️‍♂️</div>
-            
-            <style dangerouslySetInnerHTML={{ __html: `
-              @keyframes boardFloat {
-                0% { transform: translateY(0px); }
-                50% { transform: translateY(-6px); }
-                100% { transform: translateY(0px); }
-              }
-            ` }} />
+          <div style={{ maxWidth: 420, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ fontSize: 50, marginBottom: 12, animation: 'heistBoardFloat 3s ease-in-out infinite' }}>🕵️‍♂️</div>
 
             <h2 style={{ margin: '0 0 8px', fontSize: 18, fontWeight: 900, color: '#0A0B0D', letterSpacing: -0.5 }}>
               Target Vault System
@@ -553,23 +572,31 @@ export function HeistMode({ address }) {
               Ready to initiate a raid. Launching will find a random player with 300+ HP and prompt you to pick a combination card.
             </p>
             <button
+              className="heist-btn"
               onClick={handleInitiateHeistClick}
               disabled={isPending}
               style={{
-                background: 'linear-gradient(135deg, #FF9900 0%, #FF5E62 100%)',
-                boxShadow: '0 4px 14px rgba(255, 94, 98, 0.25)',
-                border: 'none',
-                borderRadius: 12,
-                padding: '12px 24px',
+                width: '100%',
+                background: '#0000FF',
                 color: '#fff',
-                fontWeight: 800,
+                border: 'none',
+                borderRadius: 20,
+                padding: '12px 18px',
                 fontSize: 13,
+                fontWeight: 800,
                 cursor: isPending ? 'not-allowed' : 'pointer',
-                transition: 'all 0.2s',
-                opacity: isPending ? 0.6 : 1
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 4,
+                boxShadow: '0 8px 24px rgba(0,0,255,0.2)',
+                opacity: isPending ? 0.5 : 1,
+                transition: 'transform 0.2s, box-shadow 0.2s'
               }}
             >
-              Initiate Heist ($0.25 USDC)
+              <span>Initiate Heist</span>
+              <span style={{ color: '#A5B4FC', fontWeight: 900, marginLeft: 4 }}>0.25</span>
+              <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14, flexShrink: 0 }} />
             </button>
           </div>
         )}
@@ -618,6 +645,7 @@ export function HeistMode({ address }) {
                 <button
                   key={idx}
                   onClick={() => handleCardSelection(idx)}
+                  className="heist-btn"
                   style={{
                     width: 90,
                     height: 120,
@@ -632,16 +660,6 @@ export function HeistMode({ address }) {
                     gap: 8,
                     transition: 'all 0.2s',
                     boxShadow: '0 4px 10px rgba(10,11,13,0.02)'
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.transform = 'translateY(-3px)'
-                    e.currentTarget.style.borderColor = '#FF9900'
-                    e.currentTarget.style.boxShadow = '0 6px 14px rgba(255, 153, 0, 0.15)'
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.transform = 'translateY(0)'
-                    e.currentTarget.style.borderColor = '#DEE1E7'
-                    e.currentTarget.style.boxShadow = '0 4px 10px rgba(10,11,13,0.02)'
                   }}
                 >
                   <div style={{ fontSize: 24 }}>❓</div>
@@ -675,9 +693,9 @@ export function HeistMode({ address }) {
 
         {/* GAMESTATE: RESULT */}
         {gameState === 'result' && gameOutcome && (
-          <div style={{ maxWidth: 440 }}>
+          <div style={{ maxWidth: 440, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             {gameOutcome.success ? (
-              <div>
+              <div style={{ width: '100%' }}>
                 <div style={{ fontSize: 50, marginBottom: 8 }}>🎉💰</div>
                 <h2 style={{ margin: '0 0 4px', fontSize: 18, fontWeight: 900, color: '#059669' }}>
                   Successful Heist!
@@ -704,7 +722,7 @@ export function HeistMode({ address }) {
                 </div>
               </div>
             ) : (
-              <div>
+              <div style={{ width: '100%' }}>
                 <div style={{ fontSize: 50, marginBottom: 8 }}>💥🔒</div>
                 <h2 style={{ margin: '0 0 4px', fontSize: 18, fontWeight: 900, color: '#E11D48' }}>
                   Heist Failed
@@ -717,16 +735,18 @@ export function HeistMode({ address }) {
 
             <button
               onClick={handlePlayAgain}
+              className="heist-btn"
               style={{
-                background: '#F1F5F9',
+                background: '#EEF0F3',
                 border: '1px solid #DEE1E7',
-                borderRadius: 10,
+                borderRadius: 20,
                 padding: '10px 24px',
                 color: '#32353D',
                 fontWeight: 800,
                 fontSize: 12,
                 cursor: 'pointer',
-                transition: 'all 0.2s'
+                transition: 'all 0.2s',
+                boxShadow: '0 2px 6px rgba(10,11,13,0.02)'
               }}
             >
               Close Result
@@ -736,7 +756,7 @@ export function HeistMode({ address }) {
       </div>
 
       {/* ═══ RAID HISTORY (Displayed directly below interactive board) ═══ */}
-      <div>
+      <div style={{ marginTop: 24 }}>
         <h2 style={{ margin: '0 0 4px', fontSize: 15, fontWeight: 900, color: '#0A0B0D', letterSpacing: -0.3 }}>
           Successful Raid History
         </h2>
@@ -770,28 +790,54 @@ export function HeistMode({ address }) {
                     background: '#ffffff',
                     border: '1px solid #DEE1E7',
                     borderRadius: 14,
-                    padding: '10px 14px',
+                    padding: '8px 12px',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'space-between',
                     gap: 12,
-                    boxShadow: '0 2px 6px rgba(10,11,13,0.01)'
+                    boxShadow: '0 2px 6px rgba(10,11,13,0.02)'
                   }}
                 >
-                  <div style={{ minWidth: 0, flex: 1 }}>
-                    <div style={{ fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '4px', color: '#0A0B0D' }}>
-                      <span style={{ color: '#FF9900' }}>🕵️‍♂️ {thiefName}</span>
-                      <span style={{ color: '#717886', fontWeight: 500 }}>stole from</span>
-                      <span style={{ color: '#0052FF' }}>🛡️ {victimName}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: -10, flexShrink: 0, position: 'relative' }}>
+                    <UserAvatar address={item.thief_address} size={28} />
+                    <div style={{ 
+                      marginLeft: -10, 
+                      border: '2px solid #fff', 
+                      borderRadius: '50%', 
+                      zIndex: 2, 
+                      background: '#fff',
+                      display: 'flex' 
+                    }}>
+                      <UserAvatar address={item.victim_address} size={20} />
                     </div>
-                    <div style={{ fontSize: 10, color: '#94A3B8', marginTop: 3 }}>
-                      Time: {timeStr} | tx: <a 
+                  </div>
+
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: '#0A0B0D',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      display: 'flex',
+                      alignItems: 'center',
+                      flexWrap: 'wrap',
+                      gap: '4px'
+                    }}>
+                      <span style={{ color: '#0A0B0D', fontWeight: 700 }}>{thiefName}</span>
+                      <span style={{ color: '#717886', fontWeight: 500, fontSize: 11 }}>stole from</span>
+                      <span style={{ color: '#0052FF', fontWeight: 700 }}>{victimName}</span>
+                    </div>
+                    <div style={{ fontSize: 10, color: '#94A3B8', marginTop: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span>{timeStr}</span>
+                      <span style={{ color: '#E2E8F0' }}>•</span>
+                      <a 
                         href={`https://basescan.org/tx/${item.tx_hash}`} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        style={{ color: '#0052FF', textDecoration: 'none', fontWeight: 600 }}
+                        style={{ color: '#0052FF', textDecoration: 'none', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 2 }}
                       >
-                        {item.tx_hash.slice(0, 8)}...
+                        Basescan ↗
                       </a>
                     </div>
                   </div>
@@ -799,19 +845,24 @@ export function HeistMode({ address }) {
                   <div style={{
                     background: '#ECFDF5',
                     border: '1px solid #A7F3D0',
-                    borderRadius: 8,
-                    padding: '4px 8px',
-                    fontSize: 11,
-                    fontWeight: 800,
+                    borderRadius: 12,
+                    padding: '6px 12px',
+                    fontSize: 12,
+                    fontWeight: 900,
                     color: '#059669',
                     textAlign: 'right',
-                    flexShrink: 0
+                    flexShrink: 0,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'flex-end',
+                    minWidth: 70
                   }}>
-                    +{item.stolen_amount} HP
+                    <span>+{item.stolen_amount} HP</span>
                     {item.percentage && (
-                      <div style={{ fontSize: 8, fontWeight: 600, color: 'rgba(5, 150, 105, 0.7)' }}>
-                        ({item.percentage}% stolen)
-                      </div>
+                      <span style={{ fontSize: 8, fontWeight: 700, opacity: 0.8, marginTop: 1 }}>
+                        {item.percentage}%
+                      </span>
                     )}
                   </div>
                 </div>
@@ -824,21 +875,17 @@ export function HeistMode({ address }) {
       {/* USDC Transaction modal */}
       {showTxModal && (
         <TxModal
-          isOpen={showTxModal}
-          onClose={() => {
-            setShowTxModal(false)
-            reset()
-          }}
+          title={txType === 'shield' ? 'Purchase Heist Shield' : 'Initiate Happy Heist'}
+          subtitle={txType === 'shield' 
+            ? 'Get 24h of absolute protection from HP raids' 
+            : 'Crack the vault lock of an active user and steal their HP!'}
+          amount={txType === 'shield' ? '0.15' : '0.25'}
           isPending={isPending}
           isConfirming={isConfirming}
           isSuccess={isSuccess}
           error={writeError}
-          txHash={txHash}
-          reset={reset}
-          title={txType === 'shield' ? 'Purchase Heist Shield' : 'Initiate Happy Heist'}
-          desc={txType === 'shield' 
-            ? 'Buying 24h shield protection for $0.15 USDC' 
-            : 'Initiating heist attempt for $0.25 USDC'}
+          onConfirm={txType === 'shield' ? handlePurchaseShieldPayment : handleInitiateHeistPayment}
+          onCancel={() => { setShowTxModal(false); reset(); }}
         />
       )}
 
@@ -852,6 +899,14 @@ export function HeistMode({ address }) {
           50% { transform: rotateY(180deg); }
           100% { transform: rotateY(360deg); }
         }
+        @keyframes heistBoardFloat {
+          0% { transform: translateY(0px); }
+          50% { transform: translateY(-6px); }
+          100% { transform: translateY(0px); }
+        }
+        .heist-btn { transition: all 0.2s ease; }
+        .heist-btn:hover { filter: brightness(1.05); transform: scale(1.01); }
+        .heist-btn:active { transform: scale(0.98); }
       `}</style>
     </div>
   )
