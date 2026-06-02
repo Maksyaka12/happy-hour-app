@@ -432,15 +432,15 @@ export function RaidMode({ address }) {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '6px', color: '#EF4444' }}>●</span>
-              <span>Raid an active user with 300+ HP (70% success chance).</span>
+              <span>Raid active users with 300+ HP (70% success).</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '6px', color: '#EF4444' }}>●</span>
-              <span>Minimum HP stolen on a successful raid: 10.00 HP (up to 5.00% of target balance).</span>
+              <span>Steal min 10 HP (up to 5% of target balance).</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '6px', color: '#EF4444' }}>●</span>
-              <span>Raid Shield provides absolute protection for 24 hours (prevents anyone from raiding you).</span>
+              <span>Raid Shield: 24h absolute protection.</span>
             </div>
           </div>
         </div>
