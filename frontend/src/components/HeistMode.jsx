@@ -1,0 +1,816 @@
+// src/components/HeistMode.jsx
+import React, { useState, useEffect, useRef } from 'react'
+import { useSwitchChain } from 'wagmi'
+import { parseUnits } from 'viem'
+import { base } from 'wagmi/chains'
+import { CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI } from '../config/constants'
+import { db } from '../config/supabase'
+import { useBuilderWrite } from '../hooks/useBuilderWrite'
+import { TxModal } from './TxModal'
+
+const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
+
+export function HeistMode({ address }) {
+  const [user, setUser] = useState(null)
+  const [shieldTimeLeft, setShieldTimeLeft] = useState('')
+  const [isShieldActive, setIsShieldActive] = useState(false)
+  const [history, setHistory] = useState([])
+  const [activeTab, setActiveTab] = useState('heist') // heist or history
+
+  // Game UI State
+  // 'idle', 'tx_pending', 'scanning', 'choose_card', 'flipping', 'result'
+  const [gameState, setGameState] = useState('idle')
+  const [scanIndex, setScanIndex] = useState(0)
+  const [potentialVictims, setPotentialVictims] = useState([])
+  const [finalVictim, setFinalVictim] = useState(null)
+  const [gameOutcome, setGameOutcome] = useState(null) // { success, stolen_amount, percentage, victim_address, victim_name }
+  const [selectedCardIdx, setSelectedCardIdx] = useState(null)
+  const [wrongChain, setWrongChain] = useState(false)
+  const { switchChain } = useSwitchChain()
+
+  const [errorMessage, setErrorMessage] = useState('')
+  const [showTxModal, setShowTxModal] = useState(false)
+  const [txType, setTxType] = useState('heist') // heist or shield
+
+  // Web3 write hook
+  const { data: txHash, writeContract, isPending, isConfirming, isSuccess, error: writeError, reset } = useBuilderWrite()
+
+  // Scanning loop ref
+  const scanIntervalRef = useRef(null)
+
+  // Fetch current user and check shield
+  const fetchUserData = async () => {
+    if (!address) return
+    const { data, error } = await db
+      .from('users')
+      .select('points, shield_expires_at')
+      .eq('address', address.toLowerCase())
+      .single()
+
+    if (!error && data) {
+      setUser(data)
+    }
+  }
+
+  // Fetch successful raids
+  const fetchHistory = async () => {
+    try {
+      const { data, error } = await db
+        .from('heist_attempts')
+        .select(`
+          id, thief_address, victim_address, stolen_amount, percentage, created_at, tx_hash, success,
+          thief:users!thief_address(basename),
+          victim:users!victim_address(basename)
+        `)
+        .eq('success', true)
+        .order('created_at', { ascending: false })
+        .limit(20)
+
+      if (!error && data) {
+        setHistory(data)
+      } else if (error) {
+        console.error('Error fetching history:', error)
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  // Fetch some active users for the visual slot-drum scanning effect
+  const fetchScanningPool = async () => {
+    try {
+      const { data } = await db
+        .from('users')
+        .select('address, basename')
+        .gt('points', 300)
+        .neq('address', address.toLowerCase())
+        .limit(15)
+
+      if (data && data.length > 0) {
+        setPotentialVictims(data)
+      } else {
+        // Fallback simulated pool
+        setPotentialVictims([
+          { address: '0x32A...89b1', basename: 'based_chad' },
+          { address: '0x9a8...c102', basename: 'degen_king' },
+          { address: '0xf83...a812', basename: 'vitalik_fan' },
+          { address: '0x1b4...d9e5', basename: 'blue_sky' },
+          { address: '0xcd1...f721', basename: 'smart_builder' }
+        ])
+      }
+    } catch {
+      // Fallback
+    }
+  }
+
+  useEffect(() => {
+    fetchUserData()
+    fetchHistory()
+    fetchScanningPool()
+
+    // Setup history realtime subscription
+    const sub = db
+      .channel('heist-history-realtime')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'heist_attempts' }, () => {
+        fetchHistory()
+      })
+      .subscribe()
+
+    return () => {
+      db.removeChannel(sub)
+    }
+  }, [address])
+
+  // Shield countdown timer
+  useEffect(() => {
+    if (!user?.shield_expires_at) {
+      setIsShieldActive(false)
+      setShieldTimeLeft('')
+      return
+    }
+
+    const updateTimer = () => {
+      const expiry = new Date(user.shield_expires_at).getTime()
+      const now = new Date().getTime()
+      const diff = expiry - now
+
+      if (diff <= 0) {
+        setIsShieldActive(false)
+        setShieldTimeLeft('')
+      } else {
+        setIsShieldActive(true)
+        const hours = Math.floor(diff / (1000 * 60 * 60))
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000)
+
+        const hStr = hours > 0 ? `${hours}h ` : ''
+        const mStr = minutes > 0 || hours > 0 ? `${minutes}m ` : ''
+        setShieldTimeLeft(`${hStr}${mStr}${seconds}s`)
+      }
+    }
+
+    updateTimer()
+    const timer = setInterval(updateTimer, 1000)
+    return () => clearInterval(timer)
+  }, [user?.shield_expires_at])
+
+  // Handle blockchain transaction success
+  useEffect(() => {
+    if (isSuccess && txHash) {
+      if (txType === 'shield') {
+        handleConfirmShieldPurchase(txHash)
+      } else if (txType === 'heist') {
+        handleConfirmHeist(txHash)
+      }
+    }
+  }, [isSuccess, txHash])
+
+  // Initiate USDC payment for shield
+  const handlePurchaseShieldClick = () => {
+    setErrorMessage('')
+    setTxType('shield')
+    setShowTxModal(true)
+    writeContract({
+      address: USDC_ADDRESS,
+      abi: USDC_ABI,
+      functionName: 'transfer',
+      args: [CHECKIN_TARGET, parseUnits('0.15', 6)],
+      chainId: base.id
+    })
+  }
+
+  // Initiate USDC payment for heist
+  const handleInitiateHeistClick = () => {
+    setErrorMessage('')
+    setTxType('heist')
+    setShowTxModal(true)
+    writeContract({
+      address: USDC_ADDRESS,
+      abi: USDC_ABI,
+      functionName: 'transfer',
+      args: [CHECKIN_TARGET, parseUnits('0.25', 6)],
+      chainId: base.id
+    })
+  }
+
+  // Confirm shield purchase in Supabase
+  const handleConfirmShieldPurchase = async (hash) => {
+    try {
+      const { data, error } = await db.rpc('purchase_heist_shield', {
+        p_buyer_address: address.toLowerCase(),
+        p_tx_hash: hash
+      })
+
+      if (error) throw error
+
+      if (data?.ok) {
+        fetchUserData()
+        setShowTxModal(false)
+        reset()
+      } else {
+        setErrorMessage(data?.error || 'Database error processing shield purchase.')
+      }
+    } catch (e) {
+      console.error(e)
+      setErrorMessage(e.message || 'Error processing shield purchase.')
+    }
+  }
+
+  // Confirm heist transaction in Supabase
+  const handleConfirmHeist = async (hash) => {
+    try {
+      setGameState('scanning')
+      setShowTxModal(false)
+
+      const { data, error } = await db.rpc('perform_heist_attempt', {
+        p_thief_address: address.toLowerCase(),
+        p_tx_hash: hash
+      })
+
+      if (error) throw error
+
+      if (data?.ok) {
+        setGameOutcome({
+          success: data.success,
+          stolen_amount: data.stolen_amount,
+          percentage: data.percentage,
+          victim_address: data.victim_address,
+          victim_name: data.victim_name
+        })
+
+        // Spin slot-drum effect for 2.5 seconds
+        let elapsed = 0
+        scanIntervalRef.current = setInterval(() => {
+          setScanIndex(prev => (prev + 1) % potentialVictims.length)
+          elapsed += 100
+          if (elapsed >= 2500) {
+            clearInterval(scanIntervalRef.current)
+            if (data.success && data.victim_address) {
+              setFinalVictim({
+                address: data.victim_address,
+                basename: data.victim_name
+              })
+            } else {
+              // Simulated final slot choice for visual continuity
+              setFinalVictim(potentialVictims[Math.floor(Math.random() * potentialVictims.length)])
+            }
+            setGameState('choose_card')
+            reset()
+          }
+        }, 100)
+
+      } else {
+        setErrorMessage(data?.error || 'Error preparing your heist.')
+        setGameState('idle')
+        reset()
+      }
+    } catch (e) {
+      console.error(e)
+      setErrorMessage(e.message || 'Error processing heist transaction.')
+      setGameState('idle')
+      reset()
+    }
+  }
+
+  const handleCardSelection = (cardIdx) => {
+    setSelectedCardIdx(cardIdx)
+    setGameState('flipping')
+
+    setTimeout(() => {
+      setGameState('result')
+      fetchUserData()
+      fetchHistory()
+    }, 1200)
+  }
+
+  const handlePlayAgain = () => {
+    setGameState('idle')
+    setSelectedCardIdx(null)
+    setFinalVictim(null)
+    setGameOutcome(null)
+    setErrorMessage('')
+    reset()
+  }
+
+  return (
+    <div style={{ padding: '16px 20px', color: '#fff', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+      
+      {/* Top Header Selector: Switch between Boxes and Heist (or group under Boxes & Heists) */}
+      <div style={{
+        display: 'flex',
+        background: 'rgba(0, 0, 0, 0.25)',
+        border: '1px solid rgba(255,255,255,0.08)',
+        borderRadius: 14,
+        padding: 4,
+        marginBottom: 20,
+        maxWidth: 400,
+        margin: '0 auto 20px'
+      }}>
+        <button
+          onClick={() => setActiveTab('heist')}
+          style={{
+            flex: 1,
+            padding: '10px 16px',
+            borderRadius: 10,
+            border: 'none',
+            background: activeTab === 'heist' ? 'rgba(0, 82, 255, 0.85)' : 'transparent',
+            color: '#fff',
+            fontWeight: 700,
+            fontSize: 14,
+            cursor: 'pointer',
+            transition: 'all 0.2s'
+          }}
+        >
+          🕵️ Heist Mode
+        </button>
+        <button
+          onClick={() => setActiveTab('history')}
+          style={{
+            flex: 1,
+            padding: '10px 16px',
+            borderRadius: 10,
+            border: 'none',
+            background: activeTab === 'history' ? 'rgba(0, 82, 255, 0.85)' : 'transparent',
+            color: '#fff',
+            fontWeight: 700,
+            fontSize: 14,
+            cursor: 'pointer',
+            transition: 'all 0.2s'
+          }}
+        >
+          🔥 Raid History
+        </button>
+      </div>
+
+      {activeTab === 'heist' ? (
+        <div>
+          {/* Shield Status Panel */}
+          <div style={{
+            background: isShieldActive 
+              ? 'linear-gradient(135deg, rgba(0, 82, 255, 0.15) 0%, rgba(0, 198, 251, 0.08) 100%)' 
+              : 'rgba(255, 255, 255, 0.03)',
+            border: isShieldActive 
+              ? '1px solid rgba(0, 82, 255, 0.4)' 
+              : '1px solid rgba(255, 255, 255, 0.08)',
+            boxShadow: isShieldActive 
+              ? '0 8px 32px rgba(0, 82, 255, 0.15), inset 0 0 12px rgba(0, 198, 251, 0.05)'
+              : 'none',
+            borderRadius: 20,
+            padding: 20,
+            marginBottom: 20,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 16,
+            backdropFilter: 'blur(10px)',
+            transition: 'all 0.3s ease'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <div style={{
+                width: 48,
+                height: 48,
+                borderRadius: '50%',
+                background: isShieldActive ? 'rgba(0, 82, 255, 0.15)' : 'rgba(255,255,255,0.05)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 24,
+                boxShadow: isShieldActive ? '0 0 12px rgba(0, 82, 255, 0.5)' : 'none',
+                animation: isShieldActive ? 'pulse 2s infinite' : 'none'
+              }}>
+                🛡️
+              </div>
+              <div>
+                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: isShieldActive ? '#00C6FB' : '#fff' }}>
+                  {isShieldActive ? 'Heist Shield Active' : 'Heist Shield Inactive'}
+                </h3>
+                <p style={{ margin: '4px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>
+                  {isShieldActive 
+                    ? 'You are protected! Flying out of potential victim pool.' 
+                    : 'Get 24h protection from all HP stealing raids.'}
+                </p>
+              </div>
+            </div>
+
+            <div>
+              {isShieldActive ? (
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ 
+                    fontFamily: 'monospace', 
+                    fontSize: 18, 
+                    fontWeight: 900, 
+                    color: '#00C6FB',
+                    textShadow: '0 0 8px rgba(0, 198, 251, 0.4)'
+                  }}>
+                    {shieldTimeLeft}
+                  </div>
+                  <button
+                    onClick={handlePurchaseShieldClick}
+                    style={{
+                      marginTop: 6,
+                      background: 'rgba(255,255,255,0.06)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: 8,
+                      padding: '4px 10px',
+                      color: '#fff',
+                      fontSize: 10,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+                  >
+                    Extend (+24h) $0.15
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={handlePurchaseShieldClick}
+                  style={{
+                    background: 'linear-gradient(135deg, #0052FF 0%, #00C6FB 100%)',
+                    boxShadow: '0 4px 15px rgba(0, 82, 255, 0.3)',
+                    border: 'none',
+                    borderRadius: 12,
+                    padding: '10px 16px',
+                    color: '#fff',
+                    fontWeight: 700,
+                    fontSize: 13,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+                  onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+                >
+                  Buy Shield $0.15
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Main Heist Interactive Board */}
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.02)',
+            border: '1px solid rgba(255, 255, 255, 0.06)',
+            borderRadius: 24,
+            padding: '24px 20px',
+            textAlign: 'center',
+            minHeight: 340,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
+
+            {errorMessage && (
+              <div style={{
+                background: 'rgba(252, 64, 31, 0.12)',
+                border: '1px solid rgba(252, 64, 31, 0.3)',
+                borderRadius: 12,
+                padding: '10px 14px',
+                color: '#FC401F',
+                fontSize: 13,
+                fontWeight: 600,
+                marginBottom: 16,
+                maxWidth: '90%'
+              }}>
+                ⚠️ {errorMessage}
+              </div>
+            )}
+
+            {/* STAGE 1: IDLE / START HEIST */}
+            {gameState === 'idle' && (
+              <div style={{ maxWidth: 420 }}>
+                <div style={{ fontSize: 60, marginBottom: 12, animation: 'float 3s ease-in-out infinite' }}>🕵️‍♂️</div>
+                <h2 style={{ margin: '0 0 8px', fontSize: 24, fontWeight: 900, letterSpacing: -0.5 }}>
+                  Launch a Happy Heist
+                </h2>
+                <p style={{ margin: '0 0 24px', fontSize: 13, lineHeight: 1.6, color: 'rgba(255,255,255,0.6)' }}>
+                  For just **$0.25 USDC**, raid an active user with 300+ HP. Try your luck in a 50/50 card game to steal 10 HP or up to 5% of their total points!
+                </p>
+                <button
+                  onClick={handleInitiateHeistClick}
+                  style={{
+                    background: 'linear-gradient(135deg, #FF9900 0%, #FF5E62 100%)',
+                    boxShadow: '0 6px 20px rgba(255, 94, 98, 0.4)',
+                    border: 'none',
+                    borderRadius: 16,
+                    padding: '14px 32px',
+                    color: '#fff',
+                    fontWeight: 800,
+                    fontSize: 16,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.03)'}
+                  onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                >
+                  Initiate Heist ($0.25)
+                </button>
+              </div>
+            )}
+
+            {/* STAGE 2: SCANNING VICTIMS */}
+            {gameState === 'scanning' && potentialVictims.length > 0 && (
+              <div>
+                <div style={{ fontSize: 44, animation: 'spin 2s linear infinite', marginBottom: 16 }}>🔍</div>
+                <h3 style={{ margin: '0 0 6px', fontSize: 18, fontWeight: 800 }}>Scanning Active Targets...</h3>
+                <p style={{ margin: '0 0 24px', fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>
+                  Looking for active vaults containing 300+ HP on Base...
+                </p>
+                
+                {/* Visual slot-drum effect */}
+                <div style={{
+                  background: 'rgba(0,0,0,0.3)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: 16,
+                  padding: '16px 24px',
+                  width: 280,
+                  height: 60,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  overflow: 'hidden',
+                  position: 'relative'
+                }}>
+                  <div style={{
+                    fontSize: 16,
+                    fontWeight: 700,
+                    color: '#FF9900',
+                    transition: 'transform 0.1s ease'
+                  }}>
+                    🎯 {potentialVictims[scanIndex]?.basename || short(potentialVictims[scanIndex]?.address)}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* STAGE 3: CARD SELECTION */}
+            {gameState === 'choose_card' && (
+              <div>
+                <h3 style={{ margin: '0 0 6px', fontSize: 20, fontWeight: 900 }}>Target Vault Located!</h3>
+                <p style={{ margin: '0 0 20px', fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>
+                  Locked vault belongs to: <strong style={{ color: '#FF9900' }}>{finalVictim?.basename || short(finalVictim?.address)}</strong>
+                </p>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#00C6FB', marginBottom: 16 }}>
+                  Choose one of the cards to break the lock! (50/50 Chance)
+                </div>
+
+                <div style={{ display: 'flex', gap: 20, justifyContent: 'center', marginTop: 10 }}>
+                  {[0, 1].map(idx => (
+                    <button
+                      key={idx}
+                      onClick={() => handleCardSelection(idx)}
+                      style={{
+                        width: 110,
+                        height: 150,
+                        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%)',
+                        border: '2px solid rgba(0, 198, 251, 0.3)',
+                        borderRadius: 16,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 12,
+                        transition: 'all 0.2s',
+                        boxShadow: '0 4px 15px rgba(0, 198, 251, 0.1)'
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.transform = 'translateY(-4px)'
+                        e.currentTarget.style.borderColor = '#00C6FB'
+                        e.currentTarget.style.boxShadow = '0 8px 25px rgba(0, 198, 251, 0.3)'
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.transform = 'translateY(0)'
+                        e.currentTarget.style.borderColor = 'rgba(0, 198, 251, 0.3)'
+                        e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 198, 251, 0.1)'
+                      }}
+                    >
+                      <div style={{ fontSize: 32 }}>❓</div>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.7)' }}>Card {idx === 0 ? 'A' : 'B'}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* STAGE 4: FLIPPING */}
+            {gameState === 'flipping' && (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div style={{
+                  width: 110,
+                  height: 150,
+                  borderRadius: 16,
+                  border: '2px solid #FF9900',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 44,
+                  animation: 'flip 1.2s ease-in-out infinite'
+                }}>
+                  🃏
+                </div>
+                <h3 style={{ marginTop: 24, fontSize: 16, fontWeight: 700 }}>Flipping Card...</h3>
+              </div>
+            )}
+
+            {/* STAGE 5: RESULT REVEAL */}
+            {gameState === 'result' && gameOutcome && (
+              <div style={{ maxWidth: 440 }}>
+                {gameOutcome.success ? (
+                  <div>
+                    <div style={{ fontSize: 60, marginBottom: 12 }}>🎉🏆</div>
+                    <h2 style={{ margin: '0 0 8px', fontSize: 24, fontWeight: 900, color: '#00FF66' }}>
+                      Successful Heist!
+                    </h2>
+                    <p style={{ margin: '0 0 16px', fontSize: 14, color: 'rgba(255,255,255,0.8)' }}>
+                      You successfully broke the vault lock and stole points!
+                    </p>
+
+                    <div style={{
+                      background: 'rgba(0, 255, 102, 0.08)',
+                      border: '1px solid rgba(0, 255, 102, 0.3)',
+                      borderRadius: 18,
+                      padding: '16px 20px',
+                      marginBottom: 24
+                    }}>
+                      <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>Stolen Points:</div>
+                      <div style={{ fontSize: 32, fontWeight: 900, color: '#00FF66', margin: '4px 0' }}>
+                        +{gameOutcome.stolen_amount} HP
+                      </div>
+                      <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>
+                        Victim: <strong style={{ color: '#fff' }}>{gameOutcome.victim_name || short(gameOutcome.victim_address)}</strong>
+                        {gameOutcome.percentage && ` (${gameOutcome.percentage}% of their balance)`}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <div style={{ fontSize: 60, marginBottom: 12 }}>💥💀</div>
+                    <h2 style={{ margin: '0 0 8px', fontSize: 24, fontWeight: 900, color: '#FF5E62' }}>
+                      Vault Lock Jammed!
+                    </h2>
+                    <p style={{ margin: '0 0 24px', fontSize: 14, color: 'rgba(255,255,255,0.8)' }}>
+                      The alarm was triggered and the vault locked down! You missed the prize card, but you gave it a good try. Better luck on the next run!
+                    </p>
+                  </div>
+                )}
+
+                <button
+                  onClick={handlePlayAgain}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    borderRadius: 12,
+                    padding: '12px 28px',
+                    color: '#fff',
+                    fontWeight: 700,
+                    fontSize: 14,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'}
+                >
+                  Play Again
+                </button>
+              </div>
+            )}
+
+          </div>
+        </div>
+      ) : (
+        /* RAID HISTORY FEED (Successful Raids Only) */
+        <div>
+          <h2 style={{ margin: '0 0 8px', fontSize: 20, fontWeight: 900, letterSpacing: -0.5 }}>
+            Successful Raids
+          </h2>
+          <p style={{ margin: '0 0 20px', fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>
+            Real-time feed of the most daring successful bank-raids on Base!
+          </p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {history.length === 0 ? (
+              <div style={{
+                background: 'rgba(255,255,255,0.02)',
+                border: '1px solid rgba(255,255,255,0.06)',
+                borderRadius: 16,
+                padding: '24px 16px',
+                textAlign: 'center',
+                color: 'rgba(255,255,255,0.4)',
+                fontSize: 13
+              }}>
+                No successful raids logged yet. Be the first one to pull off a heist!
+              </div>
+            ) : (
+              history.map(item => {
+                const thiefName = item.thief?.basename || short(item.thief_address)
+                const victimName = item.victim?.basename || short(item.victim_address)
+                const timeStr = new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+
+                return (
+                  <div
+                    key={item.id}
+                    style={{
+                      background: 'rgba(255,255,255,0.03)',
+                      border: '1px solid rgba(255,255,255,0.06)',
+                      borderRadius: 16,
+                      padding: '12px 16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: 12
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span style={{ color: '#FF9900' }}>🕵️‍♂️ {thiefName}</span>
+                        <span style={{ color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>raided</span>
+                        <span style={{ color: '#00C6FB' }}>🛡️ {victimName}</span>
+                      </div>
+                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginTop: 4 }}>
+                        Time: {timeStr} | tx: <a 
+                          href={`https://basescan.org/tx/${item.tx_hash}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          style={{ color: '#0052FF', textDecoration: 'none' }}
+                        >
+                          {item.tx_hash.slice(0, 10)}...
+                        </a>
+                      </div>
+                    </div>
+
+                    <div style={{
+                      background: 'rgba(0, 255, 102, 0.08)',
+                      border: '1px solid rgba(0, 255, 102, 0.2)',
+                      borderRadius: 10,
+                      padding: '6px 12px',
+                      fontSize: 13,
+                      fontWeight: 800,
+                      color: '#00FF66',
+                      textAlign: 'right'
+                    }}>
+                      +{item.stolen_amount} HP
+                      {item.percentage && (
+                        <div style={{ fontSize: 8, fontWeight: 500, color: 'rgba(0, 255, 102, 0.7)' }}>
+                          ({item.percentage}% stolen)
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )
+              })
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* USDC Transaction modal */}
+      {showTxModal && (
+        <TxModal
+          isOpen={showTxModal}
+          onClose={() => {
+            setShowTxModal(false)
+            reset()
+          }}
+          isPending={isPending}
+          isConfirming={isConfirming}
+          isSuccess={isSuccess}
+          error={writeError}
+          txHash={txHash}
+          reset={reset}
+          title={txType === 'shield' ? 'Purchase Heist Shield' : 'Initiate Happy Heist'}
+          desc={txType === 'shield' 
+            ? 'Buying 24h shield protection for $0.15 USDC' 
+            : 'Initiating heist attempt for $0.25 USDC'}
+        />
+      )}
+
+      {/* Global CSS animation injections */}
+      <style>{`
+        @keyframes pulse {
+          0% { box-shadow: 0 0 0 0 rgba(0, 82, 255, 0.4); }
+          70% { box-shadow: 0 0 0 10px rgba(0, 82, 255, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(0, 82, 255, 0); }
+        }
+        @keyframes float {
+          0% { transform: translateY(0px); }
+          50% { transform: translateY(-8px); }
+          100% { transform: translateY(0px); }
+        }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+        @keyframes flip {
+          0% { transform: rotateY(0deg); }
+          50% { transform: rotateY(180deg); }
+          100% { transform: rotateY(360deg); }
+        }
+      `}</style>
+    </div>
+  )
+}

@@ -8,6 +8,7 @@ import { ConnectScreen } from './components/ConnectScreen'
 import { RaffleSection } from './components/RaffleSection'
 import { TasksSection } from './components/TasksSection'
 import { HappyBoxesSection } from './components/HappyBoxesSection'
+import { HeistMode } from './components/HeistMode'
 import { LeaderboardSection } from './components/LeaderboardSection'
 import { DailyRewardsSection } from './components/DailyRewardsSection'
 import { ProfileSection } from './components/ProfileSection'
@@ -28,6 +29,13 @@ export default function App() {
   const [tab, setTab] = useState(() => {
     try { return localStorage.getItem('happy_tab') || 'raffle' } catch { return 'raffle' }
   })
+  const [boxesSubTab, setBoxesSubTab] = useState(() => {
+    try { return localStorage.getItem('happy_boxes_subtab') || 'boxes' } catch { return 'boxes' }
+  })
+
+  useEffect(() => {
+    try { localStorage.setItem('happy_boxes_subtab', boxesSubTab) } catch { }
+  }, [boxesSubTab])
 
   useEffect(() => {
     try { localStorage.setItem('happy_tab', tab) } catch { }
@@ -56,7 +64,7 @@ export default function App() {
   const tabLabels = {
     raffle: 'Happy Raffle',
     tasks: 'Tasks',
-    boxes: 'Happy Boxes',
+    boxes: 'Boxes & Heists',
     daily: 'Daily Rewards',
     leaderboard: 'Leaderboard',
     profile: 'Profile',
@@ -302,7 +310,66 @@ export default function App() {
 
         <div style={{ position: 'relative', zIndex: 1, maxWidth: 640, margin: '0 auto' }}>
           {tab === 'raffle' && <RaffleSection address={address} basename={basename} />}
-          {tab === 'boxes' && <HappyBoxesSection address={address} />}
+          {tab === 'boxes' && (
+            <div style={{ padding: '0 8px' }}>
+              {/* Premium sub-navigation switcher */}
+              <div style={{
+                display: 'flex',
+                background: 'rgba(235, 242, 255, 0.08)',
+                backdropFilter: 'blur(20px)',
+                border: '1px solid rgba(0, 82, 255, 0.25)',
+                borderRadius: 16,
+                padding: 4,
+                marginBottom: 20,
+                maxWidth: 400,
+                margin: '0 auto 20px',
+                boxShadow: '0 4px 20px rgba(0, 82, 255, 0.05)'
+              }}>
+                <button
+                  onClick={() => setBoxesSubTab('boxes')}
+                  style={{
+                    flex: 1,
+                    padding: '10px 16px',
+                    borderRadius: 12,
+                    border: 'none',
+                    background: boxesSubTab === 'boxes' ? 'linear-gradient(135deg, #0052FF 0%, #00C6FB 100%)' : 'transparent',
+                    color: boxesSubTab === 'boxes' ? '#fff' : 'var(--text-secondary, #717886)',
+                    fontWeight: 700,
+                    fontSize: 13,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    boxShadow: boxesSubTab === 'boxes' ? '0 4px 12px rgba(0, 82, 255, 0.25)' : 'none'
+                  }}
+                >
+                  📦 Open Boxes
+                </button>
+                <button
+                  onClick={() => setBoxesSubTab('heist')}
+                  style={{
+                    flex: 1,
+                    padding: '10px 16px',
+                    borderRadius: 12,
+                    border: 'none',
+                    background: boxesSubTab === 'heist' ? 'linear-gradient(135deg, #0052FF 0%, #00C6FB 100%)' : 'transparent',
+                    color: boxesSubTab === 'heist' ? '#fff' : 'var(--text-secondary, #717886)',
+                    fontWeight: 700,
+                    fontSize: 13,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    boxShadow: boxesSubTab === 'heist' ? '0 4px 12px rgba(0, 82, 255, 0.25)' : 'none'
+                  }}
+                >
+                  🕵️ Heist Mode
+                </button>
+              </div>
+
+              {boxesSubTab === 'boxes' ? (
+                <HappyBoxesSection address={address} />
+              ) : (
+                <HeistMode address={address} />
+              )}
+            </div>
+          )}
           {tab === 'tasks' && <TasksSection address={address} />}
           {tab === 'daily' && <DailyRewardsSection address={address} />}
           {tab === 'leaderboard' && <LeaderboardSection address={address} />}
