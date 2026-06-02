@@ -41,14 +41,6 @@ export function BottomNav({ tab, setTab }) {
           0%, 100% { transform: scale(1); filter: brightness(1); }
           50% { transform: scale(1.05); filter: brightness(1.1); box-shadow: 0 2px 6px rgba(239, 68, 68, 0.5); }
         }
-        @keyframes raidIconClash {
-          0%, 100% { transform: scale(1) rotate(0deg); }
-          15% { transform: scale(1.2) rotate(-15deg); }
-          30% { transform: scale(0.9) rotate(12deg); }
-          45% { transform: scale(1.1) rotate(-8deg); }
-          60% { transform: scale(0.95) rotate(4deg); }
-          75% { transform: scale(1) rotate(0deg); }
-        }
       `}</style>
       <div style={{
         background: 'rgba(235, 242, 255, 0.97)', backdropFilter: 'blur(20px)',
@@ -66,12 +58,7 @@ export function BottomNav({ tab, setTab }) {
             transition: 'all 0.2s',
             position: 'relative'
           }}>
-            <span style={{
-              fontSize: 20,
-              lineHeight: 1,
-              display: 'inline-block',
-              animation: t.id === 'raid' ? 'raidIconClash 3.5s infinite ease-in-out' : 'none'
-            }}>{t.icon}</span>
+            <span style={{ fontSize: 20, lineHeight: 1 }}>{t.icon}</span>
             <span style={{
               fontSize: 9, fontWeight: 700, letterSpacing: 0.3,
               color: tab === t.id ? '#0000FF' : '#717886',

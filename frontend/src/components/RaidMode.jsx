@@ -594,55 +594,85 @@ export function RaidMode({ address }) {
           <div style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 16, textAlign: 'left' }}>
             {/* Holographic pulsing radar ring and dial */}
             <div style={{ position: 'relative', width: 84, height: 84, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              {/* Pulsing glow ring */}
+              {/* Concentric pulsing glow rings */}
               <div className="radar-pulse" style={{
                 position: 'absolute',
                 inset: 0,
                 borderRadius: '50%',
-                border: '1.5px solid rgba(0, 82, 255, 0.15)',
+                border: '1.5px solid rgba(0, 82, 255, 0.18)',
+                pointerEvents: 'none'
+              }} />
+              <div className="radar-pulse-delayed" style={{
+                position: 'absolute',
+                inset: 4,
+                borderRadius: '50%',
+                border: '1.5px solid rgba(0, 82, 255, 0.12)',
                 pointerEvents: 'none'
               }} />
               
-              {/* Rotating target locator container */}
-              <div className="vault-dial" style={{
-                width: 68,
-                height: 68,
+              {/* Tech Radar Container */}
+              <div style={{
+                width: 70,
+                height: 70,
                 borderRadius: '50%',
-                background: 'linear-gradient(135deg, #0A0B0D 0%, #1A1C20 100%)',
+                background: '#080A10',
                 border: '2.5px solid #0052FF',
-                boxShadow: '0 6px 18px rgba(0, 82, 255, 0.2)',
+                boxShadow: '0 0 15px rgba(0, 82, 255, 0.35)',
+                position: 'relative',
+                overflow: 'hidden',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                position: 'relative',
-                cursor: 'pointer',
               }}>
-                {/* Custom Target Scope indicator */}
-                <div className="target-scope" style={{
-                  width: 32,
-                  height: 32,
+                {/* Radar Grid Lines */}
+                <div style={{ position: 'absolute', width: '100%', height: '0.5px', background: 'rgba(0, 82, 255, 0.2)' }} />
+                <div style={{ position: 'absolute', width: '0.5px', height: '100%', background: 'rgba(0, 82, 255, 0.2)' }} />
+                
+                {/* Concentric Dashed Radar Rings */}
+                <div style={{ position: 'absolute', width: 46, height: 46, borderRadius: '50%', border: '0.8px dashed rgba(0, 82, 255, 0.25)' }} />
+                <div style={{ position: 'absolute', width: 22, height: 22, borderRadius: '50%', border: '0.8px dashed rgba(0, 82, 255, 0.25)' }} />
+                
+                {/* Radar Sweep Line */}
+                <div className="radar-sweep" style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background: 'conic-gradient(from 0deg at 50% 50%, rgba(0, 82, 255, 0.35) 0deg, rgba(0, 82, 255, 0) 120deg)',
                   borderRadius: '50%',
-                  border: '1.8px dashed rgba(0, 82, 255, 0.7)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  position: 'relative',
-                  animation: 'spin 12s linear infinite'
-                }}>
-                  {/* Scope markings */}
-                  <div style={{ position: 'absolute', width: 2, height: 8, background: '#0052FF', top: -2 }} />
-                  <div style={{ position: 'absolute', width: 2, height: 8, background: '#0052FF', bottom: -2 }} />
-                  <div style={{ position: 'absolute', width: 8, height: 2, background: '#0052FF', left: -2 }} />
-                  <div style={{ position: 'absolute', width: 8, height: 2, background: '#0052FF', right: -2 }} />
-                  {/* Glowing center laser */}
-                  <div style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: '50%',
-                    background: '#0052FF',
-                    boxShadow: '0 0 10px #0052FF, 0 0 3px #0052FF'
-                  }} />
-                </div>
+                }} />
+                
+                {/* Target Blips */}
+                <div className="radar-blip-1" style={{
+                  position: 'absolute',
+                  width: 5,
+                  height: 5,
+                  borderRadius: '50%',
+                  background: '#10B981',
+                  boxShadow: '0 0 6px #10B981',
+                  top: '25%',
+                  left: '60%',
+                  animation: 'radarBlipBlink 2.2s infinite ease-in-out'
+                }} />
+                <div className="radar-blip-2" style={{
+                  position: 'absolute',
+                  width: 4,
+                  height: 4,
+                  borderRadius: '50%',
+                  background: '#EF4444',
+                  boxShadow: '0 0 6px #EF4444',
+                  bottom: '30%',
+                  left: '25%',
+                  animation: 'radarBlipBlink 1.8s infinite ease-in-out 0.6s'
+                }} />
+
+                {/* Center Crosshair Dot */}
+                <div style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: '50%',
+                  background: '#0052FF',
+                  boxShadow: '0 0 8px #0052FF',
+                  zIndex: 2
+                }} />
               </div>
             </div>
 
@@ -976,6 +1006,10 @@ export function RaidMode({ address }) {
         @keyframes liveDotBlink {
           0%, 100% { opacity: 0.4; }
           50% { opacity: 1; }
+        }
+        @keyframes radarBlipBlink {
+          0%, 100% { opacity: 0.15; transform: scale(0.85); }
+          50% { opacity: 1; transform: scale(1.15); }
         }
         .radar-pulse {
           animation: radarPulse 2s infinite ease-out;
