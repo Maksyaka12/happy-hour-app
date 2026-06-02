@@ -322,26 +322,26 @@ export default function App() {
                   background: '#EEF0F3',
                   border: '1px solid #DEE1E7',
                   borderRadius: 16,
-                  padding: 4,
+                  padding: 3,
                   marginBottom: 20,
-                  maxWidth: 400,
+                  maxWidth: 380,
                   margin: '0 auto 20px',
-                  boxShadow: '0 4px 12px rgba(10,11,13,0.03)',
+                  boxShadow: 'inset 0 2px 4px rgba(10,11,13,0.06)',
                 }}>
                   <button
                     onClick={() => setLeaderboardSubTab('usdc')}
                     style={{
                       flex: 1,
-                      padding: '10px 16px',
-                      borderRadius: 12,
+                      padding: '8px 10px',
+                      borderRadius: 13,
                       border: 'none',
-                      background: leaderboardSubTab === 'usdc' ? 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)' : 'transparent',
+                      background: leaderboardSubTab === 'usdc' ? '#0000FF' : 'transparent',
                       color: leaderboardSubTab === 'usdc' ? '#fff' : '#717886',
                       fontWeight: 800,
-                      fontSize: 13,
+                      fontSize: 11.5,
                       cursor: 'pointer',
                       transition: 'all 0.2s',
-                      boxShadow: leaderboardSubTab === 'usdc' ? '0 4px 12px rgba(0,82,255,0.2)' : 'none'
+                      boxShadow: leaderboardSubTab === 'usdc' ? '0 4px 12px rgba(0,0,255,0.2)' : 'none'
                     }}
                   >
                     🏆 USDC Rewards
@@ -350,16 +350,16 @@ export default function App() {
                     onClick={() => setLeaderboardSubTab('hp')}
                     style={{
                       flex: 1,
-                      padding: '10px 16px',
-                      borderRadius: 12,
+                      padding: '8px 10px',
+                      borderRadius: 13,
                       border: 'none',
-                      background: leaderboardSubTab === 'hp' ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' : 'transparent',
+                      background: leaderboardSubTab === 'hp' ? '#0000FF' : 'transparent',
                       color: leaderboardSubTab === 'hp' ? '#fff' : '#717886',
                       fontWeight: 800,
-                      fontSize: 13,
+                      fontSize: 11.5,
                       cursor: 'pointer',
                       transition: 'all 0.2s',
-                      boxShadow: leaderboardSubTab === 'hp' ? '0 4px 12px rgba(16,185,129,0.2)' : 'none'
+                      boxShadow: leaderboardSubTab === 'hp' ? '0 4px 12px rgba(0,0,255,0.2)' : 'none'
                     }}
                   >
                     ⚡ HP Rewards (Daily)
