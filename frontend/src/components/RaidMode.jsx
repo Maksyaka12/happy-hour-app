@@ -880,7 +880,7 @@ export function RaidMode({ address }) {
       </div>
 
       {/* ═══ RAID HISTORY (Displayed directly below interactive board) ═══ */}
-      <div style={{ marginTop: 24, fontFamily: "'Montserrat', sans-serif" }}>
+      <div style={{ marginTop: 24 }}>
         <div style={{ fontSize: 14, fontWeight: 700, color: '#0A0B0D', marginBottom: 12 }}>
           Raids History
         </div>
