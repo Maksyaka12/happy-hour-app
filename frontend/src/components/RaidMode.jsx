@@ -432,7 +432,7 @@ export function RaidMode({ address }) {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '6px', color: '#EF4444' }}>●</span>
-              <span>Raid active users with 300+ HP (70% success).</span>
+              <span>Raid active users with 300+ HP (50% success).</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '6px', color: '#EF4444' }}>●</span>
@@ -629,7 +629,7 @@ export function RaidMode({ address }) {
             {/* Right side info & action */}
             <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
               <h4 style={{ margin: '0 0 4px', fontSize: 14, fontWeight: 800, color: '#0A0B0D', letterSpacing: -0.2 }}>
-                Raid
+                Happy Raid
               </h4>
               <p style={{ margin: '0 0 10px', fontSize: 11, color: '#717886', lineHeight: 1.3, fontWeight: 400 }}>
                 Find your target and steal some <span style={{ color: '#0052FF', fontWeight: 600 }}>HP</span>
