@@ -1,4 +1,4 @@
-// src/components/HeistMode.jsx
+// src/components/RaidMode.jsx
 import React, { useState, useEffect, useRef } from 'react'
 import { useChainId, useSwitchChain } from 'wagmi'
 import { parseUnits } from 'viem'
@@ -11,7 +11,7 @@ import { UserAvatar } from './UserAvatar'
 
 const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
 
-export function HeistMode({ address }) {
+export function RaidMode({ address }) {
   const [user, setUser] = useState(null)
   const [shieldTimeLeft, setShieldTimeLeft] = useState('')
   const [isShieldActive, setIsShieldActive] = useState(false)
@@ -31,7 +31,7 @@ export function HeistMode({ address }) {
 
   const [errorMessage, setErrorMessage] = useState('')
   const [showTxModal, setShowTxModal] = useState(false)
-  const [txType, setTxType] = useState('heist') // heist or shield
+  const [txType, setTxType] = useState('raid') // raid or shield
 
   // Web3 write hook
   const { data: txHash, writeContract, isPending, isConfirming, isSuccess, error: writeError, reset } = useBuilderWrite()
@@ -53,7 +53,7 @@ export function HeistMode({ address }) {
     }
   }
 
-  // Fetch successful raids
+  // Fetch successful raids (Note: table is heist_attempts in db)
   const fetchHistory = async () => {
     try {
       const { data, error } = await db
@@ -149,8 +149,6 @@ export function HeistMode({ address }) {
         const mStr = minutes > 0 || hours > 0 ? `${minutes}m ` : ''
         setShieldTimeLeft(`${hStr}${mStr}${seconds}s`)
 
-        // A single shield purchase lasts 24h. Cap max reference at 24h for progress visual (or extend standard)
-        // If they extend, diff can be > 24 hours. Let's cap visual display at 100% of 24h.
         const oneDayMs = 24 * 60 * 60 * 1000
         const percent = Math.min((diff / oneDayMs) * 100, 100)
         setShieldProgressPercent(percent)
@@ -167,8 +165,8 @@ export function HeistMode({ address }) {
     if (isSuccess && txHash) {
       if (txType === 'shield') {
         handleConfirmShieldPurchase(txHash)
-      } else if (txType === 'heist') {
-        handleConfirmHeist(txHash)
+      } else if (txType === 'raid') {
+        handleConfirmRaid(txHash)
       }
     }
   }, [isSuccess, txHash])
@@ -179,9 +177,9 @@ export function HeistMode({ address }) {
     setShowTxModal(true)
   }
 
-  const handleInitiateHeistClick = () => {
+  const handleInitiateRaidClick = () => {
     setErrorMessage('')
-    setTxType('heist')
+    setTxType('raid')
     setShowTxModal(true)
   }
 
@@ -197,7 +195,7 @@ export function HeistMode({ address }) {
     })
   }
 
-  const handleInitiateHeistPayment = () => {
+  const handleInitiateRaidPayment = () => {
     if (wrongChain) { switchChain({ chainId: base.id }); return }
     setErrorMessage('')
     writeContract({
@@ -229,7 +227,7 @@ export function HeistMode({ address }) {
     }
   }
 
-  const handleConfirmHeist = async (hash) => {
+  const handleConfirmRaid = async (hash) => {
     try {
       setGameState('scanning')
       setShowTxModal(false)
@@ -267,13 +265,13 @@ export function HeistMode({ address }) {
           }
         }, 100)
       } else {
-        setErrorMessage(data?.error || 'Error preparing your heist.')
+        setErrorMessage(data?.error || 'Error preparing your raid.')
         setGameState('idle')
         reset()
       }
     } catch (e) {
       console.error(e)
-      setErrorMessage(e.message || 'Error processing heist transaction.')
+      setErrorMessage(e.message || 'Error processing raid transaction.')
       setGameState('idle')
       reset()
     }
@@ -300,9 +298,9 @@ export function HeistMode({ address }) {
   }
 
   return (
-    <div style={{ padding: '0 16px 120px', color: '#0A0B0D', fontFamily: "'Outfit', 'Inter', sans-serif", animation: 'heistFadeIn 0.4s ease' }}>
+    <div style={{ padding: '0 16px 120px', color: '#0A0B0D', fontFamily: "'Outfit', 'Inter', sans-serif", animation: 'raidFadeIn 0.4s ease' }}>
       <style>{`
-        @keyframes heistFadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes raidFadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
       `}</style>
 
       {/* Wrong Chain Banner */}
@@ -315,7 +313,7 @@ export function HeistMode({ address }) {
         </div>
       )}
 
-      {/* ═══ HERO BANNER (Matches Boxes Layout but themed in Dark Red/Orange Heist tones) ═══ */}
+      {/* ═══ HERO BANNER (Matches Boxes Layout but themed in Dark Red/Orange Raid tones) ═══ */}
       <div style={{
         background: '#140505',
         borderRadius: 24,
@@ -376,7 +374,7 @@ export function HeistMode({ address }) {
             zIndex: 1,
             pointerEvents: 'none',
             userSelect: 'none',
-            animation: `heistItemFloat ${s.dur}s ease-in-out infinite`,
+            animation: `raidItemFloat ${s.dur}s ease-in-out infinite`,
           }}>
             <div style={{
               fontSize: `${s.size}px`,
@@ -390,7 +388,7 @@ export function HeistMode({ address }) {
         ))}
 
         <style dangerouslySetInnerHTML={{ __html: `
-          @keyframes heistItemFloat {
+          @keyframes raidItemFloat {
             0% { transform: translateY(0px) rotate(-12deg); }
             50% { transform: translateY(-6px) rotate(-6deg); }
             100% { transform: translateY(0px) rotate(-12deg); }
@@ -405,7 +403,7 @@ export function HeistMode({ address }) {
             letterSpacing: '0.5px',
             marginBottom: '4px'
           }}>
-            Happy Heist
+            Happy Raids
           </div>
           
           <div style={{
@@ -421,7 +419,7 @@ export function HeistMode({ address }) {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '6px', color: '#EF4444' }}>●</span>
-              <span>Each heist attempt costs 0.25 USDC.</span>
+              <span>Each raid attempt costs 0.25 USDC.</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '6px', color: '#EF4444' }}>●</span>
@@ -429,17 +427,17 @@ export function HeistMode({ address }) {
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '6px', color: '#EF4444' }}>●</span>
-              <span>Steal 10 HP (80% chance) or 1%-5% of their total balance (20% chance).</span>
+              <span>Minimum HP after successfully raid: 10 HP (up to 5% of balance)</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '6px', color: '#EF4444' }}>●</span>
-              <span>Buy a Heist Shield for 0.15 USDC for 24h absolute protection.</span>
+              <span>Raid Shield забезпечує absolute protection for 24h (ніхто не може рейд тебе)</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ═══ HEIST SHIELD CARD (Structured like Boxes Limits Card) ═══ */}
+      {/* ═══ RAID SHIELD CARD ═══ */}
       <div style={{
         background: '#fff',
         border: '1px solid #DEE1E7',
@@ -454,7 +452,7 @@ export function HeistMode({ address }) {
         {/* Shield Status Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 900, color: '#0A0B0D' }}>🛡️ Heist Shield Status</div>
+            <div style={{ fontSize: 13, fontWeight: 900, color: '#0A0B0D' }}>🛡️ Raid Shield Status</div>
             <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>
               Protects your HP from being stolen by other players
             </div>
@@ -522,7 +520,7 @@ export function HeistMode({ address }) {
               opacity: isPending ? 0.6 : 1,
             }}
           >
-            <span>{isShieldActive ? '🛡️ Extend Shield (+24h)' : '🛡️ Buy Heist Shield'}</span>
+            <span>{isShieldActive ? '🛡️ Extend Shield (+24h)' : '🛡️ Buy Raid Shield'}</span>
           </button>
         </div>
       </div>
@@ -536,7 +534,7 @@ export function HeistMode({ address }) {
         marginBottom: 20,
         boxShadow: '0 4px 16px rgba(10,11,13,0.015)',
         textAlign: 'center',
-        minHeight: 280,
+        minHeight: 220,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -563,17 +561,17 @@ export function HeistMode({ address }) {
         {/* GAMESTATE: IDLE */}
         {gameState === 'idle' && (
           <div style={{ maxWidth: 420, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ fontSize: 50, marginBottom: 12, animation: 'heistBoardFloat 3s ease-in-out infinite' }}>🕵️‍♂️</div>
+            <div style={{ fontSize: 44, marginBottom: 8, animation: 'raidBoardFloat 3s ease-in-out infinite' }}>🕵️‍♂️</div>
 
-            <h2 style={{ margin: '0 0 8px', fontSize: 18, fontWeight: 900, color: '#0A0B0D', letterSpacing: -0.5 }}>
-              Target Vault System
+            <h2 style={{ margin: '0 0 4px', fontSize: 16, fontWeight: 900, color: '#0A0B0D', letterSpacing: -0.4 }}>
+              Raid System
             </h2>
-            <p style={{ margin: '0 0 20px', fontSize: 12, lineHeight: 1.6, color: '#717886' }}>
-              Ready to initiate a raid. Launching will find a random player with 300+ HP and prompt you to pick a combination card.
+            <p style={{ margin: '0 0 16px', fontSize: 11, color: '#717886' }}>
+              Search for active targets and crack their combination locks.
             </p>
             <button
               className="heist-btn"
-              onClick={handleInitiateHeistClick}
+              onClick={handleInitiateRaidClick}
               disabled={isPending}
               style={{
                 width: '100%',
@@ -594,7 +592,7 @@ export function HeistMode({ address }) {
                 transition: 'transform 0.2s, box-shadow 0.2s'
               }}
             >
-              <span>Initiate Heist</span>
+              <span>Raid</span>
               <span style={{ color: '#A5B4FC', fontWeight: 900, marginLeft: 4 }}>0.25</span>
               <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14, flexShrink: 0 }} />
             </button>
@@ -637,7 +635,7 @@ export function HeistMode({ address }) {
               Owner: <strong style={{ color: '#0052FF' }}>{finalVictim?.basename || short(finalVictim?.address)}</strong>
             </p>
             <div style={{ fontSize: 11, fontWeight: 800, color: '#FF9900', marginBottom: 14 }}>
-              Choose a card to execute the heist! (50/50 combination)
+              Choose a card to execute the raid! (50/50 combination)
             </div>
 
             <div style={{ display: 'flex', gap: 14, justifyContent: 'center' }}>
@@ -698,7 +696,7 @@ export function HeistMode({ address }) {
               <div style={{ width: '100%' }}>
                 <div style={{ fontSize: 50, marginBottom: 8 }}>🎉💰</div>
                 <h2 style={{ margin: '0 0 4px', fontSize: 18, fontWeight: 900, color: '#059669' }}>
-                  Successful Heist!
+                  Successful Raid!
                 </h2>
                 <p style={{ margin: '0 0 12px', fontSize: 12, color: '#717886' }}>
                   The combination matched! Stolen points added to your balance.
@@ -725,7 +723,7 @@ export function HeistMode({ address }) {
               <div style={{ width: '100%' }}>
                 <div style={{ fontSize: 50, marginBottom: 8 }}>💥🔒</div>
                 <h2 style={{ margin: '0 0 4px', fontSize: 18, fontWeight: 900, color: '#E11D48' }}>
-                  Heist Failed
+                  Raid Failed
                 </h2>
                 <p style={{ margin: '0 0 18px', fontSize: 12, color: '#717886', lineHeight: 1.5 }}>
                   The combination lock jammed and vault alarm sounded! You missed the prize card, but you can try again.
@@ -757,12 +755,9 @@ export function HeistMode({ address }) {
 
       {/* ═══ RAID HISTORY (Displayed directly below interactive board) ═══ */}
       <div style={{ marginTop: 24 }}>
-        <h2 style={{ margin: '0 0 4px', fontSize: 15, fontWeight: 900, color: '#0A0B0D', letterSpacing: -0.3 }}>
+        <h2 style={{ margin: '0 0 12px', fontSize: 15, fontWeight: 900, color: '#0A0B0D', letterSpacing: -0.3 }}>
           Successful Raid History
         </h2>
-        <p style={{ margin: '0 0 12px', fontSize: 11, color: '#717886' }}>
-          Recent successful HP thefts on Base network
-        </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {history.length === 0 ? (
@@ -775,7 +770,7 @@ export function HeistMode({ address }) {
               color: '#717886',
               fontSize: 11
             }}>
-              No successful raids logged yet. Be the first one to pull off a heist!
+              No successful raids logged yet. Be the first one to pull off a raid!
             </div>
           ) : (
             history.map(item => {
@@ -875,7 +870,7 @@ export function HeistMode({ address }) {
       {/* USDC Transaction modal */}
       {showTxModal && (
         <TxModal
-          title={txType === 'shield' ? 'Purchase Heist Shield' : 'Initiate Happy Heist'}
+          title={txType === 'shield' ? 'Purchase Raid Shield' : 'Purchase Raid'}
           subtitle={txType === 'shield' 
             ? 'Get 24h of absolute protection from HP raids' 
             : 'Crack the vault lock of an active user and steal their HP!'}
@@ -884,7 +879,7 @@ export function HeistMode({ address }) {
           isConfirming={isConfirming}
           isSuccess={isSuccess}
           error={writeError}
-          onConfirm={txType === 'shield' ? handlePurchaseShieldPayment : handleInitiateHeistPayment}
+          onConfirm={txType === 'shield' ? handlePurchaseShieldPayment : handleInitiateRaidPayment}
           onCancel={() => { setShowTxModal(false); reset(); }}
         />
       )}
@@ -899,7 +894,7 @@ export function HeistMode({ address }) {
           50% { transform: rotateY(180deg); }
           100% { transform: rotateY(360deg); }
         }
-        @keyframes heistBoardFloat {
+        @keyframes raidBoardFloat {
           0% { transform: translateY(0px); }
           50% { transform: translateY(-6px); }
           100% { transform: translateY(0px); }

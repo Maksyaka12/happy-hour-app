@@ -8,7 +8,7 @@ import { ConnectScreen } from './components/ConnectScreen'
 import { RaffleSection } from './components/RaffleSection'
 import { TasksSection } from './components/TasksSection'
 import { HappyBoxesSection } from './components/HappyBoxesSection'
-import { HeistMode } from './components/HeistMode'
+import { RaidMode } from './components/RaidMode'
 import { LeaderboardSection } from './components/LeaderboardSection'
 import { DailyRewardsSection } from './components/DailyRewardsSection'
 import { ProfileSection } from './components/ProfileSection'
@@ -63,7 +63,7 @@ export default function App() {
 
   const tabLabels = {
     raffle: 'Happy Raffle',
-    heist: 'Happy Heist',
+    raid: 'Happy Raids',
     boxes: 'Happy Boxes',
     tasks: 'Tasks',
     leaderboard: 'Leaderboard',
@@ -310,7 +310,7 @@ export default function App() {
 
         <div style={{ position: 'relative', zIndex: 1, maxWidth: 640, margin: '0 auto' }}>
           {tab === 'raffle' && <RaffleSection address={address} basename={basename} />}
-          {tab === 'heist' && <HeistMode address={address} />}
+          {tab === 'raid' && <RaidMode address={address} />}
           {tab === 'boxes' && <HappyBoxesSection address={address} />}
           {tab === 'tasks' && <TasksSection address={address} />}
           {tab === 'leaderboard' && (
