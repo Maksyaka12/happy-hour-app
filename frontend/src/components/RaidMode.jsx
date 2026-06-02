@@ -593,7 +593,7 @@ export function RaidMode({ address }) {
         {gameState === 'idle' && (
           <div style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 16, textAlign: 'left' }}>
             {/* Holographic pulsing radar ring and dial */}
-            <div style={{ position: 'relative', width: 84, height: 84, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <div style={{ position: 'relative', width: 96, height: 96, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               {/* Concentric pulsing glow rings */}
               <div className="radar-pulse" style={{
                 position: 'absolute',
@@ -604,7 +604,7 @@ export function RaidMode({ address }) {
               }} />
               <div className="radar-pulse-delayed" style={{
                 position: 'absolute',
-                inset: 4,
+                inset: 5,
                 borderRadius: '50%',
                 border: '1.5px solid rgba(0, 82, 255, 0.12)',
                 pointerEvents: 'none'
@@ -612,8 +612,8 @@ export function RaidMode({ address }) {
               
               {/* Tech Radar Container */}
               <div style={{
-                width: 70,
-                height: 70,
+                width: 80,
+                height: 80,
                 borderRadius: '50%',
                 background: '#080A10',
                 border: '2.5px solid #0052FF',
@@ -629,8 +629,8 @@ export function RaidMode({ address }) {
                 <div style={{ position: 'absolute', width: '0.5px', height: '100%', background: 'rgba(0, 82, 255, 0.2)' }} />
                 
                 {/* Concentric Dashed Radar Rings */}
-                <div style={{ position: 'absolute', width: 46, height: 46, borderRadius: '50%', border: '0.8px dashed rgba(0, 82, 255, 0.25)' }} />
-                <div style={{ position: 'absolute', width: 22, height: 22, borderRadius: '50%', border: '0.8px dashed rgba(0, 82, 255, 0.25)' }} />
+                <div style={{ position: 'absolute', width: 54, height: 54, borderRadius: '50%', border: '0.8px dashed rgba(0, 82, 255, 0.25)' }} />
+                <div style={{ position: 'absolute', width: 28, height: 28, borderRadius: '50%', border: '0.8px dashed rgba(0, 82, 255, 0.25)' }} />
                 
                 {/* Radar Sweep Line */}
                 <div className="radar-sweep" style={{
@@ -730,24 +730,24 @@ export function RaidMode({ address }) {
             {/* Animated Radar Sweep */}
             <div style={{
               position: 'relative',
-              width: 84,
-              height: 84,
+              width: 96,
+              height: 96,
               borderRadius: '50%',
               background: 'radial-gradient(circle, rgba(0,82,255,0.02) 0%, rgba(0,82,255,0.08) 100%)',
-              border: '2px solid rgba(0, 82, 255, 0.25)',
+              border: '2.5px solid #0052FF',
               overflow: 'hidden',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 6px 18px rgba(0,82,255,0.08)',
+              boxShadow: '0 0 15px rgba(0, 82, 255, 0.25)',
               flexShrink: 0
             }}>
               {/* Grid Lines */}
               <div style={{ position: 'absolute', width: '100%', height: 1, background: 'rgba(0,82,255,0.15)' }} />
               <div style={{ position: 'absolute', width: 1, height: '100%', background: 'rgba(0,82,255,0.15)' }} />
               {/* Concentric rings */}
-              <div style={{ position: 'absolute', width: 56, height: 56, borderRadius: '50%', border: '1px dashed rgba(0,82,255,0.12)' }} />
-              <div style={{ position: 'absolute', width: 32, height: 32, borderRadius: '50%', border: '1px dashed rgba(0,82,255,0.12)' }} />
+              <div style={{ position: 'absolute', width: 64, height: 64, borderRadius: '50%', border: '1px dashed rgba(0,82,255,0.12)' }} />
+              <div style={{ position: 'absolute', width: 36, height: 36, borderRadius: '50%', border: '1px dashed rgba(0,82,255,0.12)' }} />
               
               {/* Radar sweep line */}
               <div className="radar-sweep" style={{
