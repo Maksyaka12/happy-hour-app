@@ -137,9 +137,9 @@ export function RaidMode({ address }) {
           const minutes = Math.floor(seconds / 60)
           const extra = seconds % 60 > 0 ? 1 : 0
           const displayMin = minutes + extra
-          setCooldownText(`${displayMin}m left to next raid`)
+          setCooldownText(`${displayMin}m left`)
         } else {
-          setCooldownText(`${seconds}s left to next raid`)
+          setCooldownText(`${seconds}s left`)
         }
         return false
       }
@@ -432,15 +432,15 @@ export function RaidMode({ address }) {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '6px', color: '#EF4444' }}>●</span>
-              <span>Raid an active user with 300+ HP (50% success chance).</span>
+              <span>Raid an active user with 300+ HP (70% success chance).</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '6px', color: '#EF4444' }}>●</span>
-              <span>Min HP after successfully raid: 10 HP (up to 5% of balance)</span>
+              <span>Minimum HP stolen on a successful raid: 10.00 HP (up to 5.00% of target balance).</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '6px', color: '#EF4444' }}>●</span>
-              <span>Raid Shield provides absolute protection for 24h (no one can raid you)</span>
+              <span>Raid Shield provides absolute protection for 24 hours (prevents anyone from raiding you).</span>
             </div>
           </div>
         </div>
@@ -461,8 +461,8 @@ export function RaidMode({ address }) {
         {/* Shield Status Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 900, color: '#0A0B0D' }}>🛡️ Raid Shield Status</div>
-            <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>🛡️ Raid Shield Status</div>
+            <div style={{ fontSize: 9.5, color: '#717886', marginTop: 1, fontWeight: 500 }}>
               Protects your HP from being stolen by other players
             </div>
           </div>
@@ -505,7 +505,7 @@ export function RaidMode({ address }) {
               {isShieldActive ? 'Remaining Protection' : 'Protection Cost'}
             </span>
             <span style={{ fontSize: 13, fontWeight: 900, color: '#0A0B0D' }}>
-              {isShieldActive ? shieldTimeLeft : '0.15 USDC / 24h'}
+              {isShieldActive ? shieldTimeLeft : '0.15 USDC / 24 hours'}
             </span>
           </div>
 
@@ -626,8 +626,11 @@ export function RaidMode({ address }) {
 
             {/* Right side info & action */}
             <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <p style={{ margin: '0 0 12px', fontSize: 12.5, color: '#717886', lineHeight: 1.35, fontWeight: 500 }}>
-                Find your target and steal some <span style={{ color: '#0052FF', fontWeight: 800 }}>HP</span>
+              <h4 style={{ margin: '0 0 4px', fontSize: 14, fontWeight: 800, color: '#0A0B0D', letterSpacing: -0.2 }}>
+                Raid
+              </h4>
+              <p style={{ margin: '0 0 10px', fontSize: 11, color: '#717886', lineHeight: 1.3, fontWeight: 400 }}>
+                Find your target and steal some <span style={{ color: '#0052FF', fontWeight: 600 }}>HP</span>
               </p>
 
               <button
@@ -654,7 +657,9 @@ export function RaidMode({ address }) {
                 }}
               >
                 {isCooldownActive ? (
-                  <span>{cooldownText}</span>
+                  <span style={{ fontWeight: 500 }}>
+                    next raid: <strong style={{ fontWeight: 800 }}>{cooldownText}</strong>
+                  </span>
                 ) : (
                   <>
                     <span>Raid</span>
@@ -743,7 +748,7 @@ export function RaidMode({ address }) {
                   flexShrink: 0,
                   boxShadow: '0 4px 12px rgba(5,150,105,0.1)'
                 }}>
-                  💰
+                  🏆
                 </div>
                 {/* Right Side: Details & Action */}
                 <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
@@ -751,8 +756,8 @@ export function RaidMode({ address }) {
                     Raid successful
                   </h3>
                   <div style={{ fontSize: 13, fontWeight: 800, color: '#065F46', marginBottom: 8, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
-                    <span>+{gameOutcome.stolen_amount} HP</span>
-                    <span style={{ color: '#717886', fontWeight: 600, fontSize: 11 }}>({gameOutcome.percentage}% of target balance)</span>
+                    <span>+{Number(gameOutcome.stolen_amount).toFixed(2)} HP</span>
+                    <span style={{ color: '#717886', fontWeight: 600, fontSize: 11 }}>({Number(gameOutcome.percentage).toFixed(2)}% of target balance)</span>
                   </div>
                   <button
                     onClick={handlePlayAgain}
@@ -824,9 +829,9 @@ export function RaidMode({ address }) {
 
       {/* ═══ RAID HISTORY (Displayed directly below interactive board) ═══ */}
       <div style={{ marginTop: 24 }}>
-        <h2 style={{ margin: '0 0 12px', fontSize: 15, fontWeight: 900, color: '#0A0B0D', letterSpacing: -0.3 }}>
-          Successful Raid History
-        </h2>
+        <div style={{ fontSize: 9, color: '#717886', fontWeight: 800, letterSpacing: 0.5, marginBottom: 10, textTransform: 'uppercase' }}>
+          Raids History
+        </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {history.length === 0 ? (
@@ -839,12 +844,19 @@ export function RaidMode({ address }) {
               color: '#717886',
               fontSize: 11
             }}>
-              No successful raids logged yet. Be the first one to pull off a raid!
+              No raids logged yet. Be the first one to pull off a raid!
             </div>
           ) : (
             history.map(item => {
+              const isVictim = item.victim_address === address?.toLowerCase()
+              const raiderName = item.raider?.basename || short(item.raider_address)
               const victimName = item.victim?.basename || short(item.victim_address)
-              const timeStr = new Date(item.created_at).toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' + new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+              const avatarAddress = isVictim ? item.raider_address : item.victim_address
+
+              const dateObj = new Date(item.created_at)
+              const datePart = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })
+              const timePart = dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'UTC' })
+              const timeStr = `${datePart} ${timePart} UTC`
 
               return (
                 <div
@@ -861,7 +873,7 @@ export function RaidMode({ address }) {
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
-                    <UserAvatar address={item.victim_address} size={28} />
+                    <UserAvatar address={avatarAddress} size={28} />
                   </div>
 
                   <div style={{ flex: 1, minWidth: 0 }}>
@@ -873,7 +885,15 @@ export function RaidMode({ address }) {
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap'
                     }}>
-                      Stolen from <span style={{ color: '#0052FF' }}>{victimName}</span>
+                      {isVictim ? (
+                        <>
+                          Stolen by <span style={{ color: '#DC2626' }}>{raiderName}</span>
+                        </>
+                      ) : (
+                        <>
+                          Stolen from <span style={{ color: '#0052FF' }}>{victimName}</span>
+                        </>
+                      )}
                     </div>
                     <div style={{ fontSize: 10, color: '#94A3B8', marginTop: 2 }}>
                       {timeStr}
@@ -881,27 +901,19 @@ export function RaidMode({ address }) {
                   </div>
 
                   <div style={{
-                    background: '#ECFDF5',
-                    border: '1px solid #A7F3D0',
+                    background: isVictim ? '#FEF2F2' : '#ECFDF5',
+                    border: `1px solid ${isVictim ? '#FCA5A5' : '#A7F3D0'}`,
                     borderRadius: 12,
-                    padding: '6px 12px',
+                    padding: '6px 10px',
                     fontSize: 12,
                     fontWeight: 900,
-                    color: '#059669',
-                    textAlign: 'right',
+                    color: isVictim ? '#DC2626' : '#059669',
+                    textAlign: 'center',
                     flexShrink: 0,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'flex-end',
-                    minWidth: 70
+                    minWidth: 85,
+                    boxSizing: 'border-box'
                   }}>
-                    <span>+{item.stolen_amount} HP</span>
-                    {item.percentage && (
-                      <span style={{ fontSize: 8, fontWeight: 700, opacity: 0.8, marginTop: 1 }}>
-                        {item.percentage}%
-                      </span>
-                    )}
+                    {isVictim ? '-' : '+'}{Number(item.stolen_amount).toFixed(2)} HP
                   </div>
                 </div>
               )
