@@ -436,7 +436,7 @@ export function RaidMode({ address }) {
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '8px', color: '#EF4444' }}>●</span>
-              <span>Successful raid steals MIN 10 HP (and more).</span>
+              <span>Successful raid: min 10 HP (up to 5% of target balance).</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '8px', color: '#EF4444' }}>●</span>
