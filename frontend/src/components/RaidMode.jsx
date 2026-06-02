@@ -16,14 +16,13 @@ export function RaidMode({ address }) {
   const [shieldTimeLeft, setShieldTimeLeft] = useState('')
   const [isShieldActive, setIsShieldActive] = useState(false)
   const [history, setHistory] = useState([])
+  const [lastRaidTime, setLastRaidTime] = useState(null)
+  const [cooldownText, setCooldownText] = useState('')
+  const [isCooldownActive, setIsCooldownActive] = useState(false)
 
-  // Game UI State: 'idle', 'scanning', 'choose_card', 'flipping', 'result'
+  // Game UI State: 'idle', 'scanning', 'result'
   const [gameState, setGameState] = useState('idle')
-  const [scanIndex, setScanIndex] = useState(0)
-  const [potentialVictims, setPotentialVictims] = useState([])
-  const [finalVictim, setFinalVictim] = useState(null)
   const [gameOutcome, setGameOutcome] = useState(null)
-  const [selectedCardIdx, setSelectedCardIdx] = useState(null)
   
   const chainId = useChainId()
   const { switchChain, isPending: isSwitching } = useSwitchChain()
@@ -39,17 +38,36 @@ export function RaidMode({ address }) {
   // Scanning timeout ref
   const scanTimeoutRef = useRef(null)
 
-  // Fetch current user and check shield
-  const fetchUserData = async () => {
+  // Fetch current user details & check shield expiry & last raid time
+  const fetchRaidStatus = async () => {
     if (!address) return
-    const { data, error } = await db
-      .from('users')
-      .select('points, shield_expires_at')
-      .eq('address', address.toLowerCase())
-      .single()
+    try {
+      // 1. Fetch user data (shield)
+      const { data: userData, error: userError } = await db
+        .from('users')
+        .select('points, shield_expires_at')
+        .eq('address', address.toLowerCase())
+        .single()
 
-    if (!error && data) {
-      setUser(data)
+      if (!userError && userData) {
+        setUser(userData)
+      }
+
+      // 2. Fetch last raid attempt
+      const { data: raidData, error: raidError } = await db
+        .from('raid_attempts')
+        .select('created_at')
+        .eq('raider_address', address.toLowerCase())
+        .order('created_at', { ascending: false })
+        .limit(1)
+
+      if (!raidError && raidData && raidData.length > 0) {
+        setLastRaidTime(new Date(raidData[0].created_at).getTime())
+      } else {
+        setLastRaidTime(null)
+      }
+    } catch (e) {
+      console.error('Error fetching raid status:', e)
     }
   }
 
@@ -77,36 +95,9 @@ export function RaidMode({ address }) {
     }
   }
 
-  // Fetch potential targets
-  const fetchScanningPool = async () => {
-    try {
-      const { data } = await db
-        .from('users')
-        .select('address, basename')
-        .gt('points', 300)
-        .neq('address', address.toLowerCase())
-        .limit(15)
-
-      if (data && data.length > 0) {
-        setPotentialVictims(data)
-      } else {
-        setPotentialVictims([
-          { address: '0x32A...89b1', basename: 'based_chad' },
-          { address: '0x9a8...c102', basename: 'degen_king' },
-          { address: '0xf83...a812', basename: 'vitalik_fan' },
-          { address: '0x1b4...d9e5', basename: 'blue_sky' },
-          { address: '0xcd1...f721', basename: 'smart_builder' }
-        ])
-      }
-    } catch {
-      // Fallback
-    }
-  }
-
   useEffect(() => {
-    fetchUserData()
+    fetchRaidStatus()
     fetchHistory()
-    fetchScanningPool()
 
     const sub = db
       .channel('raid-history-realtime')
@@ -120,6 +111,52 @@ export function RaidMode({ address }) {
       if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current)
     }
   }, [address])
+
+  // Cooldown countdown timer
+  useEffect(() => {
+    if (!lastRaidTime) {
+      setIsCooldownActive(false)
+      setCooldownText('')
+      return
+    }
+
+    const updateCooldown = () => {
+      const now = Date.now()
+      const tenMinutes = 10 * 60 * 1000
+      const elapsed = now - lastRaidTime
+      const remaining = tenMinutes - elapsed
+
+      if (remaining <= 0) {
+        setIsCooldownActive(false)
+        setCooldownText('')
+        return true // Finished
+      } else {
+        setIsCooldownActive(true)
+        const seconds = Math.floor(remaining / 1000)
+        if (seconds >= 60) {
+          const minutes = Math.floor(seconds / 60)
+          const extra = seconds % 60 > 0 ? 1 : 0
+          const displayMin = minutes + extra
+          setCooldownText(`${displayMin}m left to next raid`)
+        } else {
+          setCooldownText(`${seconds}s left to next raid`)
+        }
+        return false
+      }
+    }
+
+    const finished = updateCooldown()
+    if (finished) return
+
+    const interval = setInterval(() => {
+      const isDone = updateCooldown()
+      if (isDone) {
+        clearInterval(interval)
+      }
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [lastRaidTime])
 
   // Shield countdown timer and progress calculation
   const [shieldProgressPercent, setShieldProgressPercent] = useState(0)
@@ -216,7 +253,7 @@ export function RaidMode({ address }) {
       })
       if (error) throw error
       if (data?.ok) {
-        fetchUserData()
+        fetchRaidStatus()
         setShowTxModal(false)
         reset()
       } else {
@@ -248,15 +285,9 @@ export function RaidMode({ address }) {
         })
 
         scanTimeoutRef.current = setTimeout(() => {
-          if (data.success && data.victim_address) {
-            setFinalVictim({
-              address: data.victim_address,
-              basename: data.victim_name
-            })
-          } else {
-            setFinalVictim(potentialVictims[Math.floor(Math.random() * potentialVictims.length)])
-          }
-          setGameState('choose_card')
+          setGameState('result')
+          fetchRaidStatus()
+          fetchHistory()
           reset()
         }, 3000)
       } else {
@@ -272,21 +303,8 @@ export function RaidMode({ address }) {
     }
   }
 
-  const handleCardSelection = (cardIdx) => {
-    setSelectedCardIdx(cardIdx)
-    setGameState('flipping')
-
-    setTimeout(() => {
-      setGameState('result')
-      fetchUserData()
-      fetchHistory()
-    }, 1200)
-  }
-
   const handlePlayAgain = () => {
     setGameState('idle')
-    setSelectedCardIdx(null)
-    setFinalVictim(null)
     setGameOutcome(null)
     setErrorMessage('')
     reset()
@@ -608,38 +626,42 @@ export function RaidMode({ address }) {
 
             {/* Right side info & action */}
             <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <h2 style={{ margin: '0 0 4px', fontSize: 16, fontWeight: 900, color: '#0A0B0D', letterSpacing: -0.4 }}>
-                Raid
-              </h2>
-              <p style={{ margin: '0 0 12px', fontSize: 11.5, color: '#717886', lineHeight: 1.3 }}>
-                знайди свою ціль та вкради трохи <span style={{ color: '#0052FF', fontWeight: 800 }}>HP</span>
+              <p style={{ margin: '0 0 12px', fontSize: 12.5, color: '#717886', lineHeight: 1.35, fontWeight: 500 }}>
+                Find your target and steal some <span style={{ color: '#0052FF', fontWeight: 800 }}>HP</span>
               </p>
 
               <button
                 className="raid-btn"
                 onClick={handleInitiateRaidClick}
-                disabled={isPending}
+                disabled={isPending || isCooldownActive}
                 style={{
-                  alignSelf: 'flex-start',
-                  background: '#0000FF',
-                  color: '#fff',
-                  border: 'none',
+                  width: '100%',
+                  background: isCooldownActive ? '#EEF0F3' : '#0000FF',
+                  color: isCooldownActive ? '#94A3B8' : '#fff',
+                  border: isCooldownActive ? '1px solid #DEE1E7' : 'none',
                   borderRadius: 20,
-                  padding: '8px 16px',
-                  fontSize: 11,
+                  padding: '10px 18px',
+                  fontSize: 12,
                   fontWeight: 800,
-                  cursor: isPending ? 'not-allowed' : 'pointer',
+                  cursor: (isPending || isCooldownActive) ? 'not-allowed' : 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 4,
-                  boxShadow: '0 6px 18px rgba(0,0,255,0.2)',
+                  justifyContent: 'center',
+                  gap: 6,
+                  boxShadow: (isPending || isCooldownActive) ? 'none' : '0 6px 18px rgba(0,0,255,0.2)',
                   opacity: isPending ? 0.5 : 1,
                   transition: 'transform 0.2s, box-shadow 0.2s'
                 }}
               >
-                <span>Raid</span>
-                <span style={{ color: '#A5B4FC', fontWeight: 900, marginLeft: 2 }}>0.25</span>
-                <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, flexShrink: 0 }} />
+                {isCooldownActive ? (
+                  <span>{cooldownText}</span>
+                ) : (
+                  <>
+                    <span>Raid</span>
+                    <span style={{ color: '#A5B4FC', fontWeight: 900, marginLeft: 2 }}>0.25</span>
+                    <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, flexShrink: 0 }} />
+                  </>
+                )}
               </button>
             </div>
           </div>
@@ -695,150 +717,9 @@ export function RaidMode({ address }) {
             </div>
 
             <div style={{ flex: 1, minWidth: 0 }}>
-              <h3 style={{ margin: '0 0 4px', fontSize: 15, fontWeight: 900, color: '#0A0B0D', letterSpacing: -0.4 }}>
-                Scanning Active Vaults...
+              <h3 style={{ margin: 0, fontSize: 16, fontWeight: 900, color: '#0A0B0D', letterSpacing: -0.4 }}>
+                Locating target...
               </h3>
-              <p style={{ margin: 0, fontSize: 11.5, color: '#717886', lineHeight: 1.3 }}>
-                Locating active targets containing 300+ HP on Base.
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* GAMESTATE: CHOOSE CARD */}
-        {gameState === 'choose_card' && (
-          <div style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 16, textAlign: 'left' }}>
-            {/* Left Column: Target found info */}
-            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <div style={{ fontSize: 9, fontWeight: 800, color: '#0052FF', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 2 }}>
-                🎯 Target Found
-              </div>
-              <div style={{
-                fontSize: 15,
-                fontWeight: 900,
-                color: '#0A0B0D',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                marginBottom: 4
-              }}>
-                {finalVictim?.basename || short(finalVictim?.address)}
-              </div>
-              <p style={{ margin: 0, fontSize: 10.5, color: '#717886', lineHeight: 1.3 }}>
-                Choose validation card to execute the raid.
-              </p>
-            </div>
-
-            {/* Right Column: Two Card Decryptors */}
-            <div style={{ display: 'flex', gap: 10, flexShrink: 0 }}>
-              {[0, 1].map(idx => (
-                <button
-                  key={idx}
-                  onClick={() => handleCardSelection(idx)}
-                  className="raid-btn"
-                  style={{
-                    width: 72,
-                    height: 90,
-                    background: 'linear-gradient(135deg, #0A0B0D 0%, #1A1C20 100%)',
-                    border: idx === 0 ? '1.5px solid #0052FF' : '1.5px solid #3B82F6',
-                    borderRadius: 12,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '8px 6px',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    boxShadow: idx === 0 ? '0 4px 12px rgba(0,82,255,0.12)' : '0 4px 12px rgba(59,130,246,0.12)',
-                    transition: 'all 0.2s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-3px)';
-                    e.currentTarget.style.boxShadow = idx === 0 
-                      ? '0 6px 16px rgba(0,82,255,0.2)' 
-                      : '0 6px 16px rgba(59,130,246,0.2)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = idx === 0 
-                      ? '0 4px 12px rgba(0,82,255,0.12)' 
-                      : '0 4px 12px rgba(59,130,246,0.12)';
-                  }}
-                >
-                  <div style={{
-                    position: 'absolute',
-                    inset: 0,
-                    opacity: 0.05,
-                    background: 'radial-gradient(circle, #fff 10%, transparent 11%)',
-                    backgroundSize: '8px 8px'
-                  }} />
-
-                  <div style={{
-                    fontSize: 7,
-                    fontWeight: 900,
-                    color: idx === 0 ? '#0052FF' : '#3B82F6',
-                    textTransform: 'uppercase',
-                  }}>
-                    {idx === 0 ? 'A' : 'B'}
-                  </div>
-
-                  <div style={{
-                    fontSize: 20,
-                    filter: 'drop-shadow(0 0 6px rgba(0,82,255,0.4))'
-                  }}>
-                    {idx === 0 ? '⚡' : '🔑'}
-                  </div>
-
-                  <div style={{
-                    fontSize: 8,
-                    fontWeight: 800,
-                    color: '#94A3B8',
-                    textTransform: 'uppercase'
-                  }}>
-                    Decrypt
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* GAMESTATE: FLIPPING */}
-        {gameState === 'flipping' && (
-          <div style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 16, textAlign: 'left' }}>
-            <div style={{
-              width: 72,
-              height: 90,
-              borderRadius: 12,
-              border: '1.5px solid #0052FF',
-              background: 'linear-gradient(135deg, #0A0B0D 0%, #1A1C20 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 24,
-              boxShadow: '0 6px 18px rgba(0,82,255,0.2)',
-              animation: 'flip 1s ease-in-out infinite',
-              position: 'relative',
-              flexShrink: 0
-            }}>
-              <div style={{
-                position: 'absolute',
-                inset: 0,
-                opacity: 0.1,
-                background: 'radial-gradient(circle, #fff 10%, transparent 11%)',
-                backgroundSize: '8px 8px',
-                borderRadius: 10
-              }} />
-              🔮
-            </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <h3 style={{ margin: '0 0 4px', fontSize: 15, fontWeight: 900, color: '#0A0B0D', letterSpacing: -0.4 }}>
-                Decrypting Combination...
-              </h3>
-              <p style={{ margin: 0, fontSize: 11.5, color: '#717886', lineHeight: 1.3 }}>
-                Bypassing security protocols...
-              </p>
             </div>
           </div>
         )}
@@ -867,23 +748,24 @@ export function RaidMode({ address }) {
                 {/* Right Side: Details & Action */}
                 <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
                   <h3 style={{ margin: '0 0 2px', fontSize: 16, fontWeight: 900, color: '#059669', letterSpacing: -0.4 }}>
-                    Raid successful. Congrats!
+                    Raid successful
                   </h3>
-                  <div style={{ fontSize: 12, fontWeight: 800, color: '#065F46', marginBottom: 8 }}>
-                    +{gameOutcome.stolen_amount} HP <span style={{ color: '#717886', fontWeight: 500 }}>({gameOutcome.percentage}% of {gameOutcome.victim_name || short(gameOutcome.victim_address)})</span>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: '#065F46', marginBottom: 8, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
+                    <span>+{gameOutcome.stolen_amount} HP</span>
+                    <span style={{ color: '#717886', fontWeight: 600, fontSize: 11 }}>({gameOutcome.percentage}% of target balance)</span>
                   </div>
                   <button
                     onClick={handlePlayAgain}
                     className="raid-btn"
                     style={{
-                      alignSelf: 'flex-start',
+                      width: '100%',
                       background: '#ECFDF5',
                       border: '1px solid #A7F3D0',
                       borderRadius: 20,
-                      padding: '6px 16px',
+                      padding: '10px 18px',
                       color: '#047857',
                       fontWeight: 800,
-                      fontSize: 11,
+                      fontSize: 12,
                       cursor: 'pointer',
                       transition: 'all 0.2s',
                     }}
@@ -912,24 +794,21 @@ export function RaidMode({ address }) {
                 </div>
                 {/* Right Side: Details & Action */}
                 <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-                  <h3 style={{ margin: '0 0 2px', fontSize: 16, fontWeight: 900, color: '#E11D48', letterSpacing: -0.4 }}>
-                    Raid failed.
+                  <h3 style={{ margin: '0 0 8px', fontSize: 16, fontWeight: 900, color: '#E11D48', letterSpacing: -0.4 }}>
+                    Raid failed
                   </h3>
-                  <div style={{ fontSize: 11.5, color: '#717886', fontWeight: 500, marginBottom: 8 }}>
-                    Good luck next time!
-                  </div>
                   <button
                     onClick={handlePlayAgain}
                     className="raid-btn"
                     style={{
-                      alignSelf: 'flex-start',
+                      width: '100%',
                       background: '#EEF0F3',
                       border: '1px solid #DEE1E7',
                       borderRadius: 20,
-                      padding: '6px 16px',
+                      padding: '10px 18px',
                       color: '#32353D',
                       fontWeight: 800,
-                      fontSize: 11,
+                      fontSize: 12,
                       cursor: 'pointer',
                       transition: 'all 0.2s',
                     }}
