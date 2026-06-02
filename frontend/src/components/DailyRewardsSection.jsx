@@ -112,7 +112,7 @@ export function DailyRewardsSection({ address }) {
   }
 
   return (
-    <div style={{ paddingBottom: 120, padding: '0 12px 120px' }}>
+    <div style={{ paddingBottom: 120, padding: '0 16px 120px' }}>
       {/* Premium Glassmorphic Daily Rewards Banner */}
       <div style={{
         background: '#0D1527',

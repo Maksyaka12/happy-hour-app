@@ -113,7 +113,7 @@ export function LeaderboardSection({ address }) {
   }
 
   return (
-    <div style={{ paddingBottom: 120, padding: '0 12px 120px' }}>
+    <div style={{ paddingBottom: 120, padding: '0 16px 120px' }}>
       {/* Season 1 Banner */}
       <div style={{
         backgroundImage: 'url(/banner.jpg)',

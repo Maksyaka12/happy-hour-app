@@ -314,57 +314,57 @@ export default function App() {
           {tab === 'boxes' && <HappyBoxesSection address={address} />}
           {tab === 'tasks' && <TasksSection address={address} />}
           {tab === 'leaderboard' && (
-            <div style={{ padding: '0 8px' }}>
+            <>
               {/* Premium sub-navigation switcher above the banners */}
-              <div style={{
-                display: 'flex',
-                background: leaderboardSubTab === 'usdc' ? 'rgba(0, 82, 255, 0.08)' : 'rgba(0, 200, 83, 0.08)',
-                backdropFilter: 'blur(20px)',
-                border: leaderboardSubTab === 'usdc' ? '1px solid rgba(0, 82, 255, 0.25)' : '1px solid rgba(0, 200, 83, 0.25)',
-                borderRadius: 16,
-                padding: 4,
-                marginBottom: 20,
-                maxWidth: 400,
-                margin: '0 auto 20px',
-                boxShadow: leaderboardSubTab === 'usdc' ? '0 4px 20px rgba(0, 82, 255, 0.05)' : '0 4px 20px rgba(0, 200, 83, 0.05)',
-                transition: 'all 0.3s ease'
-              }}>
-                <button
-                  onClick={() => setLeaderboardSubTab('usdc')}
-                  style={{
-                    flex: 1,
-                    padding: '10px 16px',
-                    borderRadius: 12,
-                    border: 'none',
-                    background: leaderboardSubTab === 'usdc' ? 'linear-gradient(135deg, #0052FF 0%, #00C6FB 100%)' : 'transparent',
-                    color: leaderboardSubTab === 'usdc' ? '#fff' : 'var(--text-secondary, #717886)',
-                    fontWeight: 800,
-                    fontSize: 13,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    boxShadow: leaderboardSubTab === 'usdc' ? '0 4px 12px rgba(0, 82, 255, 0.25)' : 'none'
-                  }}
-                >
-                  🏆 USDC Rewards
-                </button>
-                <button
-                  onClick={() => setLeaderboardSubTab('hp')}
-                  style={{
-                    flex: 1,
-                    padding: '10px 16px',
-                    borderRadius: 12,
-                    border: 'none',
-                    background: leaderboardSubTab === 'hp' ? 'linear-gradient(135deg, #00C853 0%, #10B981 100%)' : 'transparent',
-                    color: leaderboardSubTab === 'hp' ? '#fff' : 'var(--text-secondary, #717886)',
-                    fontWeight: 800,
-                    fontSize: 13,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    boxShadow: leaderboardSubTab === 'hp' ? '0 4px 12px rgba(0, 200, 83, 0.25)' : 'none'
-                  }}
-                >
-                  ⚡ HP Rewards (Daily)
-                </button>
+              <div style={{ padding: '0 16px' }}>
+                <div style={{
+                  display: 'flex',
+                  background: '#EEF0F3',
+                  border: '1px solid #DEE1E7',
+                  borderRadius: 16,
+                  padding: 4,
+                  marginBottom: 20,
+                  maxWidth: 400,
+                  margin: '0 auto 20px',
+                  boxShadow: '0 4px 12px rgba(10,11,13,0.03)',
+                }}>
+                  <button
+                    onClick={() => setLeaderboardSubTab('usdc')}
+                    style={{
+                      flex: 1,
+                      padding: '10px 16px',
+                      borderRadius: 12,
+                      border: 'none',
+                      background: leaderboardSubTab === 'usdc' ? 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)' : 'transparent',
+                      color: leaderboardSubTab === 'usdc' ? '#fff' : '#717886',
+                      fontWeight: 800,
+                      fontSize: 13,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      boxShadow: leaderboardSubTab === 'usdc' ? '0 4px 12px rgba(0,82,255,0.2)' : 'none'
+                    }}
+                  >
+                    🏆 USDC Rewards
+                  </button>
+                  <button
+                    onClick={() => setLeaderboardSubTab('hp')}
+                    style={{
+                      flex: 1,
+                      padding: '10px 16px',
+                      borderRadius: 12,
+                      border: 'none',
+                      background: leaderboardSubTab === 'hp' ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' : 'transparent',
+                      color: leaderboardSubTab === 'hp' ? '#fff' : '#717886',
+                      fontWeight: 800,
+                      fontSize: 13,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      boxShadow: leaderboardSubTab === 'hp' ? '0 4px 12px rgba(16,185,129,0.2)' : 'none'
+                    }}
+                  >
+                    ⚡ HP Rewards (Daily)
+                  </button>
+                </div>
               </div>
 
               {leaderboardSubTab === 'usdc' ? (
@@ -372,7 +372,7 @@ export default function App() {
               ) : (
                 <DailyRewardsSection address={address} />
               )}
-            </div>
+            </>
           )}
           {tab === 'profile' && <ProfileSection address={address} basename={basename} totalUsers={totalUsers} />}
         </div>
