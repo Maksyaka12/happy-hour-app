@@ -515,7 +515,7 @@ export function RaidMode({ address }) {
                 <>
                   <span>0.15</span>
                   <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, display: 'inline-block', verticalAlign: 'middle' }} />
-                  <span style={{ color: '#717886', fontWeight: 600, fontSize: 11 }}>/ 24h</span>
+                  <span>/ 24h</span>
                 </>
               )}
             </span>
