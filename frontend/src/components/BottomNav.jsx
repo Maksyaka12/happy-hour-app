@@ -17,9 +17,9 @@ const isBaseApp = () => {
 export function BottomNav({ tab, setTab }) {
   const tabs = [
     { id: 'raffle',      label: 'Raffle',  icon: '🎰' },
+    { id: 'tasks',       label: 'Tasks',   icon: '📋' },
     { id: 'raid',        label: 'Raids',   icon: '⚔️' },
     { id: 'boxes',       label: 'Boxes',   icon: '🎁' },
-    { id: 'tasks',       label: 'Tasks',   icon: '📋' },
     { id: 'leaderboard', label: 'Leaders', icon: '🏆' },
     { id: 'profile',     label: 'Profile', icon: '👤' },
   ]
