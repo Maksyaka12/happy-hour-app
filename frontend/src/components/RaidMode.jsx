@@ -511,25 +511,27 @@ export function RaidMode({ address }) {
 
           <button
             onClick={handlePurchaseShieldClick}
-            disabled={isPending}
+            disabled={isPending || isShieldActive}
             className="raid-btn"
             style={{
-              background: 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)',
-              color: '#fff',
-              border: 'none',
+              background: isShieldActive 
+                ? '#EEF0F3' 
+                : 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)',
+              color: isShieldActive ? '#94A3B8' : '#fff',
+              border: isShieldActive ? '1px solid #DEE1E7' : 'none',
               borderRadius: 12,
               padding: '7px 12px',
               fontSize: 9.5,
               fontWeight: 800,
-              cursor: isPending ? 'not-allowed' : 'pointer',
+              cursor: (isPending || isShieldActive) ? 'not-allowed' : 'pointer',
               display: 'flex',
               alignItems: 'center',
               gap: 4,
-              boxShadow: isPending ? 'none' : '0 4px 12px rgba(0,82,255,0.15)',
+              boxShadow: (isPending || isShieldActive) ? 'none' : '0 4px 12px rgba(0,82,255,0.15)',
               opacity: isPending ? 0.6 : 1,
             }}
           >
-            <span>{isShieldActive ? '🛡️ Extend Shield (+24h)' : '🛡️ Buy Raid Shield'}</span>
+            <span>{isShieldActive ? '🛡️ Shield Active' : '🛡️ Buy Raid Shield'}</span>
           </button>
         </div>
       </div>
