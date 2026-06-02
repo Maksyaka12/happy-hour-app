@@ -436,15 +436,15 @@ export function RaidMode({ address }) {
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '8px', color: '#EF4444' }}>●</span>
-              <span>Successful raid steals 10+ HP (and more).</span>
+              <span>Successful raid steals MIN 10 HP (and more).</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '8px', color: '#EF4444' }}>●</span>
+              <span>Raids available with 10 min cooldown.</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '8px', color: '#EF4444' }}>●</span>
               <span>Raid Shield: 24h absolute protection from raids.</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '8px', color: '#EF4444' }}>●</span>
-              <span>10-minute cooldown between raids.</span>
             </div>
           </div>
         </div>
