@@ -36,8 +36,8 @@ export function RaidMode({ address }) {
   // Web3 write hook
   const { data: txHash, writeContract, isPending, isConfirming, isSuccess, error: writeError, reset } = useBuilderWrite()
 
-  // Scanning loop ref
-  const scanIntervalRef = useRef(null)
+  // Scanning timeout ref
+  const scanTimeoutRef = useRef(null)
 
   // Fetch current user and check shield
   const fetchUserData = async () => {
@@ -117,6 +117,7 @@ export function RaidMode({ address }) {
 
     return () => {
       db.removeChannel(sub)
+      if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current)
     }
   }, [address])
 
@@ -246,24 +247,18 @@ export function RaidMode({ address }) {
           victim_name: data.victim_name
         })
 
-        let elapsed = 0
-        scanIntervalRef.current = setInterval(() => {
-          setScanIndex(prev => (prev + 1) % potentialVictims.length)
-          elapsed += 100
-          if (elapsed >= 2500) {
-            clearInterval(scanIntervalRef.current)
-            if (data.success && data.victim_address) {
-              setFinalVictim({
-                address: data.victim_address,
-                basename: data.victim_name
-              })
-            } else {
-              setFinalVictim(potentialVictims[Math.floor(Math.random() * potentialVictims.length)])
-            }
-            setGameState('choose_card')
-            reset()
+        scanTimeoutRef.current = setTimeout(() => {
+          if (data.success && data.victim_address) {
+            setFinalVictim({
+              address: data.victim_address,
+              basename: data.victim_name
+            })
+          } else {
+            setFinalVictim(potentialVictims[Math.floor(Math.random() * potentialVictims.length)])
           }
-        }, 100)
+          setGameState('choose_card')
+          reset()
+        }, 3000)
       } else {
         setErrorMessage(data?.error || 'Error preparing your raid.')
         setGameState('idle')
@@ -576,57 +571,55 @@ export function RaidMode({ address }) {
                 pointerEvents: 'none'
               }} />
               
-              {/* Rotating dial container */}
+              {/* Rotating target locator container */}
               <div className="vault-dial" style={{
-                width: 84,
-                height: 84,
+                width: 90,
+                height: 90,
                 borderRadius: '50%',
-                background: 'linear-gradient(135deg, #FFFFFF 0%, #F1F5F9 100%)',
-                border: '3px solid #DEE1E7',
-                boxShadow: '0 6px 16px rgba(10,11,13,0.06)',
+                background: 'linear-gradient(135deg, #0A0B0D 0%, #1A1C20 100%)',
+                border: '3px solid #0052FF',
+                boxShadow: '0 8px 24px rgba(0, 82, 255, 0.25)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 position: 'relative',
                 cursor: 'pointer',
               }}>
-                {/* Padlock icon in center */}
-                <div className="padlock-icon" style={{ fontSize: 32, transition: 'transform 0.3s ease' }}>🔒</div>
-                
-                {/* Little combination notches */}
-                {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => (
-                  <div key={deg} style={{
-                    position: 'absolute',
-                    width: 2,
-                    height: 6,
-                    background: '#B1B7C3',
-                    top: 2,
-                    left: 'calc(50% - 1px)',
-                    transformOrigin: '50% 40px',
-                    transform: `rotate(${deg}deg)`
+                {/* Custom Target Scope indicator */}
+                <div className="target-scope" style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: '50%',
+                  border: '2px dashed rgba(0, 82, 255, 0.7)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  position: 'relative',
+                  animation: 'spin 12s linear infinite'
+                }}>
+                  {/* Scope markings */}
+                  <div style={{ position: 'absolute', width: 2, height: 10, background: '#0052FF', top: -3 }} />
+                  <div style={{ position: 'absolute', width: 2, height: 10, background: '#0052FF', bottom: -3 }} />
+                  <div style={{ position: 'absolute', width: 10, height: 2, background: '#0052FF', left: -3 }} />
+                  <div style={{ position: 'absolute', width: 10, height: 2, background: '#0052FF', right: -3 }} />
+                  {/* Glowing center laser */}
+                  <div style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: '50%',
+                    background: '#0052FF',
+                    boxShadow: '0 0 12px #0052FF, 0 0 4px #0052FF'
                   }} />
-                ))}
+                </div>
               </div>
             </div>
 
             <h2 style={{ margin: '0 0 4px', fontSize: 16, fontWeight: 900, color: '#0A0B0D', letterSpacing: -0.4 }}>
               Raid System
             </h2>
-            <p style={{ margin: '0 0 12px', fontSize: 11, color: '#717886', maxWidth: 280, lineHeight: 1.4 }}>
-              Search for active targets and crack their combination locks.
+            <p style={{ margin: '0 0 16px', fontSize: 11, color: '#717886', maxWidth: 280, lineHeight: 1.4, textAlign: 'center' }}>
+              Initiate a scan for active targets on Base network.
             </p>
-
-            {/* Micro indicators */}
-            <div style={{ display: 'flex', gap: 16, justifyContent: 'center', fontSize: 9, fontWeight: 800, color: '#717886', marginBottom: 16 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span className="live-dot" style={{ width: 6, height: 6, borderRadius: '50%', background: '#059669', display: 'inline-block' }} />
-                <span>NETWORK: ACTIVE</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#0052FF', display: 'inline-block' }} />
-                <span>TARGETS: 15+ READY</span>
-              </div>
-            </div>
 
             <button
               className="raid-btn"
@@ -659,68 +652,168 @@ export function RaidMode({ address }) {
         )}
 
         {/* GAMESTATE: SCANNING */}
-        {gameState === 'scanning' && potentialVictims.length > 0 && (
-          <div>
-            <div style={{ fontSize: 36, animation: 'spin 2s linear infinite', marginBottom: 12 }}>🔍</div>
-            <h3 style={{ margin: '0 0 4px', fontSize: 15, fontWeight: 800, color: '#0A0B0D' }}>Scanning Active Targets...</h3>
-            <p style={{ margin: '0 0 16px', fontSize: 11, color: '#717886' }}>
-              Locating active vaults containing 300+ HP on Base...
-            </p>
-            
+        {gameState === 'scanning' && (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px 0' }}>
+            {/* Animated Radar Sweep */}
             <div style={{
-              background: '#F8FAFC',
-              border: '1px solid #DEE1E7',
-              borderRadius: 12,
-              padding: '12px 20px',
-              minWidth: 240,
-              height: 48,
+              position: 'relative',
+              width: 140,
+              height: 140,
+              borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(0,82,255,0.02) 0%, rgba(0,82,255,0.08) 100%)',
+              border: '2px solid rgba(0, 82, 255, 0.25)',
+              overflow: 'hidden',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              overflow: 'hidden',
+              boxShadow: '0 8px 32px rgba(0,82,255,0.08)',
+              marginBottom: 20
             }}>
-              <div style={{ fontSize: 13, fontWeight: 800, color: '#FF9900' }}>
-                🎯 {potentialVictims[scanIndex]?.basename || short(potentialVictims[scanIndex]?.address)}
-              </div>
+              {/* Grid Lines */}
+              <div style={{ position: 'absolute', width: '100%', height: 1, background: 'rgba(0,82,255,0.15)' }} />
+              <div style={{ position: 'absolute', width: 1, height: '100%', background: 'rgba(0,82,255,0.15)' }} />
+              {/* Concentric rings */}
+              <div style={{ position: 'absolute', width: 100, height: 100, borderRadius: '50%', border: '1px dashed rgba(0,82,255,0.12)' }} />
+              <div style={{ position: 'absolute', width: 60, height: 60, borderRadius: '50%', border: '1px dashed rgba(0,82,255,0.12)' }} />
+              
+              {/* Radar sweep line */}
+              <div className="radar-sweep" style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                background: 'conic-gradient(from 0deg at 50% 50%, rgba(0,82,255,0.3) 0deg, rgba(0,82,255,0) 90deg)',
+                borderRadius: '50%',
+              }} />
+              
+              {/* Glowing signal dots appearing */}
+              <div className="radar-signal-dot" style={{
+                position: 'absolute',
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                background: '#0052FF',
+                boxShadow: '0 0 10px #0052FF',
+                top: '30%',
+                left: '65%'
+              }} />
+              <div className="radar-signal-dot-delayed" style={{
+                position: 'absolute',
+                width: 6,
+                height: 6,
+                borderRadius: '50%',
+                background: '#059669',
+                boxShadow: '0 0 8px #059669',
+                bottom: '25%',
+                left: '20%'
+              }} />
             </div>
+
+            <h3 style={{ margin: '0 0 6px', fontSize: 16, fontWeight: 900, color: '#0A0B0D', letterSpacing: -0.4 }}>
+              Scanning Active Vaults...
+            </h3>
+            <p style={{ margin: 0, fontSize: 11, color: '#717886', maxWidth: 260, lineHeight: 1.4, textAlign: 'center' }}>
+              Locating targets with 300+ HP protected by vault locks.
+            </p>
           </div>
         )}
 
         {/* GAMESTATE: CHOOSE CARD */}
         {gameState === 'choose_card' && (
-          <div>
-            <h3 style={{ margin: '0 0 4px', fontSize: 15, fontWeight: 800, color: '#0A0B0D' }}>Target Vault Located!</h3>
-            <p style={{ margin: '0 0 12px', fontSize: 12, color: '#717886' }}>
-              Owner: <strong style={{ color: '#0052FF' }}>{finalVictim?.basename || short(finalVictim?.address)}</strong>
-            </p>
-            <div style={{ fontSize: 11, fontWeight: 800, color: '#FF9900', marginBottom: 14 }}>
-              Choose a card to execute the raid! (50/50 combination)
+          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{
+              background: 'rgba(0, 82, 255, 0.05)',
+              border: '1px solid rgba(0, 82, 255, 0.12)',
+              borderRadius: 14,
+              padding: '12px 16px',
+              width: '100%',
+              maxWidth: 320,
+              marginBottom: 16,
+              textAlign: 'center'
+            }}>
+              <div style={{ fontSize: 9, fontWeight: 800, color: '#0052FF', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>
+                🎯 TARGET VAULT LOCATED
+              </div>
+              <div style={{ fontSize: 14, fontWeight: 900, color: '#0A0B0D' }}>
+                {finalVictim?.basename || short(finalVictim?.address)}
+              </div>
             </div>
 
-            <div style={{ display: 'flex', gap: 14, justifyContent: 'center' }}>
+            <p style={{ margin: '0 0 20px 0', fontSize: 11, color: '#717886', maxWidth: 280, textAlign: 'center', lineHeight: 1.4 }}>
+              Choose a card to execute the raid! (50/50 combination)
+            </p>
+
+            <div style={{ display: 'flex', gap: 16, justifyContent: 'center', width: '100%' }}>
               {[0, 1].map(idx => (
                 <button
                   key={idx}
                   onClick={() => handleCardSelection(idx)}
                   className="raid-btn"
                   style={{
-                    width: 90,
-                    height: 120,
-                    background: '#ffffff',
-                    border: '2px solid #DEE1E7',
-                    borderRadius: 14,
+                    width: 105,
+                    height: 140,
+                    background: 'linear-gradient(135deg, #0A0B0D 0%, #1A1C20 100%)',
+                    border: idx === 0 ? '2px solid #0052FF' : '2px solid #3B82F6',
+                    borderRadius: 16,
                     cursor: 'pointer',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 8,
-                    transition: 'all 0.2s',
-                    boxShadow: '0 4px 10px rgba(10,11,13,0.02)'
+                    justifyContent: 'space-between',
+                    padding: '14px 10px',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    boxShadow: idx === 0 ? '0 8px 24px rgba(0,82,255,0.12)' : '0 8px 24px rgba(59,130,246,0.12)',
+                    transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-6px) scale(1.03)';
+                    e.currentTarget.style.boxShadow = idx === 0 
+                      ? '0 12px 32px rgba(0,82,255,0.25)' 
+                      : '0 12px 32px rgba(59,130,246,0.25)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                    e.currentTarget.style.boxShadow = idx === 0 
+                      ? '0 8px 24px rgba(0,82,255,0.12)' 
+                      : '0 8px 24px rgba(59,130,246,0.12)';
                   }}
                 >
-                  <div style={{ fontSize: 24 }}>❓</div>
-                  <div style={{ fontSize: 10, fontWeight: 800, color: '#717886' }}>Card {idx === 0 ? 'A' : 'B'}</div>
+                  <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    opacity: 0.08,
+                    background: 'radial-gradient(circle, #fff 10%, transparent 11%)',
+                    backgroundSize: '10px 10px'
+                  }} />
+
+                  <div style={{
+                    fontSize: 8,
+                    fontWeight: 900,
+                    color: idx === 0 ? '#0052FF' : '#3B82F6',
+                    letterSpacing: 0.8,
+                    textTransform: 'uppercase',
+                    alignSelf: 'flex-start'
+                  }}>
+                    CARD {idx === 0 ? 'A' : 'B'}
+                  </div>
+
+                  <div style={{
+                    fontSize: 28,
+                    filter: 'drop-shadow(0 0 8px rgba(0,82,255,0.4))'
+                  }}>
+                    {idx === 0 ? '⚡' : '🔑'}
+                  </div>
+
+                  <div style={{
+                    fontSize: 9,
+                    fontWeight: 800,
+                    color: '#94A3B8',
+                    textTransform: 'uppercase'
+                  }}>
+                    Decrypt
+                  </div>
                 </button>
               ))}
             </div>
@@ -729,22 +822,32 @@ export function RaidMode({ address }) {
 
         {/* GAMESTATE: FLIPPING */}
         {gameState === 'flipping' && (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px 0' }}>
             <div style={{
-              width: 90,
-              height: 120,
-              borderRadius: 14,
-              border: '2px solid #FF9900',
-              background: '#ffffff',
+              width: 100,
+              height: 140,
+              borderRadius: 16,
+              border: '2px solid #0052FF',
+              background: 'linear-gradient(135deg, #0A0B0D 0%, #1A1C20 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: 32,
-              animation: 'flip 1.2s ease-in-out infinite'
+              fontSize: 36,
+              boxShadow: '0 12px 32px rgba(0,82,255,0.25)',
+              animation: 'flip 1s ease-in-out infinite',
+              position: 'relative'
             }}>
-              🃏
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                opacity: 0.15,
+                background: 'radial-gradient(circle, #fff 10%, transparent 11%)',
+                backgroundSize: '10px 10px',
+                borderRadius: 14
+              }} />
+              🔮
             </div>
-            <h3 style={{ marginTop: 16, fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Cracking Vault Combination...</h3>
+            <h3 style={{ marginTop: 20, fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Decrypting Combination...</h3>
           </div>
         )}
 
@@ -752,40 +855,71 @@ export function RaidMode({ address }) {
         {gameState === 'result' && gameOutcome && (
           <div style={{ maxWidth: 440, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             {gameOutcome.success ? (
-              <div style={{ width: '100%' }}>
-                <div style={{ fontSize: 50, marginBottom: 8 }}>🎉💰</div>
-                <h2 style={{ margin: '0 0 4px', fontSize: 18, fontWeight: 900, color: '#059669' }}>
-                  Successful Raid!
+              <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div style={{ 
+                  width: 72, 
+                  height: 72, 
+                  borderRadius: '50%', 
+                  background: 'rgba(5, 150, 105, 0.08)', 
+                  border: '2px solid #059669',
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  fontSize: 32, 
+                  marginBottom: 16,
+                  boxShadow: '0 8px 24px rgba(5,150,105,0.1)'
+                }}>
+                  💰
+                </div>
+                
+                <h2 style={{ margin: '0 0 4px', fontSize: 18, fontWeight: 900, color: '#059669', letterSpacing: -0.4 }}>
+                  Raid successful.
                 </h2>
-                <p style={{ margin: '0 0 12px', fontSize: 12, color: '#717886' }}>
-                  The combination matched! Stolen points added to your balance.
+                <p style={{ margin: '0 0 16px', fontSize: 12, fontWeight: 500, color: '#717886' }}>
+                  Congrats!
                 </p>
 
                 <div style={{
-                  background: '#ECFDF5',
+                  background: 'linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%)',
                   border: '1px solid #A7F3D0',
-                  borderRadius: 14,
-                  padding: '12px 18px',
-                  marginBottom: 18
+                  borderRadius: 16,
+                  padding: '16px 20px',
+                  width: '100%',
+                  maxWidth: 320,
+                  marginBottom: 20,
+                  textAlign: 'center',
+                  boxShadow: '0 4px 12px rgba(5,150,105,0.05)'
                 }}>
-                  <div style={{ fontSize: 10, color: '#059669', fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5 }}>Stolen Reward</div>
-                  <div style={{ fontSize: 26, fontWeight: 900, color: '#059669', margin: '2px 0' }}>
+                  <div style={{ fontSize: 28, fontWeight: 900, color: '#059669', marginBottom: 4 }}>
                     +{gameOutcome.stolen_amount} HP
                   </div>
-                  <div style={{ fontSize: 11, color: '#374151', fontWeight: 600 }}>
-                    Victim: <strong style={{ color: '#0A0B0D' }}>{gameOutcome.victim_name || short(gameOutcome.victim_address)}</strong>
-                    {gameOutcome.percentage && ` (${gameOutcome.percentage}% of total)`}
+                  <div style={{ fontSize: 11, color: '#065F46', fontWeight: 700 }}>
+                    Stolen <strong style={{ color: '#047857' }}>{gameOutcome.percentage}%</strong> of {gameOutcome.victim_name || short(gameOutcome.victim_address)}'s balance
                   </div>
                 </div>
               </div>
             ) : (
-              <div style={{ width: '100%' }}>
-                <div style={{ fontSize: 50, marginBottom: 8 }}>💥🔒</div>
-                <h2 style={{ margin: '0 0 4px', fontSize: 18, fontWeight: 900, color: '#E11D48' }}>
-                  Raid Failed
+              <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div style={{ 
+                  width: 72, 
+                  height: 72, 
+                  borderRadius: '50%', 
+                  background: 'rgba(225, 29, 72, 0.08)', 
+                  border: '2px solid #E11D48',
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  fontSize: 32, 
+                  marginBottom: 16,
+                  boxShadow: '0 8px 24px rgba(225,29,72,0.1)'
+                }}>
+                  😔
+                </div>
+                <h2 style={{ margin: '0 0 6px', fontSize: 18, fontWeight: 900, color: '#E11D48', letterSpacing: -0.4 }}>
+                  Raid failed.
                 </h2>
-                <p style={{ margin: '0 0 18px', fontSize: 12, color: '#717886', lineHeight: 1.5 }}>
-                  The combination lock jammed and vault alarm sounded! You missed the prize card, but you can try again.
+                <p style={{ margin: '0 0 20px', fontSize: 12, fontWeight: 500, color: '#717886' }}>
+                  Good luck next time!
                 </p>
               </div>
             )}
@@ -806,7 +940,7 @@ export function RaidMode({ address }) {
                 boxShadow: '0 2px 6px rgba(10,11,13,0.02)'
               }}
             >
-              Close Result
+              Raid Again
             </button>
           </div>
         )}
@@ -833,9 +967,8 @@ export function RaidMode({ address }) {
             </div>
           ) : (
             history.map(item => {
-              const raiderName = item.raider?.basename || short(item.raider_address)
               const victimName = item.victim?.basename || short(item.victim_address)
-              const timeStr = new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+              const timeStr = new Date(item.created_at).toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' + new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 
               return (
                 <div
@@ -851,18 +984,8 @@ export function RaidMode({ address }) {
                     boxShadow: '0 2px 6px rgba(10,11,13,0.02)'
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: -10, flexShrink: 0, position: 'relative' }}>
-                    <UserAvatar address={item.raider_address} size={28} />
-                    <div style={{ 
-                      marginLeft: -10, 
-                      border: '2px solid #fff', 
-                      borderRadius: '50%', 
-                      zIndex: 2, 
-                      background: '#fff',
-                      display: 'flex' 
-                    }}>
-                      <UserAvatar address={item.victim_address} size={20} />
-                    </div>
+                  <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+                    <UserAvatar address={item.victim_address} size={28} />
                   </div>
 
                   <div style={{ flex: 1, minWidth: 0 }}>
@@ -872,27 +995,12 @@ export function RaidMode({ address }) {
                       color: '#0A0B0D',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      display: 'flex',
-                      alignItems: 'center',
-                      flexWrap: 'wrap',
-                      gap: '4px'
+                      whiteSpace: 'nowrap'
                     }}>
-                      <span style={{ color: '#0A0B0D', fontWeight: 700 }}>{raiderName}</span>
-                      <span style={{ color: '#717886', fontWeight: 500, fontSize: 11 }}>stole from</span>
-                      <span style={{ color: '#0052FF', fontWeight: 700 }}>{victimName}</span>
+                      Stolen from <span style={{ color: '#0052FF' }}>{victimName}</span>
                     </div>
-                    <div style={{ fontSize: 10, color: '#94A3B8', marginTop: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span>{timeStr}</span>
-                      <span style={{ color: '#E2E8F0' }}>•</span>
-                      <a 
-                        href={`https://basescan.org/tx/${item.tx_hash}`} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        style={{ color: '#0052FF', textDecoration: 'none', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 2 }}
-                      >
-                        Basescan ↗
-                      </a>
+                    <div style={{ fontSize: 10, color: '#94A3B8', marginTop: 2 }}>
+                      {timeStr}
                     </div>
                   </div>
 
@@ -930,9 +1038,7 @@ export function RaidMode({ address }) {
       {showTxModal && (
         <TxModal
           title={txType === 'shield' ? 'Purchase Raid Shield' : 'Purchase Raid'}
-          subtitle={txType === 'shield' 
-            ? 'Get 24h of absolute protection from HP raids' 
-            : 'Crack the vault lock of an active user and steal their HP!'}
+          subtitle={txType === 'shield' ? 'Get 24h of absolute protection from HP raids' : ''}
           amount={txType === 'shield' ? '0.15' : '0.25'}
           isPending={isPending}
           isConfirming={isConfirming}
@@ -977,8 +1083,15 @@ export function RaidMode({ address }) {
           transform: rotate(90deg);
           border-color: #0052FF;
         }
-        .vault-dial:hover .padlock-icon {
-          transform: scale(1.1);
+        .radar-sweep {
+          animation: spin 3s linear infinite;
+          transform-origin: center;
+        }
+        .radar-signal-dot {
+          animation: liveDotBlink 1.2s infinite ease-in-out;
+        }
+        .radar-signal-dot-delayed {
+          animation: liveDotBlink 1.2s infinite ease-in-out 0.6s;
         }
         .raid-btn { transition: all 0.2s ease; }
         .raid-btn:hover { filter: brightness(1.05); transform: scale(1.01); }
