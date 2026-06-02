@@ -29,13 +29,13 @@ export default function App() {
   const [tab, setTab] = useState(() => {
     try { return localStorage.getItem('happy_tab') || 'raffle' } catch { return 'raffle' }
   })
-  const [boxesSubTab, setBoxesSubTab] = useState(() => {
-    try { return localStorage.getItem('happy_boxes_subtab') || 'boxes' } catch { return 'boxes' }
+  const [leaderboardSubTab, setLeaderboardSubTab] = useState(() => {
+    try { return localStorage.getItem('happy_leaderboard_subtab') || 'usdc' } catch { return 'usdc' }
   })
 
   useEffect(() => {
-    try { localStorage.setItem('happy_boxes_subtab', boxesSubTab) } catch { }
-  }, [boxesSubTab])
+    try { localStorage.setItem('happy_leaderboard_subtab', leaderboardSubTab) } catch { }
+  }, [leaderboardSubTab])
 
   useEffect(() => {
     try { localStorage.setItem('happy_tab', tab) } catch { }
@@ -63,9 +63,9 @@ export default function App() {
 
   const tabLabels = {
     raffle: 'Happy Raffle',
+    heist: 'Happy Heist',
+    boxes: 'Happy Boxes',
     tasks: 'Tasks',
-    boxes: 'Boxes & Heists',
-    daily: 'Daily Rewards',
     leaderboard: 'Leaderboard',
     profile: 'Profile',
   }
@@ -310,69 +310,70 @@ export default function App() {
 
         <div style={{ position: 'relative', zIndex: 1, maxWidth: 640, margin: '0 auto' }}>
           {tab === 'raffle' && <RaffleSection address={address} basename={basename} />}
-          {tab === 'boxes' && (
+          {tab === 'heist' && <HeistMode address={address} />}
+          {tab === 'boxes' && <HappyBoxesSection address={address} />}
+          {tab === 'tasks' && <TasksSection address={address} />}
+          {tab === 'leaderboard' && (
             <div style={{ padding: '0 8px' }}>
-              {/* Premium sub-navigation switcher */}
+              {/* Premium sub-navigation switcher above the banners */}
               <div style={{
                 display: 'flex',
-                background: 'rgba(235, 242, 255, 0.08)',
+                background: leaderboardSubTab === 'usdc' ? 'rgba(0, 82, 255, 0.08)' : 'rgba(0, 200, 83, 0.08)',
                 backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(0, 82, 255, 0.25)',
+                border: leaderboardSubTab === 'usdc' ? '1px solid rgba(0, 82, 255, 0.25)' : '1px solid rgba(0, 200, 83, 0.25)',
                 borderRadius: 16,
                 padding: 4,
                 marginBottom: 20,
                 maxWidth: 400,
                 margin: '0 auto 20px',
-                boxShadow: '0 4px 20px rgba(0, 82, 255, 0.05)'
+                boxShadow: leaderboardSubTab === 'usdc' ? '0 4px 20px rgba(0, 82, 255, 0.05)' : '0 4px 20px rgba(0, 200, 83, 0.05)',
+                transition: 'all 0.3s ease'
               }}>
                 <button
-                  onClick={() => setBoxesSubTab('boxes')}
+                  onClick={() => setLeaderboardSubTab('usdc')}
                   style={{
                     flex: 1,
                     padding: '10px 16px',
                     borderRadius: 12,
                     border: 'none',
-                    background: boxesSubTab === 'boxes' ? 'linear-gradient(135deg, #0052FF 0%, #00C6FB 100%)' : 'transparent',
-                    color: boxesSubTab === 'boxes' ? '#fff' : 'var(--text-secondary, #717886)',
-                    fontWeight: 700,
+                    background: leaderboardSubTab === 'usdc' ? 'linear-gradient(135deg, #0052FF 0%, #00C6FB 100%)' : 'transparent',
+                    color: leaderboardSubTab === 'usdc' ? '#fff' : 'var(--text-secondary, #717886)',
+                    fontWeight: 800,
                     fontSize: 13,
                     cursor: 'pointer',
                     transition: 'all 0.2s',
-                    boxShadow: boxesSubTab === 'boxes' ? '0 4px 12px rgba(0, 82, 255, 0.25)' : 'none'
+                    boxShadow: leaderboardSubTab === 'usdc' ? '0 4px 12px rgba(0, 82, 255, 0.25)' : 'none'
                   }}
                 >
-                  📦 Open Boxes
+                  🏆 USDC Rewards
                 </button>
                 <button
-                  onClick={() => setBoxesSubTab('heist')}
+                  onClick={() => setLeaderboardSubTab('hp')}
                   style={{
                     flex: 1,
                     padding: '10px 16px',
                     borderRadius: 12,
                     border: 'none',
-                    background: boxesSubTab === 'heist' ? 'linear-gradient(135deg, #0052FF 0%, #00C6FB 100%)' : 'transparent',
-                    color: boxesSubTab === 'heist' ? '#fff' : 'var(--text-secondary, #717886)',
-                    fontWeight: 700,
+                    background: leaderboardSubTab === 'hp' ? 'linear-gradient(135deg, #00C853 0%, #10B981 100%)' : 'transparent',
+                    color: leaderboardSubTab === 'hp' ? '#fff' : 'var(--text-secondary, #717886)',
+                    fontWeight: 800,
                     fontSize: 13,
                     cursor: 'pointer',
                     transition: 'all 0.2s',
-                    boxShadow: boxesSubTab === 'heist' ? '0 4px 12px rgba(0, 82, 255, 0.25)' : 'none'
+                    boxShadow: leaderboardSubTab === 'hp' ? '0 4px 12px rgba(0, 200, 83, 0.25)' : 'none'
                   }}
                 >
-                  🕵️ Heist Mode
+                  ⚡ HP Rewards (Daily)
                 </button>
               </div>
 
-              {boxesSubTab === 'boxes' ? (
-                <HappyBoxesSection address={address} />
+              {leaderboardSubTab === 'usdc' ? (
+                <LeaderboardSection address={address} />
               ) : (
-                <HeistMode address={address} />
+                <DailyRewardsSection address={address} />
               )}
             </div>
           )}
-          {tab === 'tasks' && <TasksSection address={address} />}
-          {tab === 'daily' && <DailyRewardsSection address={address} />}
-          {tab === 'leaderboard' && <LeaderboardSection address={address} />}
           {tab === 'profile' && <ProfileSection address={address} basename={basename} totalUsers={totalUsers} />}
         </div>
 
