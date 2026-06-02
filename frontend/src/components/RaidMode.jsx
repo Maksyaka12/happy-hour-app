@@ -373,7 +373,7 @@ export function RaidMode({ address }) {
 
         {/* Floating background decorations */}
         {[
-          { icon: '🕵️‍♂️', top: '-5px', left: '5%', size: 50, opacity: 0.14, r: '-12deg', dur: 4.2 },
+          { icon: '⚔️', top: '-5px', left: '5%', size: 50, opacity: 0.14, r: '-12deg', dur: 4.2 },
           { icon: '💰', top: '10px', right: '25%', size: 42, opacity: 0.12, r: '14deg', dur: 4.8 },
           { icon: '🛡️', bottom: '5px', left: '40%', size: 40, opacity: 0.11, r: '22deg', dur: 5.4 },
           { icon: '💵', bottom: '15px', right: '5%', size: 48, opacity: 0.16, r: '8deg', dur: 4.6 }
