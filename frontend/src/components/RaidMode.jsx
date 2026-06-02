@@ -419,19 +419,15 @@ export function RaidMode({ address }) {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '6px', color: '#EF4444' }}>●</span>
-              <span>Each raid attempt costs 0.25 USDC.</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '6px', color: '#EF4444' }}>●</span>
               <span>Raid an active user with 300+ HP (50% success chance).</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '6px', color: '#EF4444' }}>●</span>
-              <span>Minimum HP after successfully raid: 10 HP (up to 5% of balance)</span>
+              <span>Min HP after successfully raid: 10 HP (up to 5% of balance)</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '6px', color: '#EF4444' }}>●</span>
-              <span>Raid Shield забезпечує absolute protection for 24h (ніхто не може рейд тебе)</span>
+              <span>Raid Shield provides absolute protection for 24h (no one can raid you)</span>
             </div>
           </div>
         </div>
@@ -560,15 +556,78 @@ export function RaidMode({ address }) {
 
         {/* GAMESTATE: IDLE */}
         {gameState === 'idle' && (
-          <div style={{ maxWidth: 420, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ fontSize: 44, marginBottom: 8, animation: 'raidBoardFloat 3s ease-in-out infinite' }}>🕵️‍♂️</div>
+          <div style={{ maxWidth: 420, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '10px 0' }}>
+            
+            {/* Holographic pulsing radar ring and dial */}
+            <div style={{ position: 'relative', width: 110, height: 110, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+              {/* Pulsing glow ring */}
+              <div className="radar-pulse" style={{
+                position: 'absolute',
+                inset: 0,
+                borderRadius: '50%',
+                border: '1.5px solid rgba(0, 82, 255, 0.15)',
+                pointerEvents: 'none'
+              }} />
+              <div className="radar-pulse-delayed" style={{
+                position: 'absolute',
+                inset: -10,
+                borderRadius: '50%',
+                border: '1px solid rgba(0, 82, 255, 0.08)',
+                pointerEvents: 'none'
+              }} />
+              
+              {/* Rotating dial container */}
+              <div className="vault-dial" style={{
+                width: 84,
+                height: 84,
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #FFFFFF 0%, #F1F5F9 100%)',
+                border: '3px solid #DEE1E7',
+                boxShadow: '0 6px 16px rgba(10,11,13,0.06)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative',
+                cursor: 'pointer',
+              }}>
+                {/* Padlock icon in center */}
+                <div className="padlock-icon" style={{ fontSize: 32, transition: 'transform 0.3s ease' }}>🔒</div>
+                
+                {/* Little combination notches */}
+                {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => (
+                  <div key={deg} style={{
+                    position: 'absolute',
+                    width: 2,
+                    height: 6,
+                    background: '#B1B7C3',
+                    top: 2,
+                    left: 'calc(50% - 1px)',
+                    transformOrigin: '50% 40px',
+                    transform: `rotate(${deg}deg)`
+                  }} />
+                ))}
+              </div>
+            </div>
 
             <h2 style={{ margin: '0 0 4px', fontSize: 16, fontWeight: 900, color: '#0A0B0D', letterSpacing: -0.4 }}>
               Raid System
             </h2>
-            <p style={{ margin: '0 0 16px', fontSize: 11, color: '#717886' }}>
+            <p style={{ margin: '0 0 12px', fontSize: 11, color: '#717886', maxWidth: 280, lineHeight: 1.4 }}>
               Search for active targets and crack their combination locks.
             </p>
+
+            {/* Micro indicators */}
+            <div style={{ display: 'flex', gap: 16, justifyContent: 'center', fontSize: 9, fontWeight: 800, color: '#717886', marginBottom: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <span className="live-dot" style={{ width: 6, height: 6, borderRadius: '50%', background: '#059669', display: 'inline-block' }} />
+                <span>NETWORK: ACTIVE</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#0052FF', display: 'inline-block' }} />
+                <span>TARGETS: 15+ READY</span>
+              </div>
+            </div>
+
             <button
               className="heist-btn"
               onClick={handleInitiateRaidClick}
@@ -894,10 +953,32 @@ export function RaidMode({ address }) {
           50% { transform: rotateY(180deg); }
           100% { transform: rotateY(360deg); }
         }
-        @keyframes raidBoardFloat {
-          0% { transform: translateY(0px); }
-          50% { transform: translateY(-6px); }
-          100% { transform: translateY(0px); }
+        @keyframes radarPulse {
+          0% { transform: scale(0.85); opacity: 1; }
+          100% { transform: scale(1.15); opacity: 0; }
+        }
+        @keyframes liveDotBlink {
+          0%, 100% { opacity: 0.4; }
+          50% { opacity: 1; }
+        }
+        .radar-pulse {
+          animation: radarPulse 2s infinite ease-out;
+        }
+        .radar-pulse-delayed {
+          animation: radarPulse 2s infinite ease-out 1s;
+        }
+        .live-dot {
+          animation: liveDotBlink 1.5s infinite ease-in-out;
+        }
+        .vault-dial {
+          transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s;
+        }
+        .vault-dial:hover {
+          transform: rotate(90deg);
+          border-color: #0052FF;
+        }
+        .vault-dial:hover .padlock-icon {
+          transform: scale(1.1);
         }
         .heist-btn { transition: all 0.2s ease; }
         .heist-btn:hover { filter: brightness(1.05); transform: scale(1.01); }
