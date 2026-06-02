@@ -314,10 +314,6 @@ export function RaidMode({ address }) {
     <div style={{ padding: '0 16px 120px', color: '#0A0B0D', fontFamily: "'Outfit', 'Inter', sans-serif", animation: 'raidFadeIn 0.4s ease' }}>
       <style>{`
         @keyframes raidFadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
-        @keyframes headerBadgePulse {
-          0%, 100% { transform: scale(1); filter: brightness(1); }
-          50% { transform: scale(1.05); filter: brightness(1.15); box-shadow: 0 2px 10px rgba(239, 68, 68, 0.6); }
-        }
       `}</style>
 
       {/* Wrong Chain Banner */}
@@ -414,42 +410,13 @@ export function RaidMode({ address }) {
 
         <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'flex-start' }}>
           <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            marginBottom: '4px',
-            height: 'fit-content'
+            fontSize: '26px',
+            fontWeight: 800,
+            color: '#fff',
+            letterSpacing: '0.5px',
+            marginBottom: '4px'
           }}>
-            <span style={{
-              fontSize: '26px',
-              fontWeight: 800,
-              color: '#fff',
-              letterSpacing: '0.5px',
-              lineHeight: 1
-            }}>
-              Happy Raids
-            </span>
-            <span style={{
-              background: 'linear-gradient(135deg, #FF4D4D 0%, #D31A1A 100%)',
-              color: '#ffffff',
-              fontSize: '8px',
-              fontWeight: 900,
-              padding: '2px 5px',
-              borderRadius: 6,
-              textTransform: 'uppercase',
-              letterSpacing: '0.4px',
-              boxShadow: '0 2px 6px rgba(239,68,68,0.4)',
-              border: '0.5px solid rgba(255,255,255,0.3)',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              lineHeight: 1,
-              marginTop: '2px',
-              animation: 'headerBadgePulse 2s infinite ease-in-out',
-              pointerEvents: 'none'
-            }}>
-              new
-            </span>
+            Happy Raids
           </div>
           
           <div style={{
