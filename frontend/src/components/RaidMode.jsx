@@ -431,16 +431,20 @@ export function RaidMode({ address }) {
             gap: '4px'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '6px', color: '#EF4444' }}>●</span>
+              <span style={{ fontSize: '8px', color: '#EF4444' }}>●</span>
               <span>Raid active users with 300+ HP (50% success).</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '6px', color: '#EF4444' }}>●</span>
-              <span>Steal min 10 HP (up to 5% of target balance).</span>
+              <span style={{ fontSize: '8px', color: '#EF4444' }}>●</span>
+              <span>Successful raid steals 10+ HP (and more).</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '6px', color: '#EF4444' }}>●</span>
-              <span>Raid Shield: 24h absolute protection.</span>
+              <span style={{ fontSize: '8px', color: '#EF4444' }}>●</span>
+              <span>Raid Shield: 24h absolute protection from raids.</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '8px', color: '#EF4444' }}>●</span>
+              <span>10-minute cooldown between raids.</span>
             </div>
           </div>
         </div>
