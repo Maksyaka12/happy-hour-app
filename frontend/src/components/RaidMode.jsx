@@ -53,14 +53,14 @@ export function RaidMode({ address }) {
     }
   }
 
-  // Fetch successful raids (Note: table is heist_attempts in db)
+  // Fetch successful raids (Note: table is raid_attempts in db)
   const fetchHistory = async () => {
     try {
       const { data, error } = await db
-        .from('heist_attempts')
+        .from('raid_attempts')
         .select(`
-          id, thief_address, victim_address, stolen_amount, percentage, created_at, tx_hash, success,
-          thief:users!thief_address(basename),
+          id, raider_address, victim_address, stolen_amount, percentage, created_at, tx_hash, success,
+          raider:users!raider_address(basename),
           victim:users!victim_address(basename)
         `)
         .eq('success', true)
@@ -109,8 +109,8 @@ export function RaidMode({ address }) {
     fetchScanningPool()
 
     const sub = db
-      .channel('heist-history-realtime')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'heist_attempts' }, () => {
+      .channel('raid-history-realtime')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'raid_attempts' }, () => {
         fetchHistory()
       })
       .subscribe()
@@ -209,7 +209,7 @@ export function RaidMode({ address }) {
 
   const handleConfirmShieldPurchase = async (hash) => {
     try {
-      const { data, error } = await db.rpc('purchase_heist_shield', {
+      const { data, error } = await db.rpc('purchase_raid_shield', {
         p_buyer_address: address.toLowerCase(),
         p_tx_hash: hash
       })
@@ -232,8 +232,8 @@ export function RaidMode({ address }) {
       setGameState('scanning')
       setShowTxModal(false)
 
-      const { data, error } = await db.rpc('perform_heist_attempt', {
-        p_thief_address: address.toLowerCase(),
+      const { data, error } = await db.rpc('perform_raid_attempt', {
+        p_raider_address: address.toLowerCase(),
         p_tx_hash: hash
       })
       if (error) throw error
@@ -499,7 +499,7 @@ export function RaidMode({ address }) {
           <button
             onClick={handlePurchaseShieldClick}
             disabled={isPending}
-            className="heist-btn"
+            className="raid-btn"
             style={{
               background: 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)',
               color: '#fff',
@@ -629,7 +629,7 @@ export function RaidMode({ address }) {
             </div>
 
             <button
-              className="heist-btn"
+              className="raid-btn"
               onClick={handleInitiateRaidClick}
               disabled={isPending}
               style={{
@@ -702,7 +702,7 @@ export function RaidMode({ address }) {
                 <button
                   key={idx}
                   onClick={() => handleCardSelection(idx)}
-                  className="heist-btn"
+                  className="raid-btn"
                   style={{
                     width: 90,
                     height: 120,
@@ -792,7 +792,7 @@ export function RaidMode({ address }) {
 
             <button
               onClick={handlePlayAgain}
-              className="heist-btn"
+              className="raid-btn"
               style={{
                 background: '#EEF0F3',
                 border: '1px solid #DEE1E7',
@@ -833,7 +833,7 @@ export function RaidMode({ address }) {
             </div>
           ) : (
             history.map(item => {
-              const thiefName = item.thief?.basename || short(item.thief_address)
+              const raiderName = item.raider?.basename || short(item.raider_address)
               const victimName = item.victim?.basename || short(item.victim_address)
               const timeStr = new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 
@@ -852,7 +852,7 @@ export function RaidMode({ address }) {
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: -10, flexShrink: 0, position: 'relative' }}>
-                    <UserAvatar address={item.thief_address} size={28} />
+                    <UserAvatar address={item.raider_address} size={28} />
                     <div style={{ 
                       marginLeft: -10, 
                       border: '2px solid #fff', 
@@ -878,7 +878,7 @@ export function RaidMode({ address }) {
                       flexWrap: 'wrap',
                       gap: '4px'
                     }}>
-                      <span style={{ color: '#0A0B0D', fontWeight: 700 }}>{thiefName}</span>
+                      <span style={{ color: '#0A0B0D', fontWeight: 700 }}>{raiderName}</span>
                       <span style={{ color: '#717886', fontWeight: 500, fontSize: 11 }}>stole from</span>
                       <span style={{ color: '#0052FF', fontWeight: 700 }}>{victimName}</span>
                     </div>
@@ -980,9 +980,9 @@ export function RaidMode({ address }) {
         .vault-dial:hover .padlock-icon {
           transform: scale(1.1);
         }
-        .heist-btn { transition: all 0.2s ease; }
-        .heist-btn:hover { filter: brightness(1.05); transform: scale(1.01); }
-        .heist-btn:active { transform: scale(0.98); }
+        .raid-btn { transition: all 0.2s ease; }
+        .raid-btn:hover { filter: brightness(1.05); transform: scale(1.01); }
+        .raid-btn:active { transform: scale(0.98); }
       `}</style>
     </div>
   )
