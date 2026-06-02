@@ -36,6 +36,12 @@ export function BottomNav({ tab, setTab }) {
       padding: '8px 12px 10px',
       pointerEvents: 'none',
     }}>
+      <style>{`
+        @keyframes navBadgePulse {
+          0%, 100% { transform: scale(1); filter: brightness(1); }
+          50% { transform: scale(1.05); filter: brightness(1.1); box-shadow: 0 2px 6px rgba(239, 68, 68, 0.5); }
+        }
+      `}</style>
       <div style={{
         background: 'rgba(235, 242, 255, 0.97)', backdropFilter: 'blur(20px)',
         borderRadius: 20, border: '1px solid rgba(0, 82, 255, 0.35)',
@@ -50,12 +56,38 @@ export function BottomNav({ tab, setTab }) {
             background: tab === t.id ? '#EEF0F3' : 'transparent',
             outline: tab === t.id ? '1px solid rgba(0,0,255,0.15)' : 'none',
             transition: 'all 0.2s',
+            position: 'relative'
           }}>
             <span style={{ fontSize: 20, lineHeight: 1 }}>{t.icon}</span>
             <span style={{
               fontSize: 9, fontWeight: 700, letterSpacing: 0.3,
               color: tab === t.id ? '#0000FF' : '#717886',
             }}>{t.label}</span>
+            {t.id === 'raid' && (
+              <span style={{
+                position: 'absolute',
+                top: 2,
+                right: '8%',
+                background: 'linear-gradient(135deg, #FF4D4D 0%, #D31A1A 100%)',
+                color: '#ffffff',
+                fontSize: '6.5px',
+                fontWeight: 900,
+                padding: '1px 3.5px',
+                borderRadius: 5,
+                lineHeight: 1,
+                letterSpacing: '0.3px',
+                boxShadow: '0 2px 4px rgba(239,68,68,0.3)',
+                border: '0.5px solid rgba(255,255,255,0.35)',
+                textTransform: 'uppercase',
+                pointerEvents: 'none',
+                animation: 'navBadgePulse 2s infinite ease-in-out',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                new
+              </span>
+            )}
           </button>
         ))}
       </div>
