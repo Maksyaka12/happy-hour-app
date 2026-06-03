@@ -950,27 +950,27 @@ export function RaidMode({ address }) {
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{
                       fontFamily: "'Montserrat', sans-serif",
-                      fontSize: 11.5,
-                      fontWeight: 600,
+                      fontSize: 10.5,
+                      fontWeight: 500,
                       color: '#0A0B0D',
                       display: 'flex',
                       alignItems: 'center',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
-                      gap: 4
+                      gap: 3
                     }}>
                       <span style={{ color: isRaider ? '#059669' : '#0052FF', flexShrink: 0 }}>
                         {raiderName}
                       </span>
-                      <span style={{ color: '#717886', fontWeight: 500, flexShrink: 0 }}>
+                      <span style={{ color: '#717886', fontWeight: 400, flexShrink: 0 }}>
                         stole from
                       </span>
                       <span style={{ color: isVictim ? '#DC2626' : '#0F172A', flexShrink: 0 }}>
                         {victimName}
                       </span>
                     </div>
-                    <div style={{ fontSize: 9.5, color: '#94A3B8', marginTop: 2, fontFamily: "'Montserrat', sans-serif" }}>
+                    <div style={{ fontSize: 8.5, color: '#94A3B8', marginTop: 2, fontFamily: "'Montserrat', sans-serif" }}>
                       {timeStr}
                     </div>
                   </div>
@@ -979,13 +979,14 @@ export function RaidMode({ address }) {
                     background: badgeBg,
                     border: `1px solid ${badgeBorder}`,
                     borderRadius: 12,
-                    padding: '6px 10px',
-                    fontSize: 12,
-                    fontWeight: 900,
+                    padding: '4px 8px',
+                    fontSize: 10.5,
+                    fontWeight: 800,
                     color: badgeColor,
+                    fontFamily: "'Montserrat', sans-serif",
                     textAlign: 'center',
                     flexShrink: 0,
-                    minWidth: 85,
+                    minWidth: 68,
                     boxSizing: 'border-box'
                   }}>
                     {prefix}{Number(item.stolen_amount).toFixed(2)} HP
