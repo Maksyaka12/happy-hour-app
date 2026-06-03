@@ -8,6 +8,7 @@ import { ConnectScreen } from './components/ConnectScreen'
 import { RaffleSection } from './components/RaffleSection'
 import { TasksSection } from './components/TasksSection'
 import { HappyBoxesSection } from './components/HappyBoxesSection'
+import { RaidMode } from './components/RaidMode'
 import { LeaderboardSection } from './components/LeaderboardSection'
 import { DailyRewardsSection } from './components/DailyRewardsSection'
 import { ProfileSection } from './components/ProfileSection'
@@ -28,6 +29,13 @@ export default function App() {
   const [tab, setTab] = useState(() => {
     try { return localStorage.getItem('happy_tab') || 'raffle' } catch { return 'raffle' }
   })
+  const [leaderboardSubTab, setLeaderboardSubTab] = useState(() => {
+    try { return localStorage.getItem('happy_leaderboard_subtab') || 'usdc' } catch { return 'usdc' }
+  })
+
+  useEffect(() => {
+    try { localStorage.setItem('happy_leaderboard_subtab', leaderboardSubTab) } catch { }
+  }, [leaderboardSubTab])
 
   useEffect(() => {
     try { localStorage.setItem('happy_tab', tab) } catch { }
@@ -55,9 +63,9 @@ export default function App() {
 
   const tabLabels = {
     raffle: 'Happy Raffle',
-    tasks: 'Tasks',
+    raid: 'Happy Raids',
     boxes: 'Happy Boxes',
-    daily: 'Daily Rewards',
+    tasks: 'Tasks',
     leaderboard: 'Leaderboard',
     profile: 'Profile',
   }
@@ -302,10 +310,79 @@ export default function App() {
 
         <div style={{ position: 'relative', zIndex: 1, maxWidth: 640, margin: '0 auto' }}>
           {tab === 'raffle' && <RaffleSection address={address} basename={basename} />}
+          {tab === 'raid' && <RaidMode address={address} />}
           {tab === 'boxes' && <HappyBoxesSection address={address} />}
           {tab === 'tasks' && <TasksSection address={address} />}
-          {tab === 'daily' && <DailyRewardsSection address={address} />}
-          {tab === 'leaderboard' && <LeaderboardSection address={address} />}
+          {tab === 'leaderboard' && (
+            <>
+              {/* Premium sub-navigation switcher above the banners */}
+              <div style={{ padding: '0 16px' }}>
+                <div style={{
+                  display: 'flex',
+                  background: '#EEF0F3',
+                  border: '1px solid #DEE1E7',
+                  borderRadius: 16,
+                  padding: 4,
+                  marginBottom: 20,
+                  maxWidth: 380,
+                  margin: '0 auto 20px',
+                  boxShadow: 'inset 0 2px 4px rgba(10,11,13,0.05)',
+                  gap: 6
+                }}>
+                  <button
+                    onClick={() => setLeaderboardSubTab('usdc')}
+                    style={{
+                      flex: 1,
+                      padding: '8px 10px',
+                      borderRadius: 12,
+                      border: leaderboardSubTab === 'usdc' ? 'none' : '1px solid rgba(255,255,255,0.8)',
+                      background: leaderboardSubTab === 'usdc' 
+                        ? 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)' 
+                        : 'rgba(255, 255, 255, 0.6)',
+                      color: leaderboardSubTab === 'usdc' ? '#fff' : '#717886',
+                      fontWeight: 800,
+                      fontSize: 11.5,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      boxShadow: leaderboardSubTab === 'usdc' 
+                        ? '0 4px 12px rgba(0,82,255,0.2)' 
+                        : '0 2px 4px rgba(10,11,13,0.02)'
+                    }}
+                  >
+                    🏆 USDC Rewards
+                  </button>
+                  <button
+                    onClick={() => setLeaderboardSubTab('hp')}
+                    style={{
+                      flex: 1,
+                      padding: '8px 10px',
+                      borderRadius: 12,
+                      border: leaderboardSubTab === 'hp' ? 'none' : '1px solid rgba(255,255,255,0.8)',
+                      background: leaderboardSubTab === 'hp' 
+                        ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' 
+                        : 'rgba(255, 255, 255, 0.6)',
+                      color: leaderboardSubTab === 'hp' ? '#fff' : '#717886',
+                      fontWeight: 800,
+                      fontSize: 11.5,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      boxShadow: leaderboardSubTab === 'hp' 
+                        ? '0 4px 12px rgba(16,185,129,0.2)' 
+                        : '0 2px 4px rgba(10,11,13,0.02)'
+                    }}
+                  >
+                    ⚡ HP Rewards (Daily)
+                  </button>
+                </div>
+              </div>
+
+              {leaderboardSubTab === 'usdc' ? (
+                <LeaderboardSection address={address} />
+              ) : (
+                <DailyRewardsSection address={address} />
+              )}
+            </>
+          )}
           {tab === 'profile' && <ProfileSection address={address} basename={basename} totalUsers={totalUsers} />}
         </div>
 
