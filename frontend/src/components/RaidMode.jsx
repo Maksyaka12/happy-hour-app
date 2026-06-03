@@ -949,8 +949,9 @@ export function RaidMode({ address }) {
 
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{
-                      fontSize: 12,
-                      fontWeight: 700,
+                      fontFamily: "'Montserrat', sans-serif",
+                      fontSize: 11.5,
+                      fontWeight: 600,
                       color: '#0A0B0D',
                       display: 'flex',
                       alignItems: 'center',
@@ -959,17 +960,17 @@ export function RaidMode({ address }) {
                       whiteSpace: 'nowrap',
                       gap: 4
                     }}>
-                      <span style={{ color: isRaider ? '#059669' : '#0052FF', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flexShrink: 1 }}>
+                      <span style={{ color: isRaider ? '#059669' : '#0052FF', flexShrink: 0 }}>
                         {raiderName}
                       </span>
                       <span style={{ color: '#717886', fontWeight: 500, flexShrink: 0 }}>
                         stole from
                       </span>
-                      <span style={{ color: isVictim ? '#DC2626' : '#0F172A', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flexShrink: 1 }}>
+                      <span style={{ color: isVictim ? '#DC2626' : '#0F172A', flexShrink: 0 }}>
                         {victimName}
                       </span>
                     </div>
-                    <div style={{ fontSize: 10, color: '#94A3B8', marginTop: 2 }}>
+                    <div style={{ fontSize: 9.5, color: '#94A3B8', marginTop: 2, fontFamily: "'Montserrat', sans-serif" }}>
                       {timeStr}
                     </div>
                   </div>
