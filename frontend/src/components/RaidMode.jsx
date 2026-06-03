@@ -900,15 +900,34 @@ export function RaidMode({ address }) {
             </div>
           ) : (
             history.map(item => {
+              const isRaider = item.raider_address === address?.toLowerCase()
               const isVictim = item.victim_address === address?.toLowerCase()
-              const raiderName = item.raider?.basename || short(item.raider_address)
-              const victimName = item.victim?.basename || short(item.victim_address)
-              const avatarAddress = isVictim ? item.raider_address : item.victim_address
+
+              const raiderName = isRaider ? 'You' : (item.raider?.basename || short(item.raider_address))
+              const victimName = isVictim ? 'You' : (item.victim?.basename || short(item.victim_address))
+              const avatarAddress = item.raider_address
 
               const dateObj = new Date(item.created_at)
               const datePart = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })
               const timePart = dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'UTC' })
               const timeStr = `${datePart} ${timePart} UTC`
+
+              let badgeBg = '#EEF2FF'
+              let badgeBorder = '#C7D2FE'
+              let badgeColor = '#4F46E5'
+              let prefix = ''
+
+              if (isVictim) {
+                badgeBg = '#FEF2F2'
+                badgeBorder = '#FCA5A5'
+                badgeColor = '#DC2626'
+                prefix = '-'
+              } else if (isRaider) {
+                badgeBg = '#ECFDF5'
+                badgeBorder = '#A7F3D0'
+                badgeColor = '#059669'
+                prefix = '+'
+              }
 
               return (
                 <div
@@ -933,19 +952,22 @@ export function RaidMode({ address }) {
                       fontSize: 12,
                       fontWeight: 700,
                       color: '#0A0B0D',
+                      display: 'flex',
+                      alignItems: 'center',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap'
+                      whiteSpace: 'nowrap',
+                      gap: 4
                     }}>
-                      {isVictim ? (
-                        <>
-                          Stolen by <span style={{ color: '#DC2626' }}>{raiderName}</span>
-                        </>
-                      ) : (
-                        <>
-                          Stolen from <span style={{ color: '#0052FF' }}>{victimName}</span>
-                        </>
-                      )}
+                      <span style={{ color: isRaider ? '#059669' : '#0052FF', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flexShrink: 1 }}>
+                        {raiderName}
+                      </span>
+                      <span style={{ color: '#717886', fontWeight: 500, flexShrink: 0 }}>
+                        stole from
+                      </span>
+                      <span style={{ color: isVictim ? '#DC2626' : '#0F172A', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flexShrink: 1 }}>
+                        {victimName}
+                      </span>
                     </div>
                     <div style={{ fontSize: 10, color: '#94A3B8', marginTop: 2 }}>
                       {timeStr}
@@ -953,19 +975,19 @@ export function RaidMode({ address }) {
                   </div>
 
                   <div style={{
-                    background: isVictim ? '#FEF2F2' : '#ECFDF5',
-                    border: `1px solid ${isVictim ? '#FCA5A5' : '#A7F3D0'}`,
+                    background: badgeBg,
+                    border: `1px solid ${badgeBorder}`,
                     borderRadius: 12,
                     padding: '6px 10px',
                     fontSize: 12,
                     fontWeight: 900,
-                    color: isVictim ? '#DC2626' : '#059669',
+                    color: badgeColor,
                     textAlign: 'center',
                     flexShrink: 0,
                     minWidth: 85,
                     boxSizing: 'border-box'
                   }}>
-                    {isVictim ? '-' : '+'}{Number(item.stolen_amount).toFixed(2)} HP
+                    {prefix}{Number(item.stolen_amount).toFixed(2)} HP
                   </div>
                 </div>
               )
