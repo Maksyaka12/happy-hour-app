@@ -881,8 +881,9 @@ export function RaidMode({ address }) {
 
       {/* ═══ RAID HISTORY (Displayed directly below interactive board) ═══ */}
       <div style={{ marginTop: 24 }}>
-        <div style={{ fontSize: 14, fontWeight: 700, color: '#0A0B0D', marginBottom: 12 }}>
-          Raids History
+        <div style={{ fontSize: 14, fontWeight: 700, color: '#0A0B0D', marginBottom: 12, display: 'flex', alignItems: 'baseline', gap: 6, flexWrap: 'wrap' }}>
+          <span>Raids History</span>
+          <span style={{ fontSize: 10.5, fontWeight: 400, color: '#717886' }}>(due to technical reasons, not all data is shown)</span>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
