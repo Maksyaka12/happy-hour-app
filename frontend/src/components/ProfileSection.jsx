@@ -191,6 +191,17 @@ export function ProfileSection({ address, basename, totalUsers }) {
   const [simMaxHP, setSimMaxHP] = useState(1000)
   const [isSimulating, setIsSimulating] = useState(false)
   const [editingSim, setEditingSim] = useState(null) // { address, points }
+  
+  // Admin Points Adjustment State
+  const [adminUserAddress, setAdminUserAddress] = useState('')
+  const [adminPts, setAdminPts] = useState('')
+  const [adminAction, setAdminAction] = useState('Reward')
+  const [adminBadge, setAdminBadge] = useState('')
+  const [adminType, setAdminType] = useState('quest')
+  const [adminApplyMult, setAdminApplyMult] = useState(false)
+  const [isAdminAdjusting, setIsAdminAdjusting] = useState(false)
+  const [adminAdjustStatus, setAdminAdjustStatus] = useState(null)
+
   const processedTxRef = useRef(null)
   const processedBoostTxRef = useRef(null)
   const processedMultTxRef = useRef(null)
@@ -297,6 +308,57 @@ export function ProfileSection({ address, basename, totalUsers }) {
     const { data, error } = await db.rpc(atob('ZGVsZXRlX2FsbF9ib3Rz'), { p_admin_address: address.toLowerCase() })
     if (error) console.error('Reset error:', error)
     await loadSimulations()
+  }
+
+  const handleAdminAdjustPoints = async (e) => {
+    e.preventDefault()
+    if (!adminUserAddress || !adminPts) {
+      setAdminAdjustStatus({ success: false, message: 'Please fill in user address and points.' })
+      return
+    }
+    const points = parseFloat(adminPts)
+    if (isNaN(points) || points <= 0) {
+      setAdminAdjustStatus({ success: false, message: 'Points must be a positive number.' })
+      return
+    }
+
+    setIsAdminAdjusting(true)
+    setAdminAdjustStatus(null)
+
+    try {
+      const { data, error } = await db.rpc('admin_adjust_user_points', {
+        p_admin_address: address.toLowerCase(),
+        p_user_address: adminUserAddress.trim().toLowerCase(),
+        p_points: points,
+        p_action: adminAction.trim(),
+        p_badge: adminBadge.trim() || null,
+        p_type: adminType,
+        p_apply_multiplier: adminApplyMult
+      })
+
+      if (error) {
+        setAdminAdjustStatus({ success: false, message: error.message })
+      } else if (data && data.ok) {
+        setAdminAdjustStatus({ 
+          success: true, 
+          message: `Successfully added ${data.final_points} HP (multiplier: ${data.multiplier}x) to ${short(adminUserAddress)}` 
+        })
+        // Clear form
+        setAdminUserAddress('')
+        setAdminPts('')
+        setAdminBadge('')
+        // Reload statistics if we just updated ourselves
+        if (adminUserAddress.trim().toLowerCase() === address.toLowerCase()) {
+          loadProfile()
+        }
+      } else {
+        setAdminAdjustStatus({ success: false, message: data?.error || 'Unknown error' })
+      }
+    } catch (err) {
+      setAdminAdjustStatus({ success: false, message: err.message })
+    } finally {
+      setIsAdminAdjusting(false)
+    }
   }
 
   // --- Timer Effect ---
@@ -1360,6 +1422,115 @@ export function ProfileSection({ address, basename, totalUsers }) {
                 {totalUsers}
               </div>
             </div>
+          </div>
+
+          {/* Points & History Adjustments */}
+          <div style={{ marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid rgba(252, 165, 165, 0.4)' }}>
+            <div style={{ fontWeight: 800, fontSize: 11, color: '#4B5563', letterSpacing: '0.5px', marginBottom: 10 }}>
+              ✍️ Adjust Points & History
+            </div>
+
+            <form onSubmit={handleAdminAdjustPoints} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 8 }}>
+                <div>
+                  <div style={{ fontSize: 9, fontWeight: 800, color: '#9CA3AF', marginBottom: 4, letterSpacing: '0.5px' }}>User Address</div>
+                  <input 
+                    type="text" 
+                    placeholder="0x..." 
+                    value={adminUserAddress} 
+                    onChange={e => setAdminUserAddress(e.target.value)} 
+                    style={{ width: '100%', padding: '6px 10px', borderRadius: 12, border: '1px solid #FCA5A5', fontSize: 11, fontFamily: "'DM Mono', monospace", outline: 'none', color: '#0A0B0D' }} 
+                  />
+                </div>
+                <div>
+                  <div style={{ fontSize: 9, fontWeight: 800, color: '#9CA3AF', marginBottom: 4, letterSpacing: '0.5px' }}>Base Points (HP)</div>
+                  <input 
+                    type="number" 
+                    step="any" 
+                    placeholder="e.g. 50" 
+                    value={adminPts} 
+                    onChange={e => setAdminPts(e.target.value)} 
+                    style={{ width: '100%', padding: '6px 10px', borderRadius: 12, border: '1px solid #FCA5A5', fontSize: 11, fontFamily: "'DM Mono', monospace", outline: 'none', textAlign: 'center', color: '#0A0B0D' }} 
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                <div>
+                  <div style={{ fontSize: 9, fontWeight: 800, color: '#9CA3AF', marginBottom: 4, letterSpacing: '0.5px' }}>Action Name</div>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. Reward" 
+                    value={adminAction} 
+                    onChange={e => setAdminAction(e.target.value)} 
+                    style={{ width: '100%', padding: '6px 10px', borderRadius: 12, border: '1px solid #FCA5A5', fontSize: 11, outline: 'none', color: '#0A0B0D' }} 
+                  />
+                </div>
+                <div>
+                  <div style={{ fontSize: 9, fontWeight: 800, color: '#9CA3AF', marginBottom: 4, letterSpacing: '0.5px' }}>Badge Text</div>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. Streak 50" 
+                    value={adminBadge} 
+                    onChange={e => setAdminBadge(e.target.value)} 
+                    style={{ width: '100%', padding: '6px 10px', borderRadius: 12, border: '1px solid #FCA5A5', fontSize: 11, outline: 'none', color: '#0A0B0D' }} 
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 8, alignItems: 'center' }}>
+                <div>
+                  <div style={{ fontSize: 9, fontWeight: 800, color: '#9CA3AF', marginBottom: 4, letterSpacing: '0.5px' }}>Badge Type (Style)</div>
+                  <select 
+                    value={adminType} 
+                    onChange={e => setAdminType(e.target.value)} 
+                    style={{ width: '100%', padding: '6px 10px', borderRadius: 12, border: '1px solid #FCA5A5', fontSize: 11, outline: 'none', background: '#fff', color: '#0A0B0D' }}
+                  >
+                    <option value="quest">Quest (Purple)</option>
+                    <option value="checkin">Checkin (Blue)</option>
+                    <option value="win">Win (Green)</option>
+                    <option value="boost">Boost (Blue)</option>
+                    <option value="deposit">Deposit (Orange)</option>
+                    <option value="default">Default (Grey)</option>
+                  </select>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, paddingTop: 14 }}>
+                  <input 
+                    type="checkbox" 
+                    id="adminApplyMult"
+                    checked={adminApplyMult} 
+                    onChange={e => setAdminApplyMult(e.target.checked)} 
+                    style={{ cursor: 'pointer' }}
+                  />
+                  <label htmlFor="adminApplyMult" style={{ fontSize: 10, fontWeight: 800, color: '#4B5563', cursor: 'pointer', userSelect: 'none' }}>
+                    Apply Multiplier
+                  </label>
+                </div>
+              </div>
+
+              <button 
+                type="submit" 
+                disabled={isAdminAdjusting} 
+                style={{ width: '100%', padding: '8px 16px', background: '#DC2626', color: '#fff', borderRadius: 12, fontWeight: 800, border: 'none', cursor: 'pointer', fontSize: 10, boxShadow: '0 4px 12px rgba(220,38,38,0.15)', letterSpacing: '0.5px', marginTop: 4 }}
+              >
+                {isAdminAdjusting ? 'Adjusting...' : 'Add Points & Create Log'}
+              </button>
+            </form>
+
+            {adminAdjustStatus && (
+              <div style={{ 
+                marginTop: 8, 
+                padding: '8px 10px', 
+                borderRadius: 10, 
+                fontSize: 10, 
+                fontWeight: 700,
+                background: adminAdjustStatus.success ? '#ECFDF5' : '#FEF2F2',
+                border: `1px solid ${adminAdjustStatus.success ? '#10B981' : '#FCA5A5'}`,
+                color: adminAdjustStatus.success ? '#065F46' : '#991B1B'
+              }}>
+                {adminAdjustStatus.message}
+              </div>
+            )}
           </div>
 
           {/* Simulation Diagnostics */}
