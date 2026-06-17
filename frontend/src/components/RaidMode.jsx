@@ -11,6 +11,23 @@ import { UserAvatar } from './UserAvatar'
 
 const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
 
+const formatConcise = (num) => {
+  const n = parseFloat(num || 0)
+  if (n >= 1e9) {
+    const val = (n / 1e9).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'b' : val.endsWith('0') ? val.slice(0, -1) + 'b' : val + 'b'
+  }
+  if (n >= 1e6) {
+    const val = (n / 1e6).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'm' : val.endsWith('0') ? val.slice(0, -1) + 'm' : val + 'm'
+  }
+  if (n >= 1e3) {
+    const val = (n / 1e3).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'k' : val.endsWith('0') ? val.slice(0, -1) + 'k' : val + 'k'
+  }
+  return n.toFixed(2).replace(/\.00$/, '')
+}
+
 export function RaidMode({ address }) {
   const [user, setUser] = useState(null)
   const [shieldTimeLeft, setShieldTimeLeft] = useState('')
@@ -653,7 +670,7 @@ export function RaidMode({ address }) {
               ) : (
                 paymentCurrency === 'HH' ? (
                   <>
-                    <span>{Math.round(0.15 / hhPrice)}</span>
+                    <span>{formatConcise(Math.round(0.15 / hhPrice))}</span>
                     <span style={{ fontSize: 10, fontWeight: 900, color: '#0052FF', marginLeft: 2 }}>$HH</span>
                     <span>/ 24h</span>
                   </>
@@ -865,7 +882,7 @@ export function RaidMode({ address }) {
                     {paymentCurrency === 'HH' ? (
                       <>
                         <span style={{ color: '#A5B4FC', fontWeight: 900, marginLeft: 2 }}>
-                          {Math.round(0.20 / hhPrice)}
+                          {formatConcise(0.20 / hhPrice)}
                         </span>
                         <span style={{ fontSize: 10, fontWeight: 900, color: '#A5B4FC', marginLeft: 1 }}>$HH</span>
                       </>

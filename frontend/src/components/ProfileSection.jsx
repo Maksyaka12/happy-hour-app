@@ -15,6 +15,23 @@ const formatNumber = (num, decimals = 2) => {
   })
 }
 
+const formatConcise = (num) => {
+  const n = parseFloat(num || 0)
+  if (n >= 1e9) {
+    const val = (n / 1e9).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'b' : val.endsWith('0') ? val.slice(0, -1) + 'b' : val + 'b'
+  }
+  if (n >= 1e6) {
+    const val = (n / 1e6).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'm' : val.endsWith('0') ? val.slice(0, -1) + 'm' : val + 'm'
+  }
+  if (n >= 1e3) {
+    const val = (n / 1e3).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'k' : val.endsWith('0') ? val.slice(0, -1) + 'k' : val + 'k'
+  }
+  return n.toFixed(2).replace(/\.00$/, '')
+}
+
 export function ProfileSection({ address, basename, totalUsers }) {
   const { disconnect } = useDisconnect()
   const { writeContract: wagmiWriteContract } = useWriteContract()
@@ -40,9 +57,33 @@ export function ProfileSection({ address, basename, totalUsers }) {
     }
   })
 
-  // Synchronize simulated USDC balance to localStorage
+  // List of swap-eligible tokens in Base Network
+  const swapTokens = [
+    { symbol: 'ETH', name: 'Ethereum', logo: '🌐', logoBg: '#627EEA', priceUsd: 3500.00, balanceKey: 'eth_simulated_wallet', defaultBalance: 0.15 },
+    { symbol: 'USDC', name: 'USD Coin', logo: '/usdc-logo.png', priceUsd: 1.00, balanceKey: 'usdc_simulated_wallet', defaultBalance: 500.00 },
+    { symbol: 'AERO', name: 'Aerodrome', logo: '✈️', logoBg: '#3B82F6', priceUsd: 1.15, balanceKey: 'aero_simulated_wallet', defaultBalance: 180.00 },
+    { symbol: 'WETH', name: 'Wrapped Ether', logo: '🌐', logoBg: '#8C8C8C', priceUsd: 3500.00, balanceKey: 'weth_simulated_wallet', defaultBalance: 0.05 },
+    { symbol: 'DEGEN', name: 'Degen', logo: '🎩', logoBg: '#A78BFA', priceUsd: 0.012, balanceKey: 'degen_simulated_wallet', defaultBalance: 12000.00 },
+  ]
+
+  // Track simulated token balances
+  const [tokenBalances, setTokenBalances] = useState(() => {
+    const list = {}
+    swapTokens.forEach(t => {
+      try {
+        const saved = localStorage.getItem(t.balanceKey)
+        list[t.symbol] = saved !== null ? parseFloat(saved) : t.defaultBalance
+      } catch {
+        list[t.symbol] = t.defaultBalance
+      }
+    })
+    return list
+  })
+
+  // Sync state USDC to localStorage
   useEffect(() => {
     localStorage.setItem('usdc_simulated_wallet', simulatedUsdcBalance.toString())
+    setTokenBalances(prev => ({ ...prev, USDC: simulatedUsdcBalance }))
   }, [simulatedUsdcBalance])
 
   // Read real contract balance
@@ -159,24 +200,50 @@ export function ProfileSection({ address, basename, totalUsers }) {
   const [codeCopied, setCodeCopied] = useState(false)
 
   // Swap Widget states
-  const [isBuying, setIsBuying] = useState(true) // true: USDC -> $HH, false: $HH -> USDC
+  const [isBuying, setIsBuying] = useState(true) // true: SelectToken -> $HH, false: $HH -> SelectToken
   const [payAmount, setPayAmount] = useState('')
   const [receiveAmount, setReceiveAmount] = useState('')
   const [txStep, setTxStep] = useState(null) // 'action_signing' | 'action_pending' | 'success' | null
   const [swapError, setSwapError] = useState('')
+  
+  // Selectable Token State (defaults to USDC)
+  const [selectedSymbol, setSelectedSymbol] = useState('USDC')
+  const [isSelectorOpen, setIsSelectorOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
 
+  // Sort tokens by descending USD Value
+  const sortedTokens = useMemo(() => {
+    return swapTokens.map(t => {
+      const bal = tokenBalances[t.symbol] ?? t.defaultBalance
+      return {
+        ...t,
+        balance: bal,
+        usdValue: bal * t.priceUsd
+      }
+    }).sort((a, b) => b.usdValue - a.usdValue)
+  }, [tokenBalances])
+
+  const activeSelectedToken = useMemo(() => {
+    return sortedTokens.find(t => t.symbol === selectedSymbol) || sortedTokens[0]
+  }, [sortedTokens, selectedSymbol])
+
+  // Handle Input Changes
   const handlePayChange = (val) => {
     setPayAmount(val)
     if (!val || isNaN(val)) {
       setReceiveAmount('')
       return
     }
+    const pay = parseFloat(val)
     if (isBuying) {
-      const hhAmt = parseFloat(val) / hhPrice
+      // Token -> $HH
+      const hhAmt = (pay * activeSelectedToken.priceUsd) / hhPrice
       setReceiveAmount(hhAmt.toFixed(2))
     } else {
-      const usdAmt = parseFloat(val) * hhPrice
-      setReceiveAmount(usdAmt.toFixed(2))
+      // $HH -> Token
+      const tokenAmt = (pay * hhPrice) / activeSelectedToken.priceUsd
+      const decimals = activeSelectedToken.symbol === 'ETH' || activeSelectedToken.symbol === 'WETH' ? 6 : 2
+      setReceiveAmount(tokenAmt.toFixed(decimals))
     }
   }
 
@@ -186,11 +253,15 @@ export function ProfileSection({ address, basename, totalUsers }) {
       setPayAmount('')
       return
     }
+    const recv = parseFloat(val)
     if (isBuying) {
-      const usdAmt = parseFloat(val) * hhPrice
-      setPayAmount(usdAmt.toFixed(2))
+      // Token -> $HH
+      const tokenAmt = (recv * hhPrice) / activeSelectedToken.priceUsd
+      const decimals = activeSelectedToken.symbol === 'ETH' || activeSelectedToken.symbol === 'WETH' ? 6 : 2
+      setPayAmount(tokenAmt.toFixed(decimals))
     } else {
-      const hhAmt = parseFloat(val) / hhPrice
+      // $HH -> Token
+      const hhAmt = (recv * activeSelectedToken.priceUsd) / hhPrice
       setPayAmount(hhAmt.toFixed(2))
     }
   }
@@ -211,9 +282,11 @@ export function ProfileSection({ address, basename, totalUsers }) {
       return
     }
 
+    const tokenBal = tokenBalances[activeSelectedToken.symbol] ?? activeSelectedToken.defaultBalance
+
     if (isBuying) {
-      if (pay > simulatedUsdcBalance) {
-        setSwapError('Insufficient USDC balance.')
+      if (pay > tokenBal) {
+        setSwapError(`Insufficient ${activeSelectedToken.symbol} balance.`)
         return
       }
     } else {
@@ -228,15 +301,37 @@ export function ProfileSection({ address, basename, totalUsers }) {
       setTxStep('action_pending')
       setTimeout(() => {
         if (isBuying) {
-          setSimulatedUsdcBalance(prev => prev - pay)
-          const newHh = simulatedWalletBalance + recv
-          setSimulatedWalletBalance(newHh)
+          const newTokenBal = tokenBal - pay
+          const newHh = walletBalance + recv
+
+          localStorage.setItem(activeSelectedToken.balanceKey, newTokenBal.toString())
           localStorage.setItem('hh_simulated_wallet', newHh.toString())
+          setSimulatedWalletBalance(newHh)
+          
+          setTokenBalances(prev => ({
+            ...prev,
+            [activeSelectedToken.symbol]: newTokenBal
+          }))
+          
+          if (activeSelectedToken.symbol === 'USDC') {
+            setSimulatedUsdcBalance(newTokenBal)
+          }
         } else {
-          const newHh = simulatedWalletBalance - pay
-          setSimulatedWalletBalance(newHh)
+          const newHh = walletBalance - pay
+          const newTokenBal = tokenBal + recv
+
           localStorage.setItem('hh_simulated_wallet', newHh.toString())
-          setSimulatedUsdcBalance(prev => prev + recv)
+          localStorage.setItem(activeSelectedToken.balanceKey, newTokenBal.toString())
+          setSimulatedWalletBalance(newHh)
+
+          setTokenBalances(prev => ({
+            ...prev,
+            [activeSelectedToken.symbol]: newTokenBal
+          }))
+
+          if (activeSelectedToken.symbol === 'USDC') {
+            setSimulatedUsdcBalance(newTokenBal)
+          }
         }
         setPayAmount('')
         setReceiveAmount('')
@@ -448,6 +543,14 @@ export function ProfileSection({ address, basename, totalUsers }) {
     setRefLoading(false)
   }
 
+  // Filtered Tokens for Modal search
+  const filteredTokens = useMemo(() => {
+    return sortedTokens.filter(t => 
+      t.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      t.name.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  }, [sortedTokens, searchQuery])
+
   return (
     <div style={{ paddingBottom: 120, padding: '0 12px 120px', position: 'relative' }}>
       
@@ -564,7 +667,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
             </div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
               <span style={{ fontSize: 22, fontWeight: 900, color: '#fff', fontFamily: "'Barlow Condensed',sans-serif" }}>
-                {parseFloat(walletBalance.toFixed(2)).toLocaleString()}
+                {formatConcise(walletBalance)}
               </span>
               <span style={{ fontSize: 10, fontWeight: 900, color: '#34D399' }}>$HH</span>
             </div>
@@ -572,28 +675,30 @@ export function ProfileSection({ address, basename, totalUsers }) {
         </div>
       </div>
 
-      {/* Premium Swap Widget */}
+      {/* Premium Base App Style Swap Widget */}
       <div style={{
         background: '#FFFFFF',
         border: '1px solid #DEE1E7',
         borderRadius: 24,
         padding: 20,
         marginBottom: 16,
-        boxShadow: '0 4px 16px rgba(10,11,13,0.04)'
+        boxShadow: '0 4px 20px rgba(0,82,255,0.04)'
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+        {/* Title Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
           <h3 style={{ fontSize: 14, fontWeight: 900, color: '#0A0B0D', display: 'flex', alignItems: 'center', gap: 6, margin: 0 }}>
-            🦄 Swap $HH Token
+            🦄 Swap Tokens
           </h3>
           <span style={{
-            fontSize: 9.5,
+            fontSize: 9,
             fontWeight: 800,
             color: '#0052FF',
             background: '#F0F5FF',
-            padding: '2px 8px',
-            borderRadius: 12
+            padding: '3px 8px',
+            borderRadius: 12,
+            border: '1px solid rgba(0, 82, 255, 0.1)'
           }}>
-            Base Network
+            Base Mainnet
           </span>
         </div>
 
@@ -609,143 +714,232 @@ export function ProfileSection({ address, basename, totalUsers }) {
           border: '1px solid #EEF0F3'
         }}>
           <div>
-            <div style={{ fontSize: 9, fontWeight: 800, color: '#717886', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+            <div style={{ fontSize: 8.5, fontWeight: 800, color: '#717886', textTransform: 'uppercase', letterSpacing: 0.5 }}>
               Live $HH Price
             </div>
-            <div style={{ fontSize: 14, fontWeight: 900, color: '#0A0B0D', fontFamily: 'monospace', marginTop: 2 }}>
+            <div style={{ fontSize: 14, fontWeight: 950, color: '#0A0B0D', fontFamily: 'monospace', marginTop: 2 }}>
               ${formatNumber(hhPrice, 5)}
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
             <span style={{
-              background: priceChange >= 0 ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)',
+              background: priceChange >= 0 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
               color: priceChange >= 0 ? '#10B981' : '#EF4444',
               fontSize: 10,
               fontWeight: 800,
               padding: '3px 8px',
               borderRadius: 20,
-              border: priceChange >= 0 ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid rgba(239, 68, 68, 0.2)'
+              border: priceChange >= 0 ? '1px solid rgba(16, 185, 129, 0.15)' : '1px solid rgba(239, 68, 68, 0.15)'
             }}>
               {priceChange >= 0 ? '▲' : '▼'} {priceChange}% (24h)
             </span>
           </div>
         </div>
 
-        {/* Pay Input */}
-        <div style={{
-          background: '#F8F9FC',
-          border: '1px solid #DEE1E7',
-          borderRadius: 16,
-          padding: '12px 14px',
-          position: 'relative',
-          marginBottom: 6
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, fontWeight: 800, color: '#717886', marginBottom: 6 }}>
-            <span>You Pay</span>
-            <span>Balance: {isBuying ? `${formatNumber(simulatedUsdcBalance, 2)} USDC` : `${formatNumber(walletBalance, 0)} $HH`}</span>
+        {/* Swap Panel Stack */}
+        <div style={{ position: 'relative' }}>
+          
+          {/* FROM FIELD */}
+          <div style={{
+            background: '#F5F7FA',
+            border: '1px solid #E4E7EB',
+            borderRadius: 20,
+            padding: '16px 16px 12px',
+            marginBottom: 4
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, fontWeight: 800, color: '#717886', marginBottom: 6 }}>
+              <span>From</span>
+              <span>
+                Balance: {isBuying 
+                  ? `${formatConcise(tokenBalances[activeSelectedToken.symbol])} ${activeSelectedToken.symbol}` 
+                  : `${formatConcise(walletBalance)} $HH`}
+              </span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <input
+                type="number"
+                placeholder="0.00"
+                value={payAmount}
+                onChange={(e) => handlePayChange(e.target.value)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  outline: 'none',
+                  fontSize: 22,
+                  fontWeight: 900,
+                  color: '#0A0B0D',
+                  width: '55%',
+                  fontFamily: 'monospace'
+                }}
+              />
+              
+              {/* Token Selector Trigger */}
+              {isBuying ? (
+                <button
+                  onClick={() => setIsSelectorOpen(true)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    background: '#FFFFFF',
+                    padding: '8px 12px',
+                    borderRadius: 16,
+                    border: '1px solid #DEE1E7',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.03)',
+                    cursor: 'pointer',
+                    outline: 'none'
+                  }}
+                >
+                  {activeSelectedToken.logo.startsWith('/') ? (
+                    <img src={activeSelectedToken.logo} alt="" style={{ width: 18, height: 18, borderRadius: '50%' }} />
+                  ) : (
+                    <span style={{
+                      width: 18, height: 18, borderRadius: '50%',
+                      background: activeSelectedToken.logoBg || '#8C8C8C',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 10, color: '#fff'
+                    }}>
+                      {activeSelectedToken.logo}
+                    </span>
+                  )}
+                  <span style={{ fontSize: 13, fontWeight: 900, color: '#0A0B0D' }}>{activeSelectedToken.symbol}</span>
+                  <span style={{ fontSize: 9, color: '#717886' }}>▼</span>
+                </button>
+              ) : (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  background: '#0052FF',
+                  padding: '8px 14px',
+                  borderRadius: 16,
+                  boxShadow: '0 2px 8px rgba(0,82,255,0.15)'
+                }}>
+                  <img src="/logo.jfif" alt="" style={{ width: 18, height: 18, borderRadius: '50%', objectFit: 'cover' }} />
+                  <span style={{ fontSize: 13, fontWeight: 900, color: '#FFFFFF' }}>$HH</span>
+                </div>
+              )}
+            </div>
+            <div style={{ fontSize: 10.5, color: '#717886', marginTop: 4, fontFamily: 'monospace' }}>
+              {payAmount ? `~$${formatNumber(parseFloat(payAmount) * (isBuying ? activeSelectedToken.priceUsd : hhPrice), 2)}` : '$0.00'}
+            </div>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <input
-              type="number"
-              placeholder="0.00"
-              value={payAmount}
-              onChange={(e) => handlePayChange(e.target.value)}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                outline: 'none',
-                fontSize: 18,
-                fontWeight: 900,
-                color: '#0A0B0D',
-                width: '60%',
-                fontFamily: 'monospace'
-              }}
-            />
-            {isBuying ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#FFFFFF', padding: '6px 12px', borderRadius: 12, border: '1px solid #DEE1E7', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
-                <img src="/usdc-logo.png" alt="USDC" style={{ width: 16, height: 16 }} />
-                <span style={{ fontSize: 12, fontWeight: 900, color: '#0A0B0D' }}>USDC</span>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#0052FF', padding: '6px 12px', borderRadius: 12, boxShadow: '0 2px 4px rgba(0,82,255,0.15)' }}>
-                <span style={{ fontSize: 12, fontWeight: 900, color: '#FFFFFF' }}>$HH</span>
-              </div>
-            )}
-          </div>
-        </div>
 
-        {/* Direction Switcher Button */}
-        <div style={{ display: 'flex', justifyContent: 'center', margin: '-10px 0', position: 'relative', zIndex: 2 }}>
-          <button
-            onClick={handleSwapDirection}
-            style={{
-              width: 32,
-              height: 32,
-              borderRadius: '50%',
-              background: '#FFFFFF',
-              border: '1px solid #DEE1E7',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 14,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-              color: '#0052FF',
-              cursor: 'pointer',
-              transition: 'transform 0.2s',
-            }}
-            onMouseEnter={e => e.currentTarget.style.transform = 'rotate(180deg)'}
-            onMouseLeave={e => e.currentTarget.style.transform = 'rotate(0deg)'}
-          >
-            ⇅
-          </button>
-        </div>
-
-        {/* Receive Input */}
-        <div style={{
-          background: '#F8F9FC',
-          border: '1px solid #DEE1E7',
-          borderRadius: 16,
-          padding: '12px 14px',
-          position: 'relative',
-          marginTop: 6,
-          marginBottom: 14
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, fontWeight: 800, color: '#717886', marginBottom: 6 }}>
-            <span>You Receive</span>
-            <span>Balance: {isBuying ? `${formatNumber(walletBalance, 0)} $HH` : `${formatNumber(simulatedUsdcBalance, 2)} USDC`}</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <input
-              type="number"
-              placeholder="0.00"
-              value={receiveAmount}
-              onChange={(e) => handleReceiveChange(e.target.value)}
+          {/* Direction Switcher Button in middle */}
+          <div style={{ display: 'flex', justifyContent: 'center', margin: '-14px 0', position: 'relative', zIndex: 10 }}>
+            <button
+              onClick={handleSwapDirection}
               style={{
-                background: 'transparent',
-                border: 'none',
-                outline: 'none',
-                fontSize: 18,
-                fontWeight: 900,
-                color: '#0A0B0D',
-                width: '60%',
-                fontFamily: 'monospace'
+                width: 32,
+                height: 32,
+                borderRadius: '50%',
+                background: '#FFFFFF',
+                border: '1px solid #E4E7EB',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 14,
+                boxShadow: '0 4px 10px rgba(0,0,0,0.08)',
+                color: '#0052FF',
+                cursor: 'pointer',
+                transition: 'transform 0.2s',
+                outline: 'none'
               }}
-            />
-            {!isBuying ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#FFFFFF', padding: '6px 12px', borderRadius: 12, border: '1px solid #DEE1E7', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
-                <img src="/usdc-logo.png" alt="USDC" style={{ width: 16, height: 16 }} />
-                <span style={{ fontSize: 12, fontWeight: 900, color: '#0A0B0D' }}>USDC</span>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#0052FF', padding: '6px 12px', borderRadius: 12, boxShadow: '0 2px 4px rgba(0,82,255,0.15)' }}>
-                <span style={{ fontSize: 12, fontWeight: 900, color: '#FFFFFF' }}>$HH</span>
-              </div>
-            )}
+              onMouseEnter={e => e.currentTarget.style.transform = 'rotate(180deg)'}
+              onMouseLeave={e => e.currentTarget.style.transform = 'rotate(0deg)'}
+            >
+              ⇅
+            </button>
+          </div>
+
+          {/* TO FIELD */}
+          <div style={{
+            background: '#F5F7FA',
+            border: '1px solid #E4E7EB',
+            borderRadius: 20,
+            padding: '16px 16px 12px',
+            marginTop: 4
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, fontWeight: 800, color: '#717886', marginBottom: 6 }}>
+              <span>To</span>
+              <span>
+                Balance: {isBuying 
+                  ? `${formatConcise(walletBalance)} $HH` 
+                  : `${formatConcise(tokenBalances[activeSelectedToken.symbol])} ${activeSelectedToken.symbol}`}
+              </span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <input
+                type="number"
+                placeholder="0.00"
+                value={receiveAmount}
+                onChange={(e) => handleReceiveChange(e.target.value)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  outline: 'none',
+                  fontSize: 22,
+                  fontWeight: 900,
+                  color: '#0A0B0D',
+                  width: '55%',
+                  fontFamily: 'monospace'
+                }}
+              />
+
+              {!isBuying ? (
+                <button
+                  onClick={() => setIsSelectorOpen(true)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    background: '#FFFFFF',
+                    padding: '8px 12px',
+                    borderRadius: 16,
+                    border: '1px solid #DEE1E7',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.03)',
+                    cursor: 'pointer',
+                    outline: 'none'
+                  }}
+                >
+                  {activeSelectedToken.logo.startsWith('/') ? (
+                    <img src={activeSelectedToken.logo} alt="" style={{ width: 18, height: 18, borderRadius: '50%' }} />
+                  ) : (
+                    <span style={{
+                      width: 18, height: 18, borderRadius: '50%',
+                      background: activeSelectedToken.logoBg || '#8C8C8C',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 10, color: '#fff'
+                    }}>
+                      {activeSelectedToken.logo}
+                    </span>
+                  )}
+                  <span style={{ fontSize: 13, fontWeight: 900, color: '#0A0B0D' }}>{activeSelectedToken.symbol}</span>
+                  <span style={{ fontSize: 9, color: '#717886' }}>▼</span>
+                </button>
+              ) : (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  background: '#0052FF',
+                  padding: '8px 14px',
+                  borderRadius: 16,
+                  boxShadow: '0 2px 8px rgba(0,82,255,0.15)'
+                }}>
+                  <img src="/logo.jfif" alt="" style={{ width: 18, height: 18, borderRadius: '50%', objectFit: 'cover' }} />
+                  <span style={{ fontSize: 13, fontWeight: 900, color: '#FFFFFF' }}>$HH</span>
+                </div>
+              )}
+            </div>
+            <div style={{ fontSize: 10.5, color: '#717886', marginTop: 4, fontFamily: 'monospace' }}>
+              {receiveAmount ? `~$${formatNumber(parseFloat(receiveAmount) * (isBuying ? hhPrice : activeSelectedToken.priceUsd), 2)}` : '$0.00'}
+            </div>
           </div>
         </div>
 
         {swapError && (
-          <div style={{ marginBottom: 12, padding: 10, background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: 10, color: '#DC2626', fontSize: 11, fontWeight: 700 }}>
+          <div style={{ marginTop: 12, padding: 10, background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: 10, color: '#DC2626', fontSize: 11, fontWeight: 700 }}>
             ⚠️ {swapError}
           </div>
         )}
@@ -756,27 +950,28 @@ export function ProfileSection({ address, basename, totalUsers }) {
           style={{
             width: '100%',
             padding: '14px',
-            background: 'linear-gradient(135deg, #FF007A 0%, #D80066 100%)',
+            background: 'linear-gradient(135deg, #0052FF 0%, #0043D0 100%)',
             color: '#FFFFFF',
             border: 'none',
             borderRadius: 16,
             fontSize: 14,
             fontWeight: 850,
             cursor: 'pointer',
-            boxShadow: '0 4px 16px rgba(255,0,122,0.25)',
+            boxShadow: '0 4px 16px rgba(0,82,255,0.15)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             gap: 8,
+            marginTop: 14,
             marginBottom: 12
           }}
         >
-          <span>{isBuying ? 'Swap USDC to $HH' : 'Swap $HH to USDC'}</span>
+          <span>{isBuying ? `Swap ${activeSelectedToken.symbol} to $HH` : `Swap $HH to ${activeSelectedToken.symbol}`}</span>
         </button>
 
         {/* Uniswap direct link */}
         <a
-          href="https://app.uniswap.org/swap?inputCurrency=ETH&outputCurrency=0x8235EdF32a1e10Bd1867ad622915ab613664cbA3&chain=base"
+          href="https://app.uniswap.org/swap?inputCurrency=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913&outputCurrency=0x8235edf32a1e10bd1867ad622915ab613664cba3&chain=base"
           target="_blank"
           rel="noopener noreferrer"
           style={{ textDecoration: 'none', display: 'block', textAlign: 'center', fontSize: 11, fontWeight: 800, color: '#FF007A' }}
@@ -886,7 +1081,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
             </div>
           </div>
 
-          {/* Raffle Vault Block */}
+          {/* Raffle Vault Balance */}
           <div style={{ marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid rgba(252, 165, 165, 0.4)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
               <div style={{ fontSize: 10, fontWeight: 800, color: '#B91C1C', letterSpacing: '0.5px' }}>Raffle Vault Balance</div>
@@ -1192,6 +1387,107 @@ export function ProfileSection({ address, basename, totalUsers }) {
                 </div>
               ))}
               {simulatedUsers.length === 0 && <div style={{ textAlign: 'center', fontSize: 11, color: '#9CA3AF', padding: 10 }}>No simulation participants generated yet</div>}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Selector Modal for selecting token */}
+      {isSelectorOpen && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(10,11,13,0.6)', backdropFilter: 'blur(10px)',
+          zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: 16
+        }}>
+          <div style={{
+            background: '#FFFFFF', borderRadius: 24, padding: 20, maxWidth: 360, width: '100%',
+            boxShadow: '0 12px 48px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column',
+            maxHeight: '80vh'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+              <h3 style={{ fontSize: 15, fontWeight: 900, color: '#0A0B0D', margin: 0 }}>Select a token</h3>
+              <button 
+                onClick={() => { setIsSelectorOpen(false); setSearchQuery(''); }}
+                style={{ background: 'none', border: 'none', fontSize: 18, color: '#717886', cursor: 'pointer' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <input
+              type="text"
+              placeholder="Search by name or address"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '10px 14px',
+                borderRadius: 14,
+                border: '1px solid #DEE1E7',
+                fontSize: 12,
+                fontWeight: 750,
+                outline: 'none',
+                marginBottom: 16,
+                background: '#F8F9FC'
+              }}
+            />
+
+            <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {filteredTokens.map(token => (
+                <div
+                  key={token.symbol}
+                  onClick={() => {
+                    setSelectedSymbol(token.symbol);
+                    setIsSelectorOpen(false);
+                    setSearchQuery('');
+                    setPayAmount('');
+                    setReceiveAmount('');
+                  }}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '10px 12px',
+                    borderRadius: 14,
+                    cursor: 'pointer',
+                    background: selectedSymbol === token.symbol ? '#F0F5FF' : 'transparent',
+                    transition: 'background 0.15s'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = selectedSymbol === token.symbol ? '#F0F5FF' : '#F8F9FC'}
+                  onMouseLeave={e => e.currentTarget.style.background = selectedSymbol === token.symbol ? '#F0F5FF' : 'transparent'}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    {token.logo.startsWith('/') ? (
+                      <img src={token.logo} alt="" style={{ width: 26, height: 26, borderRadius: '50%' }} />
+                    ) : (
+                      <span style={{
+                        width: 26, height: 26, borderRadius: '50%',
+                        background: token.logoBg || '#8C8C8C',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 12, color: '#fff'
+                      }}>
+                        {token.logo}
+                      </span>
+                    )}
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 900, color: '#0A0B0D' }}>{token.symbol}</div>
+                      <div style={{ fontSize: 9.5, color: '#717886', marginTop: 1 }}>{token.name}</div>
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontSize: 12.5, fontWeight: 900, color: '#0A0B0D' }}>
+                      {formatConcise(token.balance)}
+                    </div>
+                    <div style={{ fontSize: 9.5, color: '#717886', marginTop: 1, fontFamily: 'monospace' }}>
+                      ${formatNumber(token.usdValue, 2)}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {filteredTokens.length === 0 && (
+                <div style={{ textAlign: 'center', fontSize: 11, color: '#717886', padding: 20 }}>No tokens found</div>
+              )}
             </div>
           </div>
         </div>

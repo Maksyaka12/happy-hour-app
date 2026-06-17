@@ -11,6 +11,23 @@ const formatNumber = (num, decimals = 2) => {
   })
 }
 
+const formatConcise = (num) => {
+  const n = parseFloat(num || 0)
+  if (n >= 1e9) {
+    const val = (n / 1e9).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'b' : val.endsWith('0') ? val.slice(0, -1) + 'b' : val + 'b'
+  }
+  if (n >= 1e6) {
+    const val = (n / 1e6).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'm' : val.endsWith('0') ? val.slice(0, -1) + 'm' : val + 'm'
+  }
+  if (n >= 1e3) {
+    const val = (n / 1e3).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'k' : val.endsWith('0') ? val.slice(0, -1) + 'k' : val + 'k'
+  }
+  return n.toFixed(2).replace(/\.00$/, '')
+}
+
 export function StakingSection() {
   const { address, isConnected } = useAccount()
   const [hhPrice, setHhPrice] = useState(0.00025) // Fallback price
@@ -318,7 +335,7 @@ export function StakingSection() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 12 }}>
             <div>
               <span style={{ fontSize: 20, fontWeight: 900, color: '#0A0B0D' }}>
-                {formatNumber(walletBalance, 0)}
+                {formatConcise(walletBalance)}
               </span>
               <span style={{ fontSize: 12, fontWeight: 800, color: '#717886', marginLeft: 4 }}>$HH</span>
             </div>
@@ -382,7 +399,7 @@ export function StakingSection() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 12 }}>
             <div>
               <span style={{ fontSize: 20, fontWeight: 900, color: '#0A0B0D' }}>
-                {formatNumber(stakedBalance, 0)}
+                {formatConcise(stakedBalance)}
               </span>
               <span style={{ fontSize: 12, fontWeight: 800, color: '#717886', marginLeft: 4 }}>$HH</span>
             </div>
@@ -470,7 +487,7 @@ export function StakingSection() {
                 </button>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#717886', marginBottom: 16 }}>
-                <span>Available: {formatNumber(walletBalance, 0)} $HH</span>
+                <span>Available: {formatConcise(walletBalance)} $HH</span>
                 <span>Est: +{formatNumber(Math.min(20.0, (stakedUsdValue + (parseFloat(stakingAmount || 0) * hhPrice)) * 0.20), 1)} HP/day</span>
               </div>
 
@@ -514,7 +531,7 @@ export function StakingSection() {
                 </button>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#717886', marginBottom: 16 }}>
-                <span>Staked: {formatNumber(stakedBalance, 0)} $HH</span>
+                <span>Staked: {formatConcise(stakedBalance)} $HH</span>
                 <span style={{ color: '#FC401F', fontWeight: 700 }}>⚠️ 3d Unstaking Cooldown</span>
               </div>
 
@@ -565,7 +582,7 @@ export function StakingSection() {
                   }}>
                     <div>
                       <div style={{ fontSize: 13, fontWeight: 850, color: '#0A0B0D' }}>
-                        {formatNumber(w.amount, 0)} $HH
+                        {formatConcise(w.amount)} $HH
                       </div>
                       <div style={{ fontSize: 10, color: '#717886', marginTop: 2 }}>
                         {isReady ? 'Ready to claim!' : `Unlocks in: ${days}d ${hours}h ${minutes}m`}
@@ -625,7 +642,7 @@ export function StakingSection() {
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ fontSize: 12, fontWeight: 900, color: '#0052FF' }}>
-                    {formatNumber(staker.staked, 0)} $HH
+                    {formatConcise(staker.staked)} $HH
                   </div>
                   <div style={{ fontSize: 9, fontWeight: 800, color: '#059669' }}>
                     +{formatNumber(staker.hp, 1)} HP/day

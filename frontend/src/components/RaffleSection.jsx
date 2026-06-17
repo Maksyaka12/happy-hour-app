@@ -35,6 +35,23 @@ const fmt = (ms) => {
   return `${String(m).padStart(2, '0')}:${String(ss).padStart(2, '0')}`
 }
 
+const formatConcise = (num) => {
+  const n = parseFloat(num || 0)
+  if (n >= 1e9) {
+    const val = (n / 1e9).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'b' : val.endsWith('0') ? val.slice(0, -1) + 'b' : val + 'b'
+  }
+  if (n >= 1e6) {
+    const val = (n / 1e6).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'm' : val.endsWith('0') ? val.slice(0, -1) + 'm' : val + 'm'
+  }
+  if (n >= 1e3) {
+    const val = (n / 1e3).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'k' : val.endsWith('0') ? val.slice(0, -1) + 'k' : val + 'k'
+  }
+  return n.toFixed(2).replace(/\.00$/, '')
+}
+
 export function RaffleSection({ address, basename }) {
   const { round, participants, lastWinner, myTickets, myAmount, refetch } = useRoundState(address)
   const [msLeft,       setMsLeft]       = useState(0)
@@ -386,7 +403,7 @@ export function RaffleSection({ address, basename }) {
                 ROUND #{round?.id ?? '—'} · PRIZE POOL
               </div>
               <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 44, fontWeight: 900, lineHeight: 0.95, color: '#fff' }}>
-                {raffleType === 'hh' ? `${Math.round(displayTotalPot).toLocaleString()} ` : `${displayTotalPot.toFixed(2)} `}
+                {raffleType === 'hh' ? `${formatConcise(displayTotalPot)} ` : `${displayTotalPot.toFixed(2)} `}
                 <span style={{ fontSize: 18, marginLeft: 2, opacity: 0.75 }}>{raffleType === 'hh' ? '$HH' : 'USDC'}</span>
               </div>
             </div>
@@ -455,7 +472,7 @@ export function RaffleSection({ address, basename }) {
           <div>
             <div style={{ fontSize: 9, color: '#717886', fontWeight: 800, marginBottom: 2, letterSpacing: '0.3px' }}>YOUR POSITION</div>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#0A0B0D' }}>
-              {displayMyTickets} tickets · {raffleType === 'hh' ? `${Math.round(displayMyAmount).toLocaleString()} $HH` : `${displayMyAmount.toFixed(2)} USDC`}
+              {displayMyTickets} tickets · {raffleType === 'hh' ? `${formatConcise(displayMyAmount)} $HH` : `${displayMyAmount.toFixed(2)} USDC`}
             </div>
           </div>
           <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 26, fontWeight: 900, color: raffleType === 'hh' ? '#8B5CF6' : '#0000FF' }}>{displayMyChance}%</div>
@@ -483,7 +500,7 @@ export function RaffleSection({ address, basename }) {
               }}
             >
               <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 14, fontWeight: 900, color: '#fff', whiteSpace: 'nowrap' }}>
-                {raffleType === 'hh' ? `${Math.round(a / hhPrice).toLocaleString()} $HH` : `${a} USDC`}
+                {raffleType === 'hh' ? `${formatConcise(a / hhPrice)} $HH` : `${a} USDC`}
               </div>
               <div style={{ fontSize: 8, color: raffleType === 'hh' ? '#D8B4FE' : '#3C8AFF', fontWeight: 700 }}>
                 {Math.round(a / TICKET_UNIT)} TICKET{Math.round(a / TICKET_UNIT) > 1 ? 'S' : ''}
@@ -513,7 +530,7 @@ export function RaffleSection({ address, basename }) {
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 14, fontWeight: 900, color: raffleType === 'hh' ? '#8B5CF6' : '#0000FF' }}>
-                    {raffleType === 'hh' ? `${Math.round(p.amount).toLocaleString()} $HH` : `${p.amount.toFixed(2)} USDC`}
+                    {raffleType === 'hh' ? `${formatConcise(p.amount)} $HH` : `${p.amount.toFixed(2)} USDC`}
                   </div>
                   <div style={{ fontSize: 9, color: raffleType === 'hh' ? '#8B5CF6' : '#3C8AFF', fontWeight: 700 }}>
                     {displayTotalPot > 0 ? (p.amount / displayTotalPot * 100).toFixed(1) : 0}%
@@ -543,10 +560,10 @@ export function RaffleSection({ address, basename }) {
           </div>
           <div style={{ textAlign: 'right' }}>
             <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 18, fontWeight: 900, color: raffleType === 'hh' ? '#8B5CF6' : '#0000FF' }}>
-              +{raffleType === 'hh' ? `${Math.round(parseFloat(lastWinner.amount) / hhPrice).toLocaleString()} $HH` : `${lastWinner.amount} USDC`}
+              +{raffleType === 'hh' ? `${formatConcise(parseFloat(lastWinner.amount) / hhPrice)} $HH` : `${lastWinner.amount} USDC`}
             </div>
             <div style={{ fontSize: 9, color: '#717886', fontWeight: 600 }}>
-              of {raffleType === 'hh' ? `${Math.round(parseFloat(lastWinner.pot) / hhPrice).toLocaleString()} $HH` : `${lastWinner.pot} USDC`}
+              of {raffleType === 'hh' ? `${formatConcise(parseFloat(lastWinner.pot) / hhPrice)} $HH` : `${lastWinner.pot} USDC`}
             </div>
           </div>
         </div>
