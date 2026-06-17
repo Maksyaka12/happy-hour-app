@@ -101,13 +101,13 @@ export function HistorySection({ address }) {
   return (
     <div style={{
       background: '#fff',
-      borderRadius: 16,
+      borderRadius: 24,
       marginTop: 20,
-      padding: '20px 20px 16px',
-      boxShadow: '0 4px 14px rgba(10,11,13,0.03)',
-      border: '1px solid rgba(0,0,0,0.04)'
+      padding: '20px 18px 16px',
+      boxShadow: '0 8px 32px rgba(0, 82, 255, 0.02)',
+      border: '1px solid #E5E9F0'
     }}>
-      <div style={{ fontSize: 14, fontWeight: 700, color: '#0A0B0D', marginBottom: 12 }}>History</div>
+      <div style={{ fontSize: 13.5, fontWeight: 850, color: '#0A0B0D', marginBottom: 12 }}>History</div>
       
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         {history.map((record, index) => {
@@ -196,19 +196,22 @@ export function HistorySection({ address }) {
           disabled={loading}
           style={{
             width: '100%',
-            background: hasMore ? 'transparent' : '#FEF2F2',
-            border: `1px solid ${hasMore ? '#E5E7EB' : '#FCA5A5'}`,
-            borderRadius: 30,
-            padding: '12px',
-            marginTop: 8,
-            fontSize: 14,
-            fontWeight: 600,
-            color: hasMore ? '#32353D' : '#DC2626',
+            background: hasMore ? 'transparent' : 'rgba(239, 68, 68, 0.05)',
+            border: `1px solid ${hasMore ? '#E5E9F0' : 'rgba(239, 68, 68, 0.1)'}`,
+            borderRadius: 100,
+            padding: '10px 14px',
+            marginTop: 10,
+            fontSize: 11,
+            fontWeight: 800,
+            color: hasMore ? '#0A0B0D' : '#DC2626',
             cursor: loading ? 'not-allowed' : 'pointer',
-            transition: 'all 0.2s'
+            transition: 'all 0.2s',
+            outline: 'none'
           }}
+          onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-0.5px)'}
+          onMouseLeave={e => e.currentTarget.style.transform = 'none'}
         >
-          {loading ? 'Loading...' : (hasMore ? 'Show more' : 'Show less')}
+          {loading ? 'Loading...' : (hasMore ? 'Show More' : 'Show Less')}
         </button>
       )}
     </div>

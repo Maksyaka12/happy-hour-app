@@ -32,7 +32,7 @@ const formatConcise = (num) => {
   return n.toFixed(2).replace(/\.00$/, '')
 }
 
-export function ProfileSection({ address, basename, totalUsers }) {
+export function ProfileSection({ address, basename, totalUsers, setTab }) {
   const { disconnect } = useDisconnect()
   const { writeContract: wagmiWriteContract } = useWriteContract()
 
@@ -564,22 +564,16 @@ export function ProfileSection({ address, basename, totalUsers }) {
       {/* Crystal Clear Player Passport */}
       <div
         style={{
-          backgroundImage: 'url(/banner.jpg)',
-          backgroundColor: '#0052FF',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          background: 'linear-gradient(135deg, #BCE4FF 0%, #9FB4FF 50%, #E4C6FF 100%)',
           borderRadius: 24,
           padding: '24px 20px',
           marginBottom: 16,
           position: 'relative',
           overflow: 'hidden',
-          boxShadow: '0 12px 40px rgba(0,82,255,0.25)',
-          border: '1px solid rgba(255,255,255,0.15)',
+          boxShadow: '0 12px 32px rgba(0, 82, 255, 0.05)',
+          border: '1px solid rgba(255,255,255,0.5)',
         }}
       >
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0, 0, 80, 0.35)', zIndex: 0 }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,82,255,0.1) 100%)', zIndex: 0 }} />
-
         {/* Top Bar: Player Identity Passport */}
         <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           {/* Avatar & User Address/Basename */}
@@ -589,8 +583,8 @@ export function ProfileSection({ address, basename, totalUsers }) {
               height: 44,
               borderRadius: '50%',
               overflow: 'hidden',
-              border: '2px solid rgba(255,255,255,0.2)',
-              background: 'rgba(255,255,255,0.1)',
+              border: '2px solid rgba(10,11,13,0.1)',
+              background: 'rgba(10,11,13,0.05)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center'
@@ -598,10 +592,10 @@ export function ProfileSection({ address, basename, totalUsers }) {
               <UserAvatar address={address} size={44} />
             </div>
             <div>
-              <div style={{ fontSize: 14, fontWeight: 900, color: '#fff', letterSpacing: -0.3 }}>
+              <div style={{ fontSize: 15, fontWeight: 900, color: '#0A0B0D', letterSpacing: -0.3 }}>
                 {basename || short(address)}
               </div>
-              <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.5)', fontFamily: 'monospace' }}>
+              <div style={{ fontSize: 9.5, fontWeight: 700, color: 'rgba(10,11,13,0.6)', fontFamily: 'monospace' }}>
                 {address ? `${address.slice(0, 10)}...${address.slice(-8)}` : ''}
               </div>
             </div>
@@ -611,14 +605,13 @@ export function ProfileSection({ address, basename, totalUsers }) {
           <button
             onClick={() => disconnect()}
             style={{
-              background: 'rgba(255,255,255,0.1)',
-              backdropFilter: 'blur(8px)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              color: 'rgba(255,255,255,0.9)',
-              borderRadius: 50,
+              background: 'rgba(10,11,13,0.06)',
+              border: '1px solid rgba(10,11,13,0.08)',
+              color: '#0A0B0D',
+              borderRadius: 100,
               padding: '6px 14px',
               fontSize: 9,
-              fontWeight: 900,
+              fontWeight: 800,
               cursor: 'pointer',
               transition: 'all 0.2s ease',
               outline: 'none'
@@ -628,75 +621,134 @@ export function ProfileSection({ address, basename, totalUsers }) {
           </button>
         </div>
 
-        {/* Divider */}
-        <div style={{ position: 'relative', zIndex: 1, height: 1, background: 'rgba(255,255,255,0.15)', margin: '16px 0' }} />
+        {/* Total Points Display */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '8px 0 20px' }}>
+          <span style={{ fontSize: 10, fontWeight: 800, color: '#4B5563', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 4 }}>
+            Total Happy Points
+          </span>
+          <span style={{ fontSize: 40, fontWeight: 900, color: '#0A0B0D', letterSpacing: '-1px' }}>
+            {userStats.points.toLocaleString()} <span style={{ fontSize: 16, fontWeight: 900, color: '#0052FF' }}>HP</span>
+          </span>
+        </div>
 
         {/* Two-column balance stats */}
         <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-          {/* HP Balance */}
+          {/* $HH Wallet Balance */}
           <div style={{
-            background: 'rgba(255, 255, 255, 0.08)',
-            backdropFilter: 'blur(12px)',
+            background: 'rgba(255, 255, 255, 0.45)',
+            backdropFilter: 'blur(16px)',
             padding: '12px 14px',
-            borderRadius: 16,
-            border: '1px solid rgba(255,255,255,0.1)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.15)'
+            borderRadius: 18,
+            border: '1px solid rgba(255,255,255,0.4)',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.02)'
           }}>
-            <div style={{ fontSize: 8.5, fontWeight: 800, color: 'rgba(255,255,255,0.6)', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 4 }}>
-              Happy Points
+            <div style={{ fontSize: 8.5, fontWeight: 800, color: '#4B5563', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 4 }}>
+              Wallet Balance
             </div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-              <span style={{ fontSize: 22, fontWeight: 900, color: '#fff', fontFamily: "'Barlow Condensed',sans-serif" }}>
-                {userStats.points.toLocaleString()}
+              <span style={{ fontSize: 20, fontWeight: 900, color: '#0A0B0D' }}>
+                {formatConcise(walletBalance)}
               </span>
-              <span style={{ fontSize: 10, fontWeight: 900, color: '#A5B4FC' }}>HP</span>
+              <span style={{ fontSize: 10, fontWeight: 900, color: '#0052FF' }}>$HH</span>
             </div>
           </div>
 
-          {/* $HH Wallet Balance */}
+          {/* Ecosystem Wins */}
           <div style={{
-            background: 'rgba(255, 255, 255, 0.08)',
-            backdropFilter: 'blur(12px)',
+            background: 'rgba(255, 255, 255, 0.45)',
+            backdropFilter: 'blur(16px)',
             padding: '12px 14px',
-            borderRadius: 16,
-            border: '1px solid rgba(255,255,255,0.1)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.15)'
+            borderRadius: 18,
+            border: '1px solid rgba(255,255,255,0.4)',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.02)'
           }}>
-            <div style={{ fontSize: 8.5, fontWeight: 800, color: 'rgba(255,255,255,0.6)', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 4 }}>
-              $HH Balance
+            <div style={{ fontSize: 8.5, fontWeight: 800, color: '#4B5563', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 4 }}>
+              Ecosystem Wins
             </div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-              <span style={{ fontSize: 22, fontWeight: 900, color: '#fff', fontFamily: "'Barlow Condensed',sans-serif" }}>
-                {formatConcise(walletBalance)}
+              <span style={{ fontSize: 20, fontWeight: 900, color: '#0A0B0D' }}>
+                {userStats.wins || 0}
               </span>
-              <span style={{ fontSize: 10, fontWeight: 900, color: '#34D399' }}>$HH</span>
+              <span style={{ fontSize: 10, fontWeight: 900, color: '#E11D48' }}>WINS</span>
             </div>
           </div>
+        </div>
+
+        {/* Action Buttons Row */}
+        <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
+          <button
+            onClick={() => setTab('earn')}
+            style={{
+              flex: 1,
+              background: '#0052FF',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: 100,
+              padding: '11px 18px',
+              fontSize: 11.5,
+              fontWeight: 800,
+              cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(0,82,255,0.15)',
+              transition: 'all 0.2s',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 6
+            }}
+            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+            onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+          >
+            <span>📈 Stake $HH</span>
+          </button>
+          <button
+            onClick={() => setTab('raffle')}
+            style={{
+              flex: 1,
+              background: '#0A0B0D',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: 100,
+              padding: '11px 18px',
+              fontSize: 11.5,
+              fontWeight: 800,
+              cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(10,11,13,0.15)',
+              transition: 'all 0.2s',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 6
+            }}
+            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+            onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+          >
+            <span>🎰 Play Raffle</span>
+          </button>
         </div>
       </div>
 
       {/* Premium Base App Style Swap Widget */}
       <div style={{
         background: '#FFFFFF',
-        border: '1px solid #DEE1E7',
+        border: '1px solid #E5E9F0',
         borderRadius: 24,
-        padding: 20,
+        padding: '20px 18px',
         marginBottom: 16,
-        boxShadow: '0 4px 20px rgba(0,82,255,0.04)'
+        boxShadow: '0 8px 32px rgba(0, 82, 255, 0.02)'
       }}>
         {/* Title Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-          <h3 style={{ fontSize: 14, fontWeight: 900, color: '#0A0B0D', display: 'flex', alignItems: 'center', gap: 6, margin: 0 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+          <h3 style={{ fontSize: 13.5, fontWeight: 850, color: '#0A0B0D', display: 'flex', alignItems: 'center', gap: 6, margin: 0 }}>
             🦄 Swap Tokens
           </h3>
           <span style={{
             fontSize: 9,
             fontWeight: 800,
             color: '#0052FF',
-            background: '#F0F5FF',
+            background: 'rgba(0, 82, 255, 0.06)',
             padding: '3px 8px',
-            borderRadius: 12,
-            border: '1px solid rgba(0, 82, 255, 0.1)'
+            borderRadius: 100,
+            border: '1px solid rgba(0, 82, 255, 0.08)'
           }}>
             Base Mainnet
           </span>
@@ -707,29 +759,29 @@ export function ProfileSection({ address, basename, totalUsers }) {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          background: '#F8F9FC',
+          background: 'linear-gradient(135deg, rgba(0, 82, 255, 0.02) 0%, rgba(228, 198, 255, 0.05) 100%)',
           padding: '10px 14px',
-          borderRadius: 14,
+          borderRadius: 16,
           marginBottom: 14,
-          border: '1px solid #EEF0F3'
+          border: '1px solid rgba(0, 82, 255, 0.04)'
         }}>
           <div>
-            <div style={{ fontSize: 8.5, fontWeight: 800, color: '#717886', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+            <div style={{ fontSize: 8.5, fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: 0.5 }}>
               Live $HH Price
             </div>
-            <div style={{ fontSize: 14, fontWeight: 950, color: '#0A0B0D', fontFamily: 'monospace', marginTop: 2 }}>
+            <div style={{ fontSize: 13.5, fontWeight: 900, color: '#0A0B0D', fontFamily: 'monospace', marginTop: 2 }}>
               ${formatNumber(hhPrice, 5)}
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
             <span style={{
-              background: priceChange >= 0 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+              background: priceChange >= 0 ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)',
               color: priceChange >= 0 ? '#10B981' : '#EF4444',
-              fontSize: 10,
+              fontSize: 9.5,
               fontWeight: 800,
               padding: '3px 8px',
-              borderRadius: 20,
-              border: priceChange >= 0 ? '1px solid rgba(16, 185, 129, 0.15)' : '1px solid rgba(239, 68, 68, 0.15)'
+              borderRadius: 100,
+              border: priceChange >= 0 ? '1px solid rgba(16, 185, 129, 0.1)' : '1px solid rgba(239, 68, 68, 0.1)'
             }}>
               {priceChange >= 0 ? '▲' : '▼'} {priceChange}% (24h)
             </span>
@@ -741,13 +793,13 @@ export function ProfileSection({ address, basename, totalUsers }) {
           
           {/* FROM FIELD */}
           <div style={{
-            background: '#F5F7FA',
-            border: '1px solid #E4E7EB',
-            borderRadius: 20,
+            background: '#F3F5F9',
+            borderRadius: 22,
             padding: '16px 16px 12px',
-            marginBottom: 4
+            marginBottom: 4,
+            border: '1px solid rgba(226, 232, 240, 0.5)'
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, fontWeight: 800, color: '#717886', marginBottom: 6 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9.5, fontWeight: 800, color: '#64748B', marginBottom: 6 }}>
               <span>From</span>
               <span>
                 Balance: {isBuying 
@@ -766,7 +818,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
                   border: 'none',
                   outline: 'none',
                   fontSize: 22,
-                  fontWeight: 900,
+                  fontWeight: 800,
                   color: '#0A0B0D',
                   width: '55%',
                   fontFamily: 'monospace'
@@ -783,12 +835,15 @@ export function ProfileSection({ address, basename, totalUsers }) {
                     gap: 6,
                     background: '#FFFFFF',
                     padding: '8px 12px',
-                    borderRadius: 16,
-                    border: '1px solid #DEE1E7',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.03)',
+                    borderRadius: 100,
+                    border: '1px solid #E2E8F0',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
                     cursor: 'pointer',
-                    outline: 'none'
+                    outline: 'none',
+                    transition: 'all 0.2s'
                   }}
+                  onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
+                  onMouseLeave={e => e.currentTarget.style.transform = 'none'}
                 >
                   {activeSelectedToken.logo.startsWith('/') ? (
                     <img src={activeSelectedToken.logo} alt="" style={{ width: 18, height: 18, borderRadius: '50%' }} />
@@ -802,8 +857,8 @@ export function ProfileSection({ address, basename, totalUsers }) {
                       {activeSelectedToken.logo}
                     </span>
                   )}
-                  <span style={{ fontSize: 13, fontWeight: 900, color: '#0A0B0D' }}>{activeSelectedToken.symbol}</span>
-                  <span style={{ fontSize: 9, color: '#717886' }}>▼</span>
+                  <span style={{ fontSize: 12.5, fontWeight: 800, color: '#0A0B0D' }}>{activeSelectedToken.symbol}</span>
+                  <span style={{ fontSize: 8, color: '#64748B' }}>▼</span>
                 </button>
               ) : (
                 <div style={{
@@ -812,21 +867,21 @@ export function ProfileSection({ address, basename, totalUsers }) {
                   gap: 6,
                   background: '#0052FF',
                   padding: '8px 14px',
-                  borderRadius: 16,
-                  boxShadow: '0 2px 8px rgba(0,82,255,0.15)'
+                  borderRadius: 100,
+                  boxShadow: '0 2px 8px rgba(0,82,255,0.1)'
                 }}>
                   <img src="/logo.jfif" alt="" style={{ width: 18, height: 18, borderRadius: '50%', objectFit: 'cover' }} />
-                  <span style={{ fontSize: 13, fontWeight: 900, color: '#FFFFFF' }}>$HH</span>
+                  <span style={{ fontSize: 12.5, fontWeight: 800, color: '#FFFFFF' }}>$HH</span>
                 </div>
               )}
             </div>
-            <div style={{ fontSize: 10.5, color: '#717886', marginTop: 4, fontFamily: 'monospace' }}>
+            <div style={{ fontSize: 10, color: '#64748B', marginTop: 4, fontFamily: 'monospace' }}>
               {payAmount ? `~$${formatNumber(parseFloat(payAmount) * (isBuying ? activeSelectedToken.priceUsd : hhPrice), 2)}` : '$0.00'}
             </div>
           </div>
 
           {/* Direction Switcher Button in middle */}
-          <div style={{ display: 'flex', justifyContent: 'center', margin: '-14px 0', position: 'relative', zIndex: 10 }}>
+          <div style={{ display: 'flex', justifyContent: 'center', margin: '-16px 0', position: 'relative', zIndex: 10 }}>
             <button
               onClick={handleSwapDirection}
               style={{
@@ -834,19 +889,19 @@ export function ProfileSection({ address, basename, totalUsers }) {
                 height: 32,
                 borderRadius: '50%',
                 background: '#FFFFFF',
-                border: '1px solid #E4E7EB',
+                border: '1px solid #E2E8F0',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: 14,
-                boxShadow: '0 4px 10px rgba(0,0,0,0.08)',
+                fontSize: 13,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
                 color: '#0052FF',
                 cursor: 'pointer',
-                transition: 'transform 0.2s',
+                transition: 'all 0.2s',
                 outline: 'none'
               }}
-              onMouseEnter={e => e.currentTarget.style.transform = 'rotate(180deg)'}
-              onMouseLeave={e => e.currentTarget.style.transform = 'rotate(0deg)'}
+              onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1) rotate(180deg)'}
+              onMouseLeave={e => e.currentTarget.style.transform = 'none'}
             >
               ⇅
             </button>
@@ -854,13 +909,13 @@ export function ProfileSection({ address, basename, totalUsers }) {
 
           {/* TO FIELD */}
           <div style={{
-            background: '#F5F7FA',
-            border: '1px solid #E4E7EB',
-            borderRadius: 20,
+            background: '#F3F5F9',
+            borderRadius: 22,
             padding: '16px 16px 12px',
-            marginTop: 4
+            marginTop: 4,
+            border: '1px solid rgba(226, 232, 240, 0.5)'
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, fontWeight: 800, color: '#717886', marginBottom: 6 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9.5, fontWeight: 800, color: '#64748B', marginBottom: 6 }}>
               <span>To</span>
               <span>
                 Balance: {isBuying 
@@ -879,7 +934,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
                   border: 'none',
                   outline: 'none',
                   fontSize: 22,
-                  fontWeight: 900,
+                  fontWeight: 800,
                   color: '#0A0B0D',
                   width: '55%',
                   fontFamily: 'monospace'
@@ -895,12 +950,15 @@ export function ProfileSection({ address, basename, totalUsers }) {
                     gap: 6,
                     background: '#FFFFFF',
                     padding: '8px 12px',
-                    borderRadius: 16,
-                    border: '1px solid #DEE1E7',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.03)',
+                    borderRadius: 100,
+                    border: '1px solid #E2E8F0',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
                     cursor: 'pointer',
-                    outline: 'none'
+                    outline: 'none',
+                    transition: 'all 0.2s'
                   }}
+                  onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
+                  onMouseLeave={e => e.currentTarget.style.transform = 'none'}
                 >
                   {activeSelectedToken.logo.startsWith('/') ? (
                     <img src={activeSelectedToken.logo} alt="" style={{ width: 18, height: 18, borderRadius: '50%' }} />
@@ -914,8 +972,8 @@ export function ProfileSection({ address, basename, totalUsers }) {
                       {activeSelectedToken.logo}
                     </span>
                   )}
-                  <span style={{ fontSize: 13, fontWeight: 900, color: '#0A0B0D' }}>{activeSelectedToken.symbol}</span>
-                  <span style={{ fontSize: 9, color: '#717886' }}>▼</span>
+                  <span style={{ fontSize: 12.5, fontWeight: 800, color: '#0A0B0D' }}>{activeSelectedToken.symbol}</span>
+                  <span style={{ fontSize: 8, color: '#64748B' }}>▼</span>
                 </button>
               ) : (
                 <div style={{
@@ -924,22 +982,22 @@ export function ProfileSection({ address, basename, totalUsers }) {
                   gap: 6,
                   background: '#0052FF',
                   padding: '8px 14px',
-                  borderRadius: 16,
-                  boxShadow: '0 2px 8px rgba(0,82,255,0.15)'
+                  borderRadius: 100,
+                  boxShadow: '0 2px 8px rgba(0,82,255,0.1)'
                 }}>
                   <img src="/logo.jfif" alt="" style={{ width: 18, height: 18, borderRadius: '50%', objectFit: 'cover' }} />
-                  <span style={{ fontSize: 13, fontWeight: 900, color: '#FFFFFF' }}>$HH</span>
+                  <span style={{ fontSize: 12.5, fontWeight: 800, color: '#FFFFFF' }}>$HH</span>
                 </div>
               )}
             </div>
-            <div style={{ fontSize: 10.5, color: '#717886', marginTop: 4, fontFamily: 'monospace' }}>
+            <div style={{ fontSize: 10, color: '#64748B', marginTop: 4, fontFamily: 'monospace' }}>
               {receiveAmount ? `~$${formatNumber(parseFloat(receiveAmount) * (isBuying ? hhPrice : activeSelectedToken.priceUsd), 2)}` : '$0.00'}
             </div>
           </div>
         </div>
 
         {swapError && (
-          <div style={{ marginTop: 12, padding: 10, background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: 10, color: '#DC2626', fontSize: 11, fontWeight: 700 }}>
+          <div style={{ marginTop: 12, padding: 10, background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: 12, color: '#DC2626', fontSize: 11, fontWeight: 700 }}>
             ⚠️ {swapError}
           </div>
         )}
@@ -949,22 +1007,25 @@ export function ProfileSection({ address, basename, totalUsers }) {
           onClick={handleSwapExecute}
           style={{
             width: '100%',
-            padding: '14px',
-            background: 'linear-gradient(135deg, #0052FF 0%, #0043D0 100%)',
+            padding: '13px',
+            background: 'linear-gradient(135deg, #0052FF 0%, #0036B2 100%)',
             color: '#FFFFFF',
             border: 'none',
-            borderRadius: 16,
-            fontSize: 14,
-            fontWeight: 850,
+            borderRadius: 100,
+            fontSize: 13,
+            fontWeight: 800,
             cursor: 'pointer',
-            boxShadow: '0 4px 16px rgba(0,82,255,0.15)',
+            boxShadow: '0 4px 16px rgba(0,82,255,0.12)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             gap: 8,
-            marginTop: 14,
-            marginBottom: 12
+            marginTop: 16,
+            marginBottom: 12,
+            transition: 'all 0.2s'
           }}
+          onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+          onMouseLeave={e => e.currentTarget.style.transform = 'none'}
         >
           <span>{isBuying ? `Swap ${activeSelectedToken.symbol} to $HH` : `Swap $HH to ${activeSelectedToken.symbol}`}</span>
         </button>
@@ -974,26 +1035,42 @@ export function ProfileSection({ address, basename, totalUsers }) {
           href="https://app.uniswap.org/swap?inputCurrency=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913&outputCurrency=0x8235edf32a1e10bd1867ad622915ab613664cba3&chain=base"
           target="_blank"
           rel="noopener noreferrer"
-          style={{ textDecoration: 'none', display: 'block', textAlign: 'center', fontSize: 11, fontWeight: 800, color: '#FF007A' }}
+          style={{ textDecoration: 'none', display: 'block', textAlign: 'center', fontSize: 10.5, fontWeight: 800, color: '#FF007A' }}
         >
           Trade directly on Uniswap 🦄
         </a>
       </div>
 
       {/* Referral Program: Senior Hub */}
-      <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, marginBottom: 12 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+      <div style={{
+        background: '#FFFFFF',
+        border: '1px solid #E5E9F0',
+        borderRadius: 24,
+        padding: '20px 18px',
+        marginBottom: 16,
+        boxShadow: '0 8px 32px rgba(0, 82, 255, 0.02)'
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Referral Hub</div>
-            <div style={{ fontSize: 9.5, color: '#717886', marginTop: 3, fontWeight: 500, lineHeight: 1.4 }}>
+            <div style={{ fontSize: 13.5, fontWeight: 850, color: '#0A0B0D' }}>Referral Hub</div>
+            <div style={{ fontSize: 9.5, color: '#64748B', marginTop: 3, fontWeight: 500, lineHeight: 1.4 }}>
               Invite friends and <span style={{ color: '#0052FF', fontWeight: 800 }}>earn 20% of their HP</span> forever.
             </div>
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
-          <div style={{ flex: 1.5, background: '#F1F5F9', borderRadius: 12, padding: '10px 12px', border: '1px solid #E2E8F0', overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
-            <span style={{ fontFamily: "'DM Mono',monospace", fontSize: 9, color: '#64748B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{referralLink}</span>
+        <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
+          <div style={{
+            flex: 1.8,
+            background: '#F3F5F9',
+            borderRadius: 100,
+            padding: '10px 16px',
+            border: '1px solid rgba(226, 232, 240, 0.5)',
+            overflow: 'hidden',
+            display: 'flex',
+            alignItems: 'center'
+          }}>
+            <span style={{ fontFamily: 'monospace', fontSize: 9, color: '#64748B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{referralLink}</span>
           </div>
           <button
             onClick={async () => {
@@ -1003,9 +1080,23 @@ export function ProfileSection({ address, basename, totalUsers }) {
                 setTimeout(() => setLinkCopied(false), 2000)
               } catch {}
             }}
-            style={{ flex: 1, background: '#0052FF', color: '#fff', border: 'none', borderRadius: 12, fontSize: 10, fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap', boxShadow: '0 2px 8px rgba(0,82,255,0.15)' }}
+            style={{
+              flex: 1,
+              background: '#0052FF',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 100,
+              fontSize: 10,
+              fontWeight: 800,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              boxShadow: '0 2px 8px rgba(0,82,255,0.08)',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+            onMouseLeave={e => e.currentTarget.style.transform = 'none'}
           >
-            {linkCopied ? '✓' : 'Copy'}
+            {linkCopied ? '✓ Copied' : 'Copy Link'}
           </button>
           <button
             onClick={async () => {
@@ -1015,48 +1106,165 @@ export function ProfileSection({ address, basename, totalUsers }) {
                 setTimeout(() => setCodeCopied(false), 2000)
               } catch {}
             }}
-            style={{ flex: 1, background: '#10B981', color: '#fff', border: 'none', borderRadius: 12, fontSize: 10, fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap', boxShadow: '0 2px 8px rgba(16,185,129,0.15)' }}
+            style={{
+              flex: 0.8,
+              background: '#10B981',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 100,
+              fontSize: 10,
+              fontWeight: 800,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              boxShadow: '0 2px 8px rgba(16,185,129,0.08)',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+            onMouseLeave={e => e.currentTarget.style.transform = 'none'}
           >
             {codeCopied ? '✓' : 'Code'}
           </button>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 14 }}>
-          <div style={{ background: '#F8FAFC', borderRadius: 12, padding: '10px 8px', border: '1px solid #F1F5F9', textAlign: 'center' }}>
-            <div style={{ fontSize: 15, fontWeight: 900, color: '#0A0B0D', lineHeight: 1 }}>{userStats.referral_count}</div>
-            <div style={{ fontSize: 8, color: '#64748B', marginTop: 4, fontWeight: 800, textTransform: 'uppercase' }}>FRIENDS</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
+          <div style={{ background: '#F3F5F9', borderRadius: 18, padding: '12px 8px', border: '1px solid rgba(226, 232, 240, 0.5)', textAlign: 'center' }}>
+            <div style={{ fontSize: 16, fontWeight: 900, color: '#0A0B0D', lineHeight: 1 }}>{userStats.referral_count}</div>
+            <div style={{ fontSize: 8, color: '#64748B', marginTop: 4, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>FRIENDS</div>
           </div>
-          <div style={{ background: '#F8FAFC', borderRadius: 12, padding: '10px 8px', border: '1px solid #F1F5F9', textAlign: 'center' }}>
-            <div style={{ fontSize: 15, fontWeight: 900, color: '#0052FF', lineHeight: 1 }}>{userStats.referral_points} <span style={{ fontSize: 9 }}>HP</span></div>
-            <div style={{ fontSize: 8, color: '#64748B', marginTop: 4, fontWeight: 800, textTransform: 'uppercase' }}>EARNED</div>
+          <div style={{ background: '#F3F5F9', borderRadius: 18, padding: '12px 8px', border: '1px solid rgba(226, 232, 240, 0.5)', textAlign: 'center' }}>
+            <div style={{ fontSize: 16, fontWeight: 900, color: '#0052FF', lineHeight: 1 }}>{userStats.referral_points} <span style={{ fontSize: 9.5 }}>HP</span></div>
+            <div style={{ fontSize: 8, color: '#64748B', marginTop: 4, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>EARNED</div>
           </div>
         </div>
 
         {userStats.referrer ? (
-          <div style={{ paddingTop: 12, borderTop: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#059669' }} />
-            <div style={{ fontSize: 10.5, fontWeight: 700, color: '#059669' }}>
-              Referred by: <span style={{ fontFamily: "'DM Mono', monospace", fontWeight: 500, opacity: 0.8 }}>{userStats.referrer.slice(0, 6)}...{userStats.referrer.slice(-4)}</span>
+          <div style={{ paddingTop: 12, borderTop: '1px solid rgba(226, 232, 240, 0.8)', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981' }} />
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#10B981' }}>
+              Referred by: <span style={{ fontFamily: 'monospace', fontWeight: 500, opacity: 0.9 }}>{userStats.referrer.slice(0, 6)}...{userStats.referrer.slice(-4)}</span>
             </div>
           </div>
         ) : (
-          <div style={{ display: 'flex', gap: 6, paddingTop: 12, borderTop: '1px solid #F1F5F9' }}>
+          <div style={{ display: 'flex', gap: 6, paddingTop: 12, borderTop: '1px solid rgba(226, 232, 240, 0.8)' }}>
             <input
               type="text"
               value={refInput}
               onChange={(e) => setRefInput(e.target.value)}
               placeholder="Enter referral code"
-              style={{ flex: 1, background: '#fff', border: '1px solid #DEE1E7', borderRadius: 10, padding: '10px 12px', fontSize: 11, outline: 'none', fontFamily: "'DM Mono', monospace" }}
+              style={{
+                flex: 1.5,
+                background: '#F3F5F9',
+                border: '1px solid rgba(226, 232, 240, 0.5)',
+                borderRadius: 100,
+                padding: '10px 14px',
+                fontSize: 11,
+                outline: 'none',
+                fontFamily: 'monospace',
+                color: '#0A0B0D'
+              }}
             />
             <button
               onClick={handleApplyRef}
               disabled={refLoading || !refInput.trim()}
-              style={{ background: '#0052FF', color: '#fff', border: 'none', borderRadius: 10, padding: '0 16px', fontSize: 11, fontWeight: 800, cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,82,255,0.1)' }}
+              style={{
+                flex: 1,
+                background: '#0052FF',
+                color: '#fff',
+                border: 'none',
+                borderRadius: 100,
+                padding: '0 16px',
+                fontSize: 11,
+                fontWeight: 800,
+                cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(0,82,255,0.08)',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+              onMouseLeave={e => e.currentTarget.style.transform = 'none'}
             >
               Apply
             </button>
           </div>
         )}
+      </div>
+
+      {/* Quick Navigation Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
+        {/* Card 1: Staking */}
+        <div
+          onClick={() => setTab('earn')}
+          style={{
+            background: 'linear-gradient(135deg, rgba(0, 82, 255, 0.03) 0%, rgba(228, 198, 255, 0.05) 100%)',
+            border: '1px solid #E5E9F0',
+            borderRadius: 24,
+            padding: '16px 14px',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.01)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between'
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.transform = 'translateY(-2px)'
+            e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 82, 255, 0.05)'
+            e.currentTarget.style.borderColor = 'rgba(0, 82, 255, 0.15)'
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.transform = 'none'
+            e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.01)'
+            e.currentTarget.style.borderColor = '#E5E9F0'
+          }}
+        >
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 900, color: '#0A0B0D', marginBottom: 4 }}>📈 Staking Hub</div>
+            <div style={{ fontSize: 9.5, color: '#64748B', lineHeight: 1.4, fontWeight: 500 }}>
+              Lock your $HH to secure yield and accumulate passive points.
+            </div>
+          </div>
+          <div style={{ fontSize: 10, fontWeight: 800, color: '#0052FF', marginTop: 12, display: 'flex', alignItems: 'center', gap: 2 }}>
+            <span>Stake now</span>
+            <span>→</span>
+          </div>
+        </div>
+
+        {/* Card 2: Raffle */}
+        <div
+          onClick={() => setTab('raffle')}
+          style={{
+            background: 'linear-gradient(135deg, rgba(0, 82, 255, 0.03) 0%, rgba(228, 198, 255, 0.05) 100%)',
+            border: '1px solid #E5E9F0',
+            borderRadius: 24,
+            padding: '16px 14px',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.01)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between'
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.transform = 'translateY(-2px)'
+            e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 82, 255, 0.05)'
+            e.currentTarget.style.borderColor = 'rgba(0, 82, 255, 0.15)'
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.transform = 'none'
+            e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.01)'
+            e.currentTarget.style.borderColor = '#E5E9F0'
+          }}
+        >
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 900, color: '#0A0B0D', marginBottom: 4 }}>🎰 Daily Raffle</div>
+            <div style={{ fontSize: 9.5, color: '#64748B', lineHeight: 1.4, fontWeight: 500 }}>
+              Join the daily prize pool and win substantial cash rewards.
+            </div>
+          </div>
+          <div style={{ fontSize: 10, fontWeight: 800, color: '#0052FF', marginTop: 12, display: 'flex', alignItems: 'center', gap: 2 }}>
+            <span>Play now</span>
+            <span>→</span>
+          </div>
+        </div>
       </div>
 
       <HistorySection address={address} />

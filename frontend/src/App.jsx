@@ -337,7 +337,7 @@ export default function App() {
         {/* <ContestBanner onClick={() => setTab('boxes')} /> */}
 
         <div style={{ position: 'relative', zIndex: 1, maxWidth: 640, margin: '0 auto' }}>
-          {tab === 'home' && <ProfileSection address={address} basename={basename} totalUsers={totalUsers} />}
+          {tab === 'home' && <ProfileSection address={address} basename={basename} totalUsers={totalUsers} setTab={setTab} />}
           {tab === 'raffle' && <RaffleSection address={address} basename={basename} />}
           {tab === 'earn' && <EarnSection />}
           {tab === 'boxes' && <HappyBoxesSection address={address} />}
