@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { useChainId, useSwitchChain } from 'wagmi'
-import { parseUnits } from 'viem'
+import { useChainId, useSwitchChain, useReadContract } from 'wagmi'
+import { parseUnits, formatUnits } from 'viem'
 import { base } from 'wagmi/chains'
-import { CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI } from '../config/constants'
+import { CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI } from '../config/constants'
 import { db } from '../config/supabase'
 import { useBuilderWrite } from '../hooks/useBuilderWrite'
 import { TxModal } from './TxModal'
@@ -65,6 +65,45 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
   const [isBurningAp, setIsBurningAp] = useState(false)
   const [apBurnError, setApBurnError] = useState('')
   const [apBurnSuccess, setApBurnSuccess] = useState(false)
+
+  const [paymentCurrency, setPaymentCurrency] = useState('USDC')
+  const [hhPrice, setHhPrice] = useState(0.00025)
+  const [isFreePending, setIsFreePending] = useState(false)
+  const [isFreeConfirming, setIsFreeConfirming] = useState(false)
+  const [isFreeSuccess, setIsFreeSuccess] = useState(false)
+  const [freeTxHash, setFreeTxHash] = useState(null)
+
+  // Fetch HH price from DexScreener
+  useEffect(() => {
+    const getPrice = async () => {
+      try {
+        const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${HH_ADDRESS}`)
+        const data = await res.json()
+        const pair = data.pairs?.[0]
+        if (pair) {
+          setHhPrice(parseFloat(pair.priceUsd) || 0.00025)
+        }
+      } catch (err) {
+        console.error('DexScreener API error in HappyBoxes:', err)
+      }
+    }
+    getPrice()
+    const interval = setInterval(getPrice, 30000)
+    return () => clearInterval(interval)
+  }, [])
+
+  // Read allowance
+  const { data: allowanceRaw } = useReadContract({
+    address: HH_ADDRESS,
+    abi: HH_ABI,
+    functionName: 'allowance',
+    args: address && CHECKIN_TARGET ? [address, CHECKIN_TARGET] : undefined,
+    query: { enabled: !!address && paymentCurrency === 'HH', refetchInterval: 10000 }
+  })
+  
+  const currentAllowance = allowanceRaw !== undefined
+    ? parseFloat(formatUnits(allowanceRaw, 18))
+    : 0
 
   const loadDailyStats = async () => {
     if (!address) return
@@ -180,52 +219,115 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
     reset()
   }
 
-  // Handle successful USDC transactions
+  // Handle successful transactions
   useEffect(() => {
     if (isSuccess && txHash) {
-      if (txModal === 'single') {
-        setTxModal(false)
-        if (clickedBoxIndex !== null) {
-          // Option 1: User pre-clicked a chest card badge. Open it directly!
-          handleSelectChest(clickedBoxIndex, txHash)
-        } else {
-          // Standard flow: User clicked main bottom button. Give them a choice.
-          setActiveTxHash(txHash)
-          setHasActiveChoice(true)
-          setChests(prev => prev.map(c => c.status === 'locked' ? { ...c, status: 'active' } : c))
-          localStorage.setItem('happy_boxes_pending', txHash)
-        }
-      } else if (txModal === 'bundle') {
-        setTxModal(false)
+      if (txModal === 'bundle') {
         handleOpenAllChests(txHash)
+      } else if (txModal === 'single' && clickedBoxIndex !== null) {
+        handleSelectChest(clickedBoxIndex, txHash)
+      }
+    } else if (isFreeSuccess && freeTxHash) {
+      if (txModal === 'single' && clickedBoxIndex !== null) {
+        handleSelectChest(clickedBoxIndex, freeTxHash)
       }
     }
-  }, [isSuccess, txHash, txModal, clickedBoxIndex])
+  }, [isSuccess, txHash, isFreeSuccess, freeTxHash, txModal, clickedBoxIndex])
 
   // Single chest transaction confirm
   const handleSinglePayment = () => {
     if (wrongChain) { switchChain({ chainId: base.id }); return }
     setErrorMessage('')
-    writeContract({
-      address: USDC_ADDRESS,
-      abi: USDC_ABI,
-      functionName: 'transfer',
-      args: [CHECKIN_TARGET, parseUnits('0.30', 6)],
-      chainId: base.id
-    })
+    
+    const isFree = dailyStats.boxes_opened < 5
+
+    if (isFree) {
+      // Simulate free on-chain action
+      setIsFreePending(true)
+      setTimeout(() => {
+        setIsFreePending(false)
+        setIsFreeConfirming(true)
+        setTimeout(() => {
+          setIsFreeConfirming(false)
+          setIsFreeSuccess(true)
+          const fakeHash = '0x' + Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join('')
+          setFreeTxHash(fakeHash)
+        }, 1500)
+      }, 1200)
+    } else {
+      // Paid open ($0.10)
+      if (paymentCurrency === 'HH') {
+        const hhAmount = 0.10 / hhPrice
+        // Check allowance
+        if (currentAllowance < hhAmount) {
+          // Trigger infinite approve
+          writeContract({
+            address: HH_ADDRESS,
+            abi: HH_ABI,
+            functionName: 'approve',
+            args: [CHECKIN_TARGET, parseUnits('115792089237316195423570985008687907853269984665640564039457584007913129639935', 18)], // max uint256
+            chainId: base.id
+          })
+        } else {
+          // Trigger payment
+          writeContract({
+            address: HH_ADDRESS,
+            abi: HH_ABI,
+            functionName: 'transfer',
+            args: [CHECKIN_TARGET, parseUnits(hhAmount.toFixed(18), 18)],
+            chainId: base.id
+          })
+        }
+      } else {
+        // USDC payment
+        writeContract({
+          address: USDC_ADDRESS,
+          abi: USDC_ABI,
+          functionName: 'transfer',
+          args: [CHECKIN_TARGET, parseUnits('0.10', 6)],
+          chainId: base.id
+        })
+      }
+    }
   }
 
-  // Bundle transaction confirm (Open All)
+  // Bundle transaction confirm (Open All - $1.20)
   const handleBundlePayment = () => {
     if (wrongChain) { switchChain({ chainId: base.id }); return }
     setErrorMessage('')
-    writeContract({
-      address: USDC_ADDRESS,
-      abi: USDC_ABI,
-      functionName: 'transfer',
-      args: [CHECKIN_TARGET, parseUnits('1.50', 6)],
-      chainId: base.id
-    })
+
+    if (paymentCurrency === 'HH') {
+      const hhAmount = 1.20 / hhPrice
+      // Check allowance
+      if (currentAllowance < hhAmount) {
+        // Trigger infinite approve
+        writeContract({
+          address: HH_ADDRESS,
+          abi: HH_ABI,
+          functionName: 'approve',
+          args: [CHECKIN_TARGET, parseUnits('115792089237316195423570985008687907853269984665640564039457584007913129639935', 18)], // max uint256
+          chainId: base.id
+        })
+      } else {
+        // Trigger payment
+        writeContract({
+          address: HH_ADDRESS,
+          abi: HH_ABI,
+          functionName: 'transfer',
+          args: [CHECKIN_TARGET, parseUnits(hhAmount.toFixed(18), 18)],
+          chainId: base.id
+        })
+      }
+    } else {
+      // USDC payment (Season 2: $1.20)
+      writeContract({
+        address: USDC_ADDRESS,
+        abi: USDC_ABI,
+        functionName: 'transfer',
+        args: [CHECKIN_TARGET, parseUnits('1.20', 6)],
+        chainId: base.id
+      })
+    }
   }
 
   // User selects an active chest to open
@@ -277,6 +379,10 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       setRevealingIndex(null)
       setActiveTxHash(null)
       setClickedBoxIndex(null)
+      setIsFreePending(false)
+      setIsFreeConfirming(false)
+      setIsFreeSuccess(false)
+      setFreeTxHash(null)
       reset()
     }
   }
@@ -492,6 +598,58 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         </div>
       </div>
 
+      {/* ═══ PAYMENT CURRENCY SWITCHER ═══ */}
+      <div style={{
+        display: 'flex',
+        background: '#EEF0F3',
+        border: '1px solid #DEE1E7',
+        borderRadius: 16,
+        padding: 4,
+        marginBottom: 16,
+        gap: 6
+      }}>
+        <button
+          onClick={() => setPaymentCurrency('USDC')}
+          style={{
+            flex: 1,
+            padding: '8px 10px',
+            borderRadius: 12,
+            border: paymentCurrency === 'USDC' ? 'none' : '1px solid rgba(255,255,255,0.8)',
+            background: paymentCurrency === 'USDC' 
+              ? 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)' 
+              : 'rgba(255, 255, 255, 0.6)',
+            color: paymentCurrency === 'USDC' ? '#fff' : '#717886',
+            fontWeight: 850,
+            fontSize: 11.5,
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            boxShadow: paymentCurrency === 'USDC' ? '0 2px 8px rgba(0,82,255,0.15)' : 'none'
+          }}
+        >
+          💵 Pay with USDC
+        </button>
+        <button
+          onClick={() => setPaymentCurrency('HH')}
+          style={{
+            flex: 1,
+            padding: '8px 10px',
+            borderRadius: 12,
+            border: paymentCurrency === 'HH' ? 'none' : '1px solid rgba(255,255,255,0.8)',
+            background: paymentCurrency === 'HH' 
+              ? 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)' 
+              : 'rgba(255, 255, 255, 0.6)',
+            color: paymentCurrency === 'HH' ? '#fff' : '#717886',
+            fontWeight: 850,
+            fontSize: 11.5,
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            boxShadow: paymentCurrency === 'HH' ? '0 2px 8px rgba(0,82,255,0.15)' : 'none'
+          }}
+        >
+          💎 Pay with $HH
+        </button>
+      </div>
+
       {/* ═══ DAILY LIMITS & AP BURN CARD ═══ */}
       <div style={{
         background: '#fff',
@@ -537,7 +695,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           }} />
         </div>
 
-        {/* AP Burn Controller Row */}
+        {/* Season 2 Free Opens Controller Row */}
         <div style={{ 
           display: 'flex', 
           alignItems: 'center', 
@@ -547,48 +705,19 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           gap: 12
         }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            <span style={{ fontSize: 9, color: '#717886', fontWeight: 600 }}>Your Activity Points</span>
+            <span style={{ fontSize: 9, color: '#717886', fontWeight: 600 }}>Daily Free Opens Left</span>
             <span style={{ fontSize: 13, fontWeight: 900, color: '#0A0B0D', display: 'flex', alignItems: 'center', gap: 2 }}>
-              ⚡ {dailyStats.score} Points
+              🎁 {Math.max(0, 5 - dailyStats.boxes_opened)} / 5 Free
             </span>
           </div>
 
-          <button
-            onClick={handleBurnAp}
-            disabled={isBurningAp || dailyStats.score < 100}
-            className="chest-btn"
-            style={{
-              background: apBurnSuccess
-                ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
-                : (dailyStats.score < 100 
-                    ? '#F1F5F9' 
-                    : 'linear-gradient(135deg, #F97316 0%, #EA580C 100%)'),
-              color: apBurnSuccess
-                ? '#fff'
-                : (dailyStats.score < 100 ? '#94A3B8' : '#fff'),
-              border: (apBurnSuccess || dailyStats.score >= 100) ? 'none' : '1px solid #E2E8F0',
-              borderRadius: 12,
-              padding: '7px 12px',
-              fontSize: 9.5,
-              fontWeight: 800,
-              cursor: (isBurningAp || dailyStats.score < 100) ? 'not-allowed' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4,
-              boxShadow: (isBurningAp || dailyStats.score < 100) ? 'none' : '0 4px 12px rgba(249,115,22,0.2)',
-              opacity: isBurningAp ? 0.6 : 1,
-            }}
-          >
-            <span>{isBurningAp ? 'Burning...' : (apBurnSuccess ? '🔥 +6 Opens Activated!' : '🔥 Burn 100 points to get +6 opens')}</span>
-          </button>
-        </div>
-
-        {/* AP Burn Error Msg */}
-        {apBurnError && (
-          <div style={{ fontSize: 9, color: '#DC2626', fontWeight: 700, textAlign: 'right' }}>
-            ⚠️ {apBurnError}
+          <div style={{ textAlign: 'right' }}>
+            <span style={{ fontSize: 9, color: '#717886', fontWeight: 600, display: 'block' }}>Extra attempts cost</span>
+            <span style={{ fontSize: 11.5, fontWeight: 800, color: '#0052FF' }}>
+              $0.10 USD in $HH
+            </span>
           </div>
-        )}
+        </div>
       </div>
 
       {/* Status Banner */}
@@ -848,7 +977,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         <button
           className="chest-btn"
           onClick={() => setTxModal('single')}
-          disabled={isPending || isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0}
+          disabled={isPending || isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0 || isFreePending || isFreeConfirming}
           style={{
             width: '100%',
             background: '#0000FF',
@@ -858,19 +987,37 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             padding: '12px 18px',
             fontSize: 13,
             fontWeight: 800,
-            cursor: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0) ? 'not-allowed' : 'pointer',
+            cursor: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0 || isFreePending || isFreeConfirming) ? 'not-allowed' : 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             gap: 4,
             boxShadow: '0 8px 24px rgba(0,0,255,0.2)',
-            opacity: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0) ? 0.5 : 1,
+            opacity: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0 || isFreePending || isFreeConfirming) ? 0.5 : 1,
             transition: 'transform 0.2s, box-shadow 0.2s'
           }}
         >
-          <span>{remainingOpens === 0 ? 'Daily Limit Reached' : 'Open Box'}</span>
-          {remainingOpens > 0 && <span style={{ color: '#A5B4FC', fontWeight: 900, marginLeft: 4 }}>0.30</span>}
-          {remainingOpens > 0 && <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14, flexShrink: 0 }} />}
+          {dailyStats.boxes_opened < 5 ? (
+            <>
+              <span>Open Box</span>
+              <span style={{ color: '#A5B4FC', fontWeight: 900, marginLeft: 4 }}>FREE</span>
+            </>
+          ) : (
+            <>
+              <span>Open Box</span>
+              {paymentCurrency === 'HH' ? (
+                <>
+                  <span style={{ color: '#A5B4FC', fontWeight: 900, marginLeft: 4 }}>{Math.round(0.10 / hhPrice)}</span>
+                  <span style={{ fontSize: 10, fontWeight: 900, color: '#A5B4FC' }}>$HH</span>
+                </>
+              ) : (
+                <>
+                  <span style={{ color: '#A5B4FC', fontWeight: 900, marginLeft: 4 }}>0.10</span>
+                  <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14, flexShrink: 0 }} />
+                </>
+              )}
+            </>
+          )}
         </button>
 
         {/* Bundle Open All Button */}
@@ -944,7 +1091,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
               fontWeight: 600,
               letterSpacing: '0.2px'
             }}>
-              1.80
+              {paymentCurrency === 'HH' ? Math.round(1.50 / hhPrice) : '1.50'}
             </span>
             {/* Promo Price */}
             <div style={{ 
@@ -957,9 +1104,13 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
               border: '1px solid rgba(255,255,255,0.2)'
             }}>
               <span style={{ fontSize: 14, fontWeight: 900, color: '#fff' }}>
-                1.50
+                {paymentCurrency === 'HH' ? Math.round(1.20 / hhPrice) : '1.20'}
               </span>
-              <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14, flexShrink: 0 }} />
+              {paymentCurrency === 'HH' ? (
+                <span style={{ fontSize: 10, fontWeight: 900, color: '#fff', marginLeft: 2 }}>$HH</span>
+              ) : (
+                <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14, flexShrink: 0 }} />
+              )}
             </div>
           </div>
         </button>
@@ -970,15 +1121,43 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       {/* ═══ TX MODAL ═══ */}
       {txModal && (
         <TxModal
-          title={txModal === 'single' ? 'Open Box' : 'Open All 6 Boxes'}
-          subtitle={txModal === 'single' ? 'Pick a box to reveal your reward!' : 'Unlock all 6 boxes instantly with 1 box FREE!'}
-          amount={txModal === 'single' ? '0.30' : '1.50'}
-          isPending={isPending}
-          isConfirming={isConfirming}
-          isSuccess={isSuccess}
+          title={
+            txModal === 'single'
+              ? (dailyStats.boxes_opened < 5 ? 'Claim Free Box' : 'Open Box')
+              : 'Open All 6 Boxes'
+          }
+          subtitle={
+            txModal === 'single'
+              ? (dailyStats.boxes_opened < 5 ? 'Open 1 of your 5 daily free boxes!' : 'Pick a box to reveal your reward!')
+              : 'Unlock all 6 boxes instantly with 1 box FREE!'
+          }
+          amount={
+            txModal === 'single'
+              ? (dailyStats.boxes_opened < 5 
+                  ? '0.00' 
+                  : (paymentCurrency === 'HH' ? Math.round(0.10 / hhPrice).toString() : '0.10')
+                )
+              : (paymentCurrency === 'HH' ? Math.round(1.20 / hhPrice).toString() : '1.20')
+          }
+          currency={
+            txModal === 'single' && dailyStats.boxes_opened < 5
+              ? 'FREE'
+              : (paymentCurrency === 'HH' ? '$HH' : 'USDC')
+          }
+          isPending={txModal === 'single' && dailyStats.boxes_opened < 5 ? isFreePending : isPending}
+          isConfirming={txModal === 'single' && dailyStats.boxes_opened < 5 ? isFreeConfirming : isConfirming}
+          isSuccess={txModal === 'single' && dailyStats.boxes_opened < 5 ? isFreeSuccess : isSuccess}
           error={writeError}
           onConfirm={txModal === 'single' ? handleSinglePayment : handleBundlePayment}
-          onCancel={() => { setTxModal(false); reset(); setClickedBoxIndex(null) }}
+          onCancel={() => {
+            setTxModal(false);
+            reset();
+            setIsFreePending(false);
+            setIsFreeConfirming(false);
+            setIsFreeSuccess(false);
+            setFreeTxHash(null);
+            setClickedBoxIndex(null);
+          }}
         />
       )}
 

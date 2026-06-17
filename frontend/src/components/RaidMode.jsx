@@ -1,9 +1,9 @@
 // src/components/RaidMode.jsx
 import React, { useState, useEffect, useRef } from 'react'
-import { useChainId, useSwitchChain } from 'wagmi'
-import { parseUnits } from 'viem'
+import { useChainId, useSwitchChain, useReadContract } from 'wagmi'
+import { parseUnits, formatUnits } from 'viem'
 import { base } from 'wagmi/chains'
-import { CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI } from '../config/constants'
+import { CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI } from '../config/constants'
 import { db } from '../config/supabase'
 import { useBuilderWrite } from '../hooks/useBuilderWrite'
 import { TxModal } from './TxModal'
@@ -34,6 +34,41 @@ export function RaidMode({ address }) {
 
   // Web3 write hook
   const { data: txHash, writeContract, isPending, isConfirming, isSuccess, error: writeError, reset } = useBuilderWrite()
+
+  const [paymentCurrency, setPaymentCurrency] = useState('USDC')
+  const [hhPrice, setHhPrice] = useState(0.00025)
+
+  // Fetch HH price from DexScreener
+  useEffect(() => {
+    const getPrice = async () => {
+      try {
+        const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${HH_ADDRESS}`)
+        const data = await res.json()
+        const pair = data.pairs?.[0]
+        if (pair) {
+          setHhPrice(parseFloat(pair.priceUsd) || 0.00025)
+        }
+      } catch (err) {
+        console.error('DexScreener API error in RaidMode:', err)
+      }
+    }
+    getPrice()
+    const interval = setInterval(getPrice, 30000)
+    return () => clearInterval(interval)
+  }, [])
+
+  // Read allowance
+  const { data: allowanceRaw } = useReadContract({
+    address: HH_ADDRESS,
+    abi: HH_ABI,
+    functionName: 'allowance',
+    args: address && CHECKIN_TARGET ? [address, CHECKIN_TARGET] : undefined,
+    query: { enabled: !!address && paymentCurrency === 'HH', refetchInterval: 10000 }
+  })
+  
+  const currentAllowance = allowanceRaw !== undefined
+    ? parseFloat(formatUnits(allowanceRaw, 18))
+    : 0
 
   // Scanning timeout ref
   const scanTimeoutRef = useRef(null)
@@ -224,25 +259,77 @@ export function RaidMode({ address }) {
   const handlePurchaseShieldPayment = () => {
     if (wrongChain) { switchChain({ chainId: base.id }); return }
     setErrorMessage('')
-    writeContract({
-      address: USDC_ADDRESS,
-      abi: USDC_ABI,
-      functionName: 'transfer',
-      args: [CHECKIN_TARGET, parseUnits('0.15', 6)],
-      chainId: base.id
-    })
+    
+    if (paymentCurrency === 'HH') {
+      const hhAmount = 0.15 / hhPrice
+      // Check allowance
+      if (currentAllowance < hhAmount) {
+        // Trigger infinite approve
+        writeContract({
+          address: HH_ADDRESS,
+          abi: HH_ABI,
+          functionName: 'approve',
+          args: [CHECKIN_TARGET, parseUnits('115792089237316195423570985008687907853269984665640564039457584007913129639935', 18)], // max uint256
+          chainId: base.id
+        })
+      } else {
+        // Trigger contract payment call (using transfer as fallback for testing)
+        writeContract({
+          address: HH_ADDRESS,
+          abi: HH_ABI,
+          functionName: 'transfer',
+          args: [CHECKIN_TARGET, parseUnits(hhAmount.toFixed(18), 18)],
+          chainId: base.id
+        })
+      }
+    } else {
+      // USDC payment
+      writeContract({
+        address: USDC_ADDRESS,
+        abi: USDC_ABI,
+        functionName: 'transfer',
+        args: [CHECKIN_TARGET, parseUnits('0.15', 6)],
+        chainId: base.id
+      })
+    }
   }
 
   const handleInitiateRaidPayment = () => {
     if (wrongChain) { switchChain({ chainId: base.id }); return }
     setErrorMessage('')
-    writeContract({
-      address: USDC_ADDRESS,
-      abi: USDC_ABI,
-      functionName: 'transfer',
-      args: [CHECKIN_TARGET, parseUnits('0.25', 6)],
-      chainId: base.id
-    })
+
+    if (paymentCurrency === 'HH') {
+      const hhAmount = 0.20 / hhPrice
+      // Check allowance
+      if (currentAllowance < hhAmount) {
+        // Trigger infinite approve
+        writeContract({
+          address: HH_ADDRESS,
+          abi: HH_ABI,
+          functionName: 'approve',
+          args: [CHECKIN_TARGET, parseUnits('115792089237316195423570985008687907853269984665640564039457584007913129639935', 18)], // max uint256
+          chainId: base.id
+        })
+      } else {
+        // Trigger contract payment call
+        writeContract({
+          address: HH_ADDRESS,
+          abi: HH_ABI,
+          functionName: 'transfer',
+          args: [CHECKIN_TARGET, parseUnits(hhAmount.toFixed(18), 18)],
+          chainId: base.id
+        })
+      }
+    } else {
+      // USDC payment (Season 2: $0.20)
+      writeContract({
+        address: USDC_ADDRESS,
+        abi: USDC_ABI,
+        functionName: 'transfer',
+        args: [CHECKIN_TARGET, parseUnits('0.20', 6)],
+        chainId: base.id
+      })
+    }
   }
 
   const handleConfirmShieldPurchase = async (hash) => {
@@ -450,6 +537,58 @@ export function RaidMode({ address }) {
         </div>
       </div>
 
+      {/* ═══ PAYMENT CURRENCY SWITCHER ═══ */}
+      <div style={{
+        display: 'flex',
+        background: '#EEF0F3',
+        border: '1px solid #DEE1E7',
+        borderRadius: 16,
+        padding: 4,
+        marginBottom: 16,
+        gap: 6
+      }}>
+        <button
+          onClick={() => setPaymentCurrency('USDC')}
+          style={{
+            flex: 1,
+            padding: '8px 10px',
+            borderRadius: 12,
+            border: paymentCurrency === 'USDC' ? 'none' : '1px solid rgba(255,255,255,0.8)',
+            background: paymentCurrency === 'USDC' 
+              ? 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)' 
+              : 'rgba(255, 255, 255, 0.6)',
+            color: paymentCurrency === 'USDC' ? '#fff' : '#717886',
+            fontWeight: 850,
+            fontSize: 11.5,
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            boxShadow: paymentCurrency === 'USDC' ? '0 2px 8px rgba(0,82,255,0.15)' : 'none'
+          }}
+        >
+          💵 Pay with USDC
+        </button>
+        <button
+          onClick={() => setPaymentCurrency('HH')}
+          style={{
+            flex: 1,
+            padding: '8px 10px',
+            borderRadius: 12,
+            border: paymentCurrency === 'HH' ? 'none' : '1px solid rgba(255,255,255,0.8)',
+            background: paymentCurrency === 'HH' 
+              ? 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)' 
+              : 'rgba(255, 255, 255, 0.6)',
+            color: paymentCurrency === 'HH' ? '#fff' : '#717886',
+            fontWeight: 850,
+            fontSize: 11.5,
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            boxShadow: paymentCurrency === 'HH' ? '0 2px 8px rgba(0,82,255,0.15)' : 'none'
+          }}
+        >
+          💎 Pay with $HH
+        </button>
+      </div>
+
       {/* ═══ RAID SHIELD CARD ═══ */}
       <div style={{
         background: '#fff',
@@ -512,11 +651,19 @@ export function RaidMode({ address }) {
               {isShieldActive ? (
                 shieldTimeLeft
               ) : (
-                <>
-                  <span>0.15</span>
-                  <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, display: 'inline-block', verticalAlign: 'middle' }} />
-                  <span>/ 24h</span>
-                </>
+                paymentCurrency === 'HH' ? (
+                  <>
+                    <span>{Math.round(0.15 / hhPrice)}</span>
+                    <span style={{ fontSize: 10, fontWeight: 900, color: '#0052FF', marginLeft: 2 }}>$HH</span>
+                    <span>/ 24h</span>
+                  </>
+                ) : (
+                  <>
+                    <span>0.15</span>
+                    <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, display: 'inline-block', verticalAlign: 'middle' }} />
+                    <span>/ 24h</span>
+                  </>
+                )
               )}
             </span>
           </div>
@@ -715,8 +862,19 @@ export function RaidMode({ address }) {
                 ) : (
                   <>
                     <span>Raid</span>
-                    <span style={{ color: '#A5B4FC', fontWeight: 900, marginLeft: 2 }}>0.25</span>
-                    <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, flexShrink: 0 }} />
+                    {paymentCurrency === 'HH' ? (
+                      <>
+                        <span style={{ color: '#A5B4FC', fontWeight: 900, marginLeft: 2 }}>
+                          {Math.round(0.20 / hhPrice)}
+                        </span>
+                        <span style={{ fontSize: 10, fontWeight: 900, color: '#A5B4FC', marginLeft: 1 }}>$HH</span>
+                      </>
+                    ) : (
+                      <>
+                        <span style={{ color: '#A5B4FC', fontWeight: 900, marginLeft: 2 }}>0.20</span>
+                        <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, flexShrink: 0 }} />
+                      </>
+                    )}
                   </>
                 )}
               </button>
@@ -1004,7 +1162,12 @@ export function RaidMode({ address }) {
         <TxModal
           title={txType === 'shield' ? 'Purchase Raid Shield' : 'Purchase Raid'}
           subtitle={txType === 'shield' ? 'Get 24h of absolute protection from HP raids' : ''}
-          amount={txType === 'shield' ? '0.15' : '0.25'}
+          amount={
+            paymentCurrency === 'HH'
+              ? (txType === 'shield' ? Math.round(0.15 / hhPrice).toString() : Math.round(0.20 / hhPrice).toString())
+              : (txType === 'shield' ? '0.15' : '0.20')
+          }
+          currency={paymentCurrency === 'HH' ? '$HH' : 'USDC'}
           isPending={isPending}
           isConfirming={isConfirming}
           isSuccess={isSuccess}

@@ -12,6 +12,7 @@ import { RaidMode } from './components/RaidMode'
 import { LeaderboardSection } from './components/LeaderboardSection'
 import { DailyRewardsSection } from './components/DailyRewardsSection'
 import { ProfileSection } from './components/ProfileSection'
+import { StakingSection } from './components/StakingSection'
 import { BottomNav } from './components/BottomNav'
 import { HappyHourLogo } from './components/HappyHourLogo'
 import { EventBanner } from './components/EventBanner'
@@ -66,6 +67,7 @@ export default function App() {
     raid: 'Happy Raids',
     boxes: 'Happy Boxes',
     tasks: 'Tasks',
+    staking: 'Earn $HH',
     leaderboard: 'Leaderboard',
     profile: 'Profile',
   }
@@ -313,6 +315,7 @@ export default function App() {
           {tab === 'raid' && <RaidMode address={address} />}
           {tab === 'boxes' && <HappyBoxesSection address={address} />}
           {tab === 'tasks' && <TasksSection address={address} />}
+          {tab === 'staking' && <StakingSection />}
           {tab === 'leaderboard' && (
             <>
               {/* Premium sub-navigation switcher above the banners */}
