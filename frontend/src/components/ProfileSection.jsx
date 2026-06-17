@@ -564,16 +564,22 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
       {/* Crystal Clear Player Passport */}
       <div
         style={{
-          background: 'linear-gradient(135deg, #BCE4FF 0%, #9FB4FF 50%, #E4C6FF 100%)',
+          backgroundImage: 'url(/banner.jpg)',
+          backgroundColor: '#0052FF',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
           borderRadius: 24,
           padding: '24px 20px',
           marginBottom: 16,
           position: 'relative',
           overflow: 'hidden',
-          boxShadow: '0 12px 32px rgba(0, 82, 255, 0.05)',
-          border: '1px solid rgba(255,255,255,0.5)',
+          boxShadow: '0 12px 40px rgba(0,82,255,0.25)',
+          border: '1px solid rgba(255,255,255,0.15)',
         }}
       >
+        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0, 0, 80, 0.35)', zIndex: 0 }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,82,255,0.1) 100%)', zIndex: 0 }} />
+
         {/* Top Bar: Player Identity Passport */}
         <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           {/* Avatar & User Address/Basename */}
@@ -583,8 +589,8 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
               height: 44,
               borderRadius: '50%',
               overflow: 'hidden',
-              border: '2px solid rgba(10,11,13,0.1)',
-              background: 'rgba(10,11,13,0.05)',
+              border: '2px solid rgba(255,255,255,0.2)',
+              background: 'rgba(255,255,255,0.1)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center'
@@ -592,10 +598,10 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
               <UserAvatar address={address} size={44} />
             </div>
             <div>
-              <div style={{ fontSize: 15, fontWeight: 900, color: '#0A0B0D', letterSpacing: -0.3 }}>
+              <div style={{ fontSize: 14, fontWeight: 900, color: '#fff', letterSpacing: -0.3 }}>
                 {basename || short(address)}
               </div>
-              <div style={{ fontSize: 9.5, fontWeight: 700, color: 'rgba(10,11,13,0.6)', fontFamily: 'monospace' }}>
+              <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.5)', fontFamily: 'monospace' }}>
                 {address ? `${address.slice(0, 10)}...${address.slice(-8)}` : ''}
               </div>
             </div>
@@ -605,13 +611,14 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
           <button
             onClick={() => disconnect()}
             style={{
-              background: 'rgba(10,11,13,0.06)',
-              border: '1px solid rgba(10,11,13,0.08)',
-              color: '#0A0B0D',
-              borderRadius: 100,
+              background: 'rgba(255,255,255,0.1)',
+              backdropFilter: 'blur(8px)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              color: 'rgba(255,255,255,0.9)',
+              borderRadius: 50,
               padding: '6px 14px',
               fontSize: 9,
-              fontWeight: 800,
+              fontWeight: 900,
               cursor: 'pointer',
               transition: 'all 0.2s ease',
               outline: 'none'
@@ -621,109 +628,50 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
           </button>
         </div>
 
-        {/* Total Points Display */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '8px 0 20px' }}>
-          <span style={{ fontSize: 10, fontWeight: 800, color: '#4B5563', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 4 }}>
-            Total Happy Points
-          </span>
-          <span style={{ fontSize: 40, fontWeight: 900, color: '#0A0B0D', letterSpacing: '-1px' }}>
-            {userStats.points.toLocaleString()} <span style={{ fontSize: 16, fontWeight: 900, color: '#0052FF' }}>HP</span>
-          </span>
-        </div>
+        {/* Divider */}
+        <div style={{ position: 'relative', zIndex: 1, height: 1, background: 'rgba(255,255,255,0.15)', margin: '16px 0' }} />
 
         {/* Two-column balance stats */}
         <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          {/* HP Balance */}
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.08)',
+            backdropFilter: 'blur(12px)',
+            padding: '12px 14px',
+            borderRadius: 16,
+            border: '1px solid rgba(255,255,255,0.1)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.15)'
+          }}>
+            <div style={{ fontSize: 8.5, fontWeight: 800, color: 'rgba(255,255,255,0.6)', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 4 }}>
+              Happy Points
+            </div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+              <span style={{ fontSize: 22, fontWeight: 900, color: '#fff', fontFamily: "'Barlow Condensed',sans-serif" }}>
+                {userStats.points.toLocaleString()}
+              </span>
+              <span style={{ fontSize: 10, fontWeight: 900, color: '#A5B4FC' }}>HP</span>
+            </div>
+          </div>
+
           {/* $HH Wallet Balance */}
           <div style={{
-            background: 'rgba(255, 255, 255, 0.45)',
-            backdropFilter: 'blur(16px)',
+            background: 'rgba(255, 255, 255, 0.08)',
+            backdropFilter: 'blur(12px)',
             padding: '12px 14px',
-            borderRadius: 18,
-            border: '1px solid rgba(255,255,255,0.4)',
-            boxShadow: '0 4px 16px rgba(0,0,0,0.02)'
+            borderRadius: 16,
+            border: '1px solid rgba(255,255,255,0.1)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.15)'
           }}>
-            <div style={{ fontSize: 8.5, fontWeight: 800, color: '#4B5563', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 4 }}>
-              Wallet Balance
+            <div style={{ fontSize: 8.5, fontWeight: 800, color: 'rgba(255,255,255,0.6)', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 4 }}>
+              $HH Balance
             </div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-              <span style={{ fontSize: 20, fontWeight: 900, color: '#0A0B0D' }}>
+              <span style={{ fontSize: 22, fontWeight: 900, color: '#fff', fontFamily: "'Barlow Condensed',sans-serif" }}>
                 {formatConcise(walletBalance)}
               </span>
-              <span style={{ fontSize: 10, fontWeight: 900, color: '#0052FF' }}>$HH</span>
+              <span style={{ fontSize: 10, fontWeight: 900, color: '#34D399' }}>$HH</span>
             </div>
           </div>
-
-          {/* Ecosystem Wins */}
-          <div style={{
-            background: 'rgba(255, 255, 255, 0.45)',
-            backdropFilter: 'blur(16px)',
-            padding: '12px 14px',
-            borderRadius: 18,
-            border: '1px solid rgba(255,255,255,0.4)',
-            boxShadow: '0 4px 16px rgba(0,0,0,0.02)'
-          }}>
-            <div style={{ fontSize: 8.5, fontWeight: 800, color: '#4B5563', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 4 }}>
-              Ecosystem Wins
-            </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-              <span style={{ fontSize: 20, fontWeight: 900, color: '#0A0B0D' }}>
-                {userStats.wins || 0}
-              </span>
-              <span style={{ fontSize: 10, fontWeight: 900, color: '#E11D48' }}>WINS</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Action Buttons Row */}
-        <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
-          <button
-            onClick={() => setTab('earn')}
-            style={{
-              flex: 1,
-              background: '#0052FF',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: 100,
-              padding: '11px 18px',
-              fontSize: 11.5,
-              fontWeight: 800,
-              cursor: 'pointer',
-              boxShadow: '0 4px 12px rgba(0,82,255,0.15)',
-              transition: 'all 0.2s',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 6
-            }}
-            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
-            onMouseLeave={e => e.currentTarget.style.transform = 'none'}
-          >
-            <span>📈 Stake $HH</span>
-          </button>
-          <button
-            onClick={() => setTab('raffle')}
-            style={{
-              flex: 1,
-              background: '#0A0B0D',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: 100,
-              padding: '11px 18px',
-              fontSize: 11.5,
-              fontWeight: 800,
-              cursor: 'pointer',
-              boxShadow: '0 4px 12px rgba(10,11,13,0.15)',
-              transition: 'all 0.2s',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 6
-            }}
-            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
-            onMouseLeave={e => e.currentTarget.style.transform = 'none'}
-          >
-            <span>🎰 Play Raffle</span>
-          </button>
         </div>
       </div>
 
