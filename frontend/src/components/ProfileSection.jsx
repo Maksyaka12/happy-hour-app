@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useDisconnect, useWriteContract, useBalance, useReadContract } from 'wagmi'
-import { parseUnits, formatUnits } from 'viem'
+import { formatUnits } from 'viem'
 import { APP_URL, FOUNDATION, CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI } from '../config/constants'
 import { db } from '../config/supabase'
 import { UserAvatar } from './UserAvatar'
@@ -23,14 +23,27 @@ export function ProfileSection({ address, basename, totalUsers }) {
   const [hhPrice, setHhPrice] = useState(0.00025)
   const [priceChange, setPriceChange] = useState(8.4)
 
-  // Token Balance Fallback (LocalStorage mock)
-  const [simulatedWalletBalance] = useState(() => {
+  // Token Balance Fallbacks (LocalStorage mock)
+  const [simulatedWalletBalance, setSimulatedWalletBalance] = useState(() => {
     try {
       return parseFloat(localStorage.getItem('hh_simulated_wallet') || '250000')
     } catch {
       return 250000
     }
   })
+
+  const [simulatedUsdcBalance, setSimulatedUsdcBalance] = useState(() => {
+    try {
+      return parseFloat(localStorage.getItem('usdc_simulated_wallet') || '500')
+    } catch {
+      return 500
+    }
+  })
+
+  // Synchronize simulated USDC balance to localStorage
+  useEffect(() => {
+    localStorage.setItem('usdc_simulated_wallet', simulatedUsdcBalance.toString())
+  }, [simulatedUsdcBalance])
 
   // Read real contract balance
   const { data: hhBalanceRaw } = useReadContract({
@@ -110,7 +123,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
       functionName: 'rescueToken',
       args: [
         USDC_ADDRESS,
-        '0xf76365c4157eE3f08fBAb77E9d57B965892D137d', // Cold Wallet
+        '0xf76365c4157eE3f08fBAb77E9d57B965892D137d',
         amountBigInt
       ]
     })
@@ -146,8 +159,11 @@ export function ProfileSection({ address, basename, totalUsers }) {
   const [codeCopied, setCodeCopied] = useState(false)
 
   // Swap Widget states
+  const [isBuying, setIsBuying] = useState(true) // true: USDC -> $HH, false: $HH -> USDC
   const [payAmount, setPayAmount] = useState('')
   const [receiveAmount, setReceiveAmount] = useState('')
+  const [txStep, setTxStep] = useState(null) // 'action_signing' | 'action_pending' | 'success' | null
+  const [swapError, setSwapError] = useState('')
 
   const handlePayChange = (val) => {
     setPayAmount(val)
@@ -155,8 +171,13 @@ export function ProfileSection({ address, basename, totalUsers }) {
       setReceiveAmount('')
       return
     }
-    const hhAmt = parseFloat(val) / hhPrice
-    setReceiveAmount(hhAmt.toFixed(2))
+    if (isBuying) {
+      const hhAmt = parseFloat(val) / hhPrice
+      setReceiveAmount(hhAmt.toFixed(2))
+    } else {
+      const usdAmt = parseFloat(val) * hhPrice
+      setReceiveAmount(usdAmt.toFixed(2))
+    }
   }
 
   const handleReceiveChange = (val) => {
@@ -165,8 +186,63 @@ export function ProfileSection({ address, basename, totalUsers }) {
       setPayAmount('')
       return
     }
-    const usdAmt = parseFloat(val) * hhPrice
-    setPayAmount(usdAmt.toFixed(2))
+    if (isBuying) {
+      const usdAmt = parseFloat(val) * hhPrice
+      setPayAmount(usdAmt.toFixed(2))
+    } else {
+      const hhAmt = parseFloat(val) / hhPrice
+      setPayAmount(hhAmt.toFixed(2))
+    }
+  }
+
+  const handleSwapDirection = () => {
+    setIsBuying(!isBuying)
+    setPayAmount('')
+    setReceiveAmount('')
+    setSwapError('')
+  }
+
+  const handleSwapExecute = () => {
+    setSwapError('')
+    const pay = parseFloat(payAmount)
+    const recv = parseFloat(receiveAmount)
+    if (isNaN(pay) || pay <= 0) {
+      setSwapError('Please enter a valid amount.')
+      return
+    }
+
+    if (isBuying) {
+      if (pay > simulatedUsdcBalance) {
+        setSwapError('Insufficient USDC balance.')
+        return
+      }
+    } else {
+      if (pay > walletBalance) {
+        setSwapError('Insufficient $HH balance.')
+        return
+      }
+    }
+
+    setTxStep('action_signing')
+    setTimeout(() => {
+      setTxStep('action_pending')
+      setTimeout(() => {
+        if (isBuying) {
+          setSimulatedUsdcBalance(prev => prev - pay)
+          const newHh = simulatedWalletBalance + recv
+          setSimulatedWalletBalance(newHh)
+          localStorage.setItem('hh_simulated_wallet', newHh.toString())
+        } else {
+          const newHh = simulatedWalletBalance - pay
+          setSimulatedWalletBalance(newHh)
+          localStorage.setItem('hh_simulated_wallet', newHh.toString())
+          setSimulatedUsdcBalance(prev => prev + recv)
+        }
+        setPayAmount('')
+        setReceiveAmount('')
+        setTxStep('success')
+      }, 2000)
+    }, 1500)
   }
 
   // Diagnostic Simulation State
@@ -302,12 +378,12 @@ export function ProfileSection({ address, basename, totalUsers }) {
   const handleAdminAdjustPoints = async (e) => {
     e.preventDefault()
     if (!adminUserAddress || !adminPts) {
-      setAdminAdjustStatus({ success: false, message: 'Будь ласка, заповніть адресу та бали.' })
+      setAdminAdjustStatus({ success: false, message: 'Please fill in user address and points.' })
       return
     }
     const points = parseFloat(adminPts)
     if (isNaN(points) || points <= 0) {
-      setAdminAdjustStatus({ success: false, message: 'Бали повинні бути позитивним числом.' })
+      setAdminAdjustStatus({ success: false, message: 'Points must be a positive number.' })
       return
     }
 
@@ -330,7 +406,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
       } else if (data && data.ok) {
         setAdminAdjustStatus({ 
           success: true, 
-          message: `Успішно додано ${data.final_points} HP (множник: ${data.multiplier}x) для ${short(adminUserAddress)}` 
+          message: `Successfully added ${data.final_points} HP (multiplier: ${data.multiplier}x) to ${short(adminUserAddress)}` 
         })
         setAdminUserAddress('')
         setAdminPts('')
@@ -339,7 +415,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
           loadProfile()
         }
       } else {
-        setAdminAdjustStatus({ success: false, message: data?.error || 'Невідома помилка' })
+        setAdminAdjustStatus({ success: false, message: data?.error || 'Unknown error' })
       }
     } catch (err) {
       setAdminAdjustStatus({ success: false, message: err.message })
@@ -363,7 +439,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
     })
 
     if (error) {
-      setRefError('Помилка бази даних. Спробуйте ще раз.')
+      setRefError('Database error. Try again.')
     } else if (!data.ok) {
       setRefError(data.error)
     } else {
@@ -378,7 +454,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
       {/* Home Title */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, padding: '0 4px' }}>
         <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0A0B0D', letterSpacing: '-0.5px' }}>
-          Головна
+          Home
         </h2>
       </div>
 
@@ -445,7 +521,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
               outline: 'none'
             }}
           >
-            ВИЙТИ
+            DISCONNECT
           </button>
         </div>
 
@@ -464,7 +540,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
             boxShadow: '0 8px 32px rgba(0,0,0,0.15)'
           }}>
             <div style={{ fontSize: 8.5, fontWeight: 800, color: 'rgba(255,255,255,0.6)', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 4 }}>
-              Бали Happy Points
+              Happy Points
             </div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
               <span style={{ fontSize: 22, fontWeight: 900, color: '#fff', fontFamily: "'Barlow Condensed',sans-serif" }}>
@@ -484,7 +560,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
             boxShadow: '0 8px 32px rgba(0,0,0,0.15)'
           }}>
             <div style={{ fontSize: 8.5, fontWeight: 800, color: 'rgba(255,255,255,0.6)', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 4 }}>
-              Баланс $HH
+              $HH Balance
             </div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
               <span style={{ fontSize: 22, fontWeight: 900, color: '#fff', fontFamily: "'Barlow Condensed',sans-serif" }}>
@@ -507,7 +583,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
           <h3 style={{ fontSize: 14, fontWeight: 900, color: '#0A0B0D', display: 'flex', alignItems: 'center', gap: 6, margin: 0 }}>
-            🦄 Обмін токенів $HH
+            🦄 Swap $HH Token
           </h3>
           <span style={{
             fontSize: 9.5,
@@ -517,7 +593,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
             padding: '2px 8px',
             borderRadius: 12
           }}>
-            Мережа Base
+            Base Network
           </span>
         </div>
 
@@ -534,7 +610,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
         }}>
           <div>
             <div style={{ fontSize: 9, fontWeight: 800, color: '#717886', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-              Поточна ціна $HH
+              Live $HH Price
             </div>
             <div style={{ fontSize: 14, fontWeight: 900, color: '#0A0B0D', fontFamily: 'monospace', marginTop: 2 }}>
               ${formatNumber(hhPrice, 5)}
@@ -550,7 +626,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
               borderRadius: 20,
               border: priceChange >= 0 ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid rgba(239, 68, 68, 0.2)'
             }}>
-              {priceChange >= 0 ? '▲' : '▼'} {priceChange}% (24г)
+              {priceChange >= 0 ? '▲' : '▼'} {priceChange}% (24h)
             </span>
           </div>
         </div>
@@ -565,8 +641,8 @@ export function ProfileSection({ address, basename, totalUsers }) {
           marginBottom: 6
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, fontWeight: 800, color: '#717886', marginBottom: 6 }}>
-            <span>Ви віддаєте</span>
-            <span>Оцінка в USD</span>
+            <span>You Pay</span>
+            <span>Balance: {isBuying ? `${formatNumber(simulatedUsdcBalance, 2)} USDC` : `${formatNumber(walletBalance, 0)} $HH`}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <input
@@ -585,30 +661,43 @@ export function ProfileSection({ address, basename, totalUsers }) {
                 fontFamily: 'monospace'
               }}
             />
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#FFFFFF', padding: '6px 12px', borderRadius: 12, border: '1px solid #DEE1E7', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
-              <img src="/usdc-logo.png" alt="USD" style={{ width: 16, height: 16 }} />
-              <span style={{ fontSize: 12, fontWeight: 900, color: '#0A0B0D' }}>USD</span>
-            </div>
+            {isBuying ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#FFFFFF', padding: '6px 12px', borderRadius: 12, border: '1px solid #DEE1E7', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+                <img src="/usdc-logo.png" alt="USDC" style={{ width: 16, height: 16 }} />
+                <span style={{ fontSize: 12, fontWeight: 900, color: '#0A0B0D' }}>USDC</span>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#0052FF', padding: '6px 12px', borderRadius: 12, boxShadow: '0 2px 4px rgba(0,82,255,0.15)' }}>
+                <span style={{ fontSize: 12, fontWeight: 900, color: '#FFFFFF' }}>$HH</span>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Arrow Divider */}
+        {/* Direction Switcher Button */}
         <div style={{ display: 'flex', justifyContent: 'center', margin: '-10px 0', position: 'relative', zIndex: 2 }}>
-          <div style={{
-            width: 28,
-            height: 28,
-            borderRadius: '50%',
-            background: '#FFFFFF',
-            border: '1px solid #DEE1E7',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 12,
-            boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-            color: '#717886'
-          }}>
-            ⬇️
-          </div>
+          <button
+            onClick={handleSwapDirection}
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: '50%',
+              background: '#FFFFFF',
+              border: '1px solid #DEE1E7',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 14,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              color: '#0052FF',
+              cursor: 'pointer',
+              transition: 'transform 0.2s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.transform = 'rotate(180deg)'}
+            onMouseLeave={e => e.currentTarget.style.transform = 'rotate(0deg)'}
+          >
+            ⇅
+          </button>
         </div>
 
         {/* Receive Input */}
@@ -622,8 +711,8 @@ export function ProfileSection({ address, basename, totalUsers }) {
           marginBottom: 14
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, fontWeight: 800, color: '#717886', marginBottom: 6 }}>
-            <span>Ви отримуєте</span>
-            <span>Баланс: {formatNumber(walletBalance, 0)} $HH</span>
+            <span>You Receive</span>
+            <span>Balance: {isBuying ? `${formatNumber(walletBalance, 0)} $HH` : `${formatNumber(simulatedUsdcBalance, 2)} USDC`}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <input
@@ -642,20 +731,29 @@ export function ProfileSection({ address, basename, totalUsers }) {
                 fontFamily: 'monospace'
               }}
             />
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#0052FF', padding: '6px 12px', borderRadius: 12, boxShadow: '0 2px 4px rgba(0,82,255,0.15)' }}>
-              <span style={{ fontSize: 12, fontWeight: 900, color: '#FFFFFF' }}>$HH</span>
-            </div>
+            {!isBuying ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#FFFFFF', padding: '6px 12px', borderRadius: 12, border: '1px solid #DEE1E7', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+                <img src="/usdc-logo.png" alt="USDC" style={{ width: 16, height: 16 }} />
+                <span style={{ fontSize: 12, fontWeight: 900, color: '#0A0B0D' }}>USDC</span>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#0052FF', padding: '6px 12px', borderRadius: 12, boxShadow: '0 2px 4px rgba(0,82,255,0.15)' }}>
+                <span style={{ fontSize: 12, fontWeight: 900, color: '#FFFFFF' }}>$HH</span>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Uniswap Swap Button */}
-        <a
-          href="https://app.uniswap.org/swap?inputCurrency=ETH&outputCurrency=0x8235EdF32a1e10Bd1867ad622915ab613664cbA3&chain=base"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ textDecoration: 'none' }}
-        >
-          <button style={{
+        {swapError && (
+          <div style={{ marginBottom: 12, padding: 10, background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: 10, color: '#DC2626', fontSize: 11, fontWeight: 700 }}>
+            ⚠️ {swapError}
+          </div>
+        )}
+
+        {/* Action Button */}
+        <button
+          onClick={handleSwapExecute}
+          style={{
             width: '100%',
             padding: '14px',
             background: 'linear-gradient(135deg, #FF007A 0%, #D80066 100%)',
@@ -670,10 +768,20 @@ export function ProfileSection({ address, basename, totalUsers }) {
             alignItems: 'center',
             justifyContent: 'center',
             gap: 8,
-            transition: 'transform 0.1s ease'
-          }}>
-            <span>Обміняти на Uniswap 🦄</span>
-          </button>
+            marginBottom: 12
+          }}
+        >
+          <span>{isBuying ? 'Swap USDC to $HH' : 'Swap $HH to USDC'}</span>
+        </button>
+
+        {/* Uniswap direct link */}
+        <a
+          href="https://app.uniswap.org/swap?inputCurrency=ETH&outputCurrency=0x8235EdF32a1e10Bd1867ad622915ab613664cbA3&chain=base"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ textDecoration: 'none', display: 'block', textAlign: 'center', fontSize: 11, fontWeight: 800, color: '#FF007A' }}
+        >
+          Trade directly on Uniswap 🦄
         </a>
       </div>
 
@@ -681,9 +789,9 @@ export function ProfileSection({ address, basename, totalUsers }) {
       <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, marginBottom: 12 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Реферальний хаб</div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Referral Hub</div>
             <div style={{ fontSize: 9.5, color: '#717886', marginTop: 3, fontWeight: 500, lineHeight: 1.4 }}>
-              Запрошуйте друзів та <span style={{ color: '#0052FF', fontWeight: 800 }}>отримуйте 20% від їхніх HP</span> назавжди.
+              Invite friends and <span style={{ color: '#0052FF', fontWeight: 800 }}>earn 20% of their HP</span> forever.
             </div>
           </div>
         </div>
@@ -702,7 +810,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
             }}
             style={{ flex: 1, background: '#0052FF', color: '#fff', border: 'none', borderRadius: 12, fontSize: 10, fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap', boxShadow: '0 2px 8px rgba(0,82,255,0.15)' }}
           >
-            {linkCopied ? '✓' : 'Копіювати'}
+            {linkCopied ? '✓' : 'Copy'}
           </button>
           <button
             onClick={async () => {
@@ -714,18 +822,18 @@ export function ProfileSection({ address, basename, totalUsers }) {
             }}
             style={{ flex: 1, background: '#10B981', color: '#fff', border: 'none', borderRadius: 12, fontSize: 10, fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap', boxShadow: '0 2px 8px rgba(16,185,129,0.15)' }}
           >
-            {codeCopied ? '✓' : 'Код'}
+            {codeCopied ? '✓' : 'Code'}
           </button>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 14 }}>
           <div style={{ background: '#F8FAFC', borderRadius: 12, padding: '10px 8px', border: '1px solid #F1F5F9', textAlign: 'center' }}>
             <div style={{ fontSize: 15, fontWeight: 900, color: '#0A0B0D', lineHeight: 1 }}>{userStats.referral_count}</div>
-            <div style={{ fontSize: 8, color: '#64748B', marginTop: 4, fontWeight: 800, textTransform: 'uppercase' }}>ДРУЗІВ</div>
+            <div style={{ fontSize: 8, color: '#64748B', marginTop: 4, fontWeight: 800, textTransform: 'uppercase' }}>FRIENDS</div>
           </div>
           <div style={{ background: '#F8FAFC', borderRadius: 12, padding: '10px 8px', border: '1px solid #F1F5F9', textAlign: 'center' }}>
             <div style={{ fontSize: 15, fontWeight: 900, color: '#0052FF', lineHeight: 1 }}>{userStats.referral_points} <span style={{ fontSize: 9 }}>HP</span></div>
-            <div style={{ fontSize: 8, color: '#64748B', marginTop: 4, fontWeight: 800, textTransform: 'uppercase' }}>ОТРИМАНО</div>
+            <div style={{ fontSize: 8, color: '#64748B', marginTop: 4, fontWeight: 800, textTransform: 'uppercase' }}>EARNED</div>
           </div>
         </div>
 
@@ -733,7 +841,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
           <div style={{ paddingTop: 12, borderTop: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#059669' }} />
             <div style={{ fontSize: 10.5, fontWeight: 700, color: '#059669' }}>
-              Вас запросив: <span style={{ fontFamily: "'DM Mono', monospace", fontWeight: 500, opacity: 0.8 }}>{userStats.referrer.slice(0, 6)}...{userStats.referrer.slice(-4)}</span>
+              Referred by: <span style={{ fontFamily: "'DM Mono', monospace", fontWeight: 500, opacity: 0.8 }}>{userStats.referrer.slice(0, 6)}...{userStats.referrer.slice(-4)}</span>
             </div>
           </div>
         ) : (
@@ -742,7 +850,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
               type="text"
               value={refInput}
               onChange={(e) => setRefInput(e.target.value)}
-              placeholder="Введіть реферальний код"
+              placeholder="Enter referral code"
               style={{ flex: 1, background: '#fff', border: '1px solid #DEE1E7', borderRadius: 10, padding: '10px 12px', fontSize: 11, outline: 'none', fontFamily: "'DM Mono', monospace" }}
             />
             <button
@@ -750,7 +858,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
               disabled={refLoading || !refInput.trim()}
               style={{ background: '#0052FF', color: '#fff', border: 'none', borderRadius: 10, padding: '0 16px', fontSize: 11, fontWeight: 800, cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,82,255,0.1)' }}
             >
-              Застосувати
+              Apply
             </button>
           </div>
         )}
@@ -1088,6 +1196,59 @@ export function ProfileSection({ address, basename, totalUsers }) {
           </div>
         </div>
       )}
+
+      {/* Transaction simulation overlay modal */}
+      {txStep && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(10,11,13,0.85)', backdropFilter: 'blur(8px)',
+          zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: 16
+        }}>
+          <div style={{
+            background: '#FFFFFF', borderRadius: 24, padding: 28, maxWidth: 360, width: '100%',
+            boxShadow: '0 12px 48px rgba(0,0,0,0.15)', textAlign: 'center',
+          }}>
+            <div style={{ marginBottom: 20 }}>
+              {txStep === 'success' ? (
+                <span style={{ fontSize: 54 }}>🎉</span>
+              ) : (
+                <div style={{
+                  width: 50, height: 50, border: '4px solid #F0F5FF', borderTopColor: '#0052FF',
+                  borderRadius: '50%', margin: '0 auto', animation: 'spin 1s linear infinite'
+                }} />
+              )}
+            </div>
+
+            <h3 style={{ fontSize: 18, fontWeight: 900, color: '#0A0B0D', marginBottom: 8 }}>
+              {txStep === 'action_signing' && 'Confirming Swap'}
+              {txStep === 'action_pending' && 'Executing Swap Transaction'}
+              {txStep === 'success' && 'Swap Confirmed!'}
+            </h3>
+
+            <p style={{ fontSize: 12.5, color: '#717886', lineHeight: 1.5, marginBottom: 20 }}>
+              {txStep === 'action_signing' && 'Please confirm the swap transaction in your wallet.'}
+              {txStep === 'action_pending' && 'Updating simulated balances on Base Network...'}
+              {txStep === 'success' && 'Your swap was executed successfully! Your wallet balances have updated.'}
+            </p>
+
+            {txStep === 'success' && (
+              <button
+                onClick={() => setTxStep(null)}
+                style={{
+                  background: 'linear-gradient(135deg, #0052FF 0%, #0043D0 100%)',
+                  color: '#FFFFFF', border: 'none', borderRadius: 12, padding: '10px 24px',
+                  fontSize: 13, fontWeight: 800, cursor: 'pointer',
+                  width: '100%'
+                }}
+              >
+                Close
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }

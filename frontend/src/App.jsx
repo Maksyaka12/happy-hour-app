@@ -64,9 +64,28 @@ export default function App() {
     query: { enabled: !!address, refetchInterval: 10000 },
   })
 
+  const [simulatedUsdcHeader, setSimulatedUsdcHeader] = useState(() => {
+    try {
+      return parseFloat(localStorage.getItem('usdc_simulated_wallet') || '500')
+    } catch {
+      return 500
+    }
+  })
+
+  useEffect(() => {
+    if (usdcBalanceRaw !== undefined) return
+    const interval = setInterval(() => {
+      try {
+        const val = parseFloat(localStorage.getItem('usdc_simulated_wallet') || '500')
+        setSimulatedUsdcHeader(val)
+      } catch {}
+    }, 2000)
+    return () => clearInterval(interval)
+  }, [usdcBalanceRaw])
+
   const usdcBalance = usdcBalanceRaw !== undefined
     ? Number(formatUnits(usdcBalanceRaw, 6)).toFixed(2)
-    : '0.00'
+    : simulatedUsdcHeader.toFixed(2)
 
   const referralCode = useMemo(() => getReferralCode(), [])
 

@@ -17,7 +17,6 @@ export function EarnSection() {
   const chainId = useChainId()
   const { switchChain } = useSwitchChain()
   
-  const [activeSubTab, setActiveSubTab] = useState('checkin') // 'checkin' | 'raids' | 'staking'
   const [checkedToday, setCheckedToday] = useState(false)
   const [boostedToday, setBoostedToday] = useState(false)
   const [streakCount, setStreakCount] = useState(0)
@@ -157,185 +156,166 @@ export function EarnSection() {
   }
 
   return (
-    <div style={{ maxWidth: 640, margin: '0 auto', animation: 'fadeIn 0.3s ease-out' }}>
+    <div style={{ maxWidth: 640, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 24, padding: '0 12px 120px', animation: 'fadeIn 0.3s ease-out' }}>
       
-      {/* Segmented Top navigation switcher */}
-      <div style={{ padding: '0 16px' }}>
-        <div style={{
-          display: 'flex',
-          background: '#EEF0F3',
-          border: '1px solid #DEE1E7',
-          borderRadius: 16,
-          padding: 4,
-          marginBottom: 20,
-          boxShadow: 'inset 0 2px 4px rgba(10,11,13,0.05)',
-          gap: 6
-        }}>
-          <button
-            onClick={() => setActiveSubTab('checkin')}
-            style={{
-              flex: 1,
-              padding: '10px 8px',
-              borderRadius: 12,
-              border: activeSubTab === 'checkin' ? 'none' : '1px solid rgba(255,255,255,0.8)',
-              background: activeSubTab === 'checkin' 
-                ? 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)' 
-                : 'rgba(255, 255, 255, 0.6)',
-              color: activeSubTab === 'checkin' ? '#fff' : '#717886',
-              fontWeight: 850,
-              fontSize: 11.5,
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-              boxShadow: activeSubTab === 'checkin' 
-                ? '0 4px 12px rgba(0,82,255,0.15)' 
-                : 'none'
-            }}
-          >
-            📆 Check-in & Boost
-          </button>
-          <button
-            onClick={() => setActiveSubTab('raids')}
-            style={{
-              flex: 1,
-              padding: '10px 8px',
-              borderRadius: 12,
-              border: activeSubTab === 'raids' ? 'none' : '1px solid rgba(255,255,255,0.8)',
-              background: activeSubTab === 'raids' 
-                ? 'linear-gradient(135deg, #EF4444 0%, #B91C1C 100%)' 
-                : 'rgba(255, 255, 255, 0.6)',
-              color: activeSubTab === 'raids' ? '#fff' : '#717886',
-              fontWeight: 850,
-              fontSize: 11.5,
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-              boxShadow: activeSubTab === 'raids' 
-                ? '0 4px 12px rgba(239,68,68,0.15)' 
-                : 'none'
-            }}
-          >
-            ⚔️ Happy Raids
-          </button>
-          <button
-            onClick={() => setActiveSubTab('staking')}
-            style={{
-              flex: 1,
-              padding: '10px 8px',
-              borderRadius: 12,
-              border: activeSubTab === 'staking' ? 'none' : '1px solid rgba(255,255,255,0.8)',
-              background: activeSubTab === 'staking' 
-                ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' 
-                : 'rgba(255, 255, 255, 0.6)',
-              color: activeSubTab === 'staking' ? '#fff' : '#717886',
-              fontWeight: 850,
-              fontSize: 11.5,
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-              boxShadow: activeSubTab === 'staking' 
-                ? '0 4px 12px rgba(16,185,129,0.15)' 
-                : 'none'
-            }}
-          >
-            🥩 HH Staking
-          </button>
-        </div>
+      {/* Section Header */}
+      <div style={{ padding: '0 4px' }}>
+        <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0A0B0D', letterSpacing: '-0.5px', margin: 0 }}>
+          Earn HP
+        </h2>
+        <p style={{ fontSize: 13, color: '#717886', marginTop: 4, marginBottom: 0 }}>
+          Maximize your Season 2 points with active tasks, raids, and staking rewards.
+        </p>
       </div>
 
-      {/* Render sub-tabs */}
-      {activeSubTab === 'checkin' && (
-        <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: 20 }}>
-          
-          {/* Card 1: Check-in */}
-          <div style={{
-            background: '#FFFFFF',
-            border: '1px solid #DEE1E7',
-            borderRadius: 24,
-            padding: 24,
-            boxShadow: '0 4px 16px rgba(10,11,13,0.04)',
-            textAlign: 'center'
-          }}>
-            <span style={{ fontSize: 48, display: 'block', marginBottom: 12 }}>📆</span>
-            <h3 style={{ fontSize: 18, fontWeight: 900, color: '#0A0B0D' }}>Daily Check-in</h3>
-            <p style={{ fontSize: 13, color: '#717886', marginTop: 4, marginBottom: 16 }}>
-              Check-in every day to build your streak and earn HP.
-            </p>
-
-            <div style={{ display: 'inline-flex', background: '#F0F5FF', border: '1px solid rgba(0, 82, 255, 0.15)', borderRadius: 20, padding: '6px 16px', fontSize: 13, fontWeight: 800, color: '#0052FF', marginBottom: 20 }}>
-              🔥 Current Streak: {streakCount} Days
+      {/* 1. Daily Check-in & Boost (2-Column Grid) */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        {/* Daily Check-in Card */}
+        <div style={{
+          background: '#FFFFFF',
+          border: '1px solid #DEE1E7',
+          borderRadius: 20,
+          padding: 18,
+          boxShadow: '0 4px 16px rgba(10,11,13,0.04)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between'
+        }}>
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <span style={{ fontSize: 28 }}>📆</span>
+              <span style={{
+                background: '#F0F5FF', color: '#0052FF', fontSize: 10, fontWeight: 900,
+                padding: '3px 8px', borderRadius: 12, border: '1px solid rgba(0, 82, 255, 0.15)'
+              }}>
+                Streak: {streakCount}d
+              </span>
             </div>
+            <h3 style={{ fontSize: 14, fontWeight: 900, color: '#0A0B0D', margin: 0 }}>Daily Check-in</h3>
+            <p style={{ fontSize: 10.5, color: '#717886', marginTop: 4, marginBottom: 16, lineHeight: 1.4 }}>
+              Check-in daily to build your streak and earn +1.00 HP.
+            </p>
+          </div>
 
+          <div>
             <button
               onClick={() => setTxModal('checkin')}
               disabled={checkedToday}
               style={{
                 width: '100%',
-                padding: '14px',
-                borderRadius: 14,
+                padding: '10px 12px',
+                borderRadius: 10,
                 border: 'none',
                 background: checkedToday ? '#EEF0F3' : 'linear-gradient(135deg, #0052FF 0%, #0043D0 100%)',
                 color: checkedToday ? '#94A3B8' : '#FFFFFF',
-                fontSize: 14,
+                fontSize: 11.5,
                 fontWeight: 800,
                 cursor: checkedToday ? 'not-allowed' : 'pointer',
-                boxShadow: checkedToday ? 'none' : '0 4px 12px rgba(0,82,255,0.2)'
+                boxShadow: checkedToday ? 'none' : '0 2px 8px rgba(0,82,255,0.15)'
               }}
             >
-              {checkedToday ? '✓ Checked In Today' : `Check In (+1.00 HP)`}
+              {checkedToday ? 'Checked In' : 'Check In (+1 HP)'}
             </button>
-
             {checkinError && (
-              <div style={{ marginTop: 12, color: '#FC401F', fontSize: 12, fontWeight: 700 }}>
+              <div style={{ marginTop: 8, color: '#FC401F', fontSize: 10, fontWeight: 700 }}>
                 ⚠️ {checkinError}
               </div>
             )}
           </div>
+        </div>
 
-          {/* Card 2: Paid Boost */}
-          <div style={{
-            background: '#FFFFFF',
-            border: '1px solid #DEE1E7',
-            borderRadius: 24,
-            padding: 24,
-            boxShadow: '0 4px 16px rgba(10,11,13,0.04)',
-            textAlign: 'center'
-          }}>
-            <span style={{ fontSize: 48, display: 'block', marginBottom: 12 }}>⚡</span>
-            <h3 style={{ fontSize: 18, fontWeight: 900, color: '#0A0B0D' }}>Daily HP Boost</h3>
-            <p style={{ fontSize: 13, color: '#717886', marginTop: 4, marginBottom: 20 }}>
-              Buy a quick daily boost to add points directly to your season score.
+        {/* Daily HP Boost Card */}
+        <div style={{
+          background: '#FFFFFF',
+          border: '1px solid #DEE1E7',
+          borderRadius: 20,
+          padding: 18,
+          boxShadow: '0 4px 16px rgba(10,11,13,0.04)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between'
+        }}>
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <span style={{ fontSize: 28 }}>⚡</span>
+              <span style={{
+                background: '#D1FAE5', color: '#059669', fontSize: 10, fontWeight: 900,
+                padding: '3px 8px', borderRadius: 12
+              }}>
+                Cost: $0.10
+              </span>
+            </div>
+            <h3 style={{ fontSize: 14, fontWeight: 900, color: '#0A0B0D', margin: 0 }}>Daily HP Boost</h3>
+            <p style={{ fontSize: 10.5, color: '#717886', marginTop: 4, marginBottom: 16, lineHeight: 1.4 }}>
+              Claim daily paid boost to get +2.00 HP instantly.
             </p>
+          </div>
 
+          <div>
             <button
               onClick={() => setTxModal('boost')}
               disabled={boostedToday}
               style={{
                 width: '100%',
-                padding: '14px',
-                borderRadius: 14,
+                padding: '10px 12px',
+                borderRadius: 10,
                 border: 'none',
                 background: boostedToday ? '#EEF0F3' : 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
                 color: boostedToday ? '#94A3B8' : '#FFFFFF',
-                fontSize: 14,
+                fontSize: 11.5,
                 fontWeight: 800,
                 cursor: boostedToday ? 'not-allowed' : 'pointer',
-                boxShadow: boostedToday ? 'none' : '0 4px 12px rgba(16,185,129,0.2)'
+                boxShadow: boostedToday ? 'none' : '0 2px 8px rgba(16,185,129,0.15)'
               }}
             >
-              {boostedToday ? '✓ Boost Claimed Today' : `Claim HP Boost (+2.00 HP - Cost: $0.10)`}
+              {boostedToday ? 'Boost Claimed' : 'HP Boost (+2 HP)'}
             </button>
-
             {boostError && (
-              <div style={{ marginTop: 12, color: '#FC401F', fontSize: 12, fontWeight: 700 }}>
+              <div style={{ marginTop: 8, color: '#FC401F', fontSize: 10, fontWeight: 700 }}>
                 ⚠️ {boostError}
               </div>
             )}
           </div>
-
         </div>
-      )}
+      </div>
 
-      {activeSubTab === 'raids' && <RaidMode address={address} />}
+      {/* 2. Happy Raids Block */}
+      <div style={{
+        background: '#FFFFFF',
+        border: '1px solid #DEE1E7',
+        borderRadius: 24,
+        padding: '20px 8px',
+        boxShadow: '0 4px 16px rgba(10,11,13,0.04)'
+      }}>
+        <div style={{ padding: '0 12px' }}>
+          <h3 style={{ fontSize: 16, fontWeight: 900, color: '#0A0B0D', margin: 0 }}>
+            ⚔️ Happy Raids
+          </h3>
+          <p style={{ fontSize: 12, color: '#717886', marginTop: 4, marginBottom: 20 }}>
+            Fight for pools with USDC or $HH. Win huge rewards and earn HP.
+          </p>
+        </div>
+        <RaidMode address={address} />
+      </div>
 
-      {activeSubTab === 'staking' && <StakingSection />}
+      {/* 3. HH Staking & Hold Block */}
+      <div style={{
+        background: '#FFFFFF',
+        border: '1px solid #DEE1E7',
+        borderRadius: 24,
+        padding: '20px 8px',
+        boxShadow: '0 4px 16px rgba(10,11,13,0.04)'
+      }}>
+        <div style={{ padding: '0 12px' }}>
+          <h3 style={{ fontSize: 16, fontWeight: 900, color: '#0A0B0D', margin: 0 }}>
+            🥩 $HH Staking & Hold Yields
+          </h3>
+          <p style={{ fontSize: 12, color: '#717886', marginTop: 4, marginBottom: 20 }}>
+            Hold $HH or lock it in the staking contract to generate passive HP daily.
+          </p>
+        </div>
+        <StakingSection />
+      </div>
 
       {/* Transaction Modals */}
       {txModal === 'checkin' && (

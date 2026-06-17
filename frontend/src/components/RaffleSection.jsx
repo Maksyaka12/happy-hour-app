@@ -141,14 +141,14 @@ export function RaffleSection({ address, basename }) {
         setMsLeft(left)
 
         const overdueMs = -( new Date(round.ends_at).getTime() - Date.now() )
-        const FALLBACK_THRESHOLD_MS = 5 * 60 * 1000 // 5 хвилин
+        const FALLBACK_THRESHOLD_MS = 5 * 60 * 1000 // 5 minutes
 
         if (
           overdueMs > FALLBACK_THRESHOLD_MS &&
           round.status === 'open' &&
           !fallbackRef.current
         ) {
-          // pg_cron не спрацював — браузер підстрахує
+          // pg_cron missed - browser fallback
           console.warn('[raffle] pg_cron missed the round, browser fallback triggered')
           fallbackRef.current = true
           db.functions.invoke('draw-round').catch(console.error)
@@ -244,6 +244,18 @@ export function RaffleSection({ address, basename }) {
     if (displayTotalPot <= 0 || !displayMyEntry) return '0.0'
     return (((displayMyEntry.amount || 0) / displayTotalPot) * 100).toFixed(1)
   }, [displayTotalPot, displayMyEntry])
+
+  const displayParticipants = useMemo(() => {
+    return raffleType === 'hh' ? hhParticipants : participants
+  }, [raffleType, hhParticipants, participants])
+
+  const displayMyTickets = useMemo(() => {
+    return raffleType === 'hh' ? myHhTickets : (myTickets || 0)
+  }, [raffleType, myHhTickets, myTickets])
+
+  const displayMyAmount = useMemo(() => {
+    return raffleType === 'hh' ? (displayMyEntry ? displayMyEntry.amount : 0) : (myAmount || 0)
+  }, [raffleType, displayMyEntry, myAmount])
 
   const timerColor = isClosed ? '#FC401F' : '#0A0B0D'
 
