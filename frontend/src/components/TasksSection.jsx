@@ -62,7 +62,7 @@ function TaskCard({ task, taskState, onVisit, onCheck, onClaim, isClaiming }) {
           </div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 2 }}>
             <span style={{ fontSize: 9, color: '#fff', fontWeight: 800, background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', borderRadius: 6, padding: '2px 8px' }}>
-              +20 Activity Points
+              +{task.points || 1} HP
             </span>
             <span style={{ fontSize: 9, color: '#64748B', fontWeight: 600 }}>⏰ {fmt(left)} left</span>
           </div>
@@ -171,8 +171,8 @@ export function TasksSection({ address }) {
   const [adminTab, setAdminTab] = useState('create') // 'create' | 'manage'
   const [allTasks, setAllTasks] = useState([])
   const [editingTaskId, setEditingTaskId] = useState(null)
-  const [editTaskState, setEditTaskState] = useState({ type: 'retweet', text: '', url: '', points: 10, icon_url: '', expires_at: '' })
-  const [newTasks, setNewTasks] = useState([{ type: 'retweet', text: '', url: '', points: 10, icon_url: '', expires_hours: 24 }])
+  const [editTaskState, setEditTaskState] = useState({ type: 'retweet', text: '', url: '', points: 1, icon_url: '', expires_at: '' })
+  const [newTasks, setNewTasks] = useState([{ type: 'retweet', text: '', url: '', points: 1, icon_url: '', expires_hours: 24 }])
   const [isCreating, setIsCreating] = useState(false)
 
   const ADMIN_WALLET = '0x4c91d3bed372c11795b9ce9a9017dfe447bf050a'
@@ -318,7 +318,7 @@ export function TasksSection({ address }) {
 
     if (successCount > 0) {
       setShowAdmin(false)
-      setNewTasks([{ type: 'retweet', text: '', url: '', points: 10, icon_url: '', expires_hours: 24 }])
+      setNewTasks([{ type: 'retweet', text: '', url: '', points: 1, icon_url: '', expires_hours: 24 }])
       loadTasks()
       loadAllTasks()
       if (successCount < validTasks.length) {
@@ -331,7 +331,7 @@ export function TasksSection({ address }) {
   }
 
   const addTaskRow = () => {
-    setNewTasks([...newTasks, { type: 'retweet', text: '', url: '', points: 10, icon_url: '', expires_hours: 24 }])
+    setNewTasks([...newTasks, { type: 'retweet', text: '', url: '', points: 1, icon_url: '', expires_hours: 24 }])
   }
 
   const removeTaskRow = (index) => {
@@ -795,6 +795,8 @@ export function TasksSection({ address }) {
                   <input placeholder="Task Description (e.g. Retweet & Tag 3 friends)" value={task.text} onChange={e => updateTaskRow(idx, 'text', e.target.value)} style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #ccc', marginBottom: 8, background: '#fff', fontSize: 13, boxSizing: 'border-box' }} />
                   
                   <input placeholder="Post URL (https://x.com/...)" value={task.url} onChange={e => updateTaskRow(idx, 'url', e.target.value)} style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #ccc', marginBottom: 8, background: '#fff', fontSize: 13, boxSizing: 'border-box' }} />
+
+                  <input type="number" placeholder="HP Reward (default: 1)" value={task.points} onChange={e => updateTaskRow(idx, 'points', e.target.value)} style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #ccc', marginBottom: 8, background: '#fff', fontSize: 13, boxSizing: 'border-box' }} />
                   
                   <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
                     <div style={{ flex: 1 }}>
@@ -881,6 +883,14 @@ export function TasksSection({ address }) {
                           onChange={e => setEditTaskState({ ...editTaskState, url: e.target.value })}
                           style={{ width: '100%', padding: 8, borderRadius: 8, border: '1px solid #ccc', fontSize: 13, boxSizing: 'border-box' }}
                         />
+
+                        <input
+                          type="number"
+                          placeholder="HP Reward"
+                          value={editTaskState.points}
+                          onChange={e => setEditTaskState({ ...editTaskState, points: e.target.value })}
+                          style={{ width: '100%', padding: 8, borderRadius: 8, border: '1px solid #ccc', marginBottom: 8, background: '#fff', fontSize: 13, boxSizing: 'border-box' }}
+                        />
                         
                         <div style={{ display: 'flex', gap: 8 }}>
                           <input
@@ -946,7 +956,7 @@ export function TasksSection({ address }) {
                         </div>
                         <div style={{ fontSize: 9, color: '#717886', display: 'flex', gap: 6, marginTop: 2 }}>
                           <span style={{ fontSize: 9, color: '#fff', fontWeight: 800, background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', borderRadius: 6, padding: '2px 8px' }}>
-                            +20 Activity Points
+                            +{t.points || 1} HP
                           </span>
                           <span>•</span>
                           <span style={{ color: isExpired ? '#DC2626' : '#059669', fontWeight: 600 }}>{isExpired ? 'Expired' : 'Active'}</span>

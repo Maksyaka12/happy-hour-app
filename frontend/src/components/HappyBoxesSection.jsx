@@ -598,57 +598,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         </div>
       </div>
 
-      {/* ═══ PAYMENT CURRENCY SWITCHER ═══ */}
-      <div style={{
-        display: 'flex',
-        background: '#EEF0F3',
-        border: '1px solid #DEE1E7',
-        borderRadius: 16,
-        padding: 4,
-        marginBottom: 16,
-        gap: 6
-      }}>
-        <button
-          onClick={() => setPaymentCurrency('USDC')}
-          style={{
-            flex: 1,
-            padding: '8px 10px',
-            borderRadius: 12,
-            border: paymentCurrency === 'USDC' ? 'none' : '1px solid rgba(255,255,255,0.8)',
-            background: paymentCurrency === 'USDC' 
-              ? 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)' 
-              : 'rgba(255, 255, 255, 0.6)',
-            color: paymentCurrency === 'USDC' ? '#fff' : '#717886',
-            fontWeight: 850,
-            fontSize: 11.5,
-            cursor: 'pointer',
-            transition: 'all 0.2s',
-            boxShadow: paymentCurrency === 'USDC' ? '0 2px 8px rgba(0,82,255,0.15)' : 'none'
-          }}
-        >
-          💵 Pay with USDC
-        </button>
-        <button
-          onClick={() => setPaymentCurrency('HH')}
-          style={{
-            flex: 1,
-            padding: '8px 10px',
-            borderRadius: 12,
-            border: paymentCurrency === 'HH' ? 'none' : '1px solid rgba(255,255,255,0.8)',
-            background: paymentCurrency === 'HH' 
-              ? 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)' 
-              : 'rgba(255, 255, 255, 0.6)',
-            color: paymentCurrency === 'HH' ? '#fff' : '#717886',
-            fontWeight: 850,
-            fontSize: 11.5,
-            cursor: 'pointer',
-            transition: 'all 0.2s',
-            boxShadow: paymentCurrency === 'HH' ? '0 2px 8px rgba(0,82,255,0.15)' : 'none'
-          }}
-        >
-          💎 Pay with $HH
-        </button>
-      </div>
+      {/* Payment currency toggle removed - buttons now handle currency directly */}
 
       {/* ═══ DAILY LIMITS & AP BURN CARD ═══ */}
       <div style={{
@@ -959,7 +909,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
                           marginTop: 4,
                           textTransform: 'uppercase'
                         }}>
-                          HP Points
+                  HP Points
                         </div>
                       </div>
                     </div>
@@ -972,19 +922,24 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       </div>
 
       {/* ═══ BUTTONS ═══ */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {/* Main Single Open Button */}
         <button
           className="chest-btn"
-          onClick={() => setTxModal('single')}
+          onClick={() => {
+            if (dailyStats.boxes_opened >= 5) {
+              setPaymentCurrency('HH');
+            }
+            setTxModal('single');
+          }}
           disabled={isPending || isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0 || isFreePending || isFreeConfirming}
           style={{
             width: '100%',
-            background: '#0000FF',
+            background: dailyStats.boxes_opened < 5 ? '#0000FF' : 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)',
             color: '#fff',
             border: 'none',
             borderRadius: 20,
-            padding: '12px 18px',
+            padding: '14px 18px',
             fontSize: 13,
             fontWeight: 800,
             cursor: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0 || isFreePending || isFreeConfirming) ? 'not-allowed' : 'pointer',
@@ -992,128 +947,100 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             alignItems: 'center',
             justifyContent: 'center',
             gap: 4,
-            boxShadow: '0 8px 24px rgba(0,0,255,0.2)',
+            boxShadow: dailyStats.boxes_opened < 5 ? '0 8px 24px rgba(0,0,255,0.2)' : '0 8px 24px rgba(139,92,246,0.3)',
             opacity: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0 || isFreePending || isFreeConfirming) ? 0.5 : 1,
             transition: 'transform 0.2s, box-shadow 0.2s'
           }}
         >
           {dailyStats.boxes_opened < 5 ? (
-            <>
-              <span>Open Box</span>
-              <span style={{ color: '#A5B4FC', fontWeight: 900, marginLeft: 4 }}>FREE</span>
-            </>
+            <span>Open Box (Free - {5 - dailyStats.boxes_opened} left)</span>
           ) : (
             <>
-              <span>Open Box</span>
-              {paymentCurrency === 'HH' ? (
-                <>
-                  <span style={{ color: '#A5B4FC', fontWeight: 900, marginLeft: 4 }}>{Math.round(0.10 / hhPrice)}</span>
-                  <span style={{ fontSize: 10, fontWeight: 900, color: '#A5B4FC' }}>$HH</span>
-                </>
-              ) : (
-                <>
-                  <span style={{ color: '#A5B4FC', fontWeight: 900, marginLeft: 4 }}>0.10</span>
-                  <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14, flexShrink: 0 }} />
-                </>
-              )}
+              <span>Open Box with $HH</span>
+              <span style={{ color: '#D8B4FE', fontWeight: 900, marginLeft: 6 }}>{Math.round(0.10 / hhPrice).toLocaleString()}</span>
+              <span style={{ fontSize: 10, fontWeight: 900, color: '#D8B4FE' }}>$HH</span>
             </>
           )}
         </button>
 
-        {/* Bundle Open All Button */}
-        <button
-          className="chest-btn"
-          onClick={() => setTxModal('bundle')}
-          disabled={isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6}
-          style={{
-            width: '100%',
-            background: 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 20,
-            padding: '12px 18px',
-            cursor: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6) ? 'not-allowed' : 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            boxShadow: '0 8px 24px rgba(139,92,246,0.3)',
-            opacity: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6) ? 0.4 : 1,
-            position: 'relative',
-            overflow: 'hidden',
-            transition: 'transform 0.2s, box-shadow 0.2s',
-          }}
-        >
-          {/* Shine effect reflect line */}
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            left: '-100%',
-            width: '50%',
-            height: '100%',
-            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent)',
-            transform: 'skewX(-25deg)',
-            animation: 'shine 4s infinite ease-in-out',
-            pointerEvents: 'none'
-          }} />
+        {/* 6-Box Bundle Deals */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 4px', marginTop: 4 }}>
+          <span style={{ fontSize: 10, fontWeight: 800, color: '#717886' }}>🎁 6-Box Bundle Deal</span>
+          <span style={{ fontSize: 9, background: '#FCD34D', color: '#1E1B4B', padding: '2px 8px', borderRadius: 20, fontWeight: 900, letterSpacing: '0.3px' }}>
+            1 BOX FREE (Save 20%)
+          </span>
+        </div>
 
-          {/* Left Block: Offer Title & Subtitle */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2, textAlign: 'left' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 13, fontWeight: 900, letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-                Open All 6
-              </span>
-              <span style={{ 
-                fontSize: 8, 
-                background: '#FCD34D', 
-                color: '#1E1B4B', 
-                padding: '2px 8px', 
-                borderRadius: 20, 
-                fontWeight: 900,
-                letterSpacing: '0.3px',
-                boxShadow: '0 2px 6px rgba(252,211,77,0.3)',
-                whiteSpace: 'nowrap'
-              }}>
-                1 BOX FREE!
-              </span>
+        <div style={{ display: 'flex', gap: 10 }}>
+          {/* Bundle Open with USDC */}
+          <button
+            className="chest-btn"
+            onClick={() => {
+              setPaymentCurrency('USDC');
+              setTxModal('bundle');
+            }}
+            disabled={isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6}
+            style={{
+              flex: 1,
+              background: '#0052FF',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 20,
+              padding: '12px 10px',
+              cursor: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6) ? 'not-allowed' : 'pointer',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 2,
+              boxShadow: '0 8px 24px rgba(0,82,255,0.2)',
+              opacity: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6) ? 0.4 : 1,
+              transition: 'transform 0.2s, box-shadow 0.2s',
+            }}
+          >
+            <div style={{ fontSize: 11, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>
+              Bundle with USDC
             </div>
-            <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.85)', fontWeight: 500 }}>
-              {remainingOpens < 6 ? 'Requires at least 6 daily opens remaining' : 'Unlock all rewards in one click!'}
-            </span>
-          </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 2, fontSize: 9, fontWeight: 700, color: '#A5B4FC' }}>
+              <span>1.20 USDC</span>
+              <img src="/usdc-logo.png" alt="USDC" style={{ width: 10, height: 10 }} />
+            </div>
+          </button>
 
-          {/* Right Block: Price Tag with Sale Indicator */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-            {/* Crossed Out Original Price */}
-            <span style={{ 
-              fontSize: 11, 
-              color: 'rgba(255,255,255,0.5)', 
-              textDecoration: 'line-through', 
-              fontWeight: 600,
-              letterSpacing: '0.2px'
-            }}>
-              {paymentCurrency === 'HH' ? Math.round(1.50 / hhPrice) : '1.50'}
-            </span>
-            {/* Promo Price */}
-            <div style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: 4, 
-              background: 'rgba(255, 255, 255, 0.12)', 
-              padding: '6px 12px', 
-              borderRadius: 12,
-              border: '1px solid rgba(255,255,255,0.2)'
-            }}>
-              <span style={{ fontSize: 14, fontWeight: 900, color: '#fff' }}>
-                {paymentCurrency === 'HH' ? Math.round(1.20 / hhPrice) : '1.20'}
-              </span>
-              {paymentCurrency === 'HH' ? (
-                <span style={{ fontSize: 10, fontWeight: 900, color: '#fff', marginLeft: 2 }}>$HH</span>
-              ) : (
-                <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14, flexShrink: 0 }} />
-              )}
+          {/* Bundle Open with $HH */}
+          <button
+            className="chest-btn"
+            onClick={() => {
+              setPaymentCurrency('HH');
+              setTxModal('bundle');
+            }}
+            disabled={isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6}
+            style={{
+              flex: 1,
+              background: 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 20,
+              padding: '12px 10px',
+              cursor: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6) ? 'not-allowed' : 'pointer',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 2,
+              boxShadow: '0 8px 24px rgba(139,92,246,0.3)',
+              opacity: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6) ? 0.4 : 1,
+              transition: 'transform 0.2s, box-shadow 0.2s',
+            }}
+          >
+            <div style={{ fontSize: 11, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>
+              Bundle with $HH
             </div>
-          </div>
-        </button>
+            <div style={{ fontSize: 9, fontWeight: 700, color: '#D8B4FE' }}>
+              {Math.round(1.20 / hhPrice).toLocaleString()} $HH
+            </div>
+          </button>
+        </div>
       </div>
 
 

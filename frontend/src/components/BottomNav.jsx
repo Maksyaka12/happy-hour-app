@@ -16,13 +16,12 @@ const isBaseApp = () => {
 
 export function BottomNav({ tab, setTab }) {
   const tabs = [
+    { id: 'home',        label: 'Home',    icon: '🏠' },
     { id: 'raffle',      label: 'Raffle',  icon: '🎰' },
-    { id: 'tasks',       label: 'Tasks',   icon: '📋' },
-    { id: 'raid',        label: 'Raids',   icon: '⚔️' },
+    { id: 'earn',        label: 'Earn',    icon: '💎' },
     { id: 'boxes',       label: 'Boxes',   icon: '🎁' },
-    { id: 'staking',     label: 'Earn',    icon: '💎' },
+    { id: 'tasks',       label: 'Tasks',   icon: '📋' },
     { id: 'leaderboard', label: 'Leaders', icon: '🏆' },
-    { id: 'profile',     label: 'Profile', icon: '👤' },
   ]
 
   // Base App bug fixed, no offset needed
@@ -64,31 +63,6 @@ export function BottomNav({ tab, setTab }) {
               fontSize: 8.5, fontWeight: 700, letterSpacing: 0.1,
               color: tab === t.id ? '#0000FF' : '#717886',
             }}>{t.label}</span>
-            {t.id === 'raid' && (
-              <span style={{
-                position: 'absolute',
-                top: 1,
-                right: '4%',
-                background: 'linear-gradient(135deg, #FF4D4D 0%, #D31A1A 100%)',
-                color: '#ffffff',
-                fontSize: '6px',
-                fontWeight: 900,
-                padding: '1px 3px',
-                borderRadius: 4,
-                lineHeight: 1,
-                letterSpacing: '0.1px',
-                boxShadow: '0 1px 3px rgba(239,68,68,0.2)',
-                border: '0.5px solid rgba(255,255,255,0.35)',
-                textTransform: 'uppercase',
-                pointerEvents: 'none',
-                animation: 'navBadgePulse 2s infinite ease-in-out',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                new
-              </span>
-            )}
           </button>
         ))}
       </div>
