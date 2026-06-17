@@ -675,79 +675,28 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
         </div>
       </div>
 
-      {/* Premium Base App Style Swap Widget */}
+      {/* Premium Base App Style Swap Widget — Compact & Elegant */}
       <div style={{
-        background: '#FFFFFF',
-        border: '1px solid #E5E9F0',
+        background: 'linear-gradient(135deg, #EBF8FF 0%, #F3E8FF 100%)',
+        border: '1px solid rgba(229, 233, 240, 0.8)',
         borderRadius: 24,
-        padding: '20px 18px',
+        padding: '14px 14px 12px',
         marginBottom: 16,
-        boxShadow: '0 8px 32px rgba(0, 82, 255, 0.02)'
+        boxShadow: '0 8px 32px rgba(0, 82, 255, 0.01)'
       }}>
-        {/* Title Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-          <h3 style={{ fontSize: 13.5, fontWeight: 850, color: '#0A0B0D', display: 'flex', alignItems: 'center', gap: 6, margin: 0 }}>
-            🦄 Swap Tokens
-          </h3>
-          <span style={{
-            fontSize: 9,
-            fontWeight: 800,
-            color: '#0052FF',
-            background: 'rgba(0, 82, 255, 0.06)',
-            padding: '3px 8px',
-            borderRadius: 100,
-            border: '1px solid rgba(0, 82, 255, 0.08)'
-          }}>
-            Base Mainnet
-          </span>
-        </div>
-
-        {/* Live Token Price Header */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          background: 'linear-gradient(135deg, rgba(0, 82, 255, 0.02) 0%, rgba(228, 198, 255, 0.05) 100%)',
-          padding: '10px 14px',
-          borderRadius: 16,
-          marginBottom: 14,
-          border: '1px solid rgba(0, 82, 255, 0.04)'
-        }}>
-          <div>
-            <div style={{ fontSize: 8.5, fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-              Live $HH Price
-            </div>
-            <div style={{ fontSize: 13.5, fontWeight: 900, color: '#0A0B0D', fontFamily: 'monospace', marginTop: 2 }}>
-              ${formatNumber(hhPrice, 5)}
-            </div>
-          </div>
-          <div style={{ textAlign: 'right' }}>
-            <span style={{
-              background: priceChange >= 0 ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)',
-              color: priceChange >= 0 ? '#10B981' : '#EF4444',
-              fontSize: 9.5,
-              fontWeight: 800,
-              padding: '3px 8px',
-              borderRadius: 100,
-              border: priceChange >= 0 ? '1px solid rgba(16, 185, 129, 0.1)' : '1px solid rgba(239, 68, 68, 0.1)'
-            }}>
-              {priceChange >= 0 ? '▲' : '▼'} {priceChange}% (24h)
-            </span>
-          </div>
-        </div>
-
         {/* Swap Panel Stack */}
         <div style={{ position: 'relative' }}>
           
           {/* FROM FIELD */}
           <div style={{
-            background: '#F3F5F9',
-            borderRadius: 22,
-            padding: '16px 16px 12px',
-            marginBottom: 4,
-            border: '1px solid rgba(226, 232, 240, 0.5)'
+            background: 'rgba(255, 255, 255, 0.6)',
+            backdropFilter: 'blur(8px)',
+            borderRadius: 18,
+            padding: '10px 12px 8px',
+            marginBottom: 2,
+            border: '1px solid rgba(255, 255, 255, 0.5)'
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9.5, fontWeight: 800, color: '#64748B', marginBottom: 6 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, fontWeight: 800, color: '#64748B', marginBottom: 4 }}>
               <span>From</span>
               <span>
                 Balance: {isBuying 
@@ -765,7 +714,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
                   background: 'transparent',
                   border: 'none',
                   outline: 'none',
-                  fontSize: 22,
+                  fontSize: 20,
                   fontWeight: 800,
                   color: '#0A0B0D',
                   width: '55%',
@@ -782,10 +731,10 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
                     alignItems: 'center',
                     gap: 6,
                     background: '#FFFFFF',
-                    padding: '8px 12px',
+                    padding: '6px 10px',
                     borderRadius: 100,
-                    border: '1px solid #E2E8F0',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
+                    border: '1px solid rgba(226, 232, 240, 0.8)',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.01)',
                     cursor: 'pointer',
                     outline: 'none',
                     transition: 'all 0.2s'
@@ -794,19 +743,19 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
                   onMouseLeave={e => e.currentTarget.style.transform = 'none'}
                 >
                   {activeSelectedToken.logo.startsWith('/') ? (
-                    <img src={activeSelectedToken.logo} alt="" style={{ width: 18, height: 18, borderRadius: '50%' }} />
+                    <img src={activeSelectedToken.logo} alt="" style={{ width: 16, height: 16, borderRadius: '50%' }} />
                   ) : (
                     <span style={{
-                      width: 18, height: 18, borderRadius: '50%',
+                      width: 16, height: 16, borderRadius: '50%',
                       background: activeSelectedToken.logoBg || '#8C8C8C',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 10, color: '#fff'
+                      fontSize: 9, color: '#fff'
                     }}>
                       {activeSelectedToken.logo}
                     </span>
                   )}
-                  <span style={{ fontSize: 12.5, fontWeight: 800, color: '#0A0B0D' }}>{activeSelectedToken.symbol}</span>
-                  <span style={{ fontSize: 8, color: '#64748B' }}>▼</span>
+                  <span style={{ fontSize: 11.5, fontWeight: 800, color: '#0A0B0D' }}>{activeSelectedToken.symbol}</span>
+                  <span style={{ fontSize: 7, color: '#64748B' }}>▼</span>
                 </button>
               ) : (
                 <div style={{
@@ -814,35 +763,35 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
                   alignItems: 'center',
                   gap: 6,
                   background: '#0052FF',
-                  padding: '8px 14px',
+                  padding: '6px 12px',
                   borderRadius: 100,
-                  boxShadow: '0 2px 8px rgba(0,82,255,0.1)'
+                  boxShadow: '0 2px 8px rgba(0,82,255,0.08)'
                 }}>
-                  <img src="/logo.jfif" alt="" style={{ width: 18, height: 18, borderRadius: '50%', objectFit: 'cover' }} />
-                  <span style={{ fontSize: 12.5, fontWeight: 800, color: '#FFFFFF' }}>$HH</span>
+                  <img src="/logo.jfif" alt="" style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover' }} />
+                  <span style={{ fontSize: 11.5, fontWeight: 800, color: '#FFFFFF' }}>$HH</span>
                 </div>
               )}
             </div>
-            <div style={{ fontSize: 10, color: '#64748B', marginTop: 4, fontFamily: 'monospace' }}>
+            <div style={{ fontSize: 9.5, color: '#64748B', marginTop: 2, fontFamily: 'monospace' }}>
               {payAmount ? `~$${formatNumber(parseFloat(payAmount) * (isBuying ? activeSelectedToken.priceUsd : hhPrice), 2)}` : '$0.00'}
             </div>
           </div>
 
           {/* Direction Switcher Button in middle */}
-          <div style={{ display: 'flex', justifyContent: 'center', margin: '-16px 0', position: 'relative', zIndex: 10 }}>
+          <div style={{ display: 'flex', justifyContent: 'center', margin: '-12px 0', position: 'relative', zIndex: 10 }}>
             <button
               onClick={handleSwapDirection}
               style={{
-                width: 32,
-                height: 32,
+                width: 26,
+                height: 26,
                 borderRadius: '50%',
                 background: '#FFFFFF',
-                border: '1px solid #E2E8F0',
+                border: '1px solid rgba(226, 232, 240, 0.8)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: 13,
-                boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                fontSize: 12,
+                boxShadow: '0 4px 8px rgba(0,0,0,0.04)',
                 color: '#0052FF',
                 cursor: 'pointer',
                 transition: 'all 0.2s',
@@ -857,13 +806,14 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
 
           {/* TO FIELD */}
           <div style={{
-            background: '#F3F5F9',
-            borderRadius: 22,
-            padding: '16px 16px 12px',
-            marginTop: 4,
-            border: '1px solid rgba(226, 232, 240, 0.5)'
+            background: 'rgba(255, 255, 255, 0.6)',
+            backdropFilter: 'blur(8px)',
+            borderRadius: 18,
+            padding: '10px 12px 8px',
+            marginTop: 2,
+            border: '1px solid rgba(255, 255, 255, 0.5)'
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9.5, fontWeight: 800, color: '#64748B', marginBottom: 6 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, fontWeight: 800, color: '#64748B', marginBottom: 4 }}>
               <span>To</span>
               <span>
                 Balance: {isBuying 
@@ -881,7 +831,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
                   background: 'transparent',
                   border: 'none',
                   outline: 'none',
-                  fontSize: 22,
+                  fontSize: 20,
                   fontWeight: 800,
                   color: '#0A0B0D',
                   width: '55%',
@@ -897,10 +847,10 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
                     alignItems: 'center',
                     gap: 6,
                     background: '#FFFFFF',
-                    padding: '8px 12px',
+                    padding: '6px 10px',
                     borderRadius: 100,
-                    border: '1px solid #E2E8F0',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
+                    border: '1px solid rgba(226, 232, 240, 0.8)',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.01)',
                     cursor: 'pointer',
                     outline: 'none',
                     transition: 'all 0.2s'
@@ -909,19 +859,19 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
                   onMouseLeave={e => e.currentTarget.style.transform = 'none'}
                 >
                   {activeSelectedToken.logo.startsWith('/') ? (
-                    <img src={activeSelectedToken.logo} alt="" style={{ width: 18, height: 18, borderRadius: '50%' }} />
+                    <img src={activeSelectedToken.logo} alt="" style={{ width: 16, height: 16, borderRadius: '50%' }} />
                   ) : (
                     <span style={{
-                      width: 18, height: 18, borderRadius: '50%',
+                      width: 16, height: 16, borderRadius: '50%',
                       background: activeSelectedToken.logoBg || '#8C8C8C',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 10, color: '#fff'
+                      fontSize: 9, color: '#fff'
                     }}>
                       {activeSelectedToken.logo}
                     </span>
                   )}
-                  <span style={{ fontSize: 12.5, fontWeight: 800, color: '#0A0B0D' }}>{activeSelectedToken.symbol}</span>
-                  <span style={{ fontSize: 8, color: '#64748B' }}>▼</span>
+                  <span style={{ fontSize: 11.5, fontWeight: 800, color: '#0A0B0D' }}>{activeSelectedToken.symbol}</span>
+                  <span style={{ fontSize: 7, color: '#64748B' }}>▼</span>
                 </button>
               ) : (
                 <div style={{
@@ -929,23 +879,40 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
                   alignItems: 'center',
                   gap: 6,
                   background: '#0052FF',
-                  padding: '8px 14px',
+                  padding: '6px 12px',
                   borderRadius: 100,
-                  boxShadow: '0 2px 8px rgba(0,82,255,0.1)'
+                  boxShadow: '0 2px 8px rgba(0,82,255,0.08)'
                 }}>
-                  <img src="/logo.jfif" alt="" style={{ width: 18, height: 18, borderRadius: '50%', objectFit: 'cover' }} />
-                  <span style={{ fontSize: 12.5, fontWeight: 800, color: '#FFFFFF' }}>$HH</span>
+                  <img src="/logo.jfif" alt="" style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover' }} />
+                  <span style={{ fontSize: 11.5, fontWeight: 800, color: '#FFFFFF' }}>$HH</span>
                 </div>
               )}
             </div>
-            <div style={{ fontSize: 10, color: '#64748B', marginTop: 4, fontFamily: 'monospace' }}>
+            <div style={{ fontSize: 9.5, color: '#64748B', marginTop: 2, fontFamily: 'monospace' }}>
               {receiveAmount ? `~$${formatNumber(parseFloat(receiveAmount) * (isBuying ? hhPrice : activeSelectedToken.priceUsd), 2)}` : '$0.00'}
             </div>
           </div>
         </div>
 
+        {/* Compact Price / Information Line */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginTop: 8,
+          padding: '0 4px',
+          fontSize: 9.5,
+          fontWeight: 800,
+          color: '#64748B'
+        }}>
+          <span>1 $HH = ${formatNumber(hhPrice, 5)}</span>
+          <span style={{ color: priceChange >= 0 ? '#10B981' : '#EF4444' }}>
+            {priceChange >= 0 ? '▲' : '▼'} {priceChange}% (24h)
+          </span>
+        </div>
+
         {swapError && (
-          <div style={{ marginTop: 12, padding: 10, background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: 12, color: '#DC2626', fontSize: 11, fontWeight: 700 }}>
+          <div style={{ marginTop: 8, padding: 8, background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: 12, color: '#DC2626', fontSize: 10.5, fontWeight: 700 }}>
             ⚠️ {swapError}
           </div>
         )}
@@ -955,21 +922,21 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
           onClick={handleSwapExecute}
           style={{
             width: '100%',
-            padding: '13px',
+            padding: '11px',
             background: 'linear-gradient(135deg, #0052FF 0%, #0036B2 100%)',
             color: '#FFFFFF',
             border: 'none',
             borderRadius: 100,
-            fontSize: 13,
+            fontSize: 12.5,
             fontWeight: 800,
             cursor: 'pointer',
-            boxShadow: '0 4px 16px rgba(0,82,255,0.12)',
+            boxShadow: '0 4px 12px rgba(0,82,255,0.08)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 8,
-            marginTop: 16,
-            marginBottom: 12,
+            gap: 6,
+            marginTop: 10,
+            marginBottom: 8,
             transition: 'all 0.2s'
           }}
           onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
@@ -983,9 +950,9 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
           href="https://app.uniswap.org/swap?inputCurrency=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913&outputCurrency=0x8235edf32a1e10bd1867ad622915ab613664cba3&chain=base"
           target="_blank"
           rel="noopener noreferrer"
-          style={{ textDecoration: 'none', display: 'block', textAlign: 'center', fontSize: 10.5, fontWeight: 800, color: '#FF007A' }}
+          style={{ textDecoration: 'none', display: 'block', textAlign: 'center', fontSize: 9.5, fontWeight: 800, color: '#FF007A', opacity: 0.9 }}
         >
-          Trade directly on Uniswap 🦄
+          Uniswap pool 🦄
         </a>
       </div>
 
