@@ -692,7 +692,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
             background: 'rgba(255, 255, 255, 0.6)',
             backdropFilter: 'blur(8px)',
             borderRadius: 18,
-            padding: '10px 12px 8px',
+            padding: '8px 12px 6px',
             marginBottom: 2,
             border: '1px solid rgba(255, 255, 255, 0.5)'
           }}>
@@ -731,13 +731,15 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
                     alignItems: 'center',
                     gap: 6,
                     background: '#FFFFFF',
-                    padding: '6px 10px',
+                    padding: '6px 12px',
                     borderRadius: 100,
                     border: '1px solid rgba(226, 232, 240, 0.8)',
                     boxShadow: '0 2px 4px rgba(0,0,0,0.01)',
                     cursor: 'pointer',
                     outline: 'none',
-                    transition: 'all 0.2s'
+                    transition: 'all 0.2s',
+                    height: 30,
+                    boxSizing: 'border-box'
                   }}
                   onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
                   onMouseLeave={e => e.currentTarget.style.transform = 'none'}
@@ -765,7 +767,10 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
                   background: '#0052FF',
                   padding: '6px 12px',
                   borderRadius: 100,
-                  boxShadow: '0 2px 8px rgba(0,82,255,0.08)'
+                  boxShadow: '0 2px 8px rgba(0,82,255,0.08)',
+                  border: '1px solid #0052FF',
+                  height: 30,
+                  boxSizing: 'border-box'
                 }}>
                   <img src="/logo.jfif" alt="" style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover' }} />
                   <span style={{ fontSize: 11.5, fontWeight: 800, color: '#FFFFFF' }}>$HH</span>
@@ -809,7 +814,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
             background: 'rgba(255, 255, 255, 0.6)',
             backdropFilter: 'blur(8px)',
             borderRadius: 18,
-            padding: '10px 12px 8px',
+            padding: '8px 12px 6px',
             marginTop: 2,
             border: '1px solid rgba(255, 255, 255, 0.5)'
           }}>
@@ -847,13 +852,15 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
                     alignItems: 'center',
                     gap: 6,
                     background: '#FFFFFF',
-                    padding: '6px 10px',
+                    padding: '6px 12px',
                     borderRadius: 100,
                     border: '1px solid rgba(226, 232, 240, 0.8)',
                     boxShadow: '0 2px 4px rgba(0,0,0,0.01)',
                     cursor: 'pointer',
                     outline: 'none',
-                    transition: 'all 0.2s'
+                    transition: 'all 0.2s',
+                    height: 30,
+                    boxSizing: 'border-box'
                   }}
                   onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
                   onMouseLeave={e => e.currentTarget.style.transform = 'none'}
@@ -881,7 +888,10 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
                   background: '#0052FF',
                   padding: '6px 12px',
                   borderRadius: 100,
-                  boxShadow: '0 2px 8px rgba(0,82,255,0.08)'
+                  boxShadow: '0 2px 8px rgba(0,82,255,0.08)',
+                  border: '1px solid #0052FF',
+                  height: 30,
+                  boxSizing: 'border-box'
                 }}>
                   <img src="/logo.jfif" alt="" style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover' }} />
                   <span style={{ fontSize: 11.5, fontWeight: 800, color: '#FFFFFF' }}>$HH</span>
@@ -905,7 +915,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
           fontWeight: 800,
           color: '#64748B'
         }}>
-          <span>1 $HH = ${formatNumber(hhPrice, 5)}</span>
+          <span>1 $HH = ${formatNumber(hhPrice, 8)}</span>
           <span style={{ color: priceChange >= 0 ? '#10B981' : '#EF4444' }}>
             {priceChange >= 0 ? '▲' : '▼'} {priceChange}% (24h)
           </span>
@@ -952,7 +962,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
           rel="noopener noreferrer"
           style={{ textDecoration: 'none', display: 'block', textAlign: 'center', fontSize: 9.5, fontWeight: 800, color: '#FF007A', opacity: 0.9 }}
         >
-          Uniswap pool 🦄
+          Trade directly on Uniswap 🦄
         </a>
       </div>
 
