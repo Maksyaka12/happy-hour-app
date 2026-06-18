@@ -1084,9 +1084,8 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
             <div style={{
-              flex: 1.8,
               background: 'rgba(255, 255, 255, 0.06)',
               backdropFilter: 'blur(8px)',
               borderRadius: 10,
@@ -1100,63 +1099,65 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
             }}>
               <span style={{ fontFamily: 'monospace', fontSize: 9, color: 'rgba(255, 255, 255, 0.6)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{referralLink}</span>
             </div>
-            <button
-              onClick={async () => {
-                try {
-                  await navigator.clipboard.writeText(referralLink)
-                  setLinkCopied(true)
-                  setTimeout(() => setLinkCopied(false), 2000)
-                } catch {}
-              }}
-              style={{
-                flex: 1,
-                background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
-                color: '#FFFFFF',
-                border: 'none',
-                borderRadius: 10,
-                fontSize: 10,
-                fontWeight: 800,
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                boxShadow: '0 2px 8px rgba(245,158,129,0.15)',
-                transition: 'all 0.2s',
-                outline: 'none',
-                height: 30,
-                boxSizing: 'border-box'
-              }}
-              onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
-              onMouseLeave={e => e.currentTarget.style.transform = 'none'}
-            >
-              {linkCopied ? '✓ Copied' : 'Copy Link'}
-            </button>
-            <button
-              onClick={async () => {
-                try {
-                  await navigator.clipboard.writeText(userStats.ref_code || address)
-                  setCodeCopied(true)
-                  setTimeout(() => setCodeCopied(false), 2000)
-                } catch {}
-              }}
-              style={{
-                flex: 0.8,
-                background: 'rgba(255, 255, 255, 0.12)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                color: '#FFFFFF',
-                borderRadius: 10,
-                fontSize: 10,
-                fontWeight: 800,
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                transition: 'all 0.2s',
-                outline: 'none',
-                height: 30,
-                boxSizing: 'border-box'
-              }}
-              onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
-              onMouseLeave={e => e.currentTarget.style.transform = 'none'}
-            >
-              {codeCopied ? '✓' : 'Code'}
-            </button>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <button
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(referralLink)
+                    setLinkCopied(true)
+                    setTimeout(() => setLinkCopied(false), 2000)
+                  } catch {}
+                }}
+                style={{
+                  flex: 1,
+                  background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  borderRadius: 10,
+                  fontSize: 10,
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  boxShadow: '0 2px 8px rgba(245,158,129,0.15)',
+                  transition: 'all 0.2s',
+                  outline: 'none',
+                  height: 30,
+                  boxSizing: 'border-box'
+                }}
+                onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+              >
+                {linkCopied ? '✓ Copied' : 'Copy Link'}
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(userStats.ref_code || address)
+                    setCodeCopied(true)
+                    setTimeout(() => setCodeCopied(false), 2000)
+                  } catch {}
+                }}
+                style={{
+                  flex: 1,
+                  background: 'rgba(255, 255, 255, 0.12)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  color: '#FFFFFF',
+                  borderRadius: 10,
+                  fontSize: 10,
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'all 0.2s',
+                  outline: 'none',
+                  height: 30,
+                  boxSizing: 'border-box'
+                }}
+                onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+              >
+                {codeCopied ? '✓ Copied' : 'Copy Code'}
+              </button>
+            </div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
@@ -1181,10 +1182,10 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
               textAlign: 'center',
               boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
             }}>
-              <div style={{ fontSize: 14, fontWeight: 900, color: '#FBBF24', lineHeight: 1, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-                {userStats.referral_points} <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)' }}>HP</span>
+              <div style={{ fontSize: 14, fontWeight: 900, color: '#FFFFFF', lineHeight: 1, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                {userStats.referral_points} <span style={{ fontSize: 10, color: '#FFFFFF' }}>HP</span>
               </div>
-              <div style={{ fontSize: 9, color: 'rgba(245, 158, 11, 0.7)', marginTop: 3, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2px' }}>Earned</div>
+              <div style={{ fontSize: 9, color: 'rgba(255, 255, 255, 0.45)', marginTop: 3, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2px' }}>Earned</div>
             </div>
           </div>
 
