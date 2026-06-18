@@ -311,9 +311,9 @@ export function StakingSection({ setTab }) {
         }} />
 
         <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 14.5, fontWeight: 900, color: '#FFFFFF', letterSpacing: '0.2px' }}>
+          <div style={{ fontSize: 14.5, fontWeight: 900, color: '#FFFFFF', letterSpacing: '0.2px' }}>
             Holding Rewards
-          </span>
+          </div>
           <span style={{
             background: 'rgba(255, 255, 255, 0.08)',
             color: '#A0AEC0',
