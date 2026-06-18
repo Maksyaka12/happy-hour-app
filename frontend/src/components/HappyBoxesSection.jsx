@@ -465,14 +465,16 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
             transform: scale(1.03);
           }
         }
-        @keyframes single-flame-flicker {
+        @keyframes flame-float {
           0%, 100% {
-            transform: translateX(-50%) scale(0.97) rotate(-1deg);
-            opacity: 0.8;
+            transform: translateX(-50%) translateY(0px) scale(1.0) rotate(-0.5deg);
+            opacity: 0.55;
+            filter: blur(1.2px) drop-shadow(0 0 10px rgba(245, 158, 11, 0.4));
           }
           50% {
-            transform: translateX(-50%) scale(1.03) rotate(1.5deg);
-            opacity: 0.95;
+            transform: translateX(-50%) translateY(-6px) scale(1.06) rotate(1deg);
+            opacity: 0.8;
+            filter: blur(1.5px) drop-shadow(0 0 18px rgba(245, 158, 11, 0.7));
           }
         }
         .chest-slot { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
@@ -703,23 +705,23 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
           </div>
 
           <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            {/* Single animated flame starting from the bottom of the card */}
+            {/* Floating fire emoji behind the button */}
             <div style={{
               position: 'absolute',
-              bottom: '-16px', // aligns with the bottom border of Card 1 (padding is 16px)
+              bottom: '-12px', // aligns nicely with the bottom area
               left: '50%',
               transform: 'translateX(-50%)',
-              width: 130,
-              height: 92,
               pointerEvents: 'none',
               zIndex: 0,
-              background: 'radial-gradient(ellipse at bottom, rgba(255, 255, 255, 0.45) 0%, rgba(251, 191, 36, 0.65) 25%, rgba(245, 158, 11, 0.5) 50%, rgba(239, 68, 68, 0.3) 75%, transparent 90%)',
-              borderRadius: '50% 50% 20% 20% / 75% 75% 25% 25%',
-              filter: 'blur(6px) drop-shadow(0 -4px 12px rgba(245, 158, 11, 0.4))',
-              opacity: 0.9,
-              animation: 'single-flame-flicker 1.8s infinite ease-in-out',
-              transformOrigin: 'bottom center'
-            }} />
+              fontSize: '54px',
+              lineHeight: 1,
+              opacity: 0.65,
+              filter: 'blur(1.2px) drop-shadow(0 0 10px rgba(245, 158, 11, 0.45))',
+              animation: 'flame-float 2.4s ease-in-out infinite',
+              userSelect: 'none'
+            }}>
+              🔥
+            </div>
 
             <button
               onClick={handleBuyAttempt}
