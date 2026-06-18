@@ -267,7 +267,7 @@ export function EarnSection({ setTab, address: propAddress }) {
 
           <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
-              <div style={{ fontSize: 14.5, fontWeight: 800, color: '#FFFFFF' }}>Daily Check-in</div>
+              <div style={{ fontSize: 14.5, fontWeight: 800, color: '#FFFFFF' }}>Check-in</div>
               <div style={{ fontSize: 11, color: '#93C5FD', marginTop: 2, fontWeight: 700 }}>daily free HP</div>
             </div>
             <span style={{ fontSize: 9.5, fontWeight: 900, background: 'rgba(255,255,255,0.15)', color: '#FFFFFF', padding: '2.5px 8px', borderRadius: 6 }}>
