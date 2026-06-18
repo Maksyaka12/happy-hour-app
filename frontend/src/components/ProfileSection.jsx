@@ -245,6 +245,19 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
     }
   }
 
+  const handlePercentClick = (pct) => {
+    const maxBal = isBuying 
+      ? (tokenBalances[activeSelectedToken.symbol] ?? 0)
+      : walletBalance;
+
+    let multiplier = 0.25;
+    if (pct === '50%') multiplier = 0.50;
+    if (pct === 'MAX') multiplier = 1.0;
+
+    const val = maxBal * multiplier;
+    handlePayChange(val.toFixed(6).replace(/\.?0+$/, ''));
+  }
+
   const handleReceiveChange = (val) => {
     setReceiveAmount(val)
     if (!val || isNaN(val)) {
@@ -549,6 +562,14 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
     )
   }, [sortedTokens, searchQuery])
 
+  const hhSupply = 276000000;
+  const marketCap = hhSupply * hhPrice;
+  const formatMarketCap = (val) => {
+    if (val >= 1000000) return `$${(val / 1000000).toFixed(1)}M`;
+    if (val >= 1000) return `$${(val / 1000).toFixed(0)}K`;
+    return `$${val.toFixed(2)}`;
+  };
+
   return (
     <div style={{ paddingBottom: 120, padding: '0 12px 120px', position: 'relative' }}>
       
@@ -641,10 +662,10 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
             justifyContent: 'center'
           }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-              <span style={{ fontSize: 26, fontWeight: 900, color: '#fff', fontFamily: "'Barlow Condensed',sans-serif" }}>
+              <span style={{ fontSize: 30, fontWeight: 900, color: '#fff', fontFamily: "'Barlow Condensed',sans-serif" }}>
                 {userStats.points.toLocaleString()}
               </span>
-              <span style={{ fontSize: 13, fontWeight: 900, color: '#A5B4FC' }}>HP</span>
+              <span style={{ fontSize: 14, fontWeight: 900, color: '#A5B4FC' }}>HP</span>
             </div>
           </div>
 
@@ -661,10 +682,10 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
             justifyContent: 'center'
           }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-              <span style={{ fontSize: 26, fontWeight: 900, color: '#fff', fontFamily: "'Barlow Condensed',sans-serif" }}>
+              <span style={{ fontSize: 30, fontWeight: 900, color: '#fff', fontFamily: "'Barlow Condensed',sans-serif" }}>
                 {formatConcise(walletBalance)}
               </span>
-              <span style={{ fontSize: 13, fontWeight: 900, color: '#A5B4FC' }}>$HH</span>
+              <span style={{ fontSize: 14, fontWeight: 900, color: '#A5B4FC' }}>$HH</span>
             </div>
           </div>
         </div>
@@ -675,11 +696,11 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
         borderRadius: 24,
         padding: '16px 16px 14px',
         marginBottom: 16,
-        boxShadow: '0 8px 32px rgba(236, 72, 153, 0.18)',
+        boxShadow: '0 8px 32px rgba(236, 72, 153, 0.15)',
         position: 'relative',
         overflow: 'hidden',
-        border: '1px solid rgba(255, 255, 255, 0.2)',
-        background: '#2D1225'
+        border: '1px solid rgba(255, 255, 255, 0.15)',
+        background: '#1A0815'
       }}>
         {/* Grayscaled background image overlay */}
         <div style={{
@@ -688,7 +709,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
           backgroundImage: 'url(/banner.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          filter: 'grayscale(100%) brightness(0.38) contrast(1.15)',
+          filter: 'grayscale(100%) brightness(0.25) contrast(1.2)',
           zIndex: 0,
           pointerEvents: 'none'
         }} />
@@ -697,7 +718,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.35) 0%, rgba(168, 85, 247, 0.35) 100%)',
+          background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.22) 0%, rgba(147, 51, 234, 0.22) 100%)',
           zIndex: 1,
           pointerEvents: 'none'
         }} />
@@ -742,65 +763,99 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
                   }}
                 />
                 
-                {/* Token Selector Trigger */}
-                {isBuying ? (
-                  <button
-                    onClick={() => setIsSelectorOpen(true)}
-                    style={{
+                {/* Right Stack: Token Selector + Percentage shortcuts */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+                  {isBuying ? (
+                    <button
+                      onClick={() => setIsSelectorOpen(true)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 6,
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        padding: '6px 0',
+                        borderRadius: 10,
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.01)',
+                        cursor: 'pointer',
+                        outline: 'none',
+                        transition: 'all 0.2s',
+                        height: 30,
+                        width: 100,
+                        boxSizing: 'border-box'
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
+                      onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+                    >
+                      {activeSelectedToken.logo.startsWith('/') ? (
+                        <img src={activeSelectedToken.logo} alt="" style={{ width: 16, height: 16, borderRadius: '50%' }} />
+                      ) : (
+                        <span style={{
+                          width: 16, height: 16, borderRadius: '50%',
+                          background: activeSelectedToken.logoBg || '#8C8C8C',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontSize: 9, color: '#fff'
+                        }}>
+                          {activeSelectedToken.logo}
+                        </span>
+                      )}
+                      <span style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF' }}>{activeSelectedToken.symbol}</span>
+                      <span style={{ fontSize: 7, color: 'rgba(255, 255, 255, 0.6)' }}>▼</span>
+                    </button>
+                  ) : (
+                    <div style={{
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       gap: 6,
-                      background: 'rgba(255, 255, 255, 0.1)',
+                      background: 'rgba(0, 82, 255, 0.25)',
                       padding: '6px 0',
-                      borderRadius: 100,
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.01)',
-                      cursor: 'pointer',
-                      outline: 'none',
-                      transition: 'all 0.2s',
+                      borderRadius: 10,
+                      boxShadow: '0 2px 8px rgba(0,82,255,0.15)',
+                      border: '1px solid rgba(0, 82, 255, 0.4)',
                       height: 30,
                       width: 100,
                       boxSizing: 'border-box'
-                    }}
-                    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
-                    onMouseLeave={e => e.currentTarget.style.transform = 'none'}
-                  >
-                    {activeSelectedToken.logo.startsWith('/') ? (
-                      <img src={activeSelectedToken.logo} alt="" style={{ width: 16, height: 16, borderRadius: '50%' }} />
-                    ) : (
-                      <span style={{
-                        width: 16, height: 16, borderRadius: '50%',
-                        background: activeSelectedToken.logoBg || '#8C8C8C',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 9, color: '#fff'
-                      }}>
-                        {activeSelectedToken.logo}
-                      </span>
-                    )}
-                    <span style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF' }}>{activeSelectedToken.symbol}</span>
-                    <span style={{ fontSize: 7, color: 'rgba(255, 255, 255, 0.6)' }}>▼</span>
-                  </button>
-                ) : (
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 6,
-                    background: 'rgba(0, 82, 255, 0.25)',
-                    padding: '6px 0',
-                    borderRadius: 100,
-                    boxShadow: '0 2px 8px rgba(0,82,255,0.15)',
-                    border: '1px solid rgba(0, 82, 255, 0.4)',
-                    height: 30,
-                    width: 100,
-                    boxSizing: 'border-box'
-                  }}>
-                    <img src="/logo.jfif" alt="" style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover' }} />
-                    <span style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF' }}>$HH</span>
-                    <span style={{ fontSize: 7, color: 'transparent', userSelect: 'none' }}>▼</span>
+                    }}>
+                      <img src="/logo.jfif" alt="" style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover' }} />
+                      <span style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF' }}>$HH</span>
+                      <span style={{ fontSize: 7, color: 'transparent', userSelect: 'none' }}>▼</span>
+                    </div>
+                  )}
+
+                  {/* Percentage buttons shortcut row */}
+                  <div style={{ display: 'flex', gap: 3 }}>
+                    {['25%', '50%', 'MAX'].map(pct => (
+                      <button
+                        key={pct}
+                        onClick={() => handlePercentClick(pct)}
+                        style={{
+                          background: 'rgba(255,255,255,0.08)',
+                          border: '1px solid rgba(255,255,255,0.12)',
+                          color: 'rgba(255,255,255,0.7)',
+                          fontSize: 7.5,
+                          fontWeight: 900,
+                          padding: '1px 4px',
+                          borderRadius: 6,
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          outline: 'none'
+                        }}
+                        onMouseEnter={e => {
+                          e.currentTarget.style.background = 'rgba(255,255,255,0.18)';
+                          e.currentTarget.style.color = '#FFFFFF';
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+                          e.currentTarget.style.color = 'rgba(255,255,255,0.7)';
+                        }}
+                      >
+                        {pct}
+                      </button>
+                    ))}
                   </div>
-                )}
+                </div>
               </div>
               <div style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.4)', marginTop: 2, fontFamily: 'monospace' }}>
                 {payAmount ? `~$${formatNumber(parseFloat(payAmount) * (isBuying ? activeSelectedToken.priceUsd : hhPrice), 2)}` : '$0.00'}
@@ -879,7 +934,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
                       gap: 6,
                       background: 'rgba(255, 255, 255, 0.1)',
                       padding: '6px 0',
-                      borderRadius: 100,
+                      borderRadius: 10,
                       border: '1px solid rgba(255, 255, 255, 0.15)',
                       boxShadow: '0 2px 4px rgba(0,0,0,0.01)',
                       cursor: 'pointer',
@@ -915,7 +970,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
                     gap: 6,
                     background: 'rgba(0, 82, 255, 0.25)',
                     padding: '6px 0',
-                    borderRadius: 100,
+                    borderRadius: 10,
                     boxShadow: '0 2px 8px rgba(0,82,255,0.15)',
                     border: '1px solid rgba(0, 82, 255, 0.4)',
                     height: 30,
@@ -945,7 +1000,8 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
             fontWeight: 800,
             color: 'rgba(255, 255, 255, 0.6)'
           }}>
-            <span>1 $HH = ${formatNumber(hhPrice, 8)}</span>
+            <span>1 $HH = ${formatNumber(hhPrice, 6)}</span>
+            <span style={{ color: '#A5B4FC' }}>MC = {formatMarketCap(marketCap)}</span>
             <span style={{ color: priceChange >= 0 ? '#10B981' : '#EF4444' }}>
               {priceChange >= 0 ? '▲' : '▼'} {priceChange}% (24h)
             </span>
