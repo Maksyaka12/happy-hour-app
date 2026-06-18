@@ -30,6 +30,7 @@ export function EarnSection({ setTab, address: propAddress }) {
   const [streakCount, setStreakCount] = useState(0)
   const [points, setPoints] = useState(0)
   const [txModal, setTxModal] = useState(false) // 'checkin' | 'boost' | false
+  const [payWithHh, setPayWithHh] = useState(false)
   
   const [checkinError, setCheckinError] = useState('')
   const [boostError, setBoostError] = useState('')
@@ -174,13 +175,26 @@ export function EarnSection({ setTab, address: propAddress }) {
       return
     }
 
-    writeBoost({
-      address: USDC_ADDRESS,
-      abi: USDC_ABI,
-      functionName: 'transfer',
-      args: [CHECKIN_TARGET, parseUnits(BOOST_AMOUNT.toFixed(6), 6)],
-      chainId: base.id,
-    })
+    if (payWithHh) {
+      // Pay with $HH (18 decimals)
+      const hhCost = 0.10 / hhPrice
+      writeBoost({
+        address: HH_ADDRESS,
+        abi: USDC_ABI, // standard ERC20 transfer interface works identically
+        functionName: 'transfer',
+        args: [CHECKIN_TARGET, parseUnits(hhCost.toFixed(8), 18)],
+        chainId: base.id,
+      })
+    } else {
+      // Pay with USDC (6 decimals)
+      writeBoost({
+        address: USDC_ADDRESS,
+        abi: USDC_ABI,
+        functionName: 'transfer',
+        args: [CHECKIN_TARGET, parseUnits(BOOST_AMOUNT.toFixed(6), 6)],
+        chainId: base.id,
+      })
+    }
   }
 
   return (
@@ -222,93 +236,174 @@ export function EarnSection({ setTab, address: propAddress }) {
         </div>
       </div>
 
-      {/* Daily Actions Stack — 2-Column Grid */}
+      {/* Daily Actions Stack — 2-Column Themed Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-        {/* Daily Check-in Card */}
+        {/* Daily Check-in Card (Dark Blue theme) */}
         <div style={{
-          background: '#FFFFFF',
-          border: '1px solid #DEE1E7',
+          background: '#0B1E3F',
           borderRadius: 20,
           padding: 16,
-          boxShadow: '0 4px 16px rgba(10,11,13,0.01)',
+          boxShadow: '0 8px 32px rgba(30,58,138,0.2)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
           minHeight: 146,
-          boxSizing: 'border-box'
+          boxSizing: 'border-box',
+          position: 'relative',
+          overflow: 'hidden',
+          border: '1px solid rgba(59,130,246,0.25)'
         }}>
-          <div>
-            <div style={{ fontSize: 14.5, fontWeight: 800, color: '#0F172A' }}>Daily Check-in</div>
-            <div style={{ display: 'flex', gap: 4, marginTop: 8, marginBottom: 12 }}>
-              <span style={{ fontSize: 9.5, fontWeight: 900, background: '#F1F5F9', color: '#475569', padding: '2px 6px', borderRadius: 6 }}>Free</span>
-              <span style={{ fontSize: 9.5, fontWeight: 900, background: '#E0F2FE', color: '#0369A1', padding: '2px 6px', borderRadius: 6 }}>+1 HP</span>
+          {/* Background image overlay */}
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundImage: 'url(/banner.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            filter: 'hue-rotate(200deg) brightness(0.4) contrast(1.15)',
+            zIndex: 0,
+            pointerEvents: 'none'
+          }} />
+
+          <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontSize: 14.5, fontWeight: 800, color: '#FFFFFF' }}>Daily Check-in</div>
+              <div style={{ fontSize: 11, color: '#93C5FD', marginTop: 2, fontWeight: 700 }}>daily free HP</div>
             </div>
+            <span style={{ fontSize: 9.5, fontWeight: 900, background: 'rgba(255,255,255,0.15)', color: '#FFFFFF', padding: '2.5px 8px', borderRadius: 6 }}>
+              +1 HP
+            </span>
           </div>
+
           <button
             onClick={() => setTxModal('checkin')}
             disabled={checkedToday}
             style={{
+              position: 'relative',
+              zIndex: 1,
               width: '100%',
-              padding: '10px 12px',
-              borderRadius: 12,
-              border: checkedToday ? '1px solid #E5E9F0' : 'none',
-              background: checkedToday ? '#EEF0F3' : '#0052FF',
+              padding: '8px 12px',
+              borderRadius: 10,
+              border: checkedToday ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.25)',
+              background: checkedToday ? 'rgba(255,255,255,0.05)' : 'rgba(255, 255, 255, 0.12)',
               color: checkedToday ? '#94A3B8' : '#FFFFFF',
               fontSize: 12.5,
               fontWeight: 800,
               cursor: checkedToday ? 'not-allowed' : 'pointer',
               outline: 'none',
-              transition: 'all 0.2s',
+              transition: 'background 0.2s',
               textAlign: 'center'
             }}
+            onMouseEnter={e => { if (!checkedToday) e.currentTarget.style.background = 'rgba(255,255,255,0.2)' }}
+            onMouseLeave={e => { if (!checkedToday) e.currentTarget.style.background = 'rgba(255,255,255,0.12)' }}
           >
             {checkedToday ? 'Checked' : 'Claim'}
           </button>
         </div>
 
-        {/* Daily HP Boost Card */}
+        {/* Daily HP Boost Card (Dark Green theme) */}
         <div style={{
-          background: '#FFFFFF',
-          border: '1px solid #DEE1E7',
+          background: '#081E15',
           borderRadius: 20,
           padding: 16,
-          boxShadow: '0 4px 16px rgba(10,11,13,0.01)',
+          boxShadow: '0 8px 32px rgba(6,78,59,0.2)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
           minHeight: 146,
-          boxSizing: 'border-box'
+          boxSizing: 'border-box',
+          position: 'relative',
+          overflow: 'hidden',
+          border: '1px solid rgba(16,185,129,0.25)'
         }}>
-          <div>
-            <div style={{ fontSize: 14.5, fontWeight: 800, color: '#0F172A' }}>Daily Boost</div>
-            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 8, marginBottom: 12 }}>
-              <span style={{ fontSize: 9.5, fontWeight: 900, background: '#D1FAE5', color: '#065F46', padding: '2px 6px', borderRadius: 6 }}>+2 HP</span>
-              <span style={{ fontSize: 9.5, fontWeight: 900, background: '#F3E8FF', color: '#6B21A8', padding: '2px 6px', borderRadius: 6 }}>$0.10</span>
-              <span style={{ fontSize: 9.5, fontWeight: 900, background: '#FEF3C7', color: '#92400E', padding: '2px 6px', borderRadius: 6 }}>{formatConcise(0.10 / hhPrice)} $HH</span>
+          {/* Background image overlay */}
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundImage: 'url(/banner.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            filter: 'hue-rotate(110deg) brightness(0.4) contrast(1.15)',
+            zIndex: 0,
+            pointerEvents: 'none'
+          }} />
+
+          <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontSize: 14.5, fontWeight: 800, color: '#FFFFFF' }}>Daily Boost</div>
+              <div style={{ fontSize: 11, color: '#A7F3D0', marginTop: 2, fontWeight: 700 }}>daily boost HP</div>
             </div>
+            <span style={{ fontSize: 9.5, fontWeight: 900, background: 'rgba(255,255,255,0.15)', color: '#FFFFFF', padding: '2.5px 8px', borderRadius: 6 }}>
+              +2 HP
+            </span>
           </div>
-          <button
-            onClick={() => setTxModal('boost')}
-            disabled={boostedToday}
-            style={{
-              width: '100%',
-              padding: '10px 12px',
-              borderRadius: 12,
-              border: boostedToday ? '1px solid #E5E9F0' : 'none',
-              background: boostedToday ? '#EEF0F3' : '#0F172A',
-              color: boostedToday ? '#94A3B8' : '#FFFFFF',
-              fontSize: 12.5,
-              fontWeight: 800,
-              cursor: boostedToday ? 'not-allowed' : 'pointer',
-              outline: 'none',
-              transition: 'all 0.2s',
-              textAlign: 'center'
-            }}
-          >
-            {boostedToday ? 'Boosted' : 'Boost'}
-          </button>
+
+          <div style={{ position: 'relative', zIndex: 1, display: 'flex', gap: 6 }}>
+            {/* Boost USDC Button */}
+            <button
+              onClick={() => {
+                setPayWithHh(false)
+                setTxModal('boost')
+              }}
+              disabled={boostedToday}
+              style={{
+                flex: 1,
+                padding: '8px 4px',
+                borderRadius: 10,
+                border: boostedToday ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.25)',
+                background: boostedToday ? 'rgba(255,255,255,0.05)' : 'rgba(255, 255, 255, 0.12)',
+                color: boostedToday ? '#94A3B8' : '#FFFFFF',
+                fontSize: 10.5,
+                fontWeight: 800,
+                cursor: boostedToday ? 'not-allowed' : 'pointer',
+                outline: 'none',
+                transition: 'background 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 3
+              }}
+              onMouseEnter={e => { if (!boostedToday) e.currentTarget.style.background = 'rgba(255,255,255,0.2)' }}
+              onMouseLeave={e => { if (!boostedToday) e.currentTarget.style.background = 'rgba(255,255,255,0.12)' }}
+            >
+              <span>0.10</span>
+              <img src="/usdc-logo.png" alt="USDC" style={{ width: 11, height: 11, borderRadius: '50%' }} />
+            </button>
+
+            {/* Boost $HH Button */}
+            <button
+              onClick={() => {
+                setPayWithHh(true)
+                setTxModal('boost')
+              }}
+              disabled={boostedToday}
+              style={{
+                flex: 1,
+                padding: '8px 4px',
+                borderRadius: 10,
+                border: boostedToday ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.25)',
+                background: boostedToday ? 'rgba(255,255,255,0.05)' : 'rgba(255, 255, 255, 0.12)',
+                color: boostedToday ? '#94A3B8' : '#FFFFFF',
+                fontSize: 10.5,
+                fontWeight: 800,
+                cursor: boostedToday ? 'not-allowed' : 'pointer',
+                outline: 'none',
+                transition: 'background 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 3
+              }}
+              onMouseEnter={e => { if (!boostedToday) e.currentTarget.style.background = 'rgba(255,255,255,0.2)' }}
+              onMouseLeave={e => { if (!boostedToday) e.currentTarget.style.background = 'rgba(255,255,255,0.12)' }}
+            >
+              <span>{formatConcise(0.10 / hhPrice)}</span>
+              <img src="/logo.jfif" alt="$HH" style={{ width: 11, height: 11, borderRadius: '50%', objectFit: 'cover' }} />
+            </button>
+          </div>
         </div>
       </div>
+      
       {checkinError && (
         <div style={{ color: '#FC401F', fontSize: 10.5, fontWeight: 700, textAlign: 'center', marginTop: -4 }}>
           ⚠️ Check-in: {checkinError}
@@ -468,7 +563,7 @@ export function EarnSection({ setTab, address: propAddress }) {
       {txModal === 'checkin' && (
         <TxModal
           title="Daily Check-in"
-          subtitle="Build your streak to earn milestone rewards!"
+          subtitle="Claim your daily free happy points!"
           amount="0.0001"
           isPending={isPending}
           isConfirming={isConfirming}
@@ -482,8 +577,8 @@ export function EarnSection({ setTab, address: propAddress }) {
       {txModal === 'boost' && (
         <TxModal
           title="Daily HP Boost"
-          subtitle="Increase your daily points instantly"
-          amount="0.10"
+          subtitle={`Increase your daily points instantly using ${payWithHh ? '$HH' : 'USDC'}`}
+          amount={payWithHh ? `${formatConcise(0.10 / hhPrice)} $HH` : "0.10 USDC"}
           isPending={isPendingBoost}
           isConfirming={isConfirmingBoost}
           isSuccess={isSuccessBoost}
