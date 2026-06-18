@@ -677,19 +677,6 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
         </div>
       </div>
 
-      {/* Swap Zone Section Header */}
-      <div style={{
-        fontSize: 20,
-        fontWeight: 500,
-        color: '#0A0B0D',
-        letterSpacing: '-0.3px',
-        marginTop: 18,
-        marginBottom: 8,
-        padding: '0 4px'
-      }}>
-        Swap Zone
-      </div>
-
       {/* Premium Base App Style Swap Widget — Compact & Elegant */}
       <div style={{
         borderRadius: 24,
@@ -1056,149 +1043,206 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
 
       {/* Referral Program: Senior Hub */}
       <div style={{
-        background: '#FFFFFF',
-        border: '1px solid #E5E9F0',
-        borderRadius: 24,
-        padding: '20px 18px',
+        borderRadius: 20,
+        padding: '16px 18px',
         marginBottom: 16,
-        boxShadow: '0 8px 32px rgba(0, 82, 255, 0.02)'
+        boxShadow: '0 8px 32px rgba(245, 158, 11, 0.15)',
+        position: 'relative',
+        overflow: 'hidden',
+        border: '1px solid rgba(245, 158, 11, 0.25)',
+        background: '#1D0F02'
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
-          <div>
-            <div style={{ fontSize: 13.5, fontWeight: 850, color: '#0A0B0D' }}>Referral Hub</div>
-            <div style={{ fontSize: 9.5, color: '#64748B', marginTop: 3, fontWeight: 500, lineHeight: 1.4 }}>
-              Invite friends and <span style={{ color: '#0052FF', fontWeight: 800 }}>earn 20% of their HP</span> forever.
+        {/* Grayscaled background image overlay */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'url(/banner.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          filter: 'grayscale(100%) brightness(0.22) contrast(1.2)',
+          zIndex: 0,
+          pointerEvents: 'none'
+        }} />
+
+        {/* Orange/Amber gradient overlay */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.22) 0%, rgba(239, 68, 68, 0.18) 100%)',
+          zIndex: 1,
+          pointerEvents: 'none'
+        }} />
+
+        {/* Content Container */}
+        <div style={{ position: 'relative', zIndex: 2 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
+            <div>
+              <div style={{ fontSize: 14.5, fontWeight: 900, color: '#FFFFFF', letterSpacing: '0.2px' }}>Referral Hub</div>
+              <div style={{ fontSize: 10, color: 'rgba(255, 255, 255, 0.7)', marginTop: 2, fontWeight: 600, lineHeight: 1.4 }}>
+                Invite friends and <span style={{ color: '#FBBF24', fontWeight: 800 }}>earn 20% of their HP</span> forever.
+              </div>
             </div>
           </div>
-        </div>
 
-        <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
-          <div style={{
-            flex: 1.8,
-            background: '#F3F5F9',
-            borderRadius: 100,
-            padding: '10px 16px',
-            border: '1px solid rgba(226, 232, 240, 0.5)',
-            overflow: 'hidden',
-            display: 'flex',
-            alignItems: 'center'
-          }}>
-            <span style={{ fontFamily: 'monospace', fontSize: 9, color: '#64748B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{referralLink}</span>
-          </div>
-          <button
-            onClick={async () => {
-              try {
-                await navigator.clipboard.writeText(referralLink)
-                setLinkCopied(true)
-                setTimeout(() => setLinkCopied(false), 2000)
-              } catch {}
-            }}
-            style={{
-              flex: 1,
-              background: '#0052FF',
-              color: '#fff',
-              border: 'none',
-              borderRadius: 100,
-              fontSize: 10,
-              fontWeight: 800,
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              boxShadow: '0 2px 8px rgba(0,82,255,0.08)',
-              transition: 'all 0.2s'
-            }}
-            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
-            onMouseLeave={e => e.currentTarget.style.transform = 'none'}
-          >
-            {linkCopied ? '✓ Copied' : 'Copy Link'}
-          </button>
-          <button
-            onClick={async () => {
-              try {
-                await navigator.clipboard.writeText(userStats.ref_code || address)
-                setCodeCopied(true)
-                setTimeout(() => setCodeCopied(false), 2000)
-              } catch {}
-            }}
-            style={{
-              flex: 0.8,
-              background: '#10B981',
-              color: '#fff',
-              border: 'none',
-              borderRadius: 100,
-              fontSize: 10,
-              fontWeight: 800,
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              boxShadow: '0 2px 8px rgba(16,185,129,0.08)',
-              transition: 'all 0.2s'
-            }}
-            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
-            onMouseLeave={e => e.currentTarget.style.transform = 'none'}
-          >
-            {codeCopied ? '✓' : 'Code'}
-          </button>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
-          <div style={{ background: '#F3F5F9', borderRadius: 18, padding: '12px 8px', border: '1px solid rgba(226, 232, 240, 0.5)', textAlign: 'center' }}>
-            <div style={{ fontSize: 16, fontWeight: 900, color: '#0A0B0D', lineHeight: 1 }}>{userStats.referral_count}</div>
-            <div style={{ fontSize: 8, color: '#64748B', marginTop: 4, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>FRIENDS</div>
-          </div>
-          <div style={{ background: '#F3F5F9', borderRadius: 18, padding: '12px 8px', border: '1px solid rgba(226, 232, 240, 0.5)', textAlign: 'center' }}>
-            <div style={{ fontSize: 16, fontWeight: 900, color: '#0052FF', lineHeight: 1 }}>{userStats.referral_points} <span style={{ fontSize: 9.5 }}>HP</span></div>
-            <div style={{ fontSize: 8, color: '#64748B', marginTop: 4, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>EARNED</div>
-          </div>
-        </div>
-
-        {userStats.referrer ? (
-          <div style={{ paddingTop: 12, borderTop: '1px solid rgba(226, 232, 240, 0.8)', display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981' }} />
-            <div style={{ fontSize: 10, fontWeight: 700, color: '#10B981' }}>
-              Referred by: <span style={{ fontFamily: 'monospace', fontWeight: 500, opacity: 0.9 }}>{userStats.referrer.slice(0, 6)}...{userStats.referrer.slice(-4)}</span>
+          <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
+            <div style={{
+              flex: 1.8,
+              background: 'rgba(255, 255, 255, 0.06)',
+              backdropFilter: 'blur(8px)',
+              borderRadius: 10,
+              padding: '0 12px',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              overflow: 'hidden',
+              display: 'flex',
+              alignItems: 'center',
+              height: 30,
+              boxSizing: 'border-box'
+            }}>
+              <span style={{ fontFamily: 'monospace', fontSize: 9, color: 'rgba(255, 255, 255, 0.6)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{referralLink}</span>
             </div>
-          </div>
-        ) : (
-          <div style={{ display: 'flex', gap: 6, paddingTop: 12, borderTop: '1px solid rgba(226, 232, 240, 0.8)' }}>
-            <input
-              type="text"
-              value={refInput}
-              onChange={(e) => setRefInput(e.target.value)}
-              placeholder="Enter referral code"
-              style={{
-                flex: 1.5,
-                background: '#F3F5F9',
-                border: '1px solid rgba(226, 232, 240, 0.5)',
-                borderRadius: 100,
-                padding: '10px 14px',
-                fontSize: 11,
-                outline: 'none',
-                fontFamily: 'monospace',
-                color: '#0A0B0D'
-              }}
-            />
             <button
-              onClick={handleApplyRef}
-              disabled={refLoading || !refInput.trim()}
+              onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(referralLink)
+                  setLinkCopied(true)
+                  setTimeout(() => setLinkCopied(false), 2000)
+                } catch {}
+              }}
               style={{
                 flex: 1,
-                background: '#0052FF',
-                color: '#fff',
+                background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+                color: '#FFFFFF',
                 border: 'none',
-                borderRadius: 100,
-                padding: '0 16px',
-                fontSize: 11,
+                borderRadius: 10,
+                fontSize: 10,
                 fontWeight: 800,
                 cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(0,82,255,0.08)',
-                transition: 'all 0.2s'
+                whiteSpace: 'nowrap',
+                boxShadow: '0 2px 8px rgba(245,158,129,0.15)',
+                transition: 'all 0.2s',
+                outline: 'none',
+                height: 30,
+                boxSizing: 'border-box'
               }}
               onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
               onMouseLeave={e => e.currentTarget.style.transform = 'none'}
             >
-              Apply
+              {linkCopied ? '✓ Copied' : 'Copy Link'}
+            </button>
+            <button
+              onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(userStats.ref_code || address)
+                  setCodeCopied(true)
+                  setTimeout(() => setCodeCopied(false), 2000)
+                } catch {}
+              }}
+              style={{
+                flex: 0.8,
+                background: 'rgba(255, 255, 255, 0.12)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                color: '#FFFFFF',
+                borderRadius: 10,
+                fontSize: 10,
+                fontWeight: 800,
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                transition: 'all 0.2s',
+                outline: 'none',
+                height: 30,
+                boxSizing: 'border-box'
+              }}
+              onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+              onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+            >
+              {codeCopied ? '✓' : 'Code'}
             </button>
           </div>
-        )}
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.06)',
+              backdropFilter: 'blur(12px)',
+              borderRadius: 14,
+              padding: '10px 8px',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              textAlign: 'center',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+            }}>
+              <div style={{ fontSize: 14, fontWeight: 900, color: '#FFFFFF', lineHeight: 1, fontFamily: "'Outfit', 'Inter', sans-serif" }}>{userStats.referral_count}</div>
+              <div style={{ fontSize: 9, color: 'rgba(255, 255, 255, 0.45)', marginTop: 3, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2px' }}>Friends</div>
+            </div>
+            <div style={{
+              background: 'rgba(245, 158, 11, 0.08)',
+              backdropFilter: 'blur(12px)',
+              borderRadius: 14,
+              padding: '10px 8px',
+              border: '1px solid rgba(245, 158, 11, 0.25)',
+              textAlign: 'center',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+            }}>
+              <div style={{ fontSize: 14, fontWeight: 900, color: '#FBBF24', lineHeight: 1, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                {userStats.referral_points} <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)' }}>HP</span>
+              </div>
+              <div style={{ fontSize: 9, color: 'rgba(245, 158, 11, 0.7)', marginTop: 3, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2px' }}>Earned</div>
+            </div>
+          </div>
+
+          {userStats.referrer ? (
+            <div style={{ paddingTop: 12, borderTop: '1px solid rgba(255, 255, 255, 0.1)', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#F59E0B' }} />
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#FBBF24' }}>
+                Referred by: <span style={{ fontFamily: 'monospace', fontWeight: 500, color: '#FFFFFF' }}>{userStats.referrer.slice(0, 6)}...{userStats.referrer.slice(-4)}</span>
+              </div>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', gap: 6, paddingTop: 12, borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+              <input
+                type="text"
+                value={refInput}
+                onChange={(e) => setRefInput(e.target.value)}
+                placeholder="Enter referral code"
+                style={{
+                  flex: 1.5,
+                  background: 'rgba(255, 255, 255, 0.06)',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  borderRadius: 10,
+                  padding: '0 12px',
+                  fontSize: 11,
+                  outline: 'none',
+                  fontFamily: 'monospace',
+                  color: '#FFFFFF',
+                  height: 30,
+                  boxSizing: 'border-box'
+                }}
+              />
+              <button
+                onClick={handleApplyRef}
+                disabled={refLoading || !refInput.trim()}
+                style={{
+                  flex: 1,
+                  background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  borderRadius: 10,
+                  padding: '0 16px',
+                  fontSize: 11,
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(245,158,11,0.15)',
+                  transition: 'all 0.2s',
+                  outline: 'none',
+                  height: 30,
+                  boxSizing: 'border-box'
+                }}
+                onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+              >
+                Apply
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <HistorySection address={address} />
