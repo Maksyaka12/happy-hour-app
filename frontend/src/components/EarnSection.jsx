@@ -200,6 +200,14 @@ export function EarnSection({ setTab, address: propAddress }) {
   return (
     <div style={{ maxWidth: 640, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 12, padding: '12px 12px 120px', animation: 'fadeIn 0.3s ease-out' }}>
       
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes floatingLogo {
+          0% { transform: translateY(0px); }
+          50% { transform: translateY(-6px); }
+          100% { transform: translateY(0px); }
+        }
+      ` }} />
+
       {/* Section Banner */}
       <div style={{
         backgroundImage: 'url(/banner.jpg)',
@@ -221,7 +229,43 @@ export function EarnSection({ setTab, address: propAddress }) {
         boxSizing: 'border-box'
       }}>
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.25)', zIndex: 0 }} />
-        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
+        
+        {/* Floating $HH Logos */}
+        {[
+          { top: -10, right: '8%', size: 40, opacity: 0.16, r: '-12deg', blur: 0.5, dur: 4.2 },
+          { top: 35, right: '20%', size: 26, opacity: 0.14, r: '14deg', blur: 0, dur: 4.8 },
+          { top: -15, left: '10%', size: 36, opacity: 0.16, r: '22deg', blur: 0.8, dur: 5.4 },
+          { bottom: -8, left: '26%', size: 30, opacity: 0.14, r: '-15deg', blur: 0.5, dur: 4.0 },
+          { bottom: 10, right: '3%', size: 46, opacity: 0.18, r: '8deg', blur: 1.0, dur: 4.6 }
+        ].map((s, i) => (
+          <div key={i} style={{
+            position: 'absolute',
+            top: s.top,
+            right: s.right,
+            left: s.left,
+            bottom: s.bottom,
+            zIndex: 1,
+            pointerEvents: 'none',
+            userSelect: 'none',
+            animation: `floatingLogo ${s.dur}s ease-in-out infinite`,
+          }}>
+            <img
+              src="/logo.jfif"
+              alt=""
+              style={{
+                width: s.size,
+                height: s.size,
+                borderRadius: '50%',
+                opacity: s.opacity,
+                filter: s.blur > 0 ? `blur(${s.blur}px)` : 'none',
+                transform: `rotate(${s.r})`,
+                objectFit: 'cover'
+              }}
+            />
+          </div>
+        ))}
+
+        <div style={{ position: 'relative', zIndex: 2, textAlign: 'center' }}>
           <div style={{
             fontFamily: "'Barlow Condensed', sans-serif",
             fontSize: 38,
@@ -242,12 +286,12 @@ export function EarnSection({ setTab, address: propAddress }) {
         <div style={{
           background: '#0B1E3F',
           borderRadius: 20,
-          padding: 16,
+          padding: '14px 14px 12px',
           boxShadow: '0 8px 32px rgba(30,58,138,0.2)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          minHeight: 146,
+          height: 126,
           boxSizing: 'border-box',
           position: 'relative',
           overflow: 'hidden',
@@ -267,10 +311,10 @@ export function EarnSection({ setTab, address: propAddress }) {
 
           <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
-              <div style={{ fontSize: 14.5, fontWeight: 800, color: '#FFFFFF' }}>Check-in</div>
-              <div style={{ fontSize: 11, color: '#93C5FD', marginTop: 2, fontWeight: 700 }}>daily free HP</div>
+              <div style={{ fontSize: 13.5, fontWeight: 800, color: '#FFFFFF' }}>Check-in</div>
+              <div style={{ fontSize: 10, color: 'rgba(255, 255, 255, 0.7)', marginTop: 2, fontWeight: 400 }}>daily free HP</div>
             </div>
-            <span style={{ fontSize: 9.5, fontWeight: 900, background: 'rgba(255,255,255,0.15)', color: '#FFFFFF', padding: '2.5px 8px', borderRadius: 6 }}>
+            <span style={{ fontSize: 9, fontWeight: 900, background: 'rgba(255,255,255,0.15)', color: '#FFFFFF', padding: '2px 6px', borderRadius: 6 }}>
               +1 HP
             </span>
           </div>
@@ -282,17 +326,18 @@ export function EarnSection({ setTab, address: propAddress }) {
               position: 'relative',
               zIndex: 1,
               width: '100%',
-              padding: '8px 12px',
+              padding: '6px 12px',
               borderRadius: 10,
               border: checkedToday ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.25)',
               background: checkedToday ? 'rgba(255,255,255,0.05)' : 'rgba(255, 255, 255, 0.12)',
               color: checkedToday ? '#94A3B8' : '#FFFFFF',
-              fontSize: 12.5,
+              fontSize: 11.5,
               fontWeight: 800,
               cursor: checkedToday ? 'not-allowed' : 'pointer',
               outline: 'none',
               transition: 'background 0.2s',
-              textAlign: 'center'
+              textAlign: 'center',
+              height: 30
             }}
             onMouseEnter={e => { if (!checkedToday) e.currentTarget.style.background = 'rgba(255,255,255,0.2)' }}
             onMouseLeave={e => { if (!checkedToday) e.currentTarget.style.background = 'rgba(255,255,255,0.12)' }}
@@ -305,12 +350,12 @@ export function EarnSection({ setTab, address: propAddress }) {
         <div style={{
           background: '#081E15',
           borderRadius: 20,
-          padding: 16,
+          padding: '14px 14px 12px',
           boxShadow: '0 8px 32px rgba(6,78,59,0.2)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          minHeight: 146,
+          height: 126,
           boxSizing: 'border-box',
           position: 'relative',
           overflow: 'hidden',
@@ -330,10 +375,10 @@ export function EarnSection({ setTab, address: propAddress }) {
 
           <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
-              <div style={{ fontSize: 14.5, fontWeight: 800, color: '#FFFFFF' }}>Daily Boost</div>
-              <div style={{ fontSize: 11, color: '#A7F3D0', marginTop: 2, fontWeight: 700 }}>daily boost HP</div>
+              <div style={{ fontSize: 13.5, fontWeight: 800, color: '#FFFFFF' }}>Daily Boost</div>
+              <div style={{ fontSize: 10, color: 'rgba(255, 255, 255, 0.7)', marginTop: 2, fontWeight: 400 }}>daily boost HP</div>
             </div>
-            <span style={{ fontSize: 9.5, fontWeight: 900, background: 'rgba(255,255,255,0.15)', color: '#FFFFFF', padding: '2.5px 8px', borderRadius: 6 }}>
+            <span style={{ fontSize: 9, fontWeight: 900, background: 'rgba(255,255,255,0.15)', color: '#FFFFFF', padding: '2px 6px', borderRadius: 6 }}>
               +2 HP
             </span>
           </div>
@@ -348,7 +393,7 @@ export function EarnSection({ setTab, address: propAddress }) {
               disabled={boostedToday}
               style={{
                 flex: 1,
-                padding: '8px 4px',
+                height: 30,
                 borderRadius: 10,
                 border: boostedToday ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.25)',
                 background: boostedToday ? 'rgba(255,255,255,0.05)' : 'rgba(255, 255, 255, 0.12)',
@@ -379,7 +424,7 @@ export function EarnSection({ setTab, address: propAddress }) {
               disabled={boostedToday}
               style={{
                 flex: 1,
-                padding: '8px 4px',
+                height: 30,
                 borderRadius: 10,
                 border: boostedToday ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.25)',
                 background: boostedToday ? 'rgba(255,255,255,0.05)' : 'rgba(255, 255, 255, 0.12)',
@@ -423,7 +468,7 @@ export function EarnSection({ setTab, address: propAddress }) {
           style={{
             background: '#140505',
             borderRadius: 20,
-            padding: '16px',
+            padding: '14px 14px 12px',
             cursor: 'pointer',
             transition: 'all 0.2s',
             boxShadow: '0 8px 32px rgba(101,16,16,0.2)',
@@ -459,7 +504,7 @@ export function EarnSection({ setTab, address: propAddress }) {
           
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{ fontSize: 14.5, fontWeight: 800, color: '#FFFFFF' }}>Happy Raids</div>
-            <div style={{ fontSize: 11, color: '#FF8A8A', marginTop: 2, fontWeight: 700 }}>steal HP</div>
+            <div style={{ fontSize: 10, color: 'rgba(255, 255, 255, 0.7)', marginTop: 2, fontWeight: 400 }}>steal HP</div>
           </div>
           
           {/* Centered semi-transparent Play Badge */}
@@ -467,7 +512,7 @@ export function EarnSection({ setTab, address: propAddress }) {
             position: 'relative',
             zIndex: 1,
             width: '100%',
-            height: 32,
+            height: 30,
             background: 'rgba(255, 255, 255, 0.12)',
             border: '1px solid rgba(255, 255, 255, 0.25)',
             borderRadius: 10,
@@ -492,7 +537,7 @@ export function EarnSection({ setTab, address: propAddress }) {
           style={{
             background: '#090514',
             borderRadius: 20,
-            padding: '16px',
+            padding: '14px 14px 12px',
             cursor: 'pointer',
             transition: 'all 0.2s',
             boxShadow: '0 8px 32px rgba(46,16,101,0.2)',
@@ -528,7 +573,7 @@ export function EarnSection({ setTab, address: propAddress }) {
 
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{ fontSize: 14.5, fontWeight: 800, color: '#FFFFFF' }}>Happy Boxes</div>
-            <div style={{ fontSize: 11, color: '#D8B4FE', marginTop: 2, fontWeight: 700 }}>earn more HP</div>
+            <div style={{ fontSize: 10, color: 'rgba(255, 255, 255, 0.7)', marginTop: 2, fontWeight: 400 }}>earn more HP</div>
           </div>
 
           {/* Centered semi-transparent Open Badge */}
@@ -536,7 +581,7 @@ export function EarnSection({ setTab, address: propAddress }) {
             position: 'relative',
             zIndex: 1,
             width: '100%',
-            height: 32,
+            height: 30,
             background: 'rgba(255, 255, 255, 0.12)',
             border: '1px solid rgba(255, 255, 255, 0.25)',
             borderRadius: 10,
