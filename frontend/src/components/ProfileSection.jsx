@@ -601,9 +601,6 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
               <div style={{ fontSize: 14, fontWeight: 900, color: '#fff', letterSpacing: -0.3 }}>
                 {basename || short(address)}
               </div>
-              <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.5)', fontFamily: 'monospace' }}>
-                {address ? `${address.slice(0, 10)}...${address.slice(-8)}` : ''}
-              </div>
             </div>
           </div>
           
@@ -635,41 +632,41 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
         <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           {/* HP Balance */}
           <div style={{
-            background: 'rgba(255, 255, 255, 0.08)',
+            background: 'rgba(255, 255, 255, 0.05)',
             backdropFilter: 'blur(12px)',
-            padding: '12px 14px',
+            padding: '16px 14px',
             borderRadius: 16,
-            border: '1px solid rgba(255,255,255,0.1)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.15)'
+            border: '1px solid rgba(255,255,255,0.08)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
           }}>
-            <div style={{ fontSize: 8.5, fontWeight: 800, color: 'rgba(255,255,255,0.6)', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 4 }}>
-              Happy Points
-            </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-              <span style={{ fontSize: 22, fontWeight: 900, color: '#fff', fontFamily: "'Barlow Condensed',sans-serif" }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+              <span style={{ fontSize: 26, fontWeight: 900, color: '#fff', fontFamily: "'Barlow Condensed',sans-serif" }}>
                 {userStats.points.toLocaleString()}
               </span>
-              <span style={{ fontSize: 10, fontWeight: 900, color: '#A5B4FC' }}>HP</span>
+              <span style={{ fontSize: 13, fontWeight: 900, color: '#A5B4FC' }}>HP</span>
             </div>
           </div>
 
           {/* $HH Wallet Balance */}
           <div style={{
-            background: 'rgba(255, 255, 255, 0.08)',
+            background: 'rgba(255, 255, 255, 0.05)',
             backdropFilter: 'blur(12px)',
-            padding: '12px 14px',
+            padding: '16px 14px',
             borderRadius: 16,
-            border: '1px solid rgba(255,255,255,0.1)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.15)'
+            border: '1px solid rgba(255,255,255,0.08)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
           }}>
-            <div style={{ fontSize: 8.5, fontWeight: 800, color: 'rgba(255,255,255,0.6)', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 4 }}>
-              $HH Balance
-            </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-              <span style={{ fontSize: 22, fontWeight: 900, color: '#fff', fontFamily: "'Barlow Condensed',sans-serif" }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+              <span style={{ fontSize: 26, fontWeight: 900, color: '#fff', fontFamily: "'Barlow Condensed',sans-serif" }}>
                 {formatConcise(walletBalance)}
               </span>
-              <span style={{ fontSize: 10, fontWeight: 900, color: '#34D399' }}>$HH</span>
+              <span style={{ fontSize: 13, fontWeight: 900, color: '#A5B4FC' }}>$HH</span>
             </div>
           </div>
         </div>
@@ -677,293 +674,322 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
 
       {/* Premium Base App Style Swap Widget — Compact & Elegant */}
       <div style={{
-        background: 'linear-gradient(135deg, #EBF8FF 0%, #F3E8FF 100%)',
-        border: '1px solid rgba(229, 233, 240, 0.8)',
         borderRadius: 24,
-        padding: '14px 14px 12px',
+        padding: '16px 16px 14px',
         marginBottom: 16,
-        boxShadow: '0 8px 32px rgba(0, 82, 255, 0.01)'
+        boxShadow: '0 8px 32px rgba(236, 72, 153, 0.15)',
+        position: 'relative',
+        overflow: 'hidden',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
+        background: '#1A0815'
       }}>
-        {/* Swap Panel Stack */}
-        <div style={{ position: 'relative' }}>
-          
-          {/* FROM FIELD */}
-          <div style={{
-            background: 'rgba(255, 255, 255, 0.6)',
-            backdropFilter: 'blur(8px)',
-            borderRadius: 18,
-            padding: '8px 12px 6px',
-            marginBottom: 2,
-            border: '1px solid rgba(255, 255, 255, 0.5)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, fontWeight: 800, color: '#64748B', marginBottom: 4 }}>
-              <span>From</span>
-              <span>
-                Balance: {isBuying 
-                  ? `${formatConcise(tokenBalances[activeSelectedToken.symbol])} ${activeSelectedToken.symbol}` 
-                  : `${formatConcise(walletBalance)} $HH`}
-              </span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <input
-                type="number"
-                placeholder="0.00"
-                value={payAmount}
-                onChange={(e) => handlePayChange(e.target.value)}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  outline: 'none',
-                  fontSize: 20,
-                  fontWeight: 800,
-                  color: '#0A0B0D',
-                  width: '55%',
-                  fontFamily: 'monospace'
-                }}
-              />
-              
-              {/* Token Selector Trigger */}
-              {isBuying ? (
-                <button
-                  onClick={() => setIsSelectorOpen(true)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    background: '#FFFFFF',
-                    padding: '6px 12px',
-                    borderRadius: 100,
-                    border: '1px solid rgba(226, 232, 240, 0.8)',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.01)',
-                    cursor: 'pointer',
-                    outline: 'none',
-                    transition: 'all 0.2s',
-                    height: 30,
-                    boxSizing: 'border-box'
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
-                  onMouseLeave={e => e.currentTarget.style.transform = 'none'}
-                >
-                  {activeSelectedToken.logo.startsWith('/') ? (
-                    <img src={activeSelectedToken.logo} alt="" style={{ width: 16, height: 16, borderRadius: '50%' }} />
-                  ) : (
-                    <span style={{
-                      width: 16, height: 16, borderRadius: '50%',
-                      background: activeSelectedToken.logoBg || '#8C8C8C',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 9, color: '#fff'
-                    }}>
-                      {activeSelectedToken.logo}
-                    </span>
-                  )}
-                  <span style={{ fontSize: 11.5, fontWeight: 800, color: '#0A0B0D' }}>{activeSelectedToken.symbol}</span>
-                  <span style={{ fontSize: 7, color: '#64748B' }}>▼</span>
-                </button>
-              ) : (
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  background: '#0052FF',
-                  padding: '6px 12px',
-                  borderRadius: 100,
-                  boxShadow: '0 2px 8px rgba(0,82,255,0.08)',
-                  border: '1px solid #0052FF',
-                  height: 30,
-                  boxSizing: 'border-box'
-                }}>
-                  <img src="/logo.jfif" alt="" style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover' }} />
-                  <span style={{ fontSize: 11.5, fontWeight: 800, color: '#FFFFFF' }}>$HH</span>
-                </div>
-              )}
-            </div>
-            <div style={{ fontSize: 9.5, color: '#64748B', marginTop: 2, fontFamily: 'monospace' }}>
-              {payAmount ? `~$${formatNumber(parseFloat(payAmount) * (isBuying ? activeSelectedToken.priceUsd : hhPrice), 2)}` : '$0.00'}
-            </div>
-          </div>
-
-          {/* Direction Switcher Button in middle */}
-          <div style={{ display: 'flex', justifyContent: 'center', margin: '-12px 0', position: 'relative', zIndex: 10 }}>
-            <button
-              onClick={handleSwapDirection}
-              style={{
-                width: 26,
-                height: 26,
-                borderRadius: '50%',
-                background: '#FFFFFF',
-                border: '1px solid rgba(226, 232, 240, 0.8)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 12,
-                boxShadow: '0 4px 8px rgba(0,0,0,0.04)',
-                color: '#0052FF',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                outline: 'none'
-              }}
-              onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1) rotate(180deg)'}
-              onMouseLeave={e => e.currentTarget.style.transform = 'none'}
-            >
-              ⇅
-            </button>
-          </div>
-
-          {/* TO FIELD */}
-          <div style={{
-            background: 'rgba(255, 255, 255, 0.6)',
-            backdropFilter: 'blur(8px)',
-            borderRadius: 18,
-            padding: '8px 12px 6px',
-            marginTop: 2,
-            border: '1px solid rgba(255, 255, 255, 0.5)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, fontWeight: 800, color: '#64748B', marginBottom: 4 }}>
-              <span>To</span>
-              <span>
-                Balance: {isBuying 
-                  ? `${formatConcise(walletBalance)} $HH` 
-                  : `${formatConcise(tokenBalances[activeSelectedToken.symbol])} ${activeSelectedToken.symbol}`}
-              </span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <input
-                type="number"
-                placeholder="0.00"
-                value={receiveAmount}
-                onChange={(e) => handleReceiveChange(e.target.value)}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  outline: 'none',
-                  fontSize: 20,
-                  fontWeight: 800,
-                  color: '#0A0B0D',
-                  width: '55%',
-                  fontFamily: 'monospace'
-                }}
-              />
-
-              {!isBuying ? (
-                <button
-                  onClick={() => setIsSelectorOpen(true)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    background: '#FFFFFF',
-                    padding: '6px 12px',
-                    borderRadius: 100,
-                    border: '1px solid rgba(226, 232, 240, 0.8)',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.01)',
-                    cursor: 'pointer',
-                    outline: 'none',
-                    transition: 'all 0.2s',
-                    height: 30,
-                    boxSizing: 'border-box'
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
-                  onMouseLeave={e => e.currentTarget.style.transform = 'none'}
-                >
-                  {activeSelectedToken.logo.startsWith('/') ? (
-                    <img src={activeSelectedToken.logo} alt="" style={{ width: 16, height: 16, borderRadius: '50%' }} />
-                  ) : (
-                    <span style={{
-                      width: 16, height: 16, borderRadius: '50%',
-                      background: activeSelectedToken.logoBg || '#8C8C8C',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 9, color: '#fff'
-                    }}>
-                      {activeSelectedToken.logo}
-                    </span>
-                  )}
-                  <span style={{ fontSize: 11.5, fontWeight: 800, color: '#0A0B0D' }}>{activeSelectedToken.symbol}</span>
-                  <span style={{ fontSize: 7, color: '#64748B' }}>▼</span>
-                </button>
-              ) : (
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  background: '#0052FF',
-                  padding: '6px 12px',
-                  borderRadius: 100,
-                  boxShadow: '0 2px 8px rgba(0,82,255,0.08)',
-                  border: '1px solid #0052FF',
-                  height: 30,
-                  boxSizing: 'border-box'
-                }}>
-                  <img src="/logo.jfif" alt="" style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover' }} />
-                  <span style={{ fontSize: 11.5, fontWeight: 800, color: '#FFFFFF' }}>$HH</span>
-                </div>
-              )}
-            </div>
-            <div style={{ fontSize: 9.5, color: '#64748B', marginTop: 2, fontFamily: 'monospace' }}>
-              {receiveAmount ? `~$${formatNumber(parseFloat(receiveAmount) * (isBuying ? hhPrice : activeSelectedToken.priceUsd), 2)}` : '$0.00'}
-            </div>
-          </div>
-        </div>
-
-        {/* Compact Price / Information Line */}
+        {/* Grayscaled background image overlay */}
         <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginTop: 8,
-          padding: '0 4px',
-          fontSize: 9.5,
-          fontWeight: 800,
-          color: '#64748B'
-        }}>
-          <span>1 $HH = ${formatNumber(hhPrice, 8)}</span>
-          <span style={{ color: priceChange >= 0 ? '#10B981' : '#EF4444' }}>
-            {priceChange >= 0 ? '▲' : '▼'} {priceChange}% (24h)
-          </span>
-        </div>
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'url(/banner.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          filter: 'grayscale(100%) brightness(0.25) contrast(1.2)',
+          zIndex: 0,
+          pointerEvents: 'none'
+        }} />
 
-        {swapError && (
-          <div style={{ marginTop: 8, padding: 8, background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: 12, color: '#DC2626', fontSize: 10.5, fontWeight: 700 }}>
-            ⚠️ {swapError}
+        {/* Pink/plum gradient overlay */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.22) 0%, rgba(147, 51, 234, 0.22) 100%)',
+          zIndex: 1,
+          pointerEvents: 'none'
+        }} />
+
+        {/* Content Container */}
+        <div style={{ position: 'relative', zIndex: 2 }}>
+          {/* Swap Panel Stack */}
+          <div style={{ position: 'relative' }}>
+            
+            {/* FROM FIELD */}
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.06)',
+              backdropFilter: 'blur(8px)',
+              borderRadius: 18,
+              padding: '10px 14px 8px',
+              marginBottom: 4,
+              border: '1px solid rgba(255, 255, 255, 0.08)'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, fontWeight: 800, color: 'rgba(255, 255, 255, 0.6)', marginBottom: 4 }}>
+                <span>From</span>
+                <span>
+                  Balance: {isBuying 
+                    ? `${formatConcise(tokenBalances[activeSelectedToken.symbol])} ${activeSelectedToken.symbol}` 
+                    : `${formatConcise(walletBalance)} $HH`}
+                </span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <input
+                  type="number"
+                  placeholder="0.00"
+                  value={payAmount}
+                  onChange={(e) => handlePayChange(e.target.value)}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    outline: 'none',
+                    fontSize: 20,
+                    fontWeight: 800,
+                    color: '#FFFFFF',
+                    width: '55%',
+                    fontFamily: 'monospace'
+                  }}
+                />
+                
+                {/* Token Selector Trigger */}
+                {isBuying ? (
+                  <button
+                    onClick={() => setIsSelectorOpen(true)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      padding: '6px 12px',
+                      borderRadius: 100,
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.01)',
+                      cursor: 'pointer',
+                      outline: 'none',
+                      transition: 'all 0.2s',
+                      height: 30,
+                      boxSizing: 'border-box'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
+                    onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+                  >
+                    {activeSelectedToken.logo.startsWith('/') ? (
+                      <img src={activeSelectedToken.logo} alt="" style={{ width: 16, height: 16, borderRadius: '50%' }} />
+                    ) : (
+                      <span style={{
+                        width: 16, height: 16, borderRadius: '50%',
+                        background: activeSelectedToken.logoBg || '#8C8C8C',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 9, color: '#fff'
+                      }}>
+                        {activeSelectedToken.logo}
+                      </span>
+                    )}
+                    <span style={{ fontSize: 11.5, fontWeight: 800, color: '#FFFFFF' }}>{activeSelectedToken.symbol}</span>
+                    <span style={{ fontSize: 7, color: 'rgba(255, 255, 255, 0.6)' }}>▼</span>
+                  </button>
+                ) : (
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    background: 'rgba(0, 82, 255, 0.25)',
+                    padding: '6px 12px',
+                    borderRadius: 100,
+                    boxShadow: '0 2px 8px rgba(0,82,255,0.15)',
+                    border: '1px solid rgba(0, 82, 255, 0.4)',
+                    height: 30,
+                    boxSizing: 'border-box'
+                  }}>
+                    <img src="/logo.jfif" alt="" style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover' }} />
+                    <span style={{ fontSize: 11.5, fontWeight: 800, color: '#FFFFFF' }}>$HH</span>
+                  </div>
+                )}
+              </div>
+              <div style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.4)', marginTop: 2, fontFamily: 'monospace' }}>
+                {payAmount ? `~$${formatNumber(parseFloat(payAmount) * (isBuying ? activeSelectedToken.priceUsd : hhPrice), 2)}` : '$0.00'}
+              </div>
+            </div>
+
+            {/* Direction Switcher Button in middle */}
+            <div style={{ display: 'flex', justifyContent: 'center', margin: '-12px 0', position: 'relative', zIndex: 10 }}>
+              <button
+                onClick={handleSwapDirection}
+                style={{
+                  width: 30,
+                  height: 30,
+                  borderRadius: '50%',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 14,
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                  color: '#FFFFFF',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  outline: 'none'
+                }}
+                onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1) rotate(180deg)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+              >
+                ⇅
+              </button>
+            </div>
+
+            {/* TO FIELD */}
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.06)',
+              backdropFilter: 'blur(8px)',
+              borderRadius: 18,
+              padding: '10px 14px 8px',
+              marginTop: 4,
+              border: '1px solid rgba(255, 255, 255, 0.08)'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, fontWeight: 800, color: 'rgba(255, 255, 255, 0.6)', marginBottom: 4 }}>
+                <span>To</span>
+                <span>
+                  Balance: {isBuying 
+                    ? `${formatConcise(walletBalance)} $HH` 
+                    : `${formatConcise(tokenBalances[activeSelectedToken.symbol])} ${activeSelectedToken.symbol}`}
+                </span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <input
+                  type="number"
+                  placeholder="0.00"
+                  value={receiveAmount}
+                  onChange={(e) => handleReceiveChange(e.target.value)}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    outline: 'none',
+                    fontSize: 20,
+                    fontWeight: 800,
+                    color: '#FFFFFF',
+                    width: '55%',
+                    fontFamily: 'monospace'
+                  }}
+                />
+
+                {!isBuying ? (
+                  <button
+                    onClick={() => setIsSelectorOpen(true)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      padding: '6px 12px',
+                      borderRadius: 100,
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.01)',
+                      cursor: 'pointer',
+                      outline: 'none',
+                      transition: 'all 0.2s',
+                      height: 30,
+                      boxSizing: 'border-box'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
+                    onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+                  >
+                    {activeSelectedToken.logo.startsWith('/') ? (
+                      <img src={activeSelectedToken.logo} alt="" style={{ width: 16, height: 16, borderRadius: '50%' }} />
+                    ) : (
+                      <span style={{
+                        width: 16, height: 16, borderRadius: '50%',
+                        background: activeSelectedToken.logoBg || '#8C8C8C',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 9, color: '#fff'
+                      }}>
+                        {activeSelectedToken.logo}
+                      </span>
+                    )}
+                    <span style={{ fontSize: 11.5, fontWeight: 800, color: '#FFFFFF' }}>{activeSelectedToken.symbol}</span>
+                    <span style={{ fontSize: 7, color: 'rgba(255, 255, 255, 0.6)' }}>▼</span>
+                  </button>
+                ) : (
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    background: 'rgba(0, 82, 255, 0.25)',
+                    padding: '6px 12px',
+                    borderRadius: 100,
+                    boxShadow: '0 2px 8px rgba(0,82,255,0.15)',
+                    border: '1px solid rgba(0, 82, 255, 0.4)',
+                    height: 30,
+                    boxSizing: 'border-box'
+                  }}>
+                    <img src="/logo.jfif" alt="" style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover' }} />
+                    <span style={{ fontSize: 11.5, fontWeight: 800, color: '#FFFFFF' }}>$HH</span>
+                  </div>
+                )}
+              </div>
+              <div style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.4)', marginTop: 2, fontFamily: 'monospace' }}>
+                {receiveAmount ? `~$${formatNumber(parseFloat(receiveAmount) * (isBuying ? hhPrice : activeSelectedToken.priceUsd), 2)}` : '$0.00'}
+              </div>
+            </div>
           </div>
-        )}
 
-        {/* Action Button */}
-        <button
-          onClick={handleSwapExecute}
-          style={{
-            width: '100%',
-            padding: '11px',
-            background: 'linear-gradient(135deg, #0052FF 0%, #0036B2 100%)',
-            color: '#FFFFFF',
-            border: 'none',
-            borderRadius: 100,
-            fontSize: 12.5,
-            fontWeight: 800,
-            cursor: 'pointer',
-            boxShadow: '0 4px 12px rgba(0,82,255,0.08)',
+          {/* Compact Price / Information Line */}
+          <div style={{
             display: 'flex',
+            justifyContent: 'space-between',
             alignItems: 'center',
-            justifyContent: 'center',
-            gap: 6,
-            marginTop: 10,
-            marginBottom: 8,
-            transition: 'all 0.2s'
-          }}
-          onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
-          onMouseLeave={e => e.currentTarget.style.transform = 'none'}
-        >
-          <span>{isBuying ? `Swap ${activeSelectedToken.symbol} to $HH` : `Swap $HH to ${activeSelectedToken.symbol}`}</span>
-        </button>
+            marginTop: 8,
+            padding: '0 4px',
+            fontSize: 9.5,
+            fontWeight: 800,
+            color: 'rgba(255, 255, 255, 0.6)'
+          }}>
+            <span>1 $HH = ${formatNumber(hhPrice, 8)}</span>
+            <span style={{ color: priceChange >= 0 ? '#10B981' : '#EF4444' }}>
+              {priceChange >= 0 ? '▲' : '▼'} {priceChange}% (24h)
+            </span>
+          </div>
 
-        {/* Uniswap direct link */}
-        <a
-          href="https://app.uniswap.org/swap?inputCurrency=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913&outputCurrency=0x8235edf32a1e10bd1867ad622915ab613664cba3&chain=base"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ textDecoration: 'none', display: 'block', textAlign: 'center', fontSize: 9.5, fontWeight: 800, color: '#FF007A', opacity: 0.9 }}
-        >
-          Trade directly on Uniswap 🦄
-        </a>
+          {swapError && (
+            <div style={{ marginTop: 8, padding: 8, background: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.4)', borderRadius: 12, color: '#FCA5A5', fontSize: 10.5, fontWeight: 700 }}>
+              ⚠️ {swapError}
+            </div>
+          )}
+
+          {/* Action Button */}
+          <button
+            onClick={handleSwapExecute}
+            style={{
+              width: '100%',
+              padding: '11px',
+              background: 'linear-gradient(135deg, #EC4899 0%, #C084FC 100%)',
+              color: '#FFFFFF',
+              border: 'none',
+              borderRadius: 10,
+              fontSize: 13,
+              fontWeight: 800,
+              cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(236, 72, 153, 0.25)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 6,
+              marginTop: 10,
+              marginBottom: 8,
+              transition: 'all 0.2s',
+              outline: 'none'
+            }}
+            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+            onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+          >
+            <span>
+              Swap {isBuying ? activeSelectedToken.symbol : '$HH'} ⇄ {isBuying ? '$HH' : activeSelectedToken.symbol}
+            </span>
+          </button>
+
+          {/* Uniswap direct link */}
+          <a
+            href="https://app.uniswap.org/swap?inputCurrency=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913&outputCurrency=0x8235edf32a1e10bd1867ad622915ab613664cba3&chain=base"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ textDecoration: 'none', display: 'block', textAlign: 'center', fontSize: 9.5, fontWeight: 800, color: '#F472B6', marginTop: 6 }}
+          >
+            Trade directly on Uniswap 🦄
+          </a>
+        </div>
       </div>
 
       {/* Referral Program: Senior Hub */}
