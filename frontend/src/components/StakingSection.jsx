@@ -271,47 +271,162 @@ export function StakingSection() {
   return (
     <div style={{ animation: 'fadeIn 0.3s ease-out', width: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
       
-      {/* Card 1: Holding Rewards */}
+      {/* Card 1: Holding Rewards (Premium Slate/Graphite Grey Theme) */}
       <div style={{
-        background: '#FFFFFF',
-        border: '1px solid #DEE1E7',
+        background: 'linear-gradient(145deg, rgba(20, 20, 25, 0.95) 0%, rgba(38, 39, 48, 0.90) 50%, rgba(12, 12, 16, 0.98) 100%)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
         borderRadius: 20,
-        padding: 16,
-        boxShadow: '0 4px 16px rgba(10,11,13,0.01)'
+        padding: '16px 18px',
+        boxShadow: '0 8px 32px rgba(10, 10, 15, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 12,
+        position: 'relative',
+        overflow: 'hidden'
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <div style={{ fontSize: 14, fontWeight: 800, color: '#0F172A' }}>Holding Rewards</div>
-            <div style={{ fontSize: 20, fontWeight: 900, color: '#0F172A', marginTop: 6, fontFamily: 'monospace' }}>
-              {formatConcise(walletBalance)} <span style={{ fontSize: 11, color: '#717886', fontWeight: 700 }}>$HH</span>
+        {/* Grayscaled background image overlay */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'url(/banner.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          filter: 'grayscale(100%) brightness(0.28) contrast(1.1)',
+          zIndex: 0,
+          pointerEvents: 'none'
+        }} />
+
+        {/* Shimmer glow */}
+        <div style={{
+          position: 'absolute',
+          top: -30,
+          right: -30,
+          width: 120,
+          height: 120,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(255, 255, 255, 0.06) 0%, transparent 70%)',
+          pointerEvents: 'none'
+        }} />
+
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 13.5, fontWeight: 900, color: '#FFFFFF', letterSpacing: '0.2px' }}>
+            Holding Rewards
+          </span>
+          <span style={{
+            background: 'rgba(255,255,255,0.08)',
+            color: '#A0AEC0',
+            padding: '3px 8px',
+            borderRadius: 8,
+            fontSize: 10,
+            fontWeight: 800,
+            border: '1px solid rgba(255,255,255,0.1)'
+          }}>
+            Passive
+          </span>
+        </div>
+
+        {/* Two Plates Layout (Mockup-inspired side-by-side design) */}
+        <div style={{
+          position: 'relative',
+          zIndex: 1,
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: 12,
+          marginTop: 2
+        }}>
+          {/* Left Plate: You hold */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+            <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              You hold
+            </span>
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.06)',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              borderRadius: 14,
+              height: 48,
+              padding: '0 12px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
+            }}>
+              <img src="/logo.jfif" alt="$HH" style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover' }} />
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontSize: 13, fontWeight: 900, color: '#FFFFFF', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                  {formatNumber(walletBalance, 0)}
+                </span>
+                <span style={{ fontSize: 9, color: 'rgba(255, 255, 255, 0.45)', fontWeight: 600 }}>
+                  ≈${formatNumber(walletUsdValue, 2)}
+                </span>
+              </div>
             </div>
           </div>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: 9.5, fontWeight: 800, color: '#717886', textTransform: 'uppercase', letterSpacing: 0.2 }}>HP Yield / day</div>
-            <div style={{ fontSize: 15, fontWeight: 900, color: '#10B981', marginTop: 4 }}>
-              +{formatNumber(holdHpEarned, 2)} HP
+
+          {/* Right Plate: You earn HP */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+            <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              You earn HP
+            </span>
+            <div style={{
+              background: 'rgba(16, 185, 129, 0.08)',
+              border: '1px solid rgba(16, 185, 129, 0.25)',
+              borderRadius: 14,
+              height: 48,
+              padding: '0 12px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              boxShadow: 'inset 0 1px 0 rgba(16, 185, 129, 0.05)'
+            }}>
+              <span style={{ fontSize: 16 }}>⚡</span>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontSize: 13, fontWeight: 900, color: '#10B981', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                  +{formatNumber(holdHpEarned, 2)} HP
+                </span>
+                <span style={{ fontSize: 9, color: 'rgba(16, 185, 129, 0.7)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2px' }}>
+                  per day
+                </span>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Card 2: Staking Rewards */}
+      {/* Card 2: Staking Rewards (Premium Indigo/Purple Theme matching Happy Boxes) */}
       <div style={{
-        background: '#FFFFFF',
-        border: '1px solid #DEE1E7',
+        background: 'linear-gradient(145deg, rgba(12, 10, 45, 0.94) 0%, rgba(24, 18, 75, 0.90) 50%, rgba(6, 5, 25, 0.96) 100%)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        border: '1px solid rgba(167, 139, 250, 0.25)',
         borderRadius: 20,
         padding: 16,
-        boxShadow: '0 4px 16px rgba(10,11,13,0.01)'
+        boxShadow: '0 8px 32px rgba(15, 6, 45, 0.5), inset 0 1px 0 rgba(167, 139, 250, 0.10)',
+        position: 'relative',
+        overflow: 'hidden'
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
+        {/* Banner image background overlay */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'url(/banner.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          filter: 'hue-rotate(50deg) brightness(0.35) contrast(1.15)',
+          zIndex: 0,
+          pointerEvents: 'none'
+        }} />
+
+        <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
           <div>
-            <div style={{ fontSize: 14, fontWeight: 800, color: '#0F172A' }}>Staking Rewards</div>
-            <div style={{ fontSize: 11, color: '#717886', marginTop: 2 }}>
-              Staked: <span style={{ color: '#0A0B0D', fontWeight: 800 }}>{formatConcise(stakedBalance)} $HH</span> ({stakedPeriod}d lock)
+            <div style={{ fontSize: 14.5, fontWeight: 900, color: '#FFFFFF', letterSpacing: '0.2px' }}>Staking Rewards</div>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', marginTop: 4 }}>
+              Staked: <span style={{ color: '#FFFFFF', fontWeight: 800 }}>{formatConcise(stakedBalance)} $HH</span> ({stakedPeriod}d lock)
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: 9.5, fontWeight: 800, color: '#717886', textTransform: 'uppercase', letterSpacing: 0.2 }}>HP Yield / day</div>
+            <div style={{ fontSize: 9.5, fontWeight: 800, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: 0.2 }}>HP Yield / day</div>
             <div style={{ fontSize: 15, fontWeight: 900, color: '#10B981', marginTop: 2 }}>
               +{formatNumber(stakeHpEarned, 2)} HP
             </div>
@@ -319,14 +434,23 @@ export function StakingSection() {
         </div>
 
         {/* Tab switcher inside */}
-        <div style={{ display: 'flex', background: '#F8F9FC', padding: 3, borderRadius: 10, marginBottom: 12 }}>
+        <div style={{
+          position: 'relative',
+          zIndex: 2,
+          display: 'flex',
+          background: 'rgba(255,255,255,0.06)',
+          padding: 3,
+          borderRadius: 10,
+          marginBottom: 12,
+          border: '1px solid rgba(255,255,255,0.08)'
+        }}>
           <button
             onClick={() => setStakeActionTab('stake')}
             style={{
               flex: 1, padding: '6px 10px', border: 'none', borderRadius: 7, fontSize: 11.5, fontWeight: 800,
               background: stakeActionTab === 'stake' ? '#FFFFFF' : 'transparent',
-              color: stakeActionTab === 'stake' ? '#0052FF' : '#717886',
-              boxShadow: stakeActionTab === 'stake' ? '0 1px 4px rgba(0,0,0,0.05)' : 'none',
+              color: stakeActionTab === 'stake' ? '#090514' : 'rgba(255,255,255,0.5)',
+              boxShadow: stakeActionTab === 'stake' ? '0 1px 4px rgba(0,0,0,0.15)' : 'none',
               cursor: 'pointer',
               outline: 'none'
             }}
@@ -338,8 +462,8 @@ export function StakingSection() {
             style={{
               flex: 1, padding: '6px 10px', border: 'none', borderRadius: 7, fontSize: 11.5, fontWeight: 800,
               background: stakeActionTab === 'unstake' ? '#FFFFFF' : 'transparent',
-              color: stakeActionTab === 'unstake' ? '#0052FF' : '#717886',
-              boxShadow: stakeActionTab === 'unstake' ? '0 1px 4px rgba(0,0,0,0.05)' : 'none',
+              color: stakeActionTab === 'unstake' ? '#090514' : 'rgba(255,255,255,0.5)',
+              boxShadow: stakeActionTab === 'unstake' ? '0 1px 4px rgba(0,0,0,0.15)' : 'none',
               cursor: 'pointer',
               outline: 'none'
             }}
@@ -349,7 +473,7 @@ export function StakingSection() {
         </div>
 
         {stakeActionTab === 'stake' ? (
-          <div>
+          <div style={{ position: 'relative', zIndex: 2 }}>
             {/* Lock Period Selector */}
             <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
               <button
@@ -358,9 +482,9 @@ export function StakingSection() {
                   flex: 1,
                   padding: '8px 10px',
                   borderRadius: 10,
-                  border: lockPeriod === '7' ? '1.5px solid #0052FF' : '1px solid #DEE1E7',
-                  background: lockPeriod === '7' ? 'rgba(0, 82, 255, 0.04)' : '#FFFFFF',
-                  color: lockPeriod === '7' ? '#0052FF' : '#717886',
+                  border: lockPeriod === '7' ? '1.5px solid #A78BFA' : '1px solid rgba(255,255,255,0.15)',
+                  background: lockPeriod === '7' ? 'rgba(167, 139, 250, 0.15)' : 'rgba(255,255,255,0.03)',
+                  color: lockPeriod === '7' ? '#FFFFFF' : 'rgba(255,255,255,0.6)',
                   fontSize: 11,
                   fontWeight: 800,
                   cursor: 'pointer',
@@ -376,9 +500,9 @@ export function StakingSection() {
                   flex: 1,
                   padding: '8px 10px',
                   borderRadius: 10,
-                  border: lockPeriod === '14' ? '1.5px solid #0052FF' : '1px solid #DEE1E7',
-                  background: lockPeriod === '14' ? 'rgba(0, 82, 255, 0.04)' : '#FFFFFF',
-                  color: lockPeriod === '14' ? '#0052FF' : '#717886',
+                  border: lockPeriod === '14' ? '1.5px solid #A78BFA' : '1px solid rgba(255,255,255,0.15)',
+                  background: lockPeriod === '14' ? 'rgba(167, 139, 250, 0.15)' : 'rgba(255,255,255,0.03)',
+                  color: lockPeriod === '14' ? '#FFFFFF' : 'rgba(255,255,255,0.6)',
                   fontSize: 11,
                   fontWeight: 800,
                   cursor: 'pointer',
@@ -398,7 +522,8 @@ export function StakingSection() {
                 placeholder="Amount to stake"
                 style={{
                   width: '100%', padding: '10px 65px 10px 12px', borderRadius: 10,
-                  border: '1px solid #DEE1E7', fontSize: 13, fontWeight: 700, outline: 'none',
+                  border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.25)',
+                  color: '#FFFFFF', fontSize: 13, fontWeight: 700, outline: 'none',
                   boxSizing: 'border-box'
                 }}
               />
@@ -406,14 +531,14 @@ export function StakingSection() {
                 onClick={() => setStakingAmount(walletBalance.toString())}
                 style={{
                   position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
-                  background: '#F0F5FF', border: 'none', color: '#0052FF', fontSize: 10, fontWeight: 900,
+                  background: 'rgba(255,255,255,0.12)', border: 'none', color: '#A78BFA', fontSize: 10, fontWeight: 900,
                   padding: '4px 8px', borderRadius: 6, cursor: 'pointer'
                 }}
               >
                 MAX
               </button>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10.5, color: '#717886', marginBottom: 12 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10.5, color: 'rgba(255,255,255,0.6)', marginBottom: 12 }}>
               <span>Available: {formatConcise(walletBalance)} $HH</span>
               <span>Est: +{formatNumber(Math.min(20.0, (stakedUsdValue + (parseFloat(stakingAmount || 0) * hhPrice)) * (lockPeriod === '14' ? 0.30 : 0.15)), 1)} HP/day</span>
             </div>
@@ -424,17 +549,17 @@ export function StakingSection() {
               style={{
                 width: '100%', padding: '11px', border: 'none', borderRadius: 100,
                 background: allowance < parseFloat(stakingAmount || 0) 
-                  ? '#4F46E5'
-                  : '#0052FF',
+                  ? 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)'
+                  : 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)',
                 color: '#FFFFFF', fontSize: 13, fontWeight: 800, cursor: 'pointer',
-                boxShadow: '0 2px 8px rgba(0,82,255,0.08)'
+                boxShadow: '0 4px 12px rgba(139, 92, 246, 0.25)'
               }}
             >
               {allowance < parseFloat(stakingAmount || 0) ? 'Approve $HH' : 'Stake'}
             </button>
           </div>
         ) : (
-          <div>
+          <div style={{ position: 'relative', zIndex: 2 }}>
             <div style={{ position: 'relative', marginBottom: 10 }}>
               <input
                 type="number"
@@ -443,7 +568,8 @@ export function StakingSection() {
                 placeholder="Amount to unstake"
                 style={{
                   width: '100%', padding: '10px 65px 10px 12px', borderRadius: 10,
-                  border: '1px solid #DEE1E7', fontSize: 13, fontWeight: 700, outline: 'none',
+                  border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.25)',
+                  color: '#FFFFFF', fontSize: 13, fontWeight: 700, outline: 'none',
                   boxSizing: 'border-box'
                 }}
               />
@@ -451,16 +577,16 @@ export function StakingSection() {
                 onClick={() => setUnstakeAmount(stakedBalance.toString())}
                 style={{
                   position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
-                  background: '#F0F5FF', border: 'none', color: '#0052FF', fontSize: 10, fontWeight: 900,
+                  background: 'rgba(255,255,255,0.12)', border: 'none', color: '#A78BFA', fontSize: 10, fontWeight: 900,
                   padding: '4px 8px', borderRadius: 6, cursor: 'pointer'
                 }}
               >
                 MAX
               </button>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10.5, color: '#717886', marginBottom: 12 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10.5, color: 'rgba(255,255,255,0.6)', marginBottom: 12 }}>
               <span>Staked: {formatConcise(stakedBalance)} $HH</span>
-              <span style={{ color: '#FC401F', fontWeight: 700 }}>3d Cooldown</span>
+              <span style={{ color: '#EF4444', fontWeight: 700 }}>3d Cooldown</span>
             </div>
 
             <button
@@ -468,9 +594,9 @@ export function StakingSection() {
               disabled={!!txStep}
               style={{
                 width: '100%', padding: '11px', border: 'none', borderRadius: 100,
-                background: '#0F172A',
+                background: 'rgba(255,255,255,0.15)',
                 color: '#FFFFFF', fontSize: 13, fontWeight: 800, cursor: 'pointer',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+                boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
               }}
             >
               Unstake
@@ -479,7 +605,7 @@ export function StakingSection() {
         )}
 
         {txError && (
-          <div style={{ marginTop: 10, padding: 10, background: '#FEE2E2', border: '1px solid #FECACA', borderRadius: 8, color: '#DC2626', fontSize: 11, fontWeight: 750 }}>
+          <div style={{ position: 'relative', zIndex: 2, marginTop: 10, padding: 10, background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: 8, color: '#EF4444', fontSize: 11, fontWeight: 750 }}>
             ⚠️ {txError}
           </div>
         )}
@@ -488,13 +614,13 @@ export function StakingSection() {
       {/* Pending Withdrawals list (3-day cooldown tracker) */}
       {pendingWithdrawals.length > 0 && (
         <div style={{
-          background: '#FFFFFF',
-          border: '1px solid #DEE1E7',
+          background: 'linear-gradient(145deg, rgba(20, 20, 25, 0.95) 0%, rgba(38, 39, 48, 0.90) 50%, rgba(12, 12, 16, 0.98) 100%)',
+          border: '1px solid rgba(255, 255, 255, 0.15)',
           borderRadius: 20,
           padding: 16,
-          boxShadow: '0 4px 16px rgba(10,11,13,0.01)'
+          boxShadow: '0 8px 32px rgba(10, 10, 15, 0.4)'
         }}>
-          <h3 style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D', marginBottom: 10, margin: 0 }}>Pending Withdrawals</h3>
+          <h3 style={{ fontSize: 13, fontWeight: 900, color: '#FFFFFF', marginBottom: 10, margin: 0, letterSpacing: '0.2px' }}>Pending Withdrawals</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
             {pendingWithdrawals.map((w) => {
               const isReady = Date.now() >= w.unlockTime
@@ -506,13 +632,13 @@ export function StakingSection() {
               return (
                 <div key={w.id} style={{
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  background: '#F8F9FC', padding: 10, borderRadius: 12, border: '1px solid #EEF0F3'
+                  background: 'rgba(255,255,255,0.04)', padding: 10, borderRadius: 12, border: '1px solid rgba(255,255,255,0.08)'
                 }}>
                   <div>
-                    <div style={{ fontSize: 12.5, fontWeight: 850, color: '#0A0B0D' }}>
+                    <div style={{ fontSize: 12.5, fontWeight: 850, color: '#FFFFFF' }}>
                       {formatConcise(w.amount)} $HH
                     </div>
-                    <div style={{ fontSize: 9.5, color: '#717886', marginTop: 2 }}>
+                    <div style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>
                       {isReady ? 'Ready to claim!' : `Unlocks in: ${days}d ${hours}h ${minutes}m`}
                     </div>
                   </div>
@@ -520,8 +646,8 @@ export function StakingSection() {
                     onClick={() => claimWithdrawal(w.id, w.amount)}
                     disabled={!isReady}
                     style={{
-                      background: isReady ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' : '#DEE1E7',
-                      color: '#FFFFFF', border: 'none', borderRadius: 8, padding: '5px 10px',
+                      background: isReady ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' : 'rgba(255,255,255,0.1)',
+                      color: isReady ? '#FFFFFF' : 'rgba(255,255,255,0.4)', border: 'none', borderRadius: 8, padding: '5px 10px',
                       fontSize: 10.5, fontWeight: 900, cursor: isReady ? 'pointer' : 'not-allowed',
                       boxShadow: isReady ? '0 2px 6px rgba(16,185,129,0.15)' : 'none'
                     }}
