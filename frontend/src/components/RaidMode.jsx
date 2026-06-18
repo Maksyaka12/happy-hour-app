@@ -613,26 +613,27 @@ export function RaidMode({ address }) {
                 background: 'conic-gradient(from 0deg at 50% 50%, rgba(56,189,248,0.3) 0deg, rgba(56,189,248,0) 120deg)',
                 borderRadius: '50%'
               }} />
-              <span style={{ fontSize: 28, position: 'relative', zIndex: 2, filter: 'drop-shadow(0 0 8px rgba(56,189,248,0.9))' }}>🛡️</span>
+              <span style={{ fontSize: 46, position: 'relative', zIndex: 2, filter: 'drop-shadow(0 0 10px rgba(56,189,248,1)) drop-shadow(0 0 20px rgba(56,189,248,0.5))' }}>🛡️</span>
             </div>
           </div>
 
           {/* Right side info & action */}
           <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            {/* Title + badge on same line */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-              <h4 style={{ margin: 0, fontSize: 14, fontWeight: 800, color: '#FFFFFF', letterSpacing: -0.2 }}>
+            {/* Title + badge immediately after text, no gap stretch */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 6, marginBottom: 4 }}>
+              <h4 style={{ margin: 0, fontSize: 14, fontWeight: 800, color: '#FFFFFF', letterSpacing: -0.2, flexShrink: 0 }}>
                 Raid Shield
               </h4>
               <div style={{
                 background: isShieldActive ? 'rgba(16,185,129,0.2)' : 'rgba(225,29,72,0.2)',
                 color: isShieldActive ? '#34D399' : '#F87171',
-                padding: '2px 8px',
+                padding: '2px 7px',
                 borderRadius: 8,
                 fontSize: 9.5,
                 fontWeight: 800,
                 border: `1px solid ${isShieldActive ? 'rgba(52,211,153,0.35)' : 'rgba(248,113,113,0.35)'}`,
-                whiteSpace: 'nowrap'
+                whiteSpace: 'nowrap',
+                flexShrink: 0
               }}>
                 {isShieldActive ? `⏱ ${shieldTimeLeft}` : 'Inactive'}
               </div>
@@ -663,18 +664,18 @@ export function RaidMode({ address }) {
                   className="raid-btn"
                   style={{
                     position: 'relative', flex: 1,
-                    background: 'rgba(255,255,255,0.14)',
+                    background: 'rgba(255,255,255,0.20)',
                     backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
                     color: '#fff',
-                    border: '1px solid rgba(255,255,255,0.32)',
+                    border: '1px solid rgba(255,255,255,0.42)',
                     borderRadius: 14, padding: '9px 8px',
                     fontSize: 11.5, fontWeight: 800,
                     cursor: isPending ? 'not-allowed' : 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
-                    boxShadow: '0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(0,0,0,0.15)'
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)'
                   }}
-                  onMouseEnter={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.22)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)' }}}
-                  onMouseLeave={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.14)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.32)' }}}
+                  onMouseEnter={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.30)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.60)' }}}
+                  onMouseLeave={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.20)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.42)' }}}
                 >
                   <span style={{ fontWeight: 900 }}>0.20</span>
                   <img src="/usdc-logo.png" alt="USDC" style={{ width: 13, height: 13, borderRadius: '50%' }} />
@@ -687,18 +688,18 @@ export function RaidMode({ address }) {
                   className="raid-btn"
                   style={{
                     position: 'relative', flex: 1,
-                    background: 'rgba(255,255,255,0.14)',
+                    background: 'rgba(255,255,255,0.20)',
                     backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
                     color: '#fff',
-                    border: '1px solid rgba(255,255,255,0.32)',
+                    border: '1px solid rgba(255,255,255,0.42)',
                     borderRadius: 14, padding: '9px 8px',
                     fontSize: 11.5, fontWeight: 800,
                     cursor: isPending ? 'not-allowed' : 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
-                    boxShadow: '0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(0,0,0,0.15)'
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)'
                   }}
-                  onMouseEnter={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.22)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)' }}}
-                  onMouseLeave={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.14)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.32)' }}}
+                  onMouseEnter={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.30)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.60)' }}}
+                  onMouseLeave={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.20)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.42)' }}}
                 >
                   <div style={{
                     position: 'absolute', top: -8, right: -3,
@@ -878,11 +879,11 @@ export function RaidMode({ address }) {
                     style={{
                       position: 'relative',
                       flex: 1,
-                      background: 'rgba(255,255,255,0.14)',
+                      background: 'rgba(255,255,255,0.20)',
                       backdropFilter: 'blur(16px)',
                       WebkitBackdropFilter: 'blur(16px)',
                       color: '#fff',
-                      border: '1px solid rgba(255,255,255,0.32)',
+                      border: '1px solid rgba(255,255,255,0.42)',
                       borderRadius: 14,
                       padding: '9px 8px',
                       fontSize: 11.5,
@@ -892,10 +893,10 @@ export function RaidMode({ address }) {
                       alignItems: 'center',
                       justifyContent: 'center',
                       gap: 5,
-                      boxShadow: '0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(0,0,0,0.15)',
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)',
                     }}
-                    onMouseEnter={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.22)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)' }}}
-                    onMouseLeave={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.14)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.32)' }}}
+                    onMouseEnter={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.30)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.60)' }}}
+                    onMouseLeave={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.20)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.42)' }}}
                   >
                     <span style={{ fontWeight: 900 }}>0.30</span>
                     <img src="/usdc-logo.png" alt="USDC" style={{ width: 13, height: 13, borderRadius: '50%' }} />
@@ -913,11 +914,11 @@ export function RaidMode({ address }) {
                     style={{
                       position: 'relative',
                       flex: 1,
-                      background: 'rgba(255,255,255,0.14)',
+                      background: 'rgba(255,255,255,0.20)',
                       backdropFilter: 'blur(16px)',
                       WebkitBackdropFilter: 'blur(16px)',
                       color: '#fff',
-                      border: '1px solid rgba(255,255,255,0.32)',
+                      border: '1px solid rgba(255,255,255,0.42)',
                       borderRadius: 14,
                       padding: '9px 8px',
                       fontSize: 11.5,
@@ -927,10 +928,10 @@ export function RaidMode({ address }) {
                       alignItems: 'center',
                       justifyContent: 'center',
                       gap: 5,
-                      boxShadow: '0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(0,0,0,0.15)',
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)',
                     }}
-                    onMouseEnter={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.22)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)' }}}
-                    onMouseLeave={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.14)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.32)' }}}
+                    onMouseEnter={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.30)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.60)' }}}
+                    onMouseLeave={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.20)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.42)' }}}
                   >
                     <div style={{
                       position: 'absolute',
