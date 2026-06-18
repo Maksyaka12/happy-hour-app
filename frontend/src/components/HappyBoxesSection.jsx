@@ -628,11 +628,7 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '6px', color: '#A78BFA' }}>●</span>
-              <span>Each box contains from 2 to 15 HP.</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '6px', color: '#A78BFA' }}>●</span>
-              <span>Your boost is automatically applied.</span>
+              <span>Each box contains from 2 to 5 HP.</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '6px', color: '#A78BFA' }}>●</span>
@@ -804,7 +800,7 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
         <div style={{ position: 'relative', zIndex: 2 }}>
           <div style={{ fontSize: 16, fontWeight: 900, color: '#FFFFFF' }}>Happy Boxes</div>
           <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>
-            Open boxes to earn random HP rewards from 2 to 15.
+            Open boxes to earn random HP rewards from 2 to 5.
           </div>
         </div>
 
