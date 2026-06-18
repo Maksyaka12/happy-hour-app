@@ -623,7 +623,7 @@ export function EarnSection({ setTab, address: propAddress }) {
       </div>
 
       {/* Yield & Staking details */}
-      <StakingSection />
+      <StakingSection setTab={setTab} />
 
       {/* Transaction Modals */}
       {txModal === 'checkin' && (

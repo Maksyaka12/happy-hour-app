@@ -28,7 +28,7 @@ const formatConcise = (num) => {
   return n.toFixed(2).replace(/\.00$/, '')
 }
 
-export function StakingSection() {
+export function StakingSection({ setTab }) {
   const { address, isConnected } = useAccount()
   const [hhPrice, setHhPrice] = useState(0.00025) // Fallback price
   const [priceChange, setPriceChange] = useState(8.4) // 24h price change mock %
@@ -271,18 +271,167 @@ export function StakingSection() {
   return (
     <div style={{ animation: 'fadeIn 0.3s ease-out', width: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
       
-      {/* Card 1: Holding Rewards (Premium Slate/Graphite Grey Theme) */}
+      {/* Card 1: Holding Rewards (Premium Light Grey Theme) */}
+      <div style={{
+        background: 'linear-gradient(145deg, rgba(240, 241, 245, 0.96) 0%, rgba(220, 222, 230, 0.92) 50%, rgba(200, 202, 212, 0.98) 100%)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        border: '1px solid rgba(255, 255, 255, 0.6)',
+        borderRadius: 20,
+        padding: '16px 18px',
+        boxShadow: '0 8px 32px rgba(10, 10, 15, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 12,
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        {/* Grayscaled background image overlay */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'url(/banner.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          filter: 'grayscale(100%) brightness(0.92) contrast(0.9) opacity(0.08)',
+          zIndex: 0,
+          pointerEvents: 'none'
+        }} />
+
+        {/* Shimmer glow */}
+        <div style={{
+          position: 'absolute',
+          top: -30,
+          right: -30,
+          width: 120,
+          height: 120,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%)',
+          pointerEvents: 'none'
+        }} />
+
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 13.5, fontWeight: 900, color: '#0F172A', letterSpacing: '0.2px' }}>
+            Holding Rewards
+          </span>
+          <span style={{
+            background: 'rgba(15, 23, 42, 0.06)',
+            color: '#475569',
+            padding: '3px 8px',
+            borderRadius: 8,
+            fontSize: 10,
+            fontWeight: 800,
+            border: '1px solid rgba(15, 23, 42, 0.08)'
+          }}>
+            Passive
+          </span>
+        </div>
+
+        {/* Two Plates Layout (Mockup-inspired side-by-side design) */}
+        <div style={{
+          position: 'relative',
+          zIndex: 1,
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: 12,
+          marginTop: 2
+        }}>
+          {/* Left Plate: Holder Balance */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+            <span style={{ fontSize: 10, fontWeight: 800, color: '#475569', letterSpacing: '0.5px' }}>
+              Holder Balance
+            </span>
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.6)',
+              border: '1px solid rgba(15, 23, 42, 0.08)',
+              borderRadius: 14,
+              height: 48,
+              padding: '0 12px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.8)'
+            }}>
+              <img src="/logo.jfif" alt="$HH" style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover' }} />
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {walletBalance === 0 ? (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ fontSize: 13, fontWeight: 900, color: '#0F172A', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                      0
+                    </span>
+                    {setTab && (
+                      <button
+                        onClick={() => setTab('home')}
+                        style={{
+                          background: 'linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%)',
+                          color: '#FFFFFF',
+                          border: 'none',
+                          borderRadius: 6,
+                          padding: '2px 6px',
+                          fontSize: 8,
+                          fontWeight: 900,
+                          cursor: 'pointer',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.3px',
+                          boxShadow: '0 2px 4px rgba(124,58,237,0.3)',
+                          outline: 'none'
+                        }}
+                      >
+                        Buy $HH
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <span style={{ fontSize: 13, fontWeight: 900, color: '#0F172A', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                    {formatNumber(walletBalance, 0)}
+                  </span>
+                )}
+                <span style={{ fontSize: 9, color: 'rgba(15, 23, 42, 0.6)', fontWeight: 600 }}>
+                  ≈${formatNumber(walletUsdValue, 2)}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Plate: Holder HP Earnings */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+            <span style={{ fontSize: 10, fontWeight: 800, color: '#475569', letterSpacing: '0.5px' }}>
+              Holder HP Earnings
+            </span>
+            <div style={{
+              background: 'rgba(16, 185, 129, 0.06)',
+              border: '1px solid rgba(16, 185, 129, 0.25)',
+              borderRadius: 14,
+              height: 48,
+              padding: '0 12px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              boxShadow: 'inset 0 1px 0 rgba(16, 185, 129, 0.05)'
+            }}>
+              <span style={{ fontSize: 16 }}>⚡</span>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontSize: 13, fontWeight: 900, color: '#065F46', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                  +{formatNumber(holdHpEarned, 2)} HP
+                </span>
+                <span style={{ fontSize: 9, color: 'rgba(6, 95, 70, 0.7)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2px' }}>
+                  per day
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Card 2: Staking Rewards (Premium Slate/Graphite Dark Grey Theme) */}
       <div style={{
         background: 'linear-gradient(145deg, rgba(20, 20, 25, 0.95) 0%, rgba(38, 39, 48, 0.90) 50%, rgba(12, 12, 16, 0.98) 100%)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
         border: '1px solid rgba(255, 255, 255, 0.15)',
         borderRadius: 20,
-        padding: '16px 18px',
+        padding: 16,
         boxShadow: '0 8px 32px rgba(10, 10, 15, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 12,
         position: 'relative',
         overflow: 'hidden'
       }}>
@@ -310,10 +459,10 @@ export function StakingSection() {
           pointerEvents: 'none'
         }} />
 
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 13.5, fontWeight: 900, color: '#FFFFFF', letterSpacing: '0.2px' }}>
-            Holding Rewards
-          </span>
+        <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
+          <div>
+            <div style={{ fontSize: 14.5, fontWeight: 900, color: '#FFFFFF', letterSpacing: '0.2px' }}>Staking Rewards</div>
+          </div>
           <span style={{
             background: 'rgba(255,255,255,0.08)',
             color: '#A0AEC0',
@@ -323,112 +472,95 @@ export function StakingSection() {
             fontWeight: 800,
             border: '1px solid rgba(255,255,255,0.1)'
           }}>
-            Passive
+            Active Pool
           </span>
         </div>
 
-        {/* Two Plates Layout (Mockup-inspired side-by-side design) */}
+        {/* Three Plates Layout (Staked, Period, HP Earnings) */}
         <div style={{
           position: 'relative',
-          zIndex: 1,
+          zIndex: 2,
           display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: 12,
-          marginTop: 2
+          gridTemplateColumns: '1.1fr 0.9fr 1fr',
+          gap: 8,
+          marginTop: 2,
+          marginBottom: 12
         }}>
-          {/* Left Plate: You hold */}
+          {/* Column 1: Staked */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-            <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-              You hold
+            <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.3px' }}>
+              Staked
             </span>
             <div style={{
               background: 'rgba(255, 255, 255, 0.06)',
               border: '1px solid rgba(255, 255, 255, 0.12)',
               borderRadius: 14,
               height: 48,
-              padding: '0 12px',
+              padding: '0 8px',
               display: 'flex',
               alignItems: 'center',
-              gap: 8,
+              gap: 6,
               boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
             }}>
-              <img src="/logo.jfif" alt="$HH" style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover' }} />
+              <img src="/logo.jfif" alt="" style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover' }} />
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ fontSize: 13, fontWeight: 900, color: '#FFFFFF', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-                  {formatNumber(walletBalance, 0)}
+                <span style={{ fontSize: 11.5, fontWeight: 900, color: '#FFFFFF', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                  {formatConcise(stakedBalance)}
                 </span>
-                <span style={{ fontSize: 9, color: 'rgba(255, 255, 255, 0.45)', fontWeight: 600 }}>
-                  ≈${formatNumber(walletUsdValue, 2)}
+                <span style={{ fontSize: 8.5, color: 'rgba(255, 255, 255, 0.45)', fontWeight: 600 }}>
+                  ≈${formatConcise(stakedUsdValue)}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Right Plate: You earn HP */}
+          {/* Column 2: Period */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-            <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-              You earn HP
+            <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.3px' }}>
+              Period
+            </span>
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.06)',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              borderRadius: 14,
+              height: 48,
+              padding: '0 8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
+            }}>
+              <span style={{ fontSize: 11.5, fontWeight: 900, color: '#FFFFFF', textAlign: 'center' }}>
+                {stakedPeriod}d lock
+              </span>
+            </div>
+          </div>
+
+          {/* Column 3: HP Earnings */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+            <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.3px' }}>
+              HP Earnings
             </span>
             <div style={{
               background: 'rgba(16, 185, 129, 0.08)',
               border: '1px solid rgba(16, 185, 129, 0.25)',
               borderRadius: 14,
               height: 48,
-              padding: '0 12px',
+              padding: '0 6px',
               display: 'flex',
               alignItems: 'center',
-              gap: 6,
+              gap: 4,
               boxShadow: 'inset 0 1px 0 rgba(16, 185, 129, 0.05)'
             }}>
-              <span style={{ fontSize: 16 }}>⚡</span>
+              <span style={{ fontSize: 13 }}>⚡</span>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ fontSize: 13, fontWeight: 900, color: '#10B981', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-                  +{formatNumber(holdHpEarned, 2)} HP
+                <span style={{ fontSize: 11.5, fontWeight: 900, color: '#10B981', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                  +{formatNumber(stakeHpEarned, 2)} HP
                 </span>
-                <span style={{ fontSize: 9, color: 'rgba(16, 185, 129, 0.7)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2px' }}>
+                <span style={{ fontSize: 8.5, color: 'rgba(16, 185, 129, 0.7)', fontWeight: 700, textTransform: 'uppercase' }}>
                   per day
                 </span>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Card 2: Staking Rewards (Premium Indigo/Purple Theme matching Happy Boxes) */}
-      <div style={{
-        background: 'linear-gradient(145deg, rgba(12, 10, 45, 0.94) 0%, rgba(24, 18, 75, 0.90) 50%, rgba(6, 5, 25, 0.96) 100%)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        border: '1px solid rgba(167, 139, 250, 0.25)',
-        borderRadius: 20,
-        padding: 16,
-        boxShadow: '0 8px 32px rgba(15, 6, 45, 0.5), inset 0 1px 0 rgba(167, 139, 250, 0.10)',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
-        {/* Banner image background overlay */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: 'url(/banner.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          filter: 'hue-rotate(50deg) brightness(0.35) contrast(1.15)',
-          zIndex: 0,
-          pointerEvents: 'none'
-        }} />
-
-        <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
-          <div>
-            <div style={{ fontSize: 14.5, fontWeight: 900, color: '#FFFFFF', letterSpacing: '0.2px' }}>Staking Rewards</div>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', marginTop: 4 }}>
-              Staked: <span style={{ color: '#FFFFFF', fontWeight: 800 }}>{formatConcise(stakedBalance)} $HH</span> ({stakedPeriod}d lock)
-            </div>
-          </div>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: 9.5, fontWeight: 800, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: 0.2 }}>HP Yield / day</div>
-            <div style={{ fontSize: 15, fontWeight: 900, color: '#10B981', marginTop: 2 }}>
-              +{formatNumber(stakeHpEarned, 2)} HP
             </div>
           </div>
         </div>
@@ -521,22 +653,44 @@ export function StakingSection() {
                 onChange={(e) => setStakingAmount(e.target.value)}
                 placeholder="Amount to stake"
                 style={{
-                  width: '100%', padding: '10px 65px 10px 12px', borderRadius: 10,
+                  width: '100%', padding: '10px 115px 10px 12px', borderRadius: 10,
                   border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.25)',
                   color: '#FFFFFF', fontSize: 13, fontWeight: 700, outline: 'none',
                   boxSizing: 'border-box'
                 }}
               />
-              <button
-                onClick={() => setStakingAmount(walletBalance.toString())}
-                style={{
-                  position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
-                  background: 'rgba(255,255,255,0.12)', border: 'none', color: '#A78BFA', fontSize: 10, fontWeight: 900,
-                  padding: '4px 8px', borderRadius: 6, cursor: 'pointer'
-                }}
-              >
-                MAX
-              </button>
+              <div style={{
+                position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
+                display: 'flex', gap: 4, alignItems: 'center'
+              }}>
+                <button
+                  onClick={() => setStakingAmount((walletBalance * 0.25).toFixed(0))}
+                  style={{
+                    background: 'rgba(255,255,255,0.08)', border: 'none', color: 'rgba(255,255,255,0.7)', fontSize: 9, fontWeight: 900,
+                    padding: '3px 5px', borderRadius: 5, cursor: 'pointer', outline: 'none'
+                  }}
+                >
+                  25%
+                </button>
+                <button
+                  onClick={() => setStakingAmount((walletBalance * 0.5).toFixed(0))}
+                  style={{
+                    background: 'rgba(255,255,255,0.08)', border: 'none', color: 'rgba(255,255,255,0.7)', fontSize: 9, fontWeight: 900,
+                    padding: '3px 5px', borderRadius: 5, cursor: 'pointer', outline: 'none'
+                  }}
+                >
+                  50%
+                </button>
+                <button
+                  onClick={() => setStakingAmount(walletBalance.toString())}
+                  style={{
+                    background: 'rgba(255,255,255,0.15)', border: 'none', color: '#A78BFA', fontSize: 9, fontWeight: 900,
+                    padding: '3px 6px', borderRadius: 5, cursor: 'pointer', outline: 'none'
+                  }}
+                >
+                  MAX
+                </button>
+              </div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10.5, color: 'rgba(255,255,255,0.6)', marginBottom: 12 }}>
               <span>Available: {formatConcise(walletBalance)} $HH</span>
@@ -567,22 +721,44 @@ export function StakingSection() {
                 onChange={(e) => setUnstakeAmount(e.target.value)}
                 placeholder="Amount to unstake"
                 style={{
-                  width: '100%', padding: '10px 65px 10px 12px', borderRadius: 10,
+                  width: '100%', padding: '10px 115px 10px 12px', borderRadius: 10,
                   border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.25)',
                   color: '#FFFFFF', fontSize: 13, fontWeight: 700, outline: 'none',
                   boxSizing: 'border-box'
                 }}
               />
-              <button
-                onClick={() => setUnstakeAmount(stakedBalance.toString())}
-                style={{
-                  position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
-                  background: 'rgba(255,255,255,0.12)', border: 'none', color: '#A78BFA', fontSize: 10, fontWeight: 900,
-                  padding: '4px 8px', borderRadius: 6, cursor: 'pointer'
-                }}
-              >
-                MAX
-              </button>
+              <div style={{
+                position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
+                display: 'flex', gap: 4, alignItems: 'center'
+              }}>
+                <button
+                  onClick={() => setUnstakeAmount((stakedBalance * 0.25).toFixed(0))}
+                  style={{
+                    background: 'rgba(255,255,255,0.08)', border: 'none', color: 'rgba(255,255,255,0.7)', fontSize: 9, fontWeight: 900,
+                    padding: '3px 5px', borderRadius: 5, cursor: 'pointer', outline: 'none'
+                  }}
+                >
+                  25%
+                </button>
+                <button
+                  onClick={() => setUnstakeAmount((stakedBalance * 0.5).toFixed(0))}
+                  style={{
+                    background: 'rgba(255,255,255,0.08)', border: 'none', color: 'rgba(255,255,255,0.7)', fontSize: 9, fontWeight: 900,
+                    padding: '3px 5px', borderRadius: 5, cursor: 'pointer', outline: 'none'
+                  }}
+                >
+                  50%
+                </button>
+                <button
+                  onClick={() => setUnstakeAmount(stakedBalance.toString())}
+                  style={{
+                    background: 'rgba(255,255,255,0.15)', border: 'none', color: '#A78BFA', fontSize: 9, fontWeight: 900,
+                    padding: '3px 6px', borderRadius: 5, cursor: 'pointer', outline: 'none'
+                  }}
+                >
+                  MAX
+                </button>
+              </div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10.5, color: 'rgba(255,255,255,0.6)', marginBottom: 12 }}>
               <span>Staked: {formatConcise(stakedBalance)} $HH</span>
