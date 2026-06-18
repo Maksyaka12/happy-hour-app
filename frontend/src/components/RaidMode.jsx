@@ -552,14 +552,14 @@ export function RaidMode({ address }) {
 
       {/* ═══ RAID SHIELD CARD ═══ */}
       <div style={{
-        background: 'linear-gradient(145deg, rgba(90, 10, 20, 0.88) 0%, rgba(50, 5, 30, 0.92) 100%)',
+        background: 'linear-gradient(145deg, rgba(4, 18, 50, 0.94) 0%, rgba(6, 28, 70, 0.90) 50%, rgba(2, 35, 55, 0.95) 100%)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
-        border: '1px solid rgba(220, 38, 80, 0.3)',
+        border: '1px solid rgba(56, 189, 248, 0.2)',
         borderRadius: 20,
         padding: '16px 20px',
         marginBottom: 16,
-        boxShadow: '0 8px 32px rgba(150, 10, 30, 0.35), inset 0 1px 0 rgba(255,255,255,0.05)',
+        boxShadow: '0 8px 32px rgba(0, 60, 140, 0.4), inset 0 1px 0 rgba(56,189,248,0.08)',
         minHeight: 120,
         display: 'flex',
         flexDirection: 'column',
@@ -567,73 +567,82 @@ export function RaidMode({ address }) {
         position: 'relative',
         overflow: 'hidden'
       }}>
+        {/* Subtle teal shimmer accent */}
+        <div style={{ position: 'absolute', top: -30, right: -30, width: 120, height: 120, borderRadius: '50%', background: 'radial-gradient(circle, rgba(56,189,248,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
         {/* Active shield progress bar at top */}
         {isShieldActive && (
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'rgba(255,255,255,0.06)', borderRadius: '20px 20px 0 0', overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: `${shieldProgressPercent}%`, background: 'linear-gradient(90deg, #F43F5E 0%, #FB923C 100%)', transition: 'width 0.4s ease' }} />
+            <div style={{ height: '100%', width: `${shieldProgressPercent}%`, background: 'linear-gradient(90deg, #0EA5E9 0%, #38BDF8 60%, #7DD3FC 100%)', transition: 'width 0.4s ease' }} />
           </div>
         )}
 
-        {/* IDLE / INACTIVE */}
+        {/* Content row */}
         <div style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 16, textAlign: 'left' }}>
-          {/* Animated shield icon */}
-          <div style={{ position: 'relative', width: 80, height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            {/* Outer glow rings */}
+          {/* Animated shield icon — same size as radar: 96×96 wrapper, 80×80 inner */}
+          <div style={{ position: 'relative', width: 96, height: 96, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            {/* Pulse rings */}
             <div style={{
               position: 'absolute', inset: 0, borderRadius: '50%',
-              border: '1.5px solid rgba(220, 38, 80, 0.25)', pointerEvents: 'none',
+              border: '1.5px solid rgba(56, 189, 248, 0.2)', pointerEvents: 'none',
               animation: 'radarPulse 2.4s ease-in-out infinite'
             }} />
             <div style={{
-              position: 'absolute', inset: 6, borderRadius: '50%',
-              border: '1.5px solid rgba(220, 38, 80, 0.15)', pointerEvents: 'none',
-              animation: 'radarPulse 2.4s ease-in-out infinite 0.6s'
+              position: 'absolute', inset: 5, borderRadius: '50%',
+              border: '1.5px solid rgba(56, 189, 248, 0.12)', pointerEvents: 'none',
+              animation: 'radarPulse 2.4s ease-in-out infinite 0.7s'
             }} />
-            {/* Shield circle */}
+            {/* Shield circle — 80×80 matching radar */}
             <div style={{
-              width: 64, height: 64, borderRadius: '50%',
-              background: 'rgba(30, 5, 15, 0.9)',
-              border: '2.5px solid #F43F5E',
-              boxShadow: '0 0 18px rgba(244, 63, 94, 0.5)',
+              width: 80, height: 80, borderRadius: '50%',
+              background: '#040E28',
+              border: '2.5px solid #38BDF8',
+              boxShadow: '0 0 18px rgba(56, 189, 248, 0.45)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               position: 'relative', overflow: 'hidden'
             }}>
+              {/* Grid lines */}
+              <div style={{ position: 'absolute', width: '100%', height: '0.5px', background: 'rgba(56,189,248,0.2)' }} />
+              <div style={{ position: 'absolute', width: '0.5px', height: '100%', background: 'rgba(56,189,248,0.2)' }} />
+              {/* Dashed rings */}
+              <div style={{ position: 'absolute', width: 54, height: 54, borderRadius: '50%', border: '0.8px dashed rgba(56,189,248,0.22)' }} />
+              <div style={{ position: 'absolute', width: 28, height: 28, borderRadius: '50%', border: '0.8px dashed rgba(56,189,248,0.22)' }} />
               {/* Sweep glow */}
               <div className="radar-sweep" style={{
                 position: 'absolute', inset: 0,
-                background: 'conic-gradient(from 0deg at 50% 50%, rgba(244,63,94,0.3) 0deg, rgba(244,63,94,0) 100deg)',
+                background: 'conic-gradient(from 0deg at 50% 50%, rgba(56,189,248,0.3) 0deg, rgba(56,189,248,0) 120deg)',
                 borderRadius: '50%'
               }} />
-              <span style={{ fontSize: 26, position: 'relative', zIndex: 2, filter: 'drop-shadow(0 0 6px rgba(244,63,94,0.8))' }}>🛡️</span>
+              <span style={{ fontSize: 28, position: 'relative', zIndex: 2, filter: 'drop-shadow(0 0 8px rgba(56,189,248,0.9))' }}>🛡️</span>
             </div>
           </div>
 
           {/* Right side info & action */}
           <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 }}>
-              <h4 style={{ margin: 0, fontSize: 14, fontWeight: 800, color: '#FFFFFF', letterSpacing: -0.2 }}>
-                Raid Shield
-              </h4>
-              <div style={{
-                background: isShieldActive ? 'rgba(16,185,129,0.2)' : 'rgba(244,63,94,0.15)',
-                color: isShieldActive ? '#34D399' : '#FB7185',
-                padding: '2px 8px',
-                borderRadius: 10,
-                fontSize: 9.5,
-                fontWeight: 800,
-                border: `1px solid ${isShieldActive ? 'rgba(52,211,153,0.3)' : 'rgba(251,113,133,0.3)'}`
-              }}>
-                {isShieldActive ? `🟢 ${shieldTimeLeft}` : 'Inactive'}
-              </div>
+            <h4 style={{ margin: '0 0 3px', fontSize: 14, fontWeight: 800, color: '#FFFFFF', letterSpacing: -0.2 }}>
+              Raid Shield
+            </h4>
+            <div style={{
+              display: 'inline-flex', alignSelf: 'flex-start',
+              background: isShieldActive ? 'rgba(16,185,129,0.18)' : 'rgba(56,189,248,0.12)',
+              color: isShieldActive ? '#34D399' : '#7DD3FC',
+              padding: '2px 8px',
+              borderRadius: 8,
+              fontSize: 9.5,
+              fontWeight: 800,
+              border: `1px solid ${isShieldActive ? 'rgba(52,211,153,0.3)' : 'rgba(56,189,248,0.25)'}`,
+              marginBottom: 6
+            }}>
+              {isShieldActive ? `⏱ ${shieldTimeLeft}` : 'Inactive'}
             </div>
-            <p style={{ margin: '0 0 10px', fontSize: 11, color: 'rgba(255,255,255,0.5)', lineHeight: 1.3, fontWeight: 400 }}>
+            <p style={{ margin: '0 0 10px', fontSize: 11, color: 'rgba(255,255,255,0.48)', lineHeight: 1.3, fontWeight: 400 }}>
               Protect yourself from raids for 24 hours
             </p>
 
             {isShieldActive ? (
               <div style={{
-                background: 'rgba(255,255,255,0.08)',
-                color: 'rgba(255,255,255,0.5)',
+                background: 'rgba(255,255,255,0.07)',
+                color: 'rgba(255,255,255,0.45)',
                 border: '1px solid rgba(255,255,255,0.1)',
                 borderRadius: 16,
                 padding: '8px 14px',
@@ -652,20 +661,21 @@ export function RaidMode({ address }) {
                   className="raid-btn"
                   style={{
                     position: 'relative', flex: 1,
-                    background: 'rgba(255,255,255,0.1)',
-                    backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
-                    color: '#fff', border: '1.5px solid rgba(255,255,255,0.18)',
-                    borderRadius: 20, padding: '9px 8px',
+                    background: 'rgba(255,255,255,0.11)',
+                    backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
+                    color: '#fff',
+                    border: '1px solid rgba(255,255,255,0.22)',
+                    borderRadius: 16, padding: '9px 8px',
                     fontSize: 11.5, fontWeight: 800,
                     cursor: isPending ? 'not-allowed' : 'pointer',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
-                    boxShadow: '0 4px 16px rgba(0,0,0,0.2)'
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+                    boxShadow: '0 2px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.12)'
                   }}
-                  onMouseEnter={e => { if (!isPending) e.currentTarget.style.background = 'rgba(255,255,255,0.18)' }}
-                  onMouseLeave={e => { if (!isPending) e.currentTarget.style.background = 'rgba(255,255,255,0.1)' }}
+                  onMouseEnter={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.19)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.35)' }}}
+                  onMouseLeave={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.11)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.22)' }}}
                 >
-                  <span>0.20</span>
-                  <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, borderRadius: '50%' }} />
+                  <span style={{ fontWeight: 900 }}>0.20</span>
+                  <img src="/usdc-logo.png" alt="USDC" style={{ width: 13, height: 13, borderRadius: '50%' }} />
                 </button>
 
                 {/* Buy $HH — -25% badge */}
@@ -675,17 +685,18 @@ export function RaidMode({ address }) {
                   className="raid-btn"
                   style={{
                     position: 'relative', flex: 1,
-                    background: 'rgba(255,255,255,0.1)',
-                    backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
-                    color: '#fff', border: '1.5px solid rgba(255,255,255,0.18)',
-                    borderRadius: 20, padding: '9px 8px',
+                    background: 'rgba(255,255,255,0.11)',
+                    backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
+                    color: '#fff',
+                    border: '1px solid rgba(255,255,255,0.22)',
+                    borderRadius: 16, padding: '9px 8px',
                     fontSize: 11.5, fontWeight: 800,
                     cursor: isPending ? 'not-allowed' : 'pointer',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
-                    boxShadow: '0 4px 16px rgba(0,0,0,0.2)'
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+                    boxShadow: '0 2px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.12)'
                   }}
-                  onMouseEnter={e => { if (!isPending) e.currentTarget.style.background = 'rgba(255,255,255,0.18)' }}
-                  onMouseLeave={e => { if (!isPending) e.currentTarget.style.background = 'rgba(255,255,255,0.1)' }}
+                  onMouseEnter={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.19)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.35)' }}}
+                  onMouseLeave={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.11)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.22)' }}}
                 >
                   <div style={{
                     position: 'absolute', top: -8, right: -3,
@@ -696,8 +707,8 @@ export function RaidMode({ address }) {
                     border: '1px solid rgba(255,255,255,0.25)',
                     lineHeight: 1, letterSpacing: '0.2px', whiteSpace: 'nowrap'
                   }}>-25%</div>
-                  <span>{formatConcise(0.15 / hhPrice)}</span>
-                  <img src="/logo.jfif" alt="$HH" style={{ width: 12, height: 12, borderRadius: '50%', objectFit: 'cover' }} />
+                  <span style={{ fontWeight: 900 }}>{formatConcise(0.15 / hhPrice)}</span>
+                  <img src="/logo.jfif" alt="$HH" style={{ width: 13, height: 13, borderRadius: '50%', objectFit: 'cover' }} />
                 </button>
               </div>
             )}
@@ -707,14 +718,14 @@ export function RaidMode({ address }) {
 
       {/* ═══ INTERACTIVE GAMEPLAY BOARD ═══ */}
       <div style={{
-        background: 'linear-gradient(145deg, rgba(9, 15, 35, 0.92) 0%, rgba(15, 25, 55, 0.88) 100%)',
+        background: 'linear-gradient(145deg, rgba(60, 6, 12, 0.94) 0%, rgba(90, 8, 18, 0.90) 50%, rgba(40, 4, 12, 0.96) 100%)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
-        border: '1px solid rgba(0, 82, 255, 0.25)',
+        border: '1px solid rgba(248, 113, 113, 0.2)',
         borderRadius: 20,
         padding: '16px 20px',
         marginBottom: 20,
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.05)',
+        boxShadow: '0 8px 32px rgba(140, 10, 20, 0.4), inset 0 1px 0 rgba(248,113,113,0.06)',
         minHeight: 120,
         display: 'flex',
         flexDirection: 'column',
@@ -722,6 +733,8 @@ export function RaidMode({ address }) {
         position: 'relative',
         overflow: 'hidden'
       }}>
+        {/* Subtle red shimmer accent */}
+        <div style={{ position: 'absolute', top: -30, right: -30, width: 130, height: 130, borderRadius: '50%', background: 'radial-gradient(circle, rgba(248,113,113,0.07) 0%, transparent 70%)', pointerEvents: 'none' }} />
         {errorMessage && (
           <div style={{
             background: 'rgba(252, 64, 31, 0.12)',
@@ -745,83 +758,75 @@ export function RaidMode({ address }) {
           <div style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 16, textAlign: 'left' }}>
             {/* Holographic pulsing radar ring and dial */}
             <div style={{ position: 'relative', width: 96, height: 96, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              {/* Concentric pulsing glow rings */}
+              {/* Concentric pulsing glow rings — red theme */}
               <div className="radar-pulse" style={{
                 position: 'absolute',
                 inset: 0,
                 borderRadius: '50%',
-                border: '1.5px solid rgba(0, 82, 255, 0.18)',
+                border: '1.5px solid rgba(248, 113, 113, 0.2)',
                 pointerEvents: 'none'
               }} />
               <div className="radar-pulse-delayed" style={{
                 position: 'absolute',
                 inset: 5,
                 borderRadius: '50%',
-                border: '1.5px solid rgba(0, 82, 255, 0.12)',
+                border: '1.5px solid rgba(248, 113, 113, 0.12)',
                 pointerEvents: 'none'
               }} />
               
-              {/* Tech Radar Container */}
+              {/* Tech Radar Container — red theme */}
               <div style={{
                 width: 80,
                 height: 80,
                 borderRadius: '50%',
-                background: '#080A10',
-                border: '2.5px solid #0052FF',
-                boxShadow: '0 0 15px rgba(0, 82, 255, 0.35)',
+                background: '#150204',
+                border: '2.5px solid #F87171',
+                boxShadow: '0 0 15px rgba(248, 113, 113, 0.4)',
                 position: 'relative',
                 overflow: 'hidden',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-                {/* Radar Grid Lines */}
-                <div style={{ position: 'absolute', width: '100%', height: '0.5px', background: 'rgba(0, 82, 255, 0.2)' }} />
-                <div style={{ position: 'absolute', width: '0.5px', height: '100%', background: 'rgba(0, 82, 255, 0.2)' }} />
+                {/* Radar Grid Lines — red */}
+                <div style={{ position: 'absolute', width: '100%', height: '0.5px', background: 'rgba(248, 113, 113, 0.22)' }} />
+                <div style={{ position: 'absolute', width: '0.5px', height: '100%', background: 'rgba(248, 113, 113, 0.22)' }} />
                 
-                {/* Concentric Dashed Radar Rings */}
-                <div style={{ position: 'absolute', width: 54, height: 54, borderRadius: '50%', border: '0.8px dashed rgba(0, 82, 255, 0.25)' }} />
-                <div style={{ position: 'absolute', width: 28, height: 28, borderRadius: '50%', border: '0.8px dashed rgba(0, 82, 255, 0.25)' }} />
+                {/* Concentric Dashed Radar Rings — red */}
+                <div style={{ position: 'absolute', width: 54, height: 54, borderRadius: '50%', border: '0.8px dashed rgba(248, 113, 113, 0.25)' }} />
+                <div style={{ position: 'absolute', width: 28, height: 28, borderRadius: '50%', border: '0.8px dashed rgba(248, 113, 113, 0.25)' }} />
                 
-                {/* Radar Sweep Line */}
+                {/* Radar Sweep Line — red */}
                 <div className="radar-sweep" style={{
                   position: 'absolute',
                   inset: 0,
-                  background: 'conic-gradient(from 0deg at 50% 50%, rgba(0, 82, 255, 0.35) 0deg, rgba(0, 82, 255, 0) 120deg)',
+                  background: 'conic-gradient(from 0deg at 50% 50%, rgba(248, 113, 113, 0.38) 0deg, rgba(248, 113, 113, 0) 120deg)',
                   borderRadius: '50%',
                 }} />
                 
-                {/* Target Blips */}
+                {/* Target Blips — orange/amber */}
                 <div className="radar-blip-1" style={{
                   position: 'absolute',
-                  width: 5,
-                  height: 5,
-                  borderRadius: '50%',
-                  background: '#10B981',
-                  boxShadow: '0 0 6px #10B981',
-                  top: '25%',
-                  left: '60%',
+                  width: 5, height: 5, borderRadius: '50%',
+                  background: '#FB923C',
+                  boxShadow: '0 0 6px #FB923C',
+                  top: '25%', left: '60%',
                   animation: 'radarBlipBlink 2.2s infinite ease-in-out'
                 }} />
                 <div className="radar-blip-2" style={{
                   position: 'absolute',
-                  width: 4,
-                  height: 4,
-                  borderRadius: '50%',
-                  background: '#EF4444',
-                  boxShadow: '0 0 6px #EF4444',
-                  bottom: '30%',
-                  left: '25%',
+                  width: 4, height: 4, borderRadius: '50%',
+                  background: '#FBBF24',
+                  boxShadow: '0 0 6px #FBBF24',
+                  bottom: '30%', left: '25%',
                   animation: 'radarBlipBlink 1.8s infinite ease-in-out 0.6s'
                 }} />
 
-                {/* Center Crosshair Dot */}
+                {/* Center Crosshair Dot — red */}
                 <div style={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: '50%',
-                  background: '#0052FF',
-                  boxShadow: '0 0 8px #0052FF',
+                  width: 6, height: 6, borderRadius: '50%',
+                  background: '#F87171',
+                  boxShadow: '0 0 8px #F87171',
                   zIndex: 2
                 }} />
               </div>
@@ -829,10 +834,10 @@ export function RaidMode({ address }) {
 
             {/* Right side info & action */}
             <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <h4 style={{ margin: '0 0 4px', fontSize: 14, fontWeight: 800, color: '#FFFFFF', letterSpacing: -0.2 }}>
+              <h4 style={{ margin: '0 0 3px', fontSize: 14, fontWeight: 800, color: '#FFFFFF', letterSpacing: -0.2 }}>
                 Happy Raid
               </h4>
-              <p style={{ margin: '0 0 10px', fontSize: 11, color: 'rgba(255,255,255,0.55)', lineHeight: 1.3, fontWeight: 400 }}>
+              <p style={{ margin: '0 0 10px', fontSize: 11, color: 'rgba(255,255,255,0.48)', lineHeight: 1.3, fontWeight: 400 }}>
                 Find your target and steal some HP
               </p>
 
@@ -841,10 +846,10 @@ export function RaidMode({ address }) {
                   disabled
                   style={{
                     width: '100%',
-                    background: 'rgba(255,255,255,0.08)',
-                    color: 'rgba(255,255,255,0.4)',
+                    background: 'rgba(255,255,255,0.07)',
+                    color: 'rgba(255,255,255,0.38)',
                     border: '1px solid rgba(255,255,255,0.1)',
-                    borderRadius: 20,
+                    borderRadius: 16,
                     padding: '10px 18px',
                     fontSize: 12,
                     fontWeight: 800,
@@ -855,7 +860,7 @@ export function RaidMode({ address }) {
                     gap: 4
                   }}
                 >
-                  next raid: <strong style={{ color: 'rgba(255,255,255,0.7)' }}>{cooldownText}</strong>
+                  next raid: <strong style={{ color: 'rgba(255,255,255,0.65)' }}>{cooldownText}</strong>
                 </button>
               ) : (
                 <div style={{ display: 'flex', gap: 8, width: '100%' }}>
@@ -871,27 +876,27 @@ export function RaidMode({ address }) {
                     style={{
                       position: 'relative',
                       flex: 1,
-                      background: 'rgba(255,255,255,0.12)',
-                      backdropFilter: 'blur(8px)',
-                      WebkitBackdropFilter: 'blur(8px)',
+                      background: 'rgba(255,255,255,0.11)',
+                      backdropFilter: 'blur(12px)',
+                      WebkitBackdropFilter: 'blur(12px)',
                       color: '#fff',
-                      border: '1.5px solid rgba(255,255,255,0.2)',
-                      borderRadius: 20,
-                      padding: '10px 8px',
+                      border: '1px solid rgba(255,255,255,0.22)',
+                      borderRadius: 16,
+                      padding: '9px 8px',
                       fontSize: 11.5,
                       fontWeight: 800,
                       cursor: isPending ? 'not-allowed' : 'pointer',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      gap: 4,
-                      boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+                      gap: 5,
+                      boxShadow: '0 2px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.12)',
                     }}
-                    onMouseEnter={e => { if (!isPending) e.currentTarget.style.background = 'rgba(255,255,255,0.2)' }}
-                    onMouseLeave={e => { if (!isPending) e.currentTarget.style.background = 'rgba(255,255,255,0.12)' }}
+                    onMouseEnter={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.19)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.35)' }}}
+                    onMouseLeave={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.11)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.22)' }}}
                   >
                     <span style={{ fontWeight: 900 }}>0.30</span>
-                    <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, borderRadius: '50%' }} />
+                    <img src="/usdc-logo.png" alt="USDC" style={{ width: 13, height: 13, borderRadius: '50%' }} />
                   </button>
 
                   {/* Raid $HH Button — -33% badge */}
@@ -906,24 +911,24 @@ export function RaidMode({ address }) {
                     style={{
                       position: 'relative',
                       flex: 1,
-                      background: 'rgba(255,255,255,0.12)',
-                      backdropFilter: 'blur(8px)',
-                      WebkitBackdropFilter: 'blur(8px)',
+                      background: 'rgba(255,255,255,0.11)',
+                      backdropFilter: 'blur(12px)',
+                      WebkitBackdropFilter: 'blur(12px)',
                       color: '#fff',
-                      border: '1.5px solid rgba(255,255,255,0.2)',
-                      borderRadius: 20,
-                      padding: '10px 8px',
+                      border: '1px solid rgba(255,255,255,0.22)',
+                      borderRadius: 16,
+                      padding: '9px 8px',
                       fontSize: 11.5,
                       fontWeight: 800,
                       cursor: isPending ? 'not-allowed' : 'pointer',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      gap: 4,
-                      boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+                      gap: 5,
+                      boxShadow: '0 2px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.12)',
                     }}
-                    onMouseEnter={e => { if (!isPending) e.currentTarget.style.background = 'rgba(255,255,255,0.2)' }}
-                    onMouseLeave={e => { if (!isPending) e.currentTarget.style.background = 'rgba(255,255,255,0.12)' }}
+                    onMouseEnter={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.19)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.35)' }}}
+                    onMouseLeave={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.11)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.22)' }}}
                   >
                     <div style={{
                       position: 'absolute',
@@ -944,7 +949,7 @@ export function RaidMode({ address }) {
                       -33%
                     </div>
                     <span style={{ fontWeight: 900 }}>{formatConcise(0.20 / hhPrice)}</span>
-                    <img src="/logo.jfif" alt="$HH" style={{ width: 12, height: 12, borderRadius: '50%', objectFit: 'cover' }} />
+                    <img src="/logo.jfif" alt="$HH" style={{ width: 13, height: 13, borderRadius: '50%', objectFit: 'cover' }} />
                   </button>
                 </div>
               )}
