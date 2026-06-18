@@ -288,7 +288,6 @@ export function RaidMode({ address }) {
           chainId: base.id
         })
       } else {
-        // Trigger contract payment call (using transfer as fallback for testing)
         writeContract({
           address: HH_ADDRESS,
           abi: HH_ABI,
@@ -298,12 +297,12 @@ export function RaidMode({ address }) {
         })
       }
     } else {
-      // USDC payment
+      // USDC payment (0.20)
       writeContract({
         address: USDC_ADDRESS,
         abi: USDC_ABI,
         functionName: 'transfer',
-        args: [CHECKIN_TARGET, parseUnits('0.15', 6)],
+        args: [CHECKIN_TARGET, parseUnits('0.20', 6)],
         chainId: base.id
       })
     }
@@ -326,7 +325,6 @@ export function RaidMode({ address }) {
           chainId: base.id
         })
       } else {
-        // Trigger contract payment call
         writeContract({
           address: HH_ADDRESS,
           abi: HH_ABI,
@@ -336,12 +334,12 @@ export function RaidMode({ address }) {
         })
       }
     } else {
-      // USDC payment (Season 2: $0.20)
+      // USDC payment (Season 2: $0.30)
       writeContract({
         address: USDC_ADDRESS,
         abi: USDC_ABI,
         functionName: 'transfer',
-        args: [CHECKIN_TARGET, parseUnits('0.20', 6)],
+        args: [CHECKIN_TARGET, parseUnits('0.30', 6)],
         chainId: base.id
       })
     }
@@ -413,7 +411,7 @@ export function RaidMode({ address }) {
   }
 
   return (
-    <div style={{ padding: '0 16px 120px', color: '#0A0B0D', fontFamily: "'Outfit', 'Inter', sans-serif", animation: 'raidFadeIn 0.4s ease' }}>
+    <div style={{ padding: '0 12px 120px', color: '#0A0B0D', fontFamily: "'Outfit', 'Inter', sans-serif", animation: 'raidFadeIn 0.4s ease' }}>
       <style>{`
         @keyframes raidFadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
       `}</style>
@@ -554,12 +552,14 @@ export function RaidMode({ address }) {
 
       {/* ═══ RAID SHIELD CARD ═══ */}
       <div style={{
-        background: '#fff',
-        border: '1px solid #DEE1E7',
-        borderRadius: 18,
-        padding: '14px 18px',
+        background: 'linear-gradient(135deg, rgba(219, 234, 254, 0.7) 0%, rgba(239, 246, 255, 0.55) 100%)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        border: '1px solid rgba(147, 197, 253, 0.45)',
+        borderRadius: 20,
+        padding: '16px 18px',
         marginBottom: 16,
-        boxShadow: '0 4px 16px rgba(10,11,13,0.015)',
+        boxShadow: '0 8px 32px rgba(0, 82, 255, 0.08), inset 0 1px 0 rgba(255,255,255,0.6)',
         display: 'flex',
         flexDirection: 'column',
         gap: 10
@@ -567,30 +567,27 @@ export function RaidMode({ address }) {
         {/* Shield Status Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>🛡️ Raid Shield Status</div>
-            <div style={{ fontSize: 9.5, color: '#717886', marginTop: 1, fontWeight: 500 }}>
-              Protects your <span style={{ color: '#0052FF', fontWeight: 600 }}>HP</span> from raids for 24h
-            </div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Raid Shield Status</div>
           </div>
           <div style={{ 
-            background: isShieldActive ? '#ECFDF5' : '#FFF1F2', 
+            background: isShieldActive ? 'rgba(16,185,129,0.15)' : 'rgba(225,29,72,0.1)', 
             color: isShieldActive ? '#059669' : '#E11D48', 
             padding: '3px 10px', 
             borderRadius: 12, 
             fontSize: 10.5, 
             fontWeight: 800,
-            border: `1px solid ${isShieldActive ? '#A7F3D0' : '#FECDD3'}`
+            border: `1px solid ${isShieldActive ? 'rgba(16,185,129,0.3)' : 'rgba(225,29,72,0.2)'}`
           }}>
             {isShieldActive ? 'Active' : 'Inactive'}
           </div>
         </div>
 
         {/* Shield Expiry Progress Bar Segment */}
-        <div style={{ background: '#F1F5F9', height: 4, borderRadius: 2, overflow: 'hidden', position: 'relative' }}>
+        <div style={{ background: 'rgba(0,0,0,0.08)', height: 4, borderRadius: 2, overflow: 'hidden', position: 'relative' }}>
           <div style={{
             background: isShieldActive 
               ? 'linear-gradient(90deg, #0052FF 0%, #00C6FB 100%)' 
-              : '#E2E8F0',
+              : 'transparent',
             height: '100%',
             width: isShieldActive ? `${shieldProgressPercent}%` : '0%',
             transition: 'width 0.4s ease'
@@ -603,11 +600,11 @@ export function RaidMode({ address }) {
           alignItems: 'center', 
           justifyContent: 'space-between', 
           paddingTop: 8, 
-          borderTop: '1px solid #F1F5F9',
+          borderTop: '1px solid rgba(147, 197, 253, 0.3)',
           gap: 12
         }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            <span style={{ fontSize: 9, color: '#717886', fontWeight: 600 }}>
+            <span style={{ fontSize: 9, color: '#4B7FCC', fontWeight: 600 }}>
               {isShieldActive ? 'Remaining Protection' : 'Buy Shield'}
             </span>
             <span style={{ fontSize: 13, fontWeight: 900, color: '#0A0B0D' }}>
@@ -617,18 +614,18 @@ export function RaidMode({ address }) {
 
           {isShieldActive ? (
             <div style={{
-              background: '#EEF0F3',
+              background: 'rgba(0,0,0,0.06)',
               color: '#94A3B8',
-              border: '1px solid #DEE1E7',
+              border: '1px solid rgba(0,0,0,0.08)',
               borderRadius: 12,
               padding: '6px 14px',
               fontSize: 10,
               fontWeight: 800,
             }}>
-              Active
+              Shield Active
             </div>
           ) : (
-            <div style={{ display: 'flex', gap: 6, flex: 1, justifyContent: 'flex-end', maxWidth: 220 }}>
+            <div style={{ display: 'flex', gap: 6, flex: 1, justifyContent: 'flex-end', maxWidth: 240 }}>
               {/* Buy with USDC */}
               <button
                 onClick={() => {
@@ -639,27 +636,30 @@ export function RaidMode({ address }) {
                 disabled={isPending}
                 className="raid-btn"
                 style={{
-                  padding: '6px 10px',
-                  borderRadius: 10,
-                  border: '1px solid #DEE1E7',
-                  background: '#FFFFFF',
+                  position: 'relative',
+                  padding: '7px 12px',
+                  borderRadius: 12,
+                  border: '1.5px solid rgba(255,255,255,0.7)',
+                  background: 'rgba(255,255,255,0.55)',
+                  backdropFilter: 'blur(8px)',
+                  WebkitBackdropFilter: 'blur(8px)',
                   color: '#0A0B0D',
-                  fontSize: 10.5,
+                  fontSize: 11,
                   fontWeight: 800,
                   cursor: isPending ? 'not-allowed' : 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: 3,
-                  boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
+                  gap: 4,
+                  boxShadow: '0 2px 8px rgba(0,82,255,0.06)',
                   flex: 1
                 }}
               >
-                <span>0.15</span>
-                <img src="/usdc-logo.png" alt="USDC" style={{ width: 11, height: 11, borderRadius: '50%' }} />
+                <span>0.20</span>
+                <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, borderRadius: '50%' }} />
               </button>
 
-              {/* Buy with $HH */}
+              {/* Buy with $HH — -25% badge */}
               <button
                 onClick={() => {
                   setPayWithHh(true)
@@ -669,38 +669,61 @@ export function RaidMode({ address }) {
                 disabled={isPending}
                 className="raid-btn"
                 style={{
-                  padding: '6px 10px',
-                  borderRadius: 10,
-                  border: '1px solid #DEE1E7',
-                  background: '#FFFFFF',
+                  position: 'relative',
+                  padding: '7px 12px',
+                  borderRadius: 12,
+                  border: '1.5px solid rgba(255,255,255,0.7)',
+                  background: 'rgba(255,255,255,0.55)',
+                  backdropFilter: 'blur(8px)',
+                  WebkitBackdropFilter: 'blur(8px)',
                   color: '#0A0B0D',
-                  fontSize: 10.5,
+                  fontSize: 11,
                   fontWeight: 800,
                   cursor: isPending ? 'not-allowed' : 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: 3,
-                  boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
+                  gap: 4,
+                  boxShadow: '0 2px 8px rgba(0,82,255,0.06)',
                   flex: 1
                 }}
               >
+                <div style={{
+                  position: 'absolute',
+                  top: -8,
+                  right: -3,
+                  background: 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)',
+                  color: '#FFFFFF',
+                  fontSize: 7.5,
+                  fontWeight: 900,
+                  padding: '1px 4px',
+                  borderRadius: 5,
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
+                  border: '1px solid rgba(255,255,255,0.3)',
+                  lineHeight: 1,
+                  letterSpacing: '0.2px',
+                  whiteSpace: 'nowrap'
+                }}>
+                  -25%
+                </div>
                 <span>{formatConcise(0.15 / hhPrice)}</span>
-                <img src="/logo.jfif" alt="$HH" style={{ width: 11, height: 11, borderRadius: '50%', objectFit: 'cover' }} />
+                <img src="/logo.jfif" alt="$HH" style={{ width: 12, height: 12, borderRadius: '50%', objectFit: 'cover' }} />
               </button>
             </div>
           )}
         </div>
       </div>
 
-      {/* ═══ INTERACTIVE GAMEPLAY BOARD (Matches standard card style) ═══ */}
+      {/* ═══ INTERACTIVE GAMEPLAY BOARD ═══ */}
       <div style={{
-        background: '#fff',
-        border: '1px solid #DEE1E7',
-        borderRadius: 18,
+        background: 'linear-gradient(145deg, rgba(9, 15, 35, 0.92) 0%, rgba(15, 25, 55, 0.88) 100%)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(0, 82, 255, 0.25)',
+        borderRadius: 20,
         padding: '16px 20px',
         marginBottom: 20,
-        boxShadow: '0 4px 16px rgba(10,11,13,0.015)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.05)',
         minHeight: 120,
         display: 'flex',
         flexDirection: 'column',
@@ -710,11 +733,11 @@ export function RaidMode({ address }) {
       }}>
         {errorMessage && (
           <div style={{
-            background: 'rgba(252, 64, 31, 0.08)',
-            border: '1px solid rgba(252, 64, 31, 0.2)',
+            background: 'rgba(252, 64, 31, 0.12)',
+            border: '1px solid rgba(252, 64, 31, 0.3)',
             borderRadius: 12,
             padding: '8px 12px',
-            color: '#FC401F',
+            color: '#FF6B6B',
             fontSize: 11,
             fontWeight: 700,
             marginBottom: 12,
@@ -815,11 +838,11 @@ export function RaidMode({ address }) {
 
             {/* Right side info & action */}
             <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <h4 style={{ margin: '0 0 4px', fontSize: 14, fontWeight: 800, color: '#0A0B0D', letterSpacing: -0.2 }}>
+              <h4 style={{ margin: '0 0 4px', fontSize: 14, fontWeight: 800, color: '#FFFFFF', letterSpacing: -0.2 }}>
                 Happy Raid
               </h4>
-              <p style={{ margin: '0 0 10px', fontSize: 11, color: '#717886', lineHeight: 1.3, fontWeight: 400 }}>
-                Find your target and steal some <span style={{ color: '#0052FF', fontWeight: 600 }}>HP</span>
+              <p style={{ margin: '0 0 10px', fontSize: 11, color: 'rgba(255,255,255,0.55)', lineHeight: 1.3, fontWeight: 400 }}>
+                Find your target and steal some <span style={{ color: '#60A5FA', fontWeight: 600 }}>HP</span>
               </p>
 
               {isCooldownActive ? (
@@ -827,9 +850,9 @@ export function RaidMode({ address }) {
                   disabled
                   style={{
                     width: '100%',
-                    background: '#EEF0F3',
-                    color: '#94A3B8',
-                    border: '1px solid #DEE1E7',
+                    background: 'rgba(255,255,255,0.08)',
+                    color: 'rgba(255,255,255,0.4)',
+                    border: '1px solid rgba(255,255,255,0.1)',
                     borderRadius: 20,
                     padding: '10px 18px',
                     fontSize: 12,
@@ -838,9 +861,10 @@ export function RaidMode({ address }) {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
+                    gap: 4
                   }}
                 >
-                  next raid: <strong>{cooldownText}</strong>
+                  next raid: <strong style={{ color: 'rgba(255,255,255,0.7)' }}>{cooldownText}</strong>
                 </button>
               ) : (
                 <div style={{ display: 'flex', gap: 8, width: '100%' }}>
@@ -854,10 +878,13 @@ export function RaidMode({ address }) {
                     disabled={isPending}
                     className="raid-btn"
                     style={{
+                      position: 'relative',
                       flex: 1,
-                      background: '#0000FF',
+                      background: 'rgba(255,255,255,0.12)',
+                      backdropFilter: 'blur(8px)',
+                      WebkitBackdropFilter: 'blur(8px)',
                       color: '#fff',
-                      border: 'none',
+                      border: '1.5px solid rgba(255,255,255,0.2)',
                       borderRadius: 20,
                       padding: '10px 8px',
                       fontSize: 11.5,
@@ -867,15 +894,17 @@ export function RaidMode({ address }) {
                       alignItems: 'center',
                       justifyContent: 'center',
                       gap: 4,
-                      boxShadow: '0 4px 12px rgba(0,0,255,0.15)',
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
                     }}
+                    onMouseEnter={e => { if (!isPending) e.currentTarget.style.background = 'rgba(255,255,255,0.2)' }}
+                    onMouseLeave={e => { if (!isPending) e.currentTarget.style.background = 'rgba(255,255,255,0.12)' }}
                   >
                     <span>Raid</span>
-                    <span style={{ color: '#A5B4FC', fontWeight: 900 }}>0.20</span>
+                    <span style={{ color: '#93C5FD', fontWeight: 900 }}>0.30</span>
                     <img src="/usdc-logo.png" alt="USDC" style={{ width: 11, height: 11, borderRadius: '50%' }} />
                   </button>
 
-                  {/* Raid $HH Button */}
+                  {/* Raid $HH Button — -33% badge */}
                   <button
                     onClick={() => {
                       setPayWithHh(true)
@@ -885,10 +914,13 @@ export function RaidMode({ address }) {
                     disabled={isPending}
                     className="raid-btn"
                     style={{
+                      position: 'relative',
                       flex: 1,
-                      background: '#0000FF',
+                      background: 'rgba(255,255,255,0.12)',
+                      backdropFilter: 'blur(8px)',
+                      WebkitBackdropFilter: 'blur(8px)',
                       color: '#fff',
-                      border: 'none',
+                      border: '1.5px solid rgba(255,255,255,0.2)',
                       borderRadius: 20,
                       padding: '10px 8px',
                       fontSize: 11.5,
@@ -898,11 +930,31 @@ export function RaidMode({ address }) {
                       alignItems: 'center',
                       justifyContent: 'center',
                       gap: 4,
-                      boxShadow: '0 4px 12px rgba(0,0,255,0.15)',
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
                     }}
+                    onMouseEnter={e => { if (!isPending) e.currentTarget.style.background = 'rgba(255,255,255,0.2)' }}
+                    onMouseLeave={e => { if (!isPending) e.currentTarget.style.background = 'rgba(255,255,255,0.12)' }}
                   >
+                    <div style={{
+                      position: 'absolute',
+                      top: -8,
+                      right: -3,
+                      background: 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)',
+                      color: '#FFFFFF',
+                      fontSize: 7.5,
+                      fontWeight: 900,
+                      padding: '1px 4px',
+                      borderRadius: 5,
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.4)',
+                      border: '1px solid rgba(255,255,255,0.25)',
+                      lineHeight: 1,
+                      letterSpacing: '0.2px',
+                      whiteSpace: 'nowrap'
+                    }}>
+                      -33%
+                    </div>
                     <span>Raid</span>
-                    <span style={{ color: '#A5B4FC', fontWeight: 900 }}>{formatConcise(0.20 / hhPrice)}</span>
+                    <span style={{ color: '#93C5FD', fontWeight: 900 }}>{formatConcise(0.20 / hhPrice)}</span>
                     <img src="/logo.jfif" alt="$HH" style={{ width: 11, height: 11, borderRadius: '50%', objectFit: 'cover' }} />
                   </button>
                 </div>
@@ -1194,7 +1246,7 @@ export function RaidMode({ address }) {
           amount={
             payWithHh
               ? (txType === 'shield' ? formatConcise(0.15 / hhPrice) : formatConcise(0.20 / hhPrice))
-              : (txType === 'shield' ? '0.15' : '0.20')
+              : (txType === 'shield' ? '0.20' : '0.30')
           }
           currency={payWithHh ? '$HH' : 'USDC'}
           isPending={isPending}

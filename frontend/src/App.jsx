@@ -344,31 +344,32 @@ export default function App() {
           {tab === 'boxes' && <HappyBoxesSection address={address} setTab={setTab} />}
           {tab === 'tasks' && <TasksSection address={address} />}
           {tab === 'raid' && (
-            <div style={{ padding: '0 12px 100px' }}>
-              <button
-                onClick={() => setTab('earn')}
-                style={{
-                  background: '#FFFFFF',
-                  border: '1px solid rgba(226, 232, 240, 0.8)',
-                  borderRadius: 100,
-                  padding: '6px 14px',
-                  fontSize: 11,
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                  marginBottom: 12,
-                  outline: 'none',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 4,
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.01)',
-                  color: '#0A0B0D',
-                  transition: 'all 0.2s'
-                }}
-                onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-0.5px)'}
-                onMouseLeave={e => e.currentTarget.style.transform = 'none'}
-              >
-                ← Back to Earn
-              </button>
+            <div style={{ padding: '0 0 100px' }}>
+              <div style={{ padding: '0 12px', marginBottom: 12 }}>
+                <button
+                  onClick={() => setTab('earn')}
+                  style={{
+                    background: '#FFFFFF',
+                    border: '1px solid rgba(226, 232, 240, 0.8)',
+                    borderRadius: 100,
+                    padding: '6px 14px',
+                    fontSize: 11,
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    outline: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.01)',
+                    color: '#0A0B0D',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-0.5px)'}
+                  onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+                >
+                  ← Back to Earn
+                </button>
+              </div>
               <RaidMode address={address} />
             </div>
           )}
