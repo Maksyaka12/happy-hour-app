@@ -639,7 +639,7 @@ export function RaidMode({ address }) {
               </div>
             </div>
             <p style={{ margin: '0 0 10px', fontSize: 11, color: 'rgba(255,255,255,0.48)', lineHeight: 1.3, fontWeight: 400 }}>
-              Protect yourself from raids for 24 hours
+              Protect yourself from raids for 24h
             </p>
 
             {isShieldActive ? (
@@ -668,17 +668,22 @@ export function RaidMode({ address }) {
                     backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
                     color: '#fff',
                     border: '1px solid rgba(255,255,255,0.42)',
-                    borderRadius: 14, padding: '9px 8px',
+                    borderRadius: 14, padding: '7px 8px',
                     fontSize: 11.5, fontWeight: 800,
                     cursor: isPending ? 'not-allowed' : 'pointer',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2,
                     boxShadow: '0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)'
                   }}
                   onMouseEnter={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.30)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.60)' }}}
                   onMouseLeave={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.20)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.42)' }}}
                 >
-                  <span style={{ fontWeight: 900 }}>0.20</span>
-                  <img src="/usdc-logo.png" alt="USDC" style={{ width: 13, height: 13, borderRadius: '50%' }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <span style={{ fontWeight: 900 }}>0.20</span>
+                    <img src="/usdc-logo.png" alt="USDC" style={{ width: 13, height: 13, borderRadius: '50%' }} />
+                  </div>
+                  <div style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.48)', fontWeight: 600, marginTop: -2 }}>
+                    ≈$0.20
+                  </div>
                 </button>
 
                 {/* Buy $HH — -25% badge */}
@@ -692,10 +697,10 @@ export function RaidMode({ address }) {
                     backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
                     color: '#fff',
                     border: '1px solid rgba(255,255,255,0.42)',
-                    borderRadius: 14, padding: '9px 8px',
+                    borderRadius: 14, padding: '7px 8px',
                     fontSize: 11.5, fontWeight: 800,
                     cursor: isPending ? 'not-allowed' : 'pointer',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2,
                     boxShadow: '0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)'
                   }}
                   onMouseEnter={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.30)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.60)' }}}
@@ -708,10 +713,16 @@ export function RaidMode({ address }) {
                     padding: '1px 4px', borderRadius: 5,
                     boxShadow: '0 2px 6px rgba(0,0,0,0.4)',
                     border: '1px solid rgba(255,255,255,0.25)',
-                    lineHeight: 1, letterSpacing: '0.2px', whiteSpace: 'nowrap'
+                    lineHeight: 1, letterSpacing: '0.2px', whiteSpace: 'nowrap',
+                    zIndex: 10
                   }}>-25%</div>
-                  <span style={{ fontWeight: 900 }}>{formatConcise(0.15 / hhPrice)}</span>
-                  <img src="/logo.jfif" alt="$HH" style={{ width: 13, height: 13, borderRadius: '50%', objectFit: 'cover' }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <span style={{ fontWeight: 900 }}>{formatConcise(0.15 / hhPrice)}</span>
+                    <img src="/logo.jfif" alt="$HH" style={{ width: 13, height: 13, borderRadius: '50%', objectFit: 'cover' }} />
+                  </div>
+                  <div style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.48)', fontWeight: 600, marginTop: -2 }}>
+                    ≈$0.15
+                  </div>
                 </button>
               </div>
             )}
@@ -885,21 +896,27 @@ export function RaidMode({ address }) {
                       color: '#fff',
                       border: '1px solid rgba(255,255,255,0.42)',
                       borderRadius: 14,
-                      padding: '9px 8px',
+                      padding: '7px 8px',
                       fontSize: 11.5,
                       fontWeight: 800,
                       cursor: isPending ? 'not-allowed' : 'pointer',
                       display: 'flex',
+                      flexDirection: 'column',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      gap: 5,
+                      gap: 2,
                       boxShadow: '0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)',
                     }}
                     onMouseEnter={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.30)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.60)' }}}
                     onMouseLeave={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.20)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.42)' }}}
                   >
-                    <span style={{ fontWeight: 900 }}>0.30</span>
-                    <img src="/usdc-logo.png" alt="USDC" style={{ width: 13, height: 13, borderRadius: '50%' }} />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <span style={{ fontWeight: 900 }}>0.30</span>
+                      <img src="/usdc-logo.png" alt="USDC" style={{ width: 13, height: 13, borderRadius: '50%' }} />
+                    </div>
+                    <div style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.48)', fontWeight: 600, marginTop: -2 }}>
+                      ≈$0.30
+                    </div>
                   </button>
 
                   {/* Raid $HH Button — -33% badge */}
@@ -920,14 +937,15 @@ export function RaidMode({ address }) {
                       color: '#fff',
                       border: '1px solid rgba(255,255,255,0.42)',
                       borderRadius: 14,
-                      padding: '9px 8px',
+                      padding: '7px 8px',
                       fontSize: 11.5,
                       fontWeight: 800,
                       cursor: isPending ? 'not-allowed' : 'pointer',
                       display: 'flex',
+                      flexDirection: 'column',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      gap: 5,
+                      gap: 2,
                       boxShadow: '0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)',
                     }}
                     onMouseEnter={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.30)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.60)' }}}
@@ -947,12 +965,18 @@ export function RaidMode({ address }) {
                       border: '1px solid rgba(255,255,255,0.25)',
                       lineHeight: 1,
                       letterSpacing: '0.2px',
-                      whiteSpace: 'nowrap'
+                      whiteSpace: 'nowrap',
+                      zIndex: 10
                     }}>
                       -33%
                     </div>
-                    <span style={{ fontWeight: 900 }}>{formatConcise(0.20 / hhPrice)}</span>
-                    <img src="/logo.jfif" alt="$HH" style={{ width: 13, height: 13, borderRadius: '50%', objectFit: 'cover' }} />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <span style={{ fontWeight: 900 }}>{formatConcise(0.20 / hhPrice)}</span>
+                      <img src="/logo.jfif" alt="$HH" style={{ width: 13, height: 13, borderRadius: '50%', objectFit: 'cover' }} />
+                    </div>
+                    <div style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.48)', fontWeight: 600, marginTop: -2 }}>
+                      ≈$0.20
+                    </div>
                   </button>
                 </div>
               )}
