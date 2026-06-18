@@ -271,9 +271,8 @@ export function StakingSection({ setTab }) {
   return (
     <div style={{ animation: 'fadeIn 0.3s ease-out', width: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
       
-      {/* Card 1: Holding Rewards (Premium Light Grey Theme) */}
+      {/* Card 1: Holding Rewards (Premium Light Grey Theme with Brand Glow) */}
       <div style={{
-        background: 'linear-gradient(145deg, rgba(240, 241, 245, 0.96) 0%, rgba(220, 222, 230, 0.92) 50%, rgba(200, 202, 212, 0.98) 100%)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
         border: '1px solid rgba(255, 255, 255, 0.6)',
@@ -286,15 +285,24 @@ export function StakingSection({ setTab }) {
         position: 'relative',
         overflow: 'hidden'
       }}>
-        {/* Grayscaled background image overlay */}
+        {/* 1. Brand background image underneath */}
         <div style={{
           position: 'absolute',
           inset: 0,
           backgroundImage: 'url(/banner.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          filter: 'grayscale(100%) brightness(0.92) contrast(0.9) opacity(0.08)',
+          filter: 'hue-rotate(50deg) brightness(0.65) contrast(1.15)', // signature purple brand background
           zIndex: 0,
+          pointerEvents: 'none'
+        }} />
+
+        {/* 2. Light grey semi-transparent overlay */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(145deg, rgba(245, 246, 250, 0.88) 0%, rgba(235, 237, 245, 0.82) 50%, rgba(220, 222, 232, 0.88) 100%)',
+          zIndex: 1,
           pointerEvents: 'none'
         }} />
 
@@ -307,10 +315,11 @@ export function StakingSection({ setTab }) {
           height: 120,
           borderRadius: '50%',
           background: 'radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%)',
+          zIndex: 1,
           pointerEvents: 'none'
         }} />
 
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 13.5, fontWeight: 900, color: '#0F172A', letterSpacing: '0.2px' }}>
             Holding Rewards
           </span>
@@ -330,7 +339,7 @@ export function StakingSection({ setTab }) {
         {/* Two Plates Layout (Mockup-inspired side-by-side design) */}
         <div style={{
           position: 'relative',
-          zIndex: 1,
+          zIndex: 2,
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
           gap: 12,
@@ -338,7 +347,7 @@ export function StakingSection({ setTab }) {
         }}>
           {/* Left Plate: Holder Balance */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-            <span style={{ fontSize: 10, fontWeight: 800, color: '#475569', letterSpacing: '0.5px' }}>
+            <span style={{ fontSize: 10, fontWeight: 800, color: '#475569', letterSpacing: '0.5px', textAlign: 'center' }}>
               Holder Balance
             </span>
             <div style={{
@@ -395,7 +404,7 @@ export function StakingSection({ setTab }) {
 
           {/* Right Plate: Holder HP Earnings */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-            <span style={{ fontSize: 10, fontWeight: 800, color: '#475569', letterSpacing: '0.5px' }}>
+            <span style={{ fontSize: 10, fontWeight: 800, color: '#475569', letterSpacing: '0.5px', textAlign: 'center' }}>
               Holder HP Earnings
             </span>
             <div style={{
@@ -442,7 +451,7 @@ export function StakingSection({ setTab }) {
           backgroundImage: 'url(/banner.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          filter: 'grayscale(100%) brightness(0.28) contrast(1.1)',
+          filter: 'grayscale(100%) brightness(0.28) contrast(1.1) opacity(0.24)',
           zIndex: 0,
           pointerEvents: 'none'
         }} />
@@ -488,7 +497,7 @@ export function StakingSection({ setTab }) {
         }}>
           {/* Column 1: Staked */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-            <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.3px' }}>
+            <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.3px', textAlign: 'center' }}>
               Staked
             </span>
             <div style={{
@@ -516,7 +525,7 @@ export function StakingSection({ setTab }) {
 
           {/* Column 2: Period */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-            <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.3px' }}>
+            <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.3px', textAlign: 'center' }}>
               Period
             </span>
             <div style={{
@@ -531,14 +540,14 @@ export function StakingSection({ setTab }) {
               boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
             }}>
               <span style={{ fontSize: 11.5, fontWeight: 900, color: '#FFFFFF', textAlign: 'center' }}>
-                {stakedPeriod}d lock
+                {stakedBalance > 0 ? `${stakedPeriod}d lock` : '—'}
               </span>
             </div>
           </div>
 
           {/* Column 3: HP Earnings */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-            <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.3px' }}>
+            <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.3px', textAlign: 'center' }}>
               HP Earnings
             </span>
             <div style={{
