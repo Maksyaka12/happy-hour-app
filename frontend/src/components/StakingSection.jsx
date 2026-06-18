@@ -701,12 +701,11 @@ export function StakingSection({ setTab }) {
               onClick={handleStake}
               disabled={!!txStep}
               style={{
-                width: '100%', padding: '11px', border: 'none', borderRadius: 100,
-                background: allowance < parseFloat(stakingAmount || 0) 
-                  ? 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)'
-                  : 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)',
-                color: '#FFFFFF', fontSize: 13, fontWeight: 800, cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(139, 92, 246, 0.25)'
+                width: '100%', padding: '11px', border: 'none', borderRadius: 10,
+                background: '#FFFFFF',
+                color: '#090514', fontSize: 13, fontWeight: 800, cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                outline: 'none'
               }}
             >
               {allowance < parseFloat(stakingAmount || 0) ? 'Approve $HH' : 'Stake'}
