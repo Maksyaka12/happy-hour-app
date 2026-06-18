@@ -619,21 +619,23 @@ export function RaidMode({ address }) {
 
           {/* Right side info & action */}
           <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <h4 style={{ margin: '0 0 3px', fontSize: 14, fontWeight: 800, color: '#FFFFFF', letterSpacing: -0.2 }}>
-              Raid Shield
-            </h4>
-            <div style={{
-              display: 'inline-flex', alignSelf: 'flex-start',
-              background: isShieldActive ? 'rgba(16,185,129,0.18)' : 'rgba(56,189,248,0.12)',
-              color: isShieldActive ? '#34D399' : '#7DD3FC',
-              padding: '2px 8px',
-              borderRadius: 8,
-              fontSize: 9.5,
-              fontWeight: 800,
-              border: `1px solid ${isShieldActive ? 'rgba(52,211,153,0.3)' : 'rgba(56,189,248,0.25)'}`,
-              marginBottom: 6
-            }}>
-              {isShieldActive ? `⏱ ${shieldTimeLeft}` : 'Inactive'}
+            {/* Title + badge on same line */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+              <h4 style={{ margin: 0, fontSize: 14, fontWeight: 800, color: '#FFFFFF', letterSpacing: -0.2 }}>
+                Raid Shield
+              </h4>
+              <div style={{
+                background: isShieldActive ? 'rgba(16,185,129,0.2)' : 'rgba(225,29,72,0.2)',
+                color: isShieldActive ? '#34D399' : '#F87171',
+                padding: '2px 8px',
+                borderRadius: 8,
+                fontSize: 9.5,
+                fontWeight: 800,
+                border: `1px solid ${isShieldActive ? 'rgba(52,211,153,0.35)' : 'rgba(248,113,113,0.35)'}`,
+                whiteSpace: 'nowrap'
+              }}>
+                {isShieldActive ? `⏱ ${shieldTimeLeft}` : 'Inactive'}
+              </div>
             </div>
             <p style={{ margin: '0 0 10px', fontSize: 11, color: 'rgba(255,255,255,0.48)', lineHeight: 1.3, fontWeight: 400 }}>
               Protect yourself from raids for 24 hours
@@ -641,16 +643,16 @@ export function RaidMode({ address }) {
 
             {isShieldActive ? (
               <div style={{
-                background: 'rgba(255,255,255,0.07)',
-                color: 'rgba(255,255,255,0.45)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: 16,
+                background: 'rgba(52,211,153,0.1)',
+                color: '#34D399',
+                border: '1px solid rgba(52,211,153,0.25)',
+                borderRadius: 14,
                 padding: '8px 14px',
                 fontSize: 11,
                 fontWeight: 800,
                 textAlign: 'center'
               }}>
-                Shield Active
+                🛡️ Shield Active · {shieldTimeLeft} remaining
               </div>
             ) : (
               <div style={{ display: 'flex', gap: 8, width: '100%' }}>
@@ -661,18 +663,18 @@ export function RaidMode({ address }) {
                   className="raid-btn"
                   style={{
                     position: 'relative', flex: 1,
-                    background: 'rgba(255,255,255,0.11)',
-                    backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
+                    background: 'rgba(255,255,255,0.14)',
+                    backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
                     color: '#fff',
-                    border: '1px solid rgba(255,255,255,0.22)',
-                    borderRadius: 16, padding: '9px 8px',
+                    border: '1px solid rgba(255,255,255,0.32)',
+                    borderRadius: 14, padding: '9px 8px',
                     fontSize: 11.5, fontWeight: 800,
                     cursor: isPending ? 'not-allowed' : 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
-                    boxShadow: '0 2px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.12)'
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(0,0,0,0.15)'
                   }}
-                  onMouseEnter={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.19)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.35)' }}}
-                  onMouseLeave={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.11)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.22)' }}}
+                  onMouseEnter={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.22)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)' }}}
+                  onMouseLeave={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.14)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.32)' }}}
                 >
                   <span style={{ fontWeight: 900 }}>0.20</span>
                   <img src="/usdc-logo.png" alt="USDC" style={{ width: 13, height: 13, borderRadius: '50%' }} />
@@ -685,18 +687,18 @@ export function RaidMode({ address }) {
                   className="raid-btn"
                   style={{
                     position: 'relative', flex: 1,
-                    background: 'rgba(255,255,255,0.11)',
-                    backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
+                    background: 'rgba(255,255,255,0.14)',
+                    backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
                     color: '#fff',
-                    border: '1px solid rgba(255,255,255,0.22)',
-                    borderRadius: 16, padding: '9px 8px',
+                    border: '1px solid rgba(255,255,255,0.32)',
+                    borderRadius: 14, padding: '9px 8px',
                     fontSize: 11.5, fontWeight: 800,
                     cursor: isPending ? 'not-allowed' : 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
-                    boxShadow: '0 2px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.12)'
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(0,0,0,0.15)'
                   }}
-                  onMouseEnter={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.19)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.35)' }}}
-                  onMouseLeave={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.11)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.22)' }}}
+                  onMouseEnter={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.22)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)' }}}
+                  onMouseLeave={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.14)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.32)' }}}
                 >
                   <div style={{
                     position: 'absolute', top: -8, right: -3,
@@ -848,8 +850,8 @@ export function RaidMode({ address }) {
                     width: '100%',
                     background: 'rgba(255,255,255,0.07)',
                     color: 'rgba(255,255,255,0.38)',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    borderRadius: 16,
+                    border: '1px solid rgba(255,255,255,0.12)',
+                    borderRadius: 14,
                     padding: '10px 18px',
                     fontSize: 12,
                     fontWeight: 800,
@@ -876,12 +878,12 @@ export function RaidMode({ address }) {
                     style={{
                       position: 'relative',
                       flex: 1,
-                      background: 'rgba(255,255,255,0.11)',
-                      backdropFilter: 'blur(12px)',
-                      WebkitBackdropFilter: 'blur(12px)',
+                      background: 'rgba(255,255,255,0.14)',
+                      backdropFilter: 'blur(16px)',
+                      WebkitBackdropFilter: 'blur(16px)',
                       color: '#fff',
-                      border: '1px solid rgba(255,255,255,0.22)',
-                      borderRadius: 16,
+                      border: '1px solid rgba(255,255,255,0.32)',
+                      borderRadius: 14,
                       padding: '9px 8px',
                       fontSize: 11.5,
                       fontWeight: 800,
@@ -890,10 +892,10 @@ export function RaidMode({ address }) {
                       alignItems: 'center',
                       justifyContent: 'center',
                       gap: 5,
-                      boxShadow: '0 2px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.12)',
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(0,0,0,0.15)',
                     }}
-                    onMouseEnter={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.19)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.35)' }}}
-                    onMouseLeave={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.11)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.22)' }}}
+                    onMouseEnter={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.22)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)' }}}
+                    onMouseLeave={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.14)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.32)' }}}
                   >
                     <span style={{ fontWeight: 900 }}>0.30</span>
                     <img src="/usdc-logo.png" alt="USDC" style={{ width: 13, height: 13, borderRadius: '50%' }} />
@@ -911,12 +913,12 @@ export function RaidMode({ address }) {
                     style={{
                       position: 'relative',
                       flex: 1,
-                      background: 'rgba(255,255,255,0.11)',
-                      backdropFilter: 'blur(12px)',
-                      WebkitBackdropFilter: 'blur(12px)',
+                      background: 'rgba(255,255,255,0.14)',
+                      backdropFilter: 'blur(16px)',
+                      WebkitBackdropFilter: 'blur(16px)',
                       color: '#fff',
-                      border: '1px solid rgba(255,255,255,0.22)',
-                      borderRadius: 16,
+                      border: '1px solid rgba(255,255,255,0.32)',
+                      borderRadius: 14,
                       padding: '9px 8px',
                       fontSize: 11.5,
                       fontWeight: 800,
@@ -925,10 +927,10 @@ export function RaidMode({ address }) {
                       alignItems: 'center',
                       justifyContent: 'center',
                       gap: 5,
-                      boxShadow: '0 2px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.12)',
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(0,0,0,0.15)',
                     }}
-                    onMouseEnter={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.19)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.35)' }}}
-                    onMouseLeave={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.11)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.22)' }}}
+                    onMouseEnter={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.22)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)' }}}
+                    onMouseLeave={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.14)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.32)' }}}
                   >
                     <div style={{
                       position: 'absolute',
