@@ -33,21 +33,35 @@ export function StakingSection({ setTab }) {
   const [hhPrice, setHhPrice] = useState(0.00025) // Fallback price
   const [priceChange, setPriceChange] = useState(8.4) // 24h price change mock %
   const [stakingAmount, setStakingAmount] = useState('')
-  const [unstakeAmount, setUnstakeAmount] = useState('')
   const [stakeActionTab, setStakeActionTab] = useState('stake') // 'stake' or 'unstake'
-  const [lockPeriod, setLockPeriod] = useState('7') // '7' or '14'
-  const [stakedPeriod, setStakedPeriod] = useState(() => {
+  const [lockPeriod, setLockPeriod] = useState('7') // '7' or '10'
+  
+  // Simulated Positions List
+  const [simulatedStakes, setSimulatedStakes] = useState(() => {
     try {
-      return localStorage.getItem('hh_simulated_staked_period') || '7'
+      const saved = localStorage.getItem('hh_simulated_stakes_list')
+      if (saved) return JSON.parse(saved)
+      
+      const oldStaked = parseFloat(localStorage.getItem('hh_simulated_staked') || '0')
+      if (oldStaked > 0) {
+        return [{
+          id: 'initial',
+          amount: oldStaked,
+          lockPeriod: '7',
+          unlockTime: Date.now() + 7 * 24 * 3600 * 1000,
+          startTime: Date.now()
+        }]
+      }
+      return []
     } catch {
-      return '7'
+      return []
     }
   })
 
   useEffect(() => {
-    localStorage.setItem('hh_simulated_staked_period', stakedPeriod)
-  }, [stakedPeriod])
-  
+    localStorage.setItem('hh_simulated_stakes_list', JSON.stringify(simulatedStakes))
+  }, [simulatedStakes])
+
   // Custom Transaction UX Simulation States
   const [txStep, setTxStep] = useState(null) // 'approve_signing', 'approve_pending', 'action_signing', 'action_pending', 'success'
   const [txError, setTxError] = useState('')
@@ -58,28 +72,14 @@ export function StakingSection({ setTab }) {
       return 0
     }
   })
-  const [simulatedStakedBalance, setSimulatedStakedBalance] = useState(() => {
-    try {
-      return parseFloat(localStorage.getItem('hh_simulated_staked') || '0')
-    } catch {
-      return 0
-    }
-  })
+  
+  const simulatedStakedBalance = simulatedStakes.reduce((acc, s) => acc + s.amount, 0)
+  
   const [simulatedWalletBalance, setSimulatedWalletBalance] = useState(() => {
     try {
       return parseFloat(localStorage.getItem('hh_simulated_wallet') || '250000') // default mock balance for testing
     } catch {
       return 250000
-    }
-  })
-
-  // Simulated Pending Withdrawals (3-day cooldown)
-  const [pendingWithdrawals, setPendingWithdrawals] = useState(() => {
-    try {
-      const saved = localStorage.getItem('hh_pending_withdrawals')
-      return saved ? JSON.parse(saved) : []
-    } catch {
-      return []
     }
   })
 
@@ -95,10 +95,6 @@ export function StakingSection({ setTab }) {
   useEffect(() => {
     localStorage.setItem('hh_simulated_wallet', simulatedWalletBalance.toString())
   }, [simulatedWalletBalance])
-
-  useEffect(() => {
-    localStorage.setItem('hh_pending_withdrawals', JSON.stringify(pendingWithdrawals))
-  }, [pendingWithdrawals])
 
   // Fetch real $HH price from DexScreener
   useEffect(() => {
@@ -162,9 +158,9 @@ export function StakingSection({ setTab }) {
   const walletUsdValue = walletBalance * hhPrice
   const stakedUsdValue = stakedBalance * hhPrice
 
-  // Daily HP Earnings Calculations (10% of USD value for hold, 20% for stake, locked periods scale yields)
+  // Daily HP Earnings Calculations (10% of USD value for hold, 20% for stake - ceiling at 100$ hold / 100$ stake)
   const holdHpEarned = Math.min(10.0, walletUsdValue * 0.10)
-  const stakeHpEarned = Math.min(20.0, stakedUsdValue * (stakedPeriod === '14' ? 0.30 : 0.15))
+  const stakeHpEarned = Math.min(20.0, stakedUsdValue * 0.20)
   const totalDailyPassiveHp = holdHpEarned + stakeHpEarned
 
   // Progress to caps ($100 USD holds/stakes)
@@ -211,52 +207,72 @@ export function StakingSection({ setTab }) {
     setTimeout(() => {
       setTxStep('action_pending')
       setTimeout(() => {
-        setSimulatedStakedBalance(prev => prev + amount)
+        const unlockTime = Date.now() + parseInt(lockPeriod) * 24 * 60 * 60 * 1000
+        const newStake = {
+          id: Math.random().toString(36).substring(2, 9),
+          amount: amount,
+          lockPeriod: lockPeriod,
+          unlockTime: unlockTime,
+          startTime: Date.now()
+        }
+        
+        setSimulatedStakes(prev => [...prev, newStake])
         setSimulatedWalletBalance(prev => prev - amount)
-        setStakedPeriod(lockPeriod)
         setStakingAmount('')
         setTxStep('success')
       }, 2000)
     }, 1500)
   }
 
-  // Handle Unstake Action
-  const handleUnstake = async () => {
-    const amount = parseFloat(unstakeAmount)
-    if (isNaN(amount) || amount <= 0) {
-      setTxError('Please enter a valid amount to unstake.')
-      return
-    }
-    if (amount > stakedBalance) {
-      setTxError('You cannot unstake more than your staked balance.')
-      return
-    }
-
+  // Handle Unstake position
+  const handleUnstakePosition = (id, amount) => {
     setTxError('')
     setTxStep('action_signing')
 
     setTimeout(() => {
       setTxStep('action_pending')
       setTimeout(() => {
-        const unlockTime = Date.now() + 3 * 24 * 60 * 60 * 1000 // 3 days from now
-        const newWithdrawal = {
-          id: Math.random().toString(36).substring(2, 9),
-          amount: amount,
-          unlockTime: unlockTime
-        }
-        
-        setSimulatedStakedBalance(prev => prev - amount)
-        setPendingWithdrawals(prev => [...prev, newWithdrawal])
-        setUnstakeAmount('')
+        setSimulatedStakes(prev => prev.filter(s => s.id !== id))
+        setSimulatedWalletBalance(prev => prev + amount)
         setTxStep('success')
       }, 2000)
     }, 1500)
   }
 
-  // Complete a pending withdrawal (after 3 days cooldown)
-  const claimWithdrawal = (id, amount) => {
-    setSimulatedWalletBalance(prev => prev + amount)
-    setPendingWithdrawals(prev => prev.filter(w => w.id !== id))
+  // Remaining lock duration countdown text helper
+  const getRemainingTimeText = (unlockTime) => {
+    const msLeft = unlockTime - Date.now()
+    if (msLeft <= 0) return 'Unlocked'
+    
+    const sec = Math.floor(msLeft / 1000)
+    const min = Math.floor(sec / 60)
+    const hr = Math.floor(min / 60)
+    const days = Math.floor(hr / 24)
+    
+    if (days > 0) {
+      return `${days}d ${hr % 24}h left`
+    }
+    if (hr > 0) {
+      return `${hr}h ${min % 60}m left`
+    }
+    if (min > 0) {
+      return `${min}m ${sec % 60}s left`
+    }
+    return `${sec}s left`
+  }
+
+  // Calculate earliest remaining lock time for Period display
+  const activeLockedStakes = simulatedStakes.filter(s => Date.now() < s.unlockTime)
+  let periodText = '—'
+  if (stakedBalance > 0) {
+    if (activeLockedStakes.length > 0) {
+      const earliest = Math.min(...activeLockedStakes.map(s => s.unlockTime))
+      const secondsLeft = Math.max(0, Math.floor((earliest - Date.now()) / 1000))
+      const daysLeft = Math.ceil(secondsLeft / (24 * 3600))
+      periodText = `${daysLeft}d left`
+    } else {
+      periodText = 'Unlocked'
+    }
   }
 
   // Mock Leaderboard for Top Stakers
@@ -531,7 +547,7 @@ export function StakingSection({ setTab }) {
               boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
             }}>
               <span style={{ fontSize: 11.5, fontWeight: 900, color: '#FFFFFF', textAlign: 'center' }}>
-                {stakedBalance > 0 ? `${stakedPeriod}d lock` : '—'}
+                {periodText}
               </span>
             </div>
           </div>
@@ -627,14 +643,14 @@ export function StakingSection({ setTab }) {
                 7 Days (20% APR)
               </button>
               <button
-                onClick={() => setLockPeriod('14')}
+                onClick={() => setLockPeriod('10')}
                 style={{
                   flex: 1,
                   padding: '8px 10px',
                   borderRadius: 10,
-                  border: lockPeriod === '14' ? '1.5px solid #A78BFA' : '1px solid rgba(255,255,255,0.15)',
-                  background: lockPeriod === '14' ? 'rgba(167, 139, 250, 0.15)' : 'rgba(255,255,255,0.03)',
-                  color: lockPeriod === '14' ? '#FFFFFF' : 'rgba(255,255,255,0.6)',
+                  border: lockPeriod === '10' ? '1.5px solid #A78BFA' : '1px solid rgba(255,255,255,0.15)',
+                  background: lockPeriod === '10' ? 'rgba(167, 139, 250, 0.15)' : 'rgba(255,255,255,0.03)',
+                  color: lockPeriod === '10' ? '#FFFFFF' : 'rgba(255,255,255,0.6)',
                   fontSize: 11,
                   fontWeight: 800,
                   cursor: 'pointer',
@@ -642,7 +658,7 @@ export function StakingSection({ setTab }) {
                   transition: 'all 0.15s'
                 }}
               >
-                14 Days (45% APR)
+                10 Days (45% APR)
               </button>
             </div>
 
@@ -694,7 +710,7 @@ export function StakingSection({ setTab }) {
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10.5, color: 'rgba(255,255,255,0.6)', marginBottom: 12 }}>
               <span>Available: {formatConcise(walletBalance)} $HH</span>
-              <span>Est: +{formatNumber(Math.min(20.0, (stakedUsdValue + (parseFloat(stakingAmount || 0) * hhPrice)) * (lockPeriod === '14' ? 0.30 : 0.15)), 1)} HP/day</span>
+              <span>Est: +{formatNumber(Math.min(20.0, (stakedUsdValue + (parseFloat(stakingAmount || 0) * hhPrice)) * 0.20), 1)} HP/day</span>
             </div>
 
             <button
@@ -713,69 +729,122 @@ export function StakingSection({ setTab }) {
           </div>
         ) : (
           <div style={{ position: 'relative', zIndex: 2 }}>
-            <div style={{ position: 'relative', marginBottom: 10 }}>
-              <input
-                type="number"
-                value={unstakeAmount}
-                onChange={(e) => setUnstakeAmount(e.target.value)}
-                placeholder="Amount to unstake"
-                style={{
-                  width: '100%', padding: '10px 115px 10px 12px', borderRadius: 10,
-                  border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.25)',
-                  color: '#FFFFFF', fontSize: 13, fontWeight: 700, outline: 'none',
-                  boxSizing: 'border-box'
-                }}
-              />
+            {/* Unstake positions list */}
+            {simulatedStakes.length === 0 ? (
               <div style={{
-                position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
-                display: 'flex', gap: 4, alignItems: 'center'
+                textAlign: 'center',
+                padding: '24px 16px',
+                color: 'rgba(255, 255, 255, 0.45)',
+                fontSize: 12.5,
+                fontWeight: 700,
+                background: 'rgba(255,255,255,0.02)',
+                borderRadius: 14,
+                border: '1px dashed rgba(255,255,255,0.1)'
               }}>
-                <button
-                  onClick={() => setUnstakeAmount((stakedBalance * 0.25).toFixed(0))}
-                  style={{
-                    background: 'rgba(255,255,255,0.08)', border: 'none', color: 'rgba(255,255,255,0.7)', fontSize: 9, fontWeight: 900,
-                    padding: '3px 5px', borderRadius: 5, cursor: 'pointer', outline: 'none'
-                  }}
-                >
-                  25%
-                </button>
-                <button
-                  onClick={() => setUnstakeAmount((stakedBalance * 0.5).toFixed(0))}
-                  style={{
-                    background: 'rgba(255,255,255,0.08)', border: 'none', color: 'rgba(255,255,255,0.7)', fontSize: 9, fontWeight: 900,
-                    padding: '3px 5px', borderRadius: 5, cursor: 'pointer', outline: 'none'
-                  }}
-                >
-                  50%
-                </button>
-                <button
-                  onClick={() => setUnstakeAmount(stakedBalance.toString())}
-                  style={{
-                    background: 'rgba(255,255,255,0.15)', border: 'none', color: '#A78BFA', fontSize: 9, fontWeight: 900,
-                    padding: '3px 6px', borderRadius: 5, cursor: 'pointer', outline: 'none'
-                  }}
-                >
-                  MAX
-                </button>
+                No active stakes. Lock your $HH in the "Stake" tab to earn passive HP.
               </div>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10.5, color: 'rgba(255,255,255,0.6)', marginBottom: 12 }}>
-              <span>Staked: {formatConcise(stakedBalance)} $HH</span>
-              <span style={{ color: '#EF4444', fontWeight: 700 }}>3d Cooldown</span>
-            </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {/* Summary Row */}
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  background: 'rgba(255,255,255,0.04)',
+                  padding: '10px 14px',
+                  borderRadius: 12,
+                  fontSize: 11.5,
+                  fontWeight: 800,
+                  color: 'rgba(255,255,255,0.7)',
+                  border: '1px solid rgba(255,255,255,0.08)'
+                }}>
+                  <span>Locked: <strong style={{ color: '#FFFFFF' }}>{formatConcise(simulatedStakes.filter(s => Date.now() < s.unlockTime).reduce((acc, s) => acc + s.amount, 0))} $HH</strong></span>
+                  <span>Unlocked: <strong style={{ color: '#10B981' }}>{formatConcise(simulatedStakes.filter(s => Date.now() >= s.unlockTime).reduce((acc, s) => acc + s.amount, 0))} $HH</strong></span>
+                </div>
 
-            <button
-              onClick={handleUnstake}
-              disabled={!!txStep}
-              style={{
-                width: '100%', padding: '11px', border: 'none', borderRadius: 100,
-                background: 'rgba(255,255,255,0.15)',
-                color: '#FFFFFF', fontSize: 13, fontWeight: 800, cursor: 'pointer',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-              }}
-            >
-              Unstake
-            </button>
+                {/* Scrollable list */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 180, overflowY: 'auto', paddingRight: 2 }}>
+                  {simulatedStakes.map((s) => {
+                    const isLocked = Date.now() < s.unlockTime
+                    
+                    return (
+                      <div key={s.id} style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        background: 'rgba(255,255,255,0.03)',
+                        padding: '10px 12px',
+                        borderRadius: 12,
+                        border: '1px solid rgba(255,255,255,0.06)'
+                      }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                          <span style={{ fontSize: 12.5, fontWeight: 900, color: '#FFFFFF' }}>
+                            {formatNumber(s.amount, 0)} $HH
+                          </span>
+                          <span style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.45)', fontWeight: 600 }}>
+                            ≈${formatNumber(s.amount * hhPrice, 2)}
+                          </span>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                          <span style={{
+                            background: 'rgba(255,255,255,0.06)',
+                            color: '#A0AEC0',
+                            padding: '2px 6px',
+                            borderRadius: 6,
+                            fontSize: 9,
+                            fontWeight: 800,
+                            border: '1px solid rgba(255,255,255,0.08)'
+                          }}>
+                            {s.lockPeriod}d Lock
+                          </span>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          {isLocked ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+                              <span style={{ fontSize: 10.5, color: '#A0AEC0', fontWeight: 800 }}>
+                                {getRemainingTimeText(s.unlockTime)}
+                              </span>
+                              <button
+                                onClick={() => {
+                                  // Instantly unlock for testing
+                                  setSimulatedStakes(prev => prev.map(p => p.id === s.id ? { ...p, unlockTime: Date.now() } : p))
+                                }}
+                                style={{
+                                  background: 'none', border: 'none', color: '#A78BFA', fontSize: 8, fontWeight: 800,
+                                  cursor: 'pointer', padding: 0, textDecoration: 'underline', outline: 'none'
+                                }}
+                              >
+                                [dev: unlock]
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => handleUnstakePosition(s.id, s.amount)}
+                              disabled={!!txStep}
+                              style={{
+                                background: '#FFFFFF',
+                                color: '#090514',
+                                border: 'none',
+                                borderRadius: 8,
+                                padding: '6px 12px',
+                                fontSize: 11,
+                                fontWeight: 800,
+                                cursor: 'pointer',
+                                boxShadow: '0 2px 6px rgba(255,255,255,0.1)',
+                                outline: 'none'
+                              }}
+                            >
+                              Unstake
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -786,55 +855,7 @@ export function StakingSection({ setTab }) {
         )}
       </div>
 
-      {/* Pending Withdrawals list (3-day cooldown tracker) */}
-      {pendingWithdrawals.length > 0 && (
-        <div style={{
-          background: 'linear-gradient(145deg, rgba(20, 20, 25, 0.95) 0%, rgba(38, 39, 48, 0.90) 50%, rgba(12, 12, 16, 0.98) 100%)',
-          border: '1px solid rgba(255, 255, 255, 0.15)',
-          borderRadius: 20,
-          padding: 16,
-          boxShadow: '0 8px 32px rgba(10, 10, 15, 0.4)'
-        }}>
-          <h3 style={{ fontSize: 13, fontWeight: 900, color: '#FFFFFF', marginBottom: 10, margin: 0, letterSpacing: '0.2px' }}>Pending Withdrawals</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
-            {pendingWithdrawals.map((w) => {
-              const isReady = Date.now() >= w.unlockTime
-              const secondsLeft = Math.max(0, Math.floor((w.unlockTime - Date.now()) / 1000))
-              const days = Math.floor(secondsLeft / (24 * 3600))
-              const hours = Math.floor((secondsLeft % (24 * 3600)) / 3600)
-              const minutes = Math.floor((secondsLeft % 3600) / 60)
-              
-              return (
-                <div key={w.id} style={{
-                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  background: 'rgba(255,255,255,0.04)', padding: 10, borderRadius: 12, border: '1px solid rgba(255,255,255,0.08)'
-                }}>
-                  <div>
-                    <div style={{ fontSize: 12.5, fontWeight: 850, color: '#FFFFFF' }}>
-                      {formatConcise(w.amount)} $HH
-                    </div>
-                    <div style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>
-                      {isReady ? 'Ready to claim!' : `Unlocks in: ${days}d ${hours}h ${minutes}m`}
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => claimWithdrawal(w.id, w.amount)}
-                    disabled={!isReady}
-                    style={{
-                      background: isReady ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' : 'rgba(255,255,255,0.1)',
-                      color: isReady ? '#FFFFFF' : 'rgba(255,255,255,0.4)', border: 'none', borderRadius: 8, padding: '5px 10px',
-                      fontSize: 10.5, fontWeight: 900, cursor: isReady ? 'pointer' : 'not-allowed',
-                      boxShadow: isReady ? '0 2px 6px rgba(16,185,129,0.15)' : 'none'
-                    }}
-                  >
-                    Claim
-                  </button>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      )}
+      {/* Pending Withdrawals list has been integrated inside the Unstake positions list above */}
 
       {/* Custom Simulated Transaction Modal Overlay */}
       {txStep && (
