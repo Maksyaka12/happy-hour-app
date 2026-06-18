@@ -196,7 +196,7 @@ export function EarnSection({ setTab, address: propAddress }) {
         padding: '36px 20px',
         marginBottom: 4,
         position: 'relative',
-        minHeight: 140,
+        minHeight: 120,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -217,213 +217,246 @@ export function EarnSection({ setTab, address: propAddress }) {
             textShadow: '0 2px 10px rgba(0,0,0,0.5)',
             letterSpacing: '-0.5px'
           }}>
-            EARNING REWARDS ZONE
+            REWARDS ZONE
           </div>
         </div>
       </div>
 
-      {/* Daily Actions Buttons */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        {/* Check-in Button */}
-        <div>
+      {/* Daily Actions Stack — 2-Column Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+        {/* Daily Check-in Card */}
+        <div style={{
+          background: '#FFFFFF',
+          border: '1px solid #DEE1E7',
+          borderRadius: 20,
+          padding: 16,
+          boxShadow: '0 4px 16px rgba(10,11,13,0.01)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          minHeight: 146,
+          boxSizing: 'border-box'
+        }}>
+          <div>
+            <div style={{ fontSize: 14.5, fontWeight: 800, color: '#0F172A' }}>Daily Check-in</div>
+            <div style={{ display: 'flex', gap: 4, marginTop: 8, marginBottom: 12 }}>
+              <span style={{ fontSize: 9.5, fontWeight: 900, background: '#F1F5F9', color: '#475569', padding: '2px 6px', borderRadius: 6 }}>Free</span>
+              <span style={{ fontSize: 9.5, fontWeight: 900, background: '#E0F2FE', color: '#0369A1', padding: '2px 6px', borderRadius: 6 }}>+1 HP</span>
+            </div>
+          </div>
           <button
             onClick={() => setTxModal('checkin')}
             disabled={checkedToday}
             style={{
               width: '100%',
-              padding: '14px 20px',
-              borderRadius: 14,
+              padding: '10px 12px',
+              borderRadius: 12,
               border: checkedToday ? '1px solid #E5E9F0' : 'none',
               background: checkedToday ? '#EEF0F3' : '#0052FF',
               color: checkedToday ? '#94A3B8' : '#FFFFFF',
-              fontSize: 13,
+              fontSize: 12.5,
               fontWeight: 800,
               cursor: checkedToday ? 'not-allowed' : 'pointer',
-              boxShadow: checkedToday ? 'none' : '0 2px 8px rgba(0,82,255,0.08)',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              gap: 10,
-              transition: 'all 0.2s',
               outline: 'none',
-              height: 48,
-              boxSizing: 'border-box'
+              transition: 'all 0.2s',
+              textAlign: 'center'
             }}
-            onMouseEnter={e => { if (!checkedToday) e.currentTarget.style.transform = 'translateY(-0.5px)' }}
-            onMouseLeave={e => { if (!checkedToday) e.currentTarget.style.transform = 'none' }}
           >
-            <span>Daily Check-in</span>
-            <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-              <span style={{
-                background: checkedToday ? 'rgba(148,163,184,0.1)' : 'rgba(255,255,255,0.15)',
-                color: checkedToday ? '#94A3B8' : '#FFFFFF',
-                fontSize: 10,
-                fontWeight: 900,
-                padding: '2.5px 8px',
-                borderRadius: 6
-              }}>
-                Free
-              </span>
-              <span style={{
-                background: checkedToday ? 'rgba(148,163,184,0.1)' : 'rgba(255,255,255,0.15)',
-                color: checkedToday ? '#94A3B8' : '#FFFFFF',
-                fontSize: 10,
-                fontWeight: 900,
-                padding: '2.5px 8px',
-                borderRadius: 6
-              }}>
-                +1 HP
-              </span>
-            </div>
+            {checkedToday ? 'Checked' : 'Claim'}
           </button>
-          {checkinError && (
-            <div style={{ marginTop: 4, color: '#FC401F', fontSize: 10.5, fontWeight: 700, textAlign: 'center' }}>
-              ⚠️ {checkinError}
-            </div>
-          )}
         </div>
 
-        {/* Boost Button */}
-        <div>
+        {/* Daily HP Boost Card */}
+        <div style={{
+          background: '#FFFFFF',
+          border: '1px solid #DEE1E7',
+          borderRadius: 20,
+          padding: 16,
+          boxShadow: '0 4px 16px rgba(10,11,13,0.01)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          minHeight: 146,
+          boxSizing: 'border-box'
+        }}>
+          <div>
+            <div style={{ fontSize: 14.5, fontWeight: 800, color: '#0F172A' }}>Daily Boost</div>
+            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 8, marginBottom: 12 }}>
+              <span style={{ fontSize: 9.5, fontWeight: 900, background: '#D1FAE5', color: '#065F46', padding: '2px 6px', borderRadius: 6 }}>+2 HP</span>
+              <span style={{ fontSize: 9.5, fontWeight: 900, background: '#F3E8FF', color: '#6B21A8', padding: '2px 6px', borderRadius: 6 }}>$0.10</span>
+              <span style={{ fontSize: 9.5, fontWeight: 900, background: '#FEF3C7', color: '#92400E', padding: '2px 6px', borderRadius: 6 }}>{formatConcise(0.10 / hhPrice)} $HH</span>
+            </div>
+          </div>
           <button
             onClick={() => setTxModal('boost')}
             disabled={boostedToday}
             style={{
               width: '100%',
-              padding: '14px 20px',
-              borderRadius: 14,
+              padding: '10px 12px',
+              borderRadius: 12,
               border: boostedToday ? '1px solid #E5E9F0' : 'none',
               background: boostedToday ? '#EEF0F3' : '#0F172A',
               color: boostedToday ? '#94A3B8' : '#FFFFFF',
-              fontSize: 13,
+              fontSize: 12.5,
               fontWeight: 800,
               cursor: boostedToday ? 'not-allowed' : 'pointer',
-              boxShadow: boostedToday ? 'none' : '0 2px 8px rgba(0,0,0,0.08)',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              gap: 10,
-              transition: 'all 0.2s',
               outline: 'none',
-              height: 48,
-              boxSizing: 'border-box'
+              transition: 'all 0.2s',
+              textAlign: 'center'
             }}
-            onMouseEnter={e => { if (!boostedToday) e.currentTarget.style.transform = 'translateY(-0.5px)' }}
-            onMouseLeave={e => { if (!boostedToday) e.currentTarget.style.transform = 'none' }}
           >
-            <span>Daily Boost</span>
-            <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-              <span style={{
-                background: boostedToday ? 'rgba(148,163,184,0.1)' : 'rgba(255,255,255,0.15)',
-                color: boostedToday ? '#94A3B8' : '#FFFFFF',
-                fontSize: 10,
-                fontWeight: 900,
-                padding: '2.5px 8px',
-                borderRadius: 6
-              }}>
-                +2 HP
-              </span>
-              <span style={{
-                background: boostedToday ? 'rgba(148,163,184,0.1)' : 'rgba(255,255,255,0.15)',
-                color: boostedToday ? '#94A3B8' : '#FFFFFF',
-                fontSize: 10,
-                fontWeight: 900,
-                padding: '2.5px 8px',
-                borderRadius: 6
-              }}>
-                $0.10 USDC
-              </span>
-              <span style={{
-                background: boostedToday ? 'rgba(148,163,184,0.1)' : 'rgba(255,255,255,0.15)',
-                color: boostedToday ? '#94A3B8' : '#FFFFFF',
-                fontSize: 10,
-                fontWeight: 900,
-                padding: '2.5px 8px',
-                borderRadius: 6
-              }}>
-                {formatConcise(0.10 / hhPrice)} $HH
-              </span>
-            </div>
+            {boostedToday ? 'Boosted' : 'Boost'}
           </button>
-          {boostError && (
-            <div style={{ marginTop: 4, color: '#FC401F', fontSize: 10.5, fontWeight: 700, textAlign: 'center' }}>
-              ⚠️ {boostError}
-            </div>
-          )}
         </div>
       </div>
+      {checkinError && (
+        <div style={{ color: '#FC401F', fontSize: 10.5, fontWeight: 700, textAlign: 'center', marginTop: -4 }}>
+          ⚠️ Check-in: {checkinError}
+        </div>
+      )}
+      {boostError && (
+        <div style={{ color: '#FC401F', fontSize: 10.5, fontWeight: 700, textAlign: 'center', marginTop: -4 }}>
+          ⚠️ Boost: {boostError}
+        </div>
+      )}
 
-      {/* Feature Blocks Grid */}
+      {/* Feature Blocks Grid — Themed Custom Section Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 4 }}>
-        {/* Block 1: Happy Raids */}
+        {/* Block 1: Happy Raids (Dark Red/Orange theme) */}
         <div
           onClick={() => setTab('raid')}
           style={{
-            background: 'linear-gradient(135deg, #E2F1FF 0%, #FDF2F8 100%)',
-            border: '1px solid rgba(255,255,255,0.6)',
+            background: '#140505',
             borderRadius: 20,
             padding: '16px',
             cursor: 'pointer',
             transition: 'all 0.2s',
-            boxShadow: '0 4px 16px rgba(0,0,0,0.01)',
-            height: 106,
+            boxShadow: '0 8px 32px rgba(101,16,16,0.2)',
+            height: 126,
             boxSizing: 'border-box',
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
+            position: 'relative',
+            overflow: 'hidden',
+            border: '1px solid rgba(239,68,68,0.25)'
           }}
           onMouseEnter={e => {
             e.currentTarget.style.transform = 'translateY(-1.5px)'
-            e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 82, 255, 0.04)'
+            e.currentTarget.style.boxShadow = '0 12px 36px rgba(101,16,16,0.3)'
           }}
           onMouseLeave={e => {
             e.currentTarget.style.transform = 'none'
-            e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.01)'
+            e.currentTarget.style.boxShadow = '0 8px 32px rgba(101,16,16,0.2)'
           }}
         >
-          <div>
-            <div style={{ fontSize: 14.5, fontWeight: 800, color: '#0F172A' }}>Happy Raids</div>
-            <div style={{ fontSize: 10.5, color: '#717886', marginTop: 2, fontWeight: 700 }}>steal HP</div>
+          {/* Graded background image */}
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundImage: 'url(/banner.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            filter: 'hue-rotate(330deg) brightness(0.45) contrast(1.2)',
+            zIndex: 0,
+            pointerEvents: 'none'
+          }} />
+          
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <div style={{ fontSize: 14.5, fontWeight: 800, color: '#FFFFFF' }}>Happy Raids</div>
+            <div style={{ fontSize: 11, color: '#FF8A8A', marginTop: 2, fontWeight: 700 }}>steal HP</div>
           </div>
-          <div style={{ fontSize: 13, fontWeight: 900, color: '#0052FF', display: 'flex', alignItems: 'center', gap: 4 }}>
-            <span>Play</span>
-            <span>→</span>
+          
+          {/* Centered semi-transparent Play Badge */}
+          <div style={{
+            position: 'relative',
+            zIndex: 1,
+            width: '100%',
+            height: 32,
+            background: 'rgba(255, 255, 255, 0.12)',
+            border: '1px solid rgba(255, 255, 255, 0.25)',
+            borderRadius: 10,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#FFFFFF',
+            fontSize: 12.5,
+            fontWeight: 800,
+            transition: 'background 0.2s'
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
+          >
+            Play →
           </div>
         </div>
 
-        {/* Block 2: Happy Boxes */}
+        {/* Block 2: Happy Boxes (Dark Purple theme) */}
         <div
           onClick={() => setTab('boxes')}
           style={{
-            background: 'linear-gradient(135deg, #FEF3C7 0%, #FDF2F8 100%)',
-            border: '1px solid rgba(255,255,255,0.6)',
+            background: '#090514',
             borderRadius: 20,
             padding: '16px',
             cursor: 'pointer',
             transition: 'all 0.2s',
-            boxShadow: '0 4px 16px rgba(0,0,0,0.01)',
-            height: 106,
+            boxShadow: '0 8px 32px rgba(46,16,101,0.2)',
+            height: 126,
             boxSizing: 'border-box',
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
+            position: 'relative',
+            overflow: 'hidden',
+            border: '1px solid rgba(139,92,246,0.25)'
           }}
           onMouseEnter={e => {
             e.currentTarget.style.transform = 'translateY(-1.5px)'
-            e.currentTarget.style.boxShadow = '0 8px 20px rgba(217, 119, 6, 0.04)'
+            e.currentTarget.style.boxShadow = '0 12px 36px rgba(46,16,101,0.3)'
           }}
           onMouseLeave={e => {
             e.currentTarget.style.transform = 'none'
-            e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.01)'
+            e.currentTarget.style.boxShadow = '0 8px 32px rgba(46,16,101,0.2)'
           }}
         >
-          <div>
-            <div style={{ fontSize: 14.5, fontWeight: 800, color: '#0F172A' }}>Happy Boxes</div>
-            <div style={{ fontSize: 10.5, color: '#717886', marginTop: 2, fontWeight: 700 }}>earn more HP</div>
+          {/* Graded background image */}
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundImage: 'url(/banner.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            filter: 'hue-rotate(50deg) brightness(0.6) contrast(1.15)',
+            zIndex: 0,
+            pointerEvents: 'none'
+          }} />
+
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <div style={{ fontSize: 14.5, fontWeight: 800, color: '#FFFFFF' }}>Happy Boxes</div>
+            <div style={{ fontSize: 11, color: '#D8B4FE', marginTop: 2, fontWeight: 700 }}>earn more HP</div>
           </div>
-          <div style={{ fontSize: 13, fontWeight: 900, color: '#D97706', display: 'flex', alignItems: 'center', gap: 4 }}>
-            <span>Open</span>
-            <span>→</span>
+
+          {/* Centered semi-transparent Open Badge */}
+          <div style={{
+            position: 'relative',
+            zIndex: 1,
+            width: '100%',
+            height: 32,
+            background: 'rgba(255, 255, 255, 0.12)',
+            border: '1px solid rgba(255, 255, 255, 0.25)',
+            borderRadius: 10,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#FFFFFF',
+            fontSize: 12.5,
+            fontWeight: 800,
+            transition: 'background 0.2s'
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
+          >
+            Open →
           </div>
         </div>
       </div>
