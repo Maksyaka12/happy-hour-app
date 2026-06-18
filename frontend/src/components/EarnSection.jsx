@@ -3,7 +3,7 @@ import { useAccount, useReadContract, useChainId, useSwitchChain } from 'wagmi'
 import { parseUnits } from 'viem'
 import { base } from 'wagmi/chains'
 import { db } from '../config/supabase'
-import { CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, CHECKIN_AMOUNT, BOOST_AMOUNT } from '../config/constants'
+import { CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, CHECKIN_AMOUNT, BOOST_AMOUNT, HH_ADDRESS } from '../config/constants'
 import { useBuilderWrite } from '../hooks/useBuilderWrite'
 import { TxModal } from './TxModal'
 import { RaidMode } from './RaidMode'
@@ -11,6 +11,13 @@ import { StakingSection } from './StakingSection'
 
 // Helper for date
 const todayUTC = () => new Date().toISOString().split('T')[0]
+
+const formatConcise = (num) => {
+  const n = parseFloat(num || 0)
+  if (n >= 1e6) return (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'm'
+  if (n >= 1e3) return (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'k'
+  return Math.round(n).toString()
+}
 
 export function EarnSection({ setTab, address: propAddress }) {
   const { address: accountAddress } = useAccount()
@@ -26,10 +33,30 @@ export function EarnSection({ setTab, address: propAddress }) {
   
   const [checkinError, setCheckinError] = useState('')
   const [boostError, setBoostError] = useState('')
+  const [hhPrice, setHhPrice] = useState(0.00025)
   
   const today = todayUTC()
   const processedTxRef = useRef(null)
   const processedBoostTxRef = useRef(null)
+
+  // Fetch HH price from DexScreener
+  useEffect(() => {
+    const getPrice = async () => {
+      try {
+        const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${HH_ADDRESS}`)
+        const data = await res.json()
+        const pair = data.pairs?.[0]
+        if (pair) {
+          setHhPrice(parseFloat(pair.priceUsd) || 0.00025)
+        }
+      } catch (err) {
+        console.error('DexScreener API error in EarnSection:', err)
+      }
+    }
+    getPrice()
+    const interval = setInterval(getPrice, 30000)
+    return () => clearInterval(interval)
+  }, [])
 
   const { data: txHash, writeContract, isPending, isConfirming, isSuccess, error: writeError, reset } = useBuilderWrite()
   const { data: boostTxHash, writeContract: writeBoost, isPending: isPendingBoost, isConfirming: isConfirmingBoost, isSuccess: isSuccessBoost, error: boostWriteError, reset: resetBoost } = useBuilderWrite()
@@ -159,7 +186,43 @@ export function EarnSection({ setTab, address: propAddress }) {
   return (
     <div style={{ maxWidth: 640, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 12, padding: '12px 12px 120px', animation: 'fadeIn 0.3s ease-out' }}>
       
-      {/* Daily Actions Capsule Buttons */}
+      {/* Section Banner */}
+      <div style={{
+        backgroundImage: 'url(/banner.jpg)',
+        backgroundColor: '#0000FF',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        borderRadius: 24,
+        padding: '36px 20px',
+        marginBottom: 4,
+        position: 'relative',
+        minHeight: 140,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+        overflow: 'hidden',
+        border: '1px solid rgba(255,255,255,0.1)',
+        boxSizing: 'border-box'
+      }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.25)', zIndex: 0 }} />
+        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
+          <div style={{
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontSize: 38,
+            fontWeight: 900,
+            color: '#FFFFFF',
+            lineHeight: 1.1,
+            textShadow: '0 2px 10px rgba(0,0,0,0.5)',
+            letterSpacing: '-0.5px'
+          }}>
+            EARNING REWARDS ZONE
+          </div>
+        </div>
+      </div>
+
+      {/* Daily Actions Buttons */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {/* Check-in Button */}
         <div>
@@ -169,7 +232,7 @@ export function EarnSection({ setTab, address: propAddress }) {
             style={{
               width: '100%',
               padding: '14px 20px',
-              borderRadius: 100,
+              borderRadius: 14,
               border: checkedToday ? '1px solid #E5E9F0' : 'none',
               background: checkedToday ? '#EEF0F3' : '#0052FF',
               color: checkedToday ? '#94A3B8' : '#FFFFFF',
@@ -178,8 +241,9 @@ export function EarnSection({ setTab, address: propAddress }) {
               cursor: checkedToday ? 'not-allowed' : 'pointer',
               boxShadow: checkedToday ? 'none' : '0 2px 8px rgba(0,82,255,0.08)',
               display: 'flex',
-              justifyContent: 'space-between',
+              justifyContent: 'center',
               alignItems: 'center',
+              gap: 10,
               transition: 'all 0.2s',
               outline: 'none',
               height: 48,
@@ -188,14 +252,7 @@ export function EarnSection({ setTab, address: propAddress }) {
             onMouseEnter={e => { if (!checkedToday) e.currentTarget.style.transform = 'translateY(-0.5px)' }}
             onMouseLeave={e => { if (!checkedToday) e.currentTarget.style.transform = 'none' }}
           >
-            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span>Daily Check-in</span>
-              {streakCount > 0 && (
-                <span style={{ fontSize: 10.5, opacity: 0.8, fontWeight: 700 }}>
-                  ({streakCount}d streak)
-                </span>
-              )}
-            </span>
+            <span>Daily Check-in</span>
             <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
               <span style={{
                 background: checkedToday ? 'rgba(148,163,184,0.1)' : 'rgba(255,255,255,0.15)',
@@ -203,9 +260,9 @@ export function EarnSection({ setTab, address: propAddress }) {
                 fontSize: 10,
                 fontWeight: 900,
                 padding: '2.5px 8px',
-                borderRadius: 100
+                borderRadius: 6
               }}>
-                +1 HP
+                Free
               </span>
               <span style={{
                 background: checkedToday ? 'rgba(148,163,184,0.1)' : 'rgba(255,255,255,0.15)',
@@ -213,14 +270,14 @@ export function EarnSection({ setTab, address: propAddress }) {
                 fontSize: 10,
                 fontWeight: 900,
                 padding: '2.5px 8px',
-                borderRadius: 100
+                borderRadius: 6
               }}>
-                Free
+                +1 HP
               </span>
             </div>
           </button>
           {checkinError && (
-            <div style={{ marginTop: 4, color: '#FC401F', fontSize: 10.5, fontWeight: 700, paddingLeft: 16 }}>
+            <div style={{ marginTop: 4, color: '#FC401F', fontSize: 10.5, fontWeight: 700, textAlign: 'center' }}>
               ⚠️ {checkinError}
             </div>
           )}
@@ -234,7 +291,7 @@ export function EarnSection({ setTab, address: propAddress }) {
             style={{
               width: '100%',
               padding: '14px 20px',
-              borderRadius: 100,
+              borderRadius: 14,
               border: boostedToday ? '1px solid #E5E9F0' : 'none',
               background: boostedToday ? '#EEF0F3' : '#0F172A',
               color: boostedToday ? '#94A3B8' : '#FFFFFF',
@@ -243,8 +300,9 @@ export function EarnSection({ setTab, address: propAddress }) {
               cursor: boostedToday ? 'not-allowed' : 'pointer',
               boxShadow: boostedToday ? 'none' : '0 2px 8px rgba(0,0,0,0.08)',
               display: 'flex',
-              justifyContent: 'space-between',
+              justifyContent: 'center',
               alignItems: 'center',
+              gap: 10,
               transition: 'all 0.2s',
               outline: 'none',
               height: 48,
@@ -261,7 +319,7 @@ export function EarnSection({ setTab, address: propAddress }) {
                 fontSize: 10,
                 fontWeight: 900,
                 padding: '2.5px 8px',
-                borderRadius: 100
+                borderRadius: 6
               }}>
                 +2 HP
               </span>
@@ -271,21 +329,31 @@ export function EarnSection({ setTab, address: propAddress }) {
                 fontSize: 10,
                 fontWeight: 900,
                 padding: '2.5px 8px',
-                borderRadius: 100
+                borderRadius: 6
               }}>
-                $0.10
+                $0.10 USDC
+              </span>
+              <span style={{
+                background: boostedToday ? 'rgba(148,163,184,0.1)' : 'rgba(255,255,255,0.15)',
+                color: boostedToday ? '#94A3B8' : '#FFFFFF',
+                fontSize: 10,
+                fontWeight: 900,
+                padding: '2.5px 8px',
+                borderRadius: 6
+              }}>
+                {formatConcise(0.10 / hhPrice)} $HH
               </span>
             </div>
           </button>
           {boostError && (
-            <div style={{ marginTop: 4, color: '#FC401F', fontSize: 10.5, fontWeight: 700, paddingLeft: 16 }}>
+            <div style={{ marginTop: 4, color: '#FC401F', fontSize: 10.5, fontWeight: 700, textAlign: 'center' }}>
               ⚠️ {boostError}
             </div>
           )}
         </div>
       </div>
 
-      {/* Feature Blocks Grid — Elegant & Colorful */}
+      {/* Feature Blocks Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 4 }}>
         {/* Block 1: Happy Raids */}
         <div
@@ -298,7 +366,7 @@ export function EarnSection({ setTab, address: propAddress }) {
             cursor: 'pointer',
             transition: 'all 0.2s',
             boxShadow: '0 4px 16px rgba(0,0,0,0.01)',
-            height: 100,
+            height: 106,
             boxSizing: 'border-box',
             display: 'flex',
             flexDirection: 'column',
@@ -313,10 +381,13 @@ export function EarnSection({ setTab, address: propAddress }) {
             e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.01)'
           }}
         >
-          <div style={{ fontSize: 14.5, fontWeight: 800, color: '#0F172A' }}>Happy Raids</div>
-          <div style={{ fontSize: 11.5, fontWeight: 800, color: '#0052FF', display: 'flex', alignItems: 'center', gap: 4 }}>
+          <div>
+            <div style={{ fontSize: 14.5, fontWeight: 800, color: '#0F172A' }}>Happy Raids</div>
+            <div style={{ fontSize: 10.5, color: '#717886', marginTop: 2, fontWeight: 700 }}>steal HP</div>
+          </div>
+          <div style={{ fontSize: 13, fontWeight: 900, color: '#0052FF', display: 'flex', alignItems: 'center', gap: 4 }}>
             <span>Play</span>
-            <span>&gt;</span>
+            <span>→</span>
           </div>
         </div>
 
@@ -331,7 +402,7 @@ export function EarnSection({ setTab, address: propAddress }) {
             cursor: 'pointer',
             transition: 'all 0.2s',
             boxShadow: '0 4px 16px rgba(0,0,0,0.01)',
-            height: 100,
+            height: 106,
             boxSizing: 'border-box',
             display: 'flex',
             flexDirection: 'column',
@@ -346,10 +417,13 @@ export function EarnSection({ setTab, address: propAddress }) {
             e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.01)'
           }}
         >
-          <div style={{ fontSize: 14.5, fontWeight: 800, color: '#0F172A' }}>Happy Boxes</div>
-          <div style={{ fontSize: 11.5, fontWeight: 800, color: '#D97706', display: 'flex', alignItems: 'center', gap: 4 }}>
+          <div>
+            <div style={{ fontSize: 14.5, fontWeight: 800, color: '#0F172A' }}>Happy Boxes</div>
+            <div style={{ fontSize: 10.5, color: '#717886', marginTop: 2, fontWeight: 700 }}>earn more HP</div>
+          </div>
+          <div style={{ fontSize: 13, fontWeight: 900, color: '#D97706', display: 'flex', alignItems: 'center', gap: 4 }}>
             <span>Open</span>
-            <span>&gt;</span>
+            <span>→</span>
           </div>
         </div>
       </div>
