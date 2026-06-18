@@ -35,6 +35,18 @@ export function StakingSection() {
   const [stakingAmount, setStakingAmount] = useState('')
   const [unstakeAmount, setUnstakeAmount] = useState('')
   const [stakeActionTab, setStakeActionTab] = useState('stake') // 'stake' or 'unstake'
+  const [lockPeriod, setLockPeriod] = useState('7') // '7' or '14'
+  const [stakedPeriod, setStakedPeriod] = useState(() => {
+    try {
+      return localStorage.getItem('hh_simulated_staked_period') || '7'
+    } catch {
+      return '7'
+    }
+  })
+
+  useEffect(() => {
+    localStorage.setItem('hh_simulated_staked_period', stakedPeriod)
+  }, [stakedPeriod])
   
   // Custom Transaction UX Simulation States
   const [txStep, setTxStep] = useState(null) // 'approve_signing', 'approve_pending', 'action_signing', 'action_pending', 'success'
@@ -150,9 +162,9 @@ export function StakingSection() {
   const walletUsdValue = walletBalance * hhPrice
   const stakedUsdValue = stakedBalance * hhPrice
 
-  // Daily HP Earnings Calculations (10% of USD value for hold, 20% for stake, capped at $100 equivalent)
+  // Daily HP Earnings Calculations (10% of USD value for hold, 20% for stake, locked periods scale yields)
   const holdHpEarned = Math.min(10.0, walletUsdValue * 0.10)
-  const stakeHpEarned = Math.min(20.0, stakedUsdValue * 0.20)
+  const stakeHpEarned = Math.min(20.0, stakedUsdValue * (stakedPeriod === '14' ? 0.30 : 0.15))
   const totalDailyPassiveHp = holdHpEarned + stakeHpEarned
 
   // Progress to caps ($100 USD holds/stakes)
@@ -201,6 +213,7 @@ export function StakingSection() {
       setTimeout(() => {
         setSimulatedStakedBalance(prev => prev + amount)
         setSimulatedWalletBalance(prev => prev - amount)
+        setStakedPeriod(lockPeriod)
         setStakingAmount('')
         setTxStep('success')
       }, 2000)
@@ -256,345 +269,271 @@ export function StakingSection() {
   ].sort((a, b) => b.staked - a.staked).map((s, idx) => ({ ...s, rank: idx + 1 }))
 
   return (
-    <div style={{ animation: 'fadeIn 0.3s ease-out', width: '100%', display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div style={{ animation: 'fadeIn 0.3s ease-out', width: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
       
-      {/* Compact Header Info Block */}
+      {/* Card 1: Holding Rewards */}
       <div style={{
-        background: 'linear-gradient(135deg, #0052FF 0%, #0036B2 100%)',
+        background: '#FFFFFF',
+        border: '1px solid #DEE1E7',
         borderRadius: 20,
-        padding: '12px 16px',
-        color: '#FFFFFF',
-        boxShadow: '0 4px 16px rgba(0, 82, 255, 0.15)',
-        position: 'relative',
-        overflow: 'hidden'
+        padding: 16,
+        boxShadow: '0 4px 16px rgba(10,11,13,0.01)'
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <div style={{ fontSize: 9.5, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5, color: 'rgba(255,255,255,0.75)', marginBottom: 2 }}>
-              Active Price $HH
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ fontSize: 18, fontWeight: 900, fontFamily: 'monospace' }}>
-                ${formatNumber(hhPrice, 8)}
-              </span>
-              <span style={{
-                background: 'rgba(16, 185, 129, 0.2)',
-                color: '#10B981',
-                fontSize: 9,
-                fontWeight: 800,
-                padding: '2px 6px',
-                borderRadius: 20
-              }}>
-                ▲ +{priceChange}%
-              </span>
+            <div style={{ fontSize: 14, fontWeight: 800, color: '#0F172A' }}>Holding Rewards</div>
+            <div style={{ fontSize: 20, fontWeight: 900, color: '#0F172A', marginTop: 6, fontFamily: 'monospace' }}>
+              {formatConcise(walletBalance)} <span style={{ fontSize: 11, color: '#717886', fontWeight: 700 }}>$HH</span>
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: 9.5, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5, color: 'rgba(255,255,255,0.75)', marginBottom: 2 }}>
-              Daily HP Yield
-            </div>
-            <div style={{ fontSize: 18, fontWeight: 900, color: '#FCD34D' }}>
-              +{formatNumber(totalDailyPassiveHp, 2)} HP
+            <div style={{ fontSize: 9.5, fontWeight: 800, color: '#717886', textTransform: 'uppercase', letterSpacing: 0.2 }}>HP Yield / day</div>
+            <div style={{ fontSize: 15, fontWeight: 900, color: '#10B981', marginTop: 4 }}>
+              +{formatNumber(holdHpEarned, 2)} HP
             </div>
           </div>
         </div>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        
-        {/* Card 1: Holding Status */}
-        <div style={{
-          background: '#FFFFFF',
-          border: '1px solid #DEE1E7',
-          borderRadius: 20,
-          padding: 16,
-          boxShadow: '0 4px 16px rgba(10,11,13,0.02)'
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-            <div>
-              <h3 style={{ fontSize: 14, fontWeight: 850, color: '#0A0B0D', margin: 0 }}>💼 Wallet Hold Rewards</h3>
-              <p style={{ fontSize: 10.5, color: '#717886', marginTop: 2, marginBottom: 0 }}>Earn passive HP by holding $HH in your wallet</p>
-            </div>
-            <span style={{
-              background: '#F0F5FF', color: '#0052FF', fontSize: 9.5, fontWeight: 900,
-              padding: '2px 8px', borderRadius: 12
-            }}>
-              10% HP / Day
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
-            <div>
-              <span style={{ fontSize: 18, fontWeight: 900, color: '#0A0B0D' }}>
-                {formatConcise(walletBalance)}
-              </span>
-              <span style={{ fontSize: 11, fontWeight: 800, color: '#717886', marginLeft: 4 }}>$HH</span>
-            </div>
-            <span style={{ fontSize: 12, fontWeight: 800, color: '#32353D' }}>
-              ${formatNumber(walletUsdValue, 2)} USD
-            </span>
-          </div>
-
-          {/* Hold progress to cap */}
-          <div style={{ marginBottom: 10 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9.5, fontWeight: 800, color: '#717886', marginBottom: 4 }}>
-              <span>Cap Progress</span>
-              <span>${formatNumber(walletUsdValue, 2)} / $100.00</span>
-            </div>
-            <div style={{ height: 5, background: '#EEF0F3', borderRadius: 4, overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: `${holdCapPercent}%`, background: '#3B82F6', borderRadius: 4 }} />
+      {/* Card 2: Staking Rewards */}
+      <div style={{
+        background: '#FFFFFF',
+        border: '1px solid #DEE1E7',
+        borderRadius: 20,
+        padding: 16,
+        boxShadow: '0 4px 16px rgba(10,11,13,0.01)'
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 800, color: '#0F172A' }}>Staking Rewards</div>
+            <div style={{ fontSize: 11, color: '#717886', marginTop: 2 }}>
+              Staked: <span style={{ color: '#0A0B0D', fontWeight: 800 }}>{formatConcise(stakedBalance)} $HH</span> ({stakedPeriod}d lock)
             </div>
           </div>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#F8F9FC', padding: '8px 12px', borderRadius: 12 }}>
-            <span style={{ fontSize: 11, fontWeight: 700, color: '#717886' }}>Daily HP Earnings:</span>
-            <span style={{ fontSize: 12, fontWeight: 900, color: '#059669' }}>
-              +{formatNumber(holdHpEarned, 2)} HP/day
-            </span>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: 9.5, fontWeight: 800, color: '#717886', textTransform: 'uppercase', letterSpacing: 0.2 }}>HP Yield / day</div>
+            <div style={{ fontSize: 15, fontWeight: 900, color: '#10B981', marginTop: 2 }}>
+              +{formatNumber(stakeHpEarned, 2)} HP
+            </div>
           </div>
         </div>
 
-        {/* Card 2: Hard Staking Status & Form Unified */}
-        <div style={{
-          background: '#FFFFFF',
-          border: '1px solid #DEE1E7',
-          borderRadius: 20,
-          padding: 16,
-          boxShadow: '0 4px 16px rgba(10,11,13,0.02)',
-          position: 'relative'
-        }}>
-          <div style={{
-            position: 'absolute', top: -1, right: 16,
-            background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-            color: '#FFFFFF', fontSize: '8px', fontWeight: 900,
-            padding: '3px 8px', borderRadius: '0 0 8px 8px',
-            textTransform: 'uppercase', letterSpacing: 0.5,
-            boxShadow: '0 2px 8px rgba(16,185,129,0.1)'
-          }}>
-            🔥 45.8% APR (Yield in $HH)
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-            <div>
-              <h3 style={{ fontSize: 14, fontWeight: 850, color: '#0A0B0D', margin: 0 }}>🥩 Locked Staking Rewards</h3>
-              <p style={{ fontSize: 10.5, color: '#717886', marginTop: 2, marginBottom: 0 }}>Lock tokens on contract for double HP yield</p>
-            </div>
-            <span style={{
-              background: '#D1FAE5', color: '#059669', fontSize: 9.5, fontWeight: 900,
-              padding: '2px 8px', borderRadius: 12, marginRight: 85
-            }}>
-              20% HP / Day
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
-            <div>
-              <span style={{ fontSize: 18, fontWeight: 900, color: '#0A0B0D' }}>
-                {formatConcise(stakedBalance)}
-              </span>
-              <span style={{ fontSize: 11, fontWeight: 800, color: '#717886', marginLeft: 4 }}>$HH</span>
-            </div>
-            <span style={{ fontSize: 12, fontWeight: 800, color: '#32353D' }}>
-              ${formatNumber(stakedUsdValue, 2)} USD
-            </span>
-          </div>
-
-          {/* Stake progress to cap */}
-          <div style={{ marginBottom: 12 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9.5, fontWeight: 800, color: '#717886', marginBottom: 4 }}>
-              <span>Cap Progress</span>
-              <span>${formatNumber(stakedUsdValue, 2)} / $100.00</span>
-            </div>
-            <div style={{ height: 5, background: '#EEF0F3', borderRadius: 4, overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: `${stakeCapPercent}%`, background: '#10B981', borderRadius: 4 }} />
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#F8F9FC', padding: '8px 12px', borderRadius: 12, marginBottom: 16 }}>
-            <span style={{ fontSize: 11, fontWeight: 700, color: '#717886' }}>Daily HP Earnings:</span>
-            <span style={{ fontSize: 12, fontWeight: 900, color: '#059669' }}>
-              +{formatNumber(stakeHpEarned, 2)} HP/day
-            </span>
-          </div>
-
-          {/* Inline Action Form */}
-          <div style={{ borderTop: '1px solid #EEF0F3', paddingTop: 14 }}>
-            <div style={{ display: 'flex', background: '#F8F9FC', padding: 3, borderRadius: 10, marginBottom: 12 }}>
-              <button
-                onClick={() => setStakeActionTab('stake')}
-                style={{
-                  flex: 1, padding: '6px 10px', border: 'none', borderRadius: 7, fontSize: 11.5, fontWeight: 800,
-                  background: stakeActionTab === 'stake' ? '#FFFFFF' : 'transparent',
-                  color: stakeActionTab === 'stake' ? '#0052FF' : '#717886',
-                  boxShadow: stakeActionTab === 'stake' ? '0 1px 4px rgba(0,0,0,0.05)' : 'none',
-                  cursor: 'pointer'
-                }}
-              >
-                Stake $HH
-              </button>
-              <button
-                onClick={() => setStakeActionTab('unstake')}
-                style={{
-                  flex: 1, padding: '6px 10px', border: 'none', borderRadius: 7, fontSize: 11.5, fontWeight: 800,
-                  background: stakeActionTab === 'unstake' ? '#FFFFFF' : 'transparent',
-                  color: stakeActionTab === 'unstake' ? '#0052FF' : '#717886',
-                  boxShadow: stakeActionTab === 'unstake' ? '0 1px 4px rgba(0,0,0,0.05)' : 'none',
-                  cursor: 'pointer'
-                }}
-              >
-                Unstake $HH
-              </button>
-            </div>
-
-            {stakeActionTab === 'stake' ? (
-              <div>
-                <div style={{ position: 'relative', marginBottom: 10 }}>
-                  <input
-                    type="number"
-                    value={stakingAmount}
-                    onChange={(e) => setStakingAmount(e.target.value)}
-                    placeholder="Amount to stake"
-                    style={{
-                      width: '100%', padding: '10px 65px 10px 12px', borderRadius: 10,
-                      border: '1px solid #DEE1E7', fontSize: 13, fontWeight: 700, outline: 'none'
-                    }}
-                  />
-                  <button
-                    onClick={() => setStakingAmount(walletBalance.toString())}
-                    style={{
-                      position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
-                      background: '#F0F5FF', border: 'none', color: '#0052FF', fontSize: 10, fontWeight: 900,
-                      padding: '4px 8px', borderRadius: 6, cursor: 'pointer'
-                    }}
-                  >
-                    MAX
-                  </button>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10.5, color: '#717886', marginBottom: 12 }}>
-                  <span>Available: {formatConcise(walletBalance)} $HH</span>
-                  <span>Est: +{formatNumber(Math.min(20.0, (stakedUsdValue + (parseFloat(stakingAmount || 0) * hhPrice)) * 0.20), 1)} HP/day</span>
-                </div>
-
-                <button
-                  onClick={handleStake}
-                  disabled={!!txStep}
-                  style={{
-                    width: '100%', padding: '11px', border: 'none', borderRadius: 12,
-                    background: allowance < parseFloat(stakingAmount || 0) 
-                      ? 'linear-gradient(135deg, #4F46E5 0%, #3730A3 100%)'
-                      : 'linear-gradient(135deg, #0052FF 0%, #0043D0 100%)',
-                    color: '#FFFFFF', fontSize: 12.5, fontWeight: 800, cursor: 'pointer',
-                    boxShadow: '0 2px 8px rgba(0,82,255,0.08)'
-                  }}
-                >
-                  {allowance < parseFloat(stakingAmount || 0) ? 'Approve $HH (One-time)' : 'Stake $HH'}
-                </button>
-              </div>
-            ) : (
-              <div>
-                <div style={{ position: 'relative', marginBottom: 10 }}>
-                  <input
-                    type="number"
-                    value={unstakeAmount}
-                    onChange={(e) => setUnstakeAmount(e.target.value)}
-                    placeholder="Amount to unstake"
-                    style={{
-                      width: '100%', padding: '10px 65px 10px 12px', borderRadius: 10,
-                      border: '1px solid #DEE1E7', fontSize: 13, fontWeight: 700, outline: 'none'
-                    }}
-                  />
-                  <button
-                    onClick={() => setUnstakeAmount(stakedBalance.toString())}
-                    style={{
-                      position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
-                      background: '#F0F5FF', border: 'none', color: '#0052FF', fontSize: 10, fontWeight: 900,
-                      padding: '4px 8px', borderRadius: 6, cursor: 'pointer'
-                    }}
-                  >
-                    MAX
-                  </button>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10.5, color: '#717886', marginBottom: 12 }}>
-                  <span>Staked: {formatConcise(stakedBalance)} $HH</span>
-                  <span style={{ color: '#FC401F', fontWeight: 700 }}>⚠️ 3d Unstacking Cooldown</span>
-                </div>
-
-                <button
-                  onClick={handleUnstake}
-                  disabled={!!txStep}
-                  style={{
-                    width: '100%', padding: '11px', border: 'none', borderRadius: 12,
-                    background: 'linear-gradient(135deg, #32353D 0%, #1A1C20 100%)',
-                    color: '#FFFFFF', fontSize: 12.5, fontWeight: 800, cursor: 'pointer',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
-                  }}
-                >
-                  Unstake & Begin Cooldown
-                </button>
-              </div>
-            )}
-
-            {txError && (
-              <div style={{ marginTop: 10, padding: 10, background: '#FEE2E2', border: '1px solid #FECACA', borderRadius: 8, color: '#DC2626', fontSize: 11, fontWeight: 750 }}>
-                ⚠️ {txError}
-              </div>
-            )}
-          </div>
+        {/* Tab switcher inside */}
+        <div style={{ display: 'flex', background: '#F8F9FC', padding: 3, borderRadius: 10, marginBottom: 12 }}>
+          <button
+            onClick={() => setStakeActionTab('stake')}
+            style={{
+              flex: 1, padding: '6px 10px', border: 'none', borderRadius: 7, fontSize: 11.5, fontWeight: 800,
+              background: stakeActionTab === 'stake' ? '#FFFFFF' : 'transparent',
+              color: stakeActionTab === 'stake' ? '#0052FF' : '#717886',
+              boxShadow: stakeActionTab === 'stake' ? '0 1px 4px rgba(0,0,0,0.05)' : 'none',
+              cursor: 'pointer',
+              outline: 'none'
+            }}
+          >
+            Stake
+          </button>
+          <button
+            onClick={() => setStakeActionTab('unstake')}
+            style={{
+              flex: 1, padding: '6px 10px', border: 'none', borderRadius: 7, fontSize: 11.5, fontWeight: 800,
+              background: stakeActionTab === 'unstake' ? '#FFFFFF' : 'transparent',
+              color: stakeActionTab === 'unstake' ? '#0052FF' : '#717886',
+              boxShadow: stakeActionTab === 'unstake' ? '0 1px 4px rgba(0,0,0,0.05)' : 'none',
+              cursor: 'pointer',
+              outline: 'none'
+            }}
+          >
+            Unstake
+          </button>
         </div>
 
-        {/* Pending Withdrawals list (3-day cooldown tracker) */}
-        {pendingWithdrawals.length > 0 && (
-          <div style={{
-            background: '#FFFFFF',
-            border: '1px solid #DEE1E7',
-            borderRadius: 20,
-            padding: 16,
-            boxShadow: '0 4px 16px rgba(10,11,13,0.02)'
-          }}>
-            <h3 style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D', marginBottom: 10, margin: 0 }}>⏳ Pending Withdrawals</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
-              {pendingWithdrawals.map((w) => {
-                const isReady = Date.now() >= w.unlockTime
-                const secondsLeft = Math.max(0, Math.floor((w.unlockTime - Date.now()) / 1000))
-                const days = Math.floor(secondsLeft / (24 * 3600))
-                const hours = Math.floor((secondsLeft % (24 * 3600)) / 3600)
-                const minutes = Math.floor((secondsLeft % 3600) / 60)
-                
-                return (
-                  <div key={w.id} style={{
-                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                    background: '#F8F9FC', padding: 10, borderRadius: 12, border: '1px solid #EEF0F3'
-                  }}>
-                    <div>
-                      <div style={{ fontSize: 12.5, fontWeight: 850, color: '#0A0B0D' }}>
-                        {formatConcise(w.amount)} $HH
-                      </div>
-                      <div style={{ fontSize: 9.5, color: '#717886', marginTop: 2 }}>
-                        {isReady ? 'Ready to claim!' : `Unlocks in: ${days}d ${hours}h ${minutes}m`}
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => claimWithdrawal(w.id, w.amount)}
-                      disabled={!isReady}
-                      style={{
-                        background: isReady ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' : '#DEE1E7',
-                        color: '#FFFFFF', border: 'none', borderRadius: 8, padding: '5px 10px',
-                        fontSize: 10.5, fontWeight: 900, cursor: isReady ? 'pointer' : 'not-allowed',
-                        boxShadow: isReady ? '0 2px 6px rgba(16,185,129,0.15)' : 'none'
-                      }}
-                    >
-                      Claim
-                    </button>
-                  </div>
-                )
-              })}
+        {stakeActionTab === 'stake' ? (
+          <div>
+            {/* Lock Period Selector */}
+            <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
+              <button
+                onClick={() => setLockPeriod('7')}
+                style={{
+                  flex: 1,
+                  padding: '8px 10px',
+                  borderRadius: 10,
+                  border: lockPeriod === '7' ? '1.5px solid #0052FF' : '1px solid #DEE1E7',
+                  background: lockPeriod === '7' ? 'rgba(0, 82, 255, 0.04)' : '#FFFFFF',
+                  color: lockPeriod === '7' ? '#0052FF' : '#717886',
+                  fontSize: 11,
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  outline: 'none',
+                  transition: 'all 0.15s'
+                }}
+              >
+                7 Days (20% APR)
+              </button>
+              <button
+                onClick={() => setLockPeriod('14')}
+                style={{
+                  flex: 1,
+                  padding: '8px 10px',
+                  borderRadius: 10,
+                  border: lockPeriod === '14' ? '1.5px solid #0052FF' : '1px solid #DEE1E7',
+                  background: lockPeriod === '14' ? 'rgba(0, 82, 255, 0.04)' : '#FFFFFF',
+                  color: lockPeriod === '14' ? '#0052FF' : '#717886',
+                  fontSize: 11,
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  outline: 'none',
+                  transition: 'all 0.15s'
+                }}
+              >
+                14 Days (45% APR)
+              </button>
             </div>
+
+            <div style={{ position: 'relative', marginBottom: 10 }}>
+              <input
+                type="number"
+                value={stakingAmount}
+                onChange={(e) => setStakingAmount(e.target.value)}
+                placeholder="Amount to stake"
+                style={{
+                  width: '100%', padding: '10px 65px 10px 12px', borderRadius: 10,
+                  border: '1px solid #DEE1E7', fontSize: 13, fontWeight: 700, outline: 'none',
+                  boxSizing: 'border-box'
+                }}
+              />
+              <button
+                onClick={() => setStakingAmount(walletBalance.toString())}
+                style={{
+                  position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
+                  background: '#F0F5FF', border: 'none', color: '#0052FF', fontSize: 10, fontWeight: 900,
+                  padding: '4px 8px', borderRadius: 6, cursor: 'pointer'
+                }}
+              >
+                MAX
+              </button>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10.5, color: '#717886', marginBottom: 12 }}>
+              <span>Available: {formatConcise(walletBalance)} $HH</span>
+              <span>Est: +{formatNumber(Math.min(20.0, (stakedUsdValue + (parseFloat(stakingAmount || 0) * hhPrice)) * (lockPeriod === '14' ? 0.30 : 0.15)), 1)} HP/day</span>
+            </div>
+
+            <button
+              onClick={handleStake}
+              disabled={!!txStep}
+              style={{
+                width: '100%', padding: '11px', border: 'none', borderRadius: 100,
+                background: allowance < parseFloat(stakingAmount || 0) 
+                  ? '#4F46E5'
+                  : '#0052FF',
+                color: '#FFFFFF', fontSize: 13, fontWeight: 800, cursor: 'pointer',
+                boxShadow: '0 2px 8px rgba(0,82,255,0.08)'
+              }}
+            >
+              {allowance < parseFloat(stakingAmount || 0) ? 'Approve $HH' : 'Stake'}
+            </button>
+          </div>
+        ) : (
+          <div>
+            <div style={{ position: 'relative', marginBottom: 10 }}>
+              <input
+                type="number"
+                value={unstakeAmount}
+                onChange={(e) => setUnstakeAmount(e.target.value)}
+                placeholder="Amount to unstake"
+                style={{
+                  width: '100%', padding: '10px 65px 10px 12px', borderRadius: 10,
+                  border: '1px solid #DEE1E7', fontSize: 13, fontWeight: 700, outline: 'none',
+                  boxSizing: 'border-box'
+                }}
+              />
+              <button
+                onClick={() => setUnstakeAmount(stakedBalance.toString())}
+                style={{
+                  position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
+                  background: '#F0F5FF', border: 'none', color: '#0052FF', fontSize: 10, fontWeight: 900,
+                  padding: '4px 8px', borderRadius: 6, cursor: 'pointer'
+                }}
+              >
+                MAX
+              </button>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10.5, color: '#717886', marginBottom: 12 }}>
+              <span>Staked: {formatConcise(stakedBalance)} $HH</span>
+              <span style={{ color: '#FC401F', fontWeight: 700 }}>3d Cooldown</span>
+            </div>
+
+            <button
+              onClick={handleUnstake}
+              disabled={!!txStep}
+              style={{
+                width: '100%', padding: '11px', border: 'none', borderRadius: 100,
+                background: '#0F172A',
+                color: '#FFFFFF', fontSize: 13, fontWeight: 800, cursor: 'pointer',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+              }}
+            >
+              Unstake
+            </button>
           </div>
         )}
 
-
-
+        {txError && (
+          <div style={{ marginTop: 10, padding: 10, background: '#FEE2E2', border: '1px solid #FECACA', borderRadius: 8, color: '#DC2626', fontSize: 11, fontWeight: 750 }}>
+            ⚠️ {txError}
+          </div>
+        )}
       </div>
+
+      {/* Pending Withdrawals list (3-day cooldown tracker) */}
+      {pendingWithdrawals.length > 0 && (
+        <div style={{
+          background: '#FFFFFF',
+          border: '1px solid #DEE1E7',
+          borderRadius: 20,
+          padding: 16,
+          boxShadow: '0 4px 16px rgba(10,11,13,0.01)'
+        }}>
+          <h3 style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D', marginBottom: 10, margin: 0 }}>Pending Withdrawals</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
+            {pendingWithdrawals.map((w) => {
+              const isReady = Date.now() >= w.unlockTime
+              const secondsLeft = Math.max(0, Math.floor((w.unlockTime - Date.now()) / 1000))
+              const days = Math.floor(secondsLeft / (24 * 3600))
+              const hours = Math.floor((secondsLeft % (24 * 3600)) / 3600)
+              const minutes = Math.floor((secondsLeft % 3600) / 60)
+              
+              return (
+                <div key={w.id} style={{
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  background: '#F8F9FC', padding: 10, borderRadius: 12, border: '1px solid #EEF0F3'
+                }}>
+                  <div>
+                    <div style={{ fontSize: 12.5, fontWeight: 850, color: '#0A0B0D' }}>
+                      {formatConcise(w.amount)} $HH
+                    </div>
+                    <div style={{ fontSize: 9.5, color: '#717886', marginTop: 2 }}>
+                      {isReady ? 'Ready to claim!' : `Unlocks in: ${days}d ${hours}h ${minutes}m`}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => claimWithdrawal(w.id, w.amount)}
+                    disabled={!isReady}
+                    style={{
+                      background: isReady ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' : '#DEE1E7',
+                      color: '#FFFFFF', border: 'none', borderRadius: 8, padding: '5px 10px',
+                      fontSize: 10.5, fontWeight: 900, cursor: isReady ? 'pointer' : 'not-allowed',
+                      boxShadow: isReady ? '0 2px 6px rgba(16,185,129,0.15)' : 'none'
+                    }}
+                  >
+                    Claim
+                  </button>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Custom Simulated Transaction Modal Overlay */}
       {txStep && (

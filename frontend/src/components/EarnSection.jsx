@@ -157,20 +157,10 @@ export function EarnSection({ setTab, address: propAddress }) {
   }
 
   return (
-    <div style={{ maxWidth: 640, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 16, padding: '0 12px 120px', animation: 'fadeIn 0.3s ease-out' }}>
+    <div style={{ maxWidth: 640, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 12, padding: '12px 12px 120px', animation: 'fadeIn 0.3s ease-out' }}>
       
-      {/* Section Header */}
-      <div style={{ padding: '0 4px', marginBottom: 4 }}>
-        <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0A0B0D', letterSpacing: '-0.5px', margin: 0 }}>
-          Earn HP
-        </h2>
-        <p style={{ fontSize: 12.5, color: '#717886', marginTop: 4, marginBottom: 0 }}>
-          Maximize your Season 2 points with active tasks, raids, and staking rewards.
-        </p>
-      </div>
-
-      {/* Daily Actions Stack — Clean & Concise */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {/* Daily Actions Capsule Buttons */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {/* Check-in Button */}
         <div>
           <button
@@ -179,45 +169,58 @@ export function EarnSection({ setTab, address: propAddress }) {
             style={{
               width: '100%',
               padding: '14px 20px',
-              borderRadius: 16,
+              borderRadius: 100,
               border: checkedToday ? '1px solid #E5E9F0' : 'none',
-              background: checkedToday ? '#F8F9FC' : 'linear-gradient(135deg, #0052FF 0%, #0043D0 100%)',
+              background: checkedToday ? '#EEF0F3' : '#0052FF',
               color: checkedToday ? '#94A3B8' : '#FFFFFF',
               fontSize: 13,
               fontWeight: 800,
               cursor: checkedToday ? 'not-allowed' : 'pointer',
-              boxShadow: checkedToday ? 'none' : '0 4px 16px rgba(0,82,255,0.15)',
+              boxShadow: checkedToday ? 'none' : '0 2px 8px rgba(0,82,255,0.08)',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
               transition: 'all 0.2s',
-              outline: 'none'
+              outline: 'none',
+              height: 48,
+              boxSizing: 'border-box'
             }}
-            onMouseEnter={e => { if (!checkedToday) e.currentTarget.style.transform = 'translateY(-1px)' }}
+            onMouseEnter={e => { if (!checkedToday) e.currentTarget.style.transform = 'translateY(-0.5px)' }}
             onMouseLeave={e => { if (!checkedToday) e.currentTarget.style.transform = 'none' }}
           >
             <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span>📆</span>
               <span>Daily Check-in</span>
               {streakCount > 0 && (
-                <span style={{
-                  background: checkedToday ? 'rgba(148, 163, 184, 0.15)' : 'rgba(255,255,255,0.2)',
-                  color: checkedToday ? '#64748B' : '#FFFFFF',
-                  fontSize: 10,
-                  fontWeight: 900,
-                  padding: '2px 8px',
-                  borderRadius: 10,
-                  border: checkedToday ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1.5px solid rgba(255,255,255,0.4)',
-                  marginLeft: 4
-                }}>
-                  {streakCount}d streak
+                <span style={{ fontSize: 10.5, opacity: 0.8, fontWeight: 700 }}>
+                  ({streakCount}d streak)
                 </span>
               )}
             </span>
-            <span>{checkedToday ? 'Checked In ✓' : 'Claim +1 HP →'}</span>
+            <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+              <span style={{
+                background: checkedToday ? 'rgba(148,163,184,0.1)' : 'rgba(255,255,255,0.15)',
+                color: checkedToday ? '#94A3B8' : '#FFFFFF',
+                fontSize: 10,
+                fontWeight: 900,
+                padding: '2.5px 8px',
+                borderRadius: 100
+              }}>
+                +1 HP
+              </span>
+              <span style={{
+                background: checkedToday ? 'rgba(148,163,184,0.1)' : 'rgba(255,255,255,0.15)',
+                color: checkedToday ? '#94A3B8' : '#FFFFFF',
+                fontSize: 10,
+                fontWeight: 900,
+                padding: '2.5px 8px',
+                borderRadius: 100
+              }}>
+                Free
+              </span>
+            </div>
           </button>
           {checkinError && (
-            <div style={{ marginTop: 6, color: '#FC401F', fontSize: 10.5, fontWeight: 700, paddingLeft: 12 }}>
+            <div style={{ marginTop: 4, color: '#FC401F', fontSize: 10.5, fontWeight: 700, paddingLeft: 16 }}>
               ⚠️ {checkinError}
             </div>
           )}
@@ -231,86 +234,89 @@ export function EarnSection({ setTab, address: propAddress }) {
             style={{
               width: '100%',
               padding: '14px 20px',
-              borderRadius: 16,
+              borderRadius: 100,
               border: boostedToday ? '1px solid #E5E9F0' : 'none',
-              background: boostedToday ? '#F8F9FC' : 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+              background: boostedToday ? '#EEF0F3' : '#0F172A',
               color: boostedToday ? '#94A3B8' : '#FFFFFF',
               fontSize: 13,
               fontWeight: 800,
               cursor: boostedToday ? 'not-allowed' : 'pointer',
-              boxShadow: boostedToday ? 'none' : '0 4px 16px rgba(16,185,129,0.15)',
+              boxShadow: boostedToday ? 'none' : '0 2px 8px rgba(0,0,0,0.08)',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
               transition: 'all 0.2s',
-              outline: 'none'
+              outline: 'none',
+              height: 48,
+              boxSizing: 'border-box'
             }}
-            onMouseEnter={e => { if (!boostedToday) e.currentTarget.style.transform = 'translateY(-1px)' }}
+            onMouseEnter={e => { if (!boostedToday) e.currentTarget.style.transform = 'translateY(-0.5px)' }}
             onMouseLeave={e => { if (!boostedToday) e.currentTarget.style.transform = 'none' }}
           >
-            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span>⚡</span>
-              <span>Daily HP Boost</span>
+            <span>Daily Boost</span>
+            <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
               <span style={{
-                background: boostedToday ? 'rgba(148, 163, 184, 0.15)' : 'rgba(255,255,255,0.2)',
-                color: boostedToday ? '#64748B' : '#FFFFFF',
+                background: boostedToday ? 'rgba(148,163,184,0.1)' : 'rgba(255,255,255,0.15)',
+                color: boostedToday ? '#94A3B8' : '#FFFFFF',
                 fontSize: 10,
                 fontWeight: 900,
-                padding: '2px 8px',
-                borderRadius: 10,
-                border: boostedToday ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1.5px solid rgba(255,255,255,0.4)',
-                marginLeft: 4
+                padding: '2.5px 8px',
+                borderRadius: 100
               }}>
-                Cost: $0.10
+                +2 HP
               </span>
-            </span>
-            <span>{boostedToday ? 'Boost Claimed ✓' : 'Get +2 HP →'}</span>
+              <span style={{
+                background: boostedToday ? 'rgba(148,163,184,0.1)' : 'rgba(255,255,255,0.15)',
+                color: boostedToday ? '#94A3B8' : '#FFFFFF',
+                fontSize: 10,
+                fontWeight: 900,
+                padding: '2.5px 8px',
+                borderRadius: 100
+              }}>
+                $0.10
+              </span>
+            </div>
           </button>
           {boostError && (
-            <div style={{ marginTop: 6, color: '#FC401F', fontSize: 10.5, fontWeight: 700, paddingLeft: 12 }}>
+            <div style={{ marginTop: 4, color: '#FC401F', fontSize: 10.5, fontWeight: 700, paddingLeft: 16 }}>
               ⚠️ {boostError}
             </div>
           )}
         </div>
       </div>
 
-      {/* Feature Blocks (2-Column Grid) */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+      {/* Feature Blocks Grid — Elegant & Colorful */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 4 }}>
         {/* Block 1: Happy Raids */}
         <div
           onClick={() => setTab('raid')}
           style={{
-            background: 'linear-gradient(135deg, rgba(0, 82, 255, 0.03) 0%, rgba(228, 198, 255, 0.05) 100%)',
-            border: '1px solid #E5E9F0',
-            borderRadius: 24,
-            padding: '16px 14px',
+            background: 'linear-gradient(135deg, #E2F1FF 0%, #FDF2F8 100%)',
+            border: '1px solid rgba(255,255,255,0.6)',
+            borderRadius: 20,
+            padding: '16px',
             cursor: 'pointer',
             transition: 'all 0.2s',
             boxShadow: '0 4px 16px rgba(0,0,0,0.01)',
+            height: 100,
+            boxSizing: 'border-box',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between'
           }}
           onMouseEnter={e => {
-            e.currentTarget.style.transform = 'translateY(-2px)'
-            e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 82, 255, 0.05)'
-            e.currentTarget.style.borderColor = 'rgba(0, 82, 255, 0.15)'
+            e.currentTarget.style.transform = 'translateY(-1.5px)'
+            e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 82, 255, 0.04)'
           }}
           onMouseLeave={e => {
             e.currentTarget.style.transform = 'none'
             e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.01)'
-            e.currentTarget.style.borderColor = '#E5E9F0'
           }}
         >
-          <div>
-            <div style={{ fontSize: 13.5, fontWeight: 900, color: '#0A0B0D', marginBottom: 4 }}>⚔️ Happy Raids</div>
-            <div style={{ fontSize: 9.5, color: '#64748B', lineHeight: 1.4, fontWeight: 500 }}>
-              Fight for USDC/HH pools. Win huge rewards & passive HP points.
-            </div>
-          </div>
-          <div style={{ fontSize: 10, fontWeight: 800, color: '#0052FF', marginTop: 16, display: 'flex', alignItems: 'center', gap: 2 }}>
-            <span>Play now</span>
-            <span>→</span>
+          <div style={{ fontSize: 14.5, fontWeight: 800, color: '#0F172A' }}>Happy Raids</div>
+          <div style={{ fontSize: 11.5, fontWeight: 800, color: '#0052FF', display: 'flex', alignItems: 'center', gap: 4 }}>
+            <span>Play</span>
+            <span>&gt;</span>
           </div>
         </div>
 
@@ -318,37 +324,32 @@ export function EarnSection({ setTab, address: propAddress }) {
         <div
           onClick={() => setTab('boxes')}
           style={{
-            background: 'linear-gradient(135deg, rgba(0, 82, 255, 0.03) 0%, rgba(228, 198, 255, 0.05) 100%)',
-            border: '1px solid #E5E9F0',
-            borderRadius: 24,
-            padding: '16px 14px',
+            background: 'linear-gradient(135deg, #FEF3C7 0%, #FDF2F8 100%)',
+            border: '1px solid rgba(255,255,255,0.6)',
+            borderRadius: 20,
+            padding: '16px',
             cursor: 'pointer',
             transition: 'all 0.2s',
             boxShadow: '0 4px 16px rgba(0,0,0,0.01)',
+            height: 100,
+            boxSizing: 'border-box',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between'
           }}
           onMouseEnter={e => {
-            e.currentTarget.style.transform = 'translateY(-2px)'
-            e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 82, 255, 0.05)'
-            e.currentTarget.style.borderColor = 'rgba(0, 82, 255, 0.15)'
+            e.currentTarget.style.transform = 'translateY(-1.5px)'
+            e.currentTarget.style.boxShadow = '0 8px 20px rgba(217, 119, 6, 0.04)'
           }}
           onMouseLeave={e => {
             e.currentTarget.style.transform = 'none'
             e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.01)'
-            e.currentTarget.style.borderColor = '#E5E9F0'
           }}
         >
-          <div>
-            <div style={{ fontSize: 13.5, fontWeight: 900, color: '#0A0B0D', marginBottom: 4 }}>🎁 Happy Boxes</div>
-            <div style={{ fontSize: 9.5, color: '#64748B', lineHeight: 1.4, fontWeight: 500 }}>
-              Open mystery chests to claim high multiplier passive rewards.
-            </div>
-          </div>
-          <div style={{ fontSize: 10, fontWeight: 800, color: '#0052FF', marginTop: 16, display: 'flex', alignItems: 'center', gap: 2 }}>
-            <span>Open now</span>
-            <span>→</span>
+          <div style={{ fontSize: 14.5, fontWeight: 800, color: '#0F172A' }}>Happy Boxes</div>
+          <div style={{ fontSize: 11.5, fontWeight: 800, color: '#D97706', display: 'flex', alignItems: 'center', gap: 4 }}>
+            <span>Open</span>
+            <span>&gt;</span>
           </div>
         </div>
       </div>
