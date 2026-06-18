@@ -448,11 +448,22 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
       <style>{`
         @keyframes hbFadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
         @keyframes hbBob { 0%,100% { transform:translateY(0) scale(1); } 50% { transform:translateY(-4px) scale(1.03); } }
-        @keyframes hbPulseGlow { 0%,100% { box-shadow: 0 0 12px rgba(139,92,246,0.15); } 50% { box-shadow: 0 0 24px rgba(139,92,246,0.4); } }
+        @keyframes hbPulseGlow { 0%,100% { box-shadow: 0 0 12px rgba(56,189,248,0.15); } 50% { box-shadow: 0 0 24px rgba(56,189,248,0.4); } }
         @keyframes hbGiftFloat { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
         @keyframes hbActivePulse { 
-          0%, 100% { border-color: rgba(139,92,246,0.5); box-shadow: 0 0 8px rgba(139,92,246,0.2); } 
-          50% { border-color: rgba(139,92,246,0.9); box-shadow: 0 0 18px rgba(139,92,246,0.45); } 
+          0%, 100% { border-color: rgba(56, 189, 248, 0.5); box-shadow: 0 0 8px rgba(56, 189, 248, 0.2); } 
+          50% { border-color: rgba(56, 189, 248, 0.9); box-shadow: 0 0 18px rgba(56, 189, 248, 0.45); } 
+        }
+        @keyframes hbBurnFlame {
+          0%, 100% {
+            box-shadow: 0 0 10px rgba(255, 61, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(0,0,0,0.15);
+            border-color: rgba(245, 158, 11, 0.5);
+          }
+          50% {
+            box-shadow: 0 0 25px rgba(255, 61, 0, 0.95), inset 0 1px 0 rgba(255,255,255,0.60), inset 0 -1px 0 rgba(0,0,0,0.15);
+            border-color: rgba(239, 68, 68, 0.9);
+            transform: scale(1.03);
+          }
         }
         @keyframes flame-flicker-1 {
           0% { transform: translateY(2px) scale(0.9) rotate(-3deg); opacity: 0.7; }
@@ -529,9 +540,9 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        boxShadow: '0 8px 32px rgba(46,16,101,0.3)',
+        boxShadow: '0 8px 32px rgba(8,20,40,0.4)',
         overflow: 'hidden',
-        border: '1px solid rgba(139,92,246,0.2)'
+        border: '1px solid rgba(56,189,248,0.2)'
       }}>
         {/* Branded background banner in purple tones */}
         <div style={{
@@ -547,7 +558,7 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(135deg, rgba(9, 5, 20, 0.25) 0%, rgba(46, 16, 101, 0.7) 100%)',
+          background: 'linear-gradient(135deg, rgba(5, 10, 20, 0.25) 0%, rgba(8, 30, 60, 0.75) 100%)',
           zIndex: 0,
           pointerEvents: 'none'
         }} />
@@ -559,7 +570,7 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
           right: '-10%',
           width: '180px',
           height: '180px',
-          background: 'radial-gradient(circle, rgba(139,92,246,0.25) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(56,189,248,0.25) 0%, transparent 70%)',
           zIndex: 0,
           pointerEvents: 'none'
         }} />
@@ -585,7 +596,7 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
             <div style={{
               fontSize: `${s.size}px`,
               opacity: s.opacity,
-              filter: s.blur > 0 ? `blur(${s.blur}px) drop-shadow(0 0 10px rgba(139,92,246,0.25))` : 'drop-shadow(0 0 10px rgba(139,92,246,0.25))',
+              filter: s.blur > 0 ? `blur(${s.blur}px) drop-shadow(0 0 10px rgba(56,189,248,0.25))` : 'drop-shadow(0 0 10px rgba(56,189,248,0.25))',
               transform: `rotate(${s.r})`,
             }}>
               🎁
@@ -616,19 +627,19 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
             gap: '4px'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '6px', color: '#8B5CF6' }}>●</span>
+              <span style={{ fontSize: '6px', color: '#38BDF8' }}>●</span>
               <span>Each box contains from 2 to 15 HP.</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '6px', color: '#8B5CF6' }}>●</span>
+              <span style={{ fontSize: '6px', color: '#38BDF8' }}>●</span>
               <span>Your boost is automatically applied.</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '6px', color: '#8B5CF6' }}>●</span>
+              <span style={{ fontSize: '6px', color: '#38BDF8' }}>●</span>
               <span>Each user can open up to 12 boxes per day.</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '6px', color: '#8B5CF6' }}>●</span>
+              <span style={{ fontSize: '6px', color: '#38BDF8' }}>●</span>
               <span>Burn $HH to unlock extra openings.</span>
             </div>
           </div>
@@ -637,14 +648,13 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
 
       {/* ═══ CARD 1: DAILY LIMITS ═══ */}
       <div style={{
-        background: 'linear-gradient(145deg, rgba(38, 14, 88, 0.94) 0%, rgba(58, 20, 120, 0.90) 50%, rgba(20, 6, 52, 0.96) 100%)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        border: '1px solid rgba(139, 92, 246, 0.25)',
+        background: 'linear-gradient(145deg, rgba(10, 18, 32, 0.94) 0%, rgba(18, 32, 54, 0.90) 50%, rgba(8, 14, 24, 0.96) 100%)',
         borderRadius: 20,
-        padding: '16px 20px',
-        marginBottom: 16,
-        boxShadow: '0 8px 32px rgba(46,16,101,0.4), inset 0 1px 0 rgba(139,92,246,0.08)',
+        padding: 16,
+        border: '1px solid rgba(56, 189, 248, 0.25)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        boxShadow: '0 8px 32px rgba(8, 20, 40, 0.5), inset 0 1px 0 rgba(56, 189, 248, 0.10)',
         display: 'flex',
         flexDirection: 'column',
         gap: 12,
@@ -652,7 +662,7 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
         overflow: 'hidden'
       }}>
         {/* Shimmer accent */}
-        <div style={{ position: 'absolute', top: -30, right: -30, width: 120, height: 120, borderRadius: '50%', background: 'radial-gradient(circle, rgba(139,92,246,0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: -30, right: -30, width: 120, height: 120, borderRadius: '50%', background: 'radial-gradient(circle, rgba(56, 189, 248, 0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
         {/* Title + Indicator Row */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -660,13 +670,13 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
             <div style={{ fontSize: 13, fontWeight: 900, color: '#FFFFFF', letterSpacing: '0.2px' }}>Daily Box Limits</div>
           </div>
           <div style={{ 
-            background: remainingOpens === 0 ? 'rgba(239, 68, 68, 0.15)' : 'rgba(167, 139, 250, 0.15)', 
-            color: remainingOpens === 0 ? '#EF4444' : '#C084FC', 
+            background: remainingOpens === 0 ? 'rgba(239, 68, 68, 0.15)' : 'rgba(56, 189, 248, 0.12)', 
+            color: remainingOpens === 0 ? '#EF4444' : '#38BDF8', 
             padding: '3px 10px', 
             borderRadius: 12, 
             fontSize: 11, 
             fontWeight: 800,
-            border: `1px solid ${remainingOpens === 0 ? 'rgba(239, 68, 68, 0.3)' : 'rgba(167, 139, 250, 0.3)'}`
+            border: `1px solid ${remainingOpens === 0 ? 'rgba(239, 68, 68, 0.3)' : 'rgba(56, 189, 248, 0.25)'}`
           }}>
             {remainingOpens} / {maxDailyOpens} left
           </div>
@@ -677,7 +687,7 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
           <div style={{
             background: remainingOpens === 0 
               ? '#EF4444' 
-              : 'linear-gradient(90deg, #A78BFA 0%, #EC4899 100%)',
+              : 'linear-gradient(90deg, #38BDF8 0%, #06B6D4 100%)',
             height: '100%',
             width: `${(remainingOpens / maxDailyOpens) * 100}%`,
             transition: 'width 0.4s ease'
@@ -687,7 +697,9 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
         {/* Info & Buy Button Row */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 4, paddingTop: 4 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.95)', fontWeight: 850 }}>Burn $HH for extra attempts</span>
+            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.95)', fontWeight: 500 }}>
+              Burn <span style={{ color: '#FFD700', fontWeight: 900, textShadow: '0 0 8px rgba(255, 215, 0, 0.5)' }}>$HH</span> for extra attempts
+            </span>
             <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.65)', fontWeight: 650 }}>Each burn grants +1 box opening</span>
           </div>
 
@@ -746,35 +758,38 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
               style={{
                 position: 'relative',
                 zIndex: 1,
-                background: isBuyingAttemptLoading ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.18)',
+                background: isBuyingAttemptLoading 
+                  ? 'rgba(255, 61, 0, 0.3)' 
+                  : 'linear-gradient(135deg, #FF3D00 0%, #FF8A00 50%, #E00000 100%)',
                 backdropFilter: 'blur(12px)',
                 WebkitBackdropFilter: 'blur(12px)',
-                border: '1px solid rgba(255,255,255,0.42)',
+                border: '1px solid rgba(255,255,255,0.45)',
                 color: '#FFF',
                 borderRadius: 12,
                 padding: '6px 14px',
                 cursor: isBuyingAttemptLoading ? 'not-allowed' : 'pointer',
-                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15), 0 0 15px rgba(239, 68, 68, 0.25)',
+                boxShadow: '0 0 15px rgba(255, 61, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(0,0,0,0.15)',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
                 minWidth: 110,
                 outline: 'none',
+                animation: isBuyingAttemptLoading ? 'none' : 'hbBurnFlame 1.8s infinite ease-in-out',
                 transition: 'all 0.2s'
               }}
               onMouseEnter={e => {
                 if (!isBuyingAttemptLoading) {
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.28)'
-                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.60)'
-                  e.currentTarget.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15), 0 0 25px rgba(239, 68, 68, 0.45)'
+                  e.currentTarget.style.background = 'linear-gradient(135deg, #FF5722 0%, #FFA000 50%, #FF1744 100%)'
+                  e.currentTarget.style.borderColor = '#FFF'
+                  e.currentTarget.style.boxShadow = '0 0 25px rgba(255, 61, 0, 0.9), inset 0 1px 0 rgba(255,255,255,0.60), inset 0 -1px 0 rgba(0,0,0,0.15)'
                 }
               }}
               onMouseLeave={e => {
                 if (!isBuyingAttemptLoading) {
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.18)'
-                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.42)'
-                  e.currentTarget.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15), 0 0 15px rgba(239, 68, 68, 0.25)'
+                  e.currentTarget.style.background = 'linear-gradient(135deg, #FF3D00 0%, #FF8A00 50%, #E00000 100%)'
+                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.45)'
+                  e.currentTarget.style.boxShadow = '0 0 15px rgba(255, 61, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(0,0,0,0.15)'
                 }
               }}
             >
@@ -798,13 +813,13 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
 
       {/* ═══ CARD 2: HAPPY BOXES ═══ */}
       <div style={{
-        background: 'linear-gradient(145deg, rgba(13, 6, 32, 0.94) 0%, rgba(22, 11, 48, 0.90) 50%, rgba(8, 3, 20, 0.95) 100%)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        border: '1px solid rgba(139, 92, 246, 0.25)',
+        background: 'linear-gradient(145deg, rgba(6, 26, 38, 0.94) 0%, rgba(10, 42, 60, 0.90) 50%, rgba(4, 16, 24, 0.96) 100%)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        border: '1px solid rgba(6, 182, 212, 0.25)',
         borderRadius: 20,
         padding: '16px 20px',
-        boxShadow: '0 8px 32px rgba(46,16,101,0.4), inset 0 1px 0 rgba(139,92,246,0.08)',
+        boxShadow: '0 8px 32px rgba(4, 24, 32, 0.5), inset 0 1px 0 rgba(6, 182, 212, 0.10)',
         display: 'flex',
         flexDirection: 'column',
         gap: 16,
@@ -812,7 +827,7 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
         overflow: 'hidden'
       }}>
         {/* Shimmer accent */}
-        <div style={{ position: 'absolute', top: -30, right: -30, width: 120, height: 120, borderRadius: '50%', background: 'radial-gradient(circle, rgba(139,92,246,0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: -30, right: -30, width: 120, height: 120, borderRadius: '50%', background: 'radial-gradient(circle, rgba(6, 182, 212, 0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
         {/* Card Header */}
         <div style={{ position: 'relative', zIndex: 2 }}>
@@ -825,14 +840,14 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
         {/* Paid Active / State Banners */}
         {hasActiveChoice && (
           <div style={{
-            background: 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)',
+            background: 'linear-gradient(135deg, #0284C7 0%, #0369A1 100%)',
             color: '#fff',
             borderRadius: 14,
             padding: '10px 14px',
             textAlign: 'center',
             fontSize: 11,
             fontWeight: 800,
-            boxShadow: '0 4px 16px rgba(139,92,246,0.3)',
+            boxShadow: '0 4px 16px rgba(2,132,199,0.3)',
             animation: 'hbFadeIn 0.3s ease, hbPulseGlow 2s infinite',
             position: 'relative',
             zIndex: 2
@@ -860,7 +875,7 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
             const details = chest.status === 'opened' ? getOpenedCardDetails(chest.mult) : null
             const anyOpened = chests.some(c => c.status === 'opened')
             
-            let imageFilter = 'drop-shadow(0 4px 8px rgba(139,92,246,0.15))'
+            let imageFilter = 'drop-shadow(0 4px 8px rgba(56, 189, 248, 0.15))'
             let imageOpacity = 1
 
             if (chest.status === 'locked') {
@@ -918,13 +933,13 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
                       justifyContent: 'center',
                       overflow: 'hidden',
                       background: chest.status === 'active'
-                        ? 'linear-gradient(135deg, rgba(139, 92, 246, 0.20) 0%, rgba(139, 92, 246, 0.05) 100%)'
+                        ? 'linear-gradient(135deg, rgba(56, 189, 248, 0.20) 0%, rgba(56, 189, 248, 0.05) 100%)'
                         : 'linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%)',
                       border: chest.status === 'active'
-                        ? '2px solid rgba(139, 92, 246, 0.8)'
+                        ? '2px solid rgba(56, 189, 248, 0.8)'
                         : '1px dashed rgba(255, 255, 255, 0.15)',
                       boxShadow: chest.status === 'active'
-                        ? '0 0 16px rgba(139, 92, 246, 0.35)'
+                        ? '0 0 16px rgba(56, 189, 248, 0.35)'
                         : 'none',
                       animation: chest.status === 'active' ? 'hbBob 1.6s ease-in-out infinite, hbActivePulse 2s infinite' : 'none',
                       transform: chest.status === 'active' ? 'scale(1.01)' : 'none',
@@ -936,11 +951,11 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
                         <div style={{
                           width: 20, height: 20,
                           border: '2px solid rgba(255,255,255,0.1)',
-                          borderTop: '2px solid #C084FC',
+                          borderTop: '2px solid #38BDF8',
                           borderRadius: '50%',
                           animation: 'spin 0.8s linear infinite'
                         }} />
-                        <span style={{ fontSize: 7, fontWeight: 900, color: '#C084FC', textTransform: 'uppercase', letterSpacing: 0.5 }}>Opening...</span>
+                        <span style={{ fontSize: 7, fontWeight: 900, color: '#38BDF8', textTransform: 'uppercase', letterSpacing: 0.5 }}>Opening...</span>
                       </div>
                     ) : (
                       <>
@@ -961,7 +976,7 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
                           <div style={{
                             position: 'absolute',
                             inset: 0,
-                            background: 'rgba(10,5,25,0.7)',
+                            background: 'rgba(5, 10, 20, 0.7)',
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
@@ -972,7 +987,7 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
                           }}>
                             <span style={{ fontSize: 9, fontWeight: 800, color: '#FFF' }}>Open</span>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 2, background: 'rgba(255,255,255,0.15)', padding: '2px 6px', borderRadius: 20 }}>
-                              <span style={{ fontSize: 8, fontWeight: 900, color: '#C084FC' }}>0.30</span>
+                              <span style={{ fontSize: 8, fontWeight: 900, color: '#38BDF8' }}>0.30</span>
                               <img src="/usdc-logo.png" alt="USDC" style={{ width: 8, height: 8 }} />
                             </div>
                           </div>
@@ -995,9 +1010,9 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
                       justifyContent: 'center',
                       overflow: 'hidden',
                       transform: 'rotateY(180deg)',
-                      background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.25) 0%, rgba(79, 70, 229, 0.15) 100%)',
-                      border: '1px solid rgba(139, 92, 246, 0.4)',
-                      boxShadow: '0 4px 16px rgba(139, 92, 246, 0.15)',
+                      background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.25) 0%, rgba(3, 105, 161, 0.15) 100%)',
+                      border: '1px solid rgba(56, 189, 248, 0.4)',
+                      boxShadow: '0 4px 16px rgba(56, 189, 248, 0.15)',
                       zIndex: 1
                     }}
                   >
@@ -1047,7 +1062,7 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
                           <div style={{
                             fontSize: 8,
                             fontWeight: 900,
-                            color: '#A78BFA',
+                            color: '#38BDF8',
                             letterSpacing: '1px',
                             marginTop: 2,
                             textTransform: 'uppercase'
@@ -1163,19 +1178,24 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
             <span style={{
               position: 'absolute',
               top: -8,
-              right: 6,
-              background: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
-              color: '#FFF',
+              right: -3,
+              background: 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)',
+              color: '#FFFFFF',
               fontSize: 7.5,
-              fontWeight: 950,
-              padding: '1px 5px',
-              borderRadius: 6,
-              boxShadow: '0 2px 4px rgba(239,68,68,0.2)'
+              fontWeight: 900,
+              padding: '1px 4px',
+              borderRadius: 5,
+              boxShadow: '0 2px 6px rgba(0,0,0,0.4)',
+              border: '1px solid rgba(255,255,255,0.25)',
+              lineHeight: 1,
+              letterSpacing: '0.2px',
+              whiteSpace: 'nowrap',
+              zIndex: 10
             }}>-33%</span>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <span style={{ fontSize: 11, fontWeight: 900 }}>Open Box</span>
-              <span style={{ fontSize: 9, color: '#C084FC', fontWeight: 900 }}>$HH</span>
+              <img src="/logo.jfif" alt="$HH" style={{ width: 10, height: 10, borderRadius: '50%', objectFit: 'cover' }} />
             </div>
             <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.7)' }}>
               {formatConcise(0.20 / hhPrice)} (≈$0.20)
@@ -1297,7 +1317,7 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <span style={{ fontSize: 11, fontWeight: 900 }}>Open All 6</span>
-              <span style={{ fontSize: 9, color: '#C084FC', fontWeight: 900 }}>$HH</span>
+              <img src="/logo.jfif" alt="$HH" style={{ width: 10, height: 10, borderRadius: '50%', objectFit: 'cover' }} />
             </div>
             <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.7)' }}>
               {formatConcise(1.00 / hhPrice)} (≈$1.00)
