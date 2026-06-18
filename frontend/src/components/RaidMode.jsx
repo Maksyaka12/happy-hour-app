@@ -552,165 +552,156 @@ export function RaidMode({ address }) {
 
       {/* ═══ RAID SHIELD CARD ═══ */}
       <div style={{
-        background: 'linear-gradient(135deg, rgba(219, 234, 254, 0.7) 0%, rgba(239, 246, 255, 0.55) 100%)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-        border: '1px solid rgba(147, 197, 253, 0.45)',
+        background: 'linear-gradient(145deg, rgba(90, 10, 20, 0.88) 0%, rgba(50, 5, 30, 0.92) 100%)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(220, 38, 80, 0.3)',
         borderRadius: 20,
-        padding: '16px 18px',
+        padding: '16px 20px',
         marginBottom: 16,
-        boxShadow: '0 8px 32px rgba(0, 82, 255, 0.08), inset 0 1px 0 rgba(255,255,255,0.6)',
+        boxShadow: '0 8px 32px rgba(150, 10, 30, 0.35), inset 0 1px 0 rgba(255,255,255,0.05)',
+        minHeight: 120,
         display: 'flex',
         flexDirection: 'column',
-        gap: 10
+        justifyContent: 'center',
+        position: 'relative',
+        overflow: 'hidden'
       }}>
-        {/* Shield Status Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Raid Shield Status</div>
+        {/* Active shield progress bar at top */}
+        {isShieldActive && (
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'rgba(255,255,255,0.06)', borderRadius: '20px 20px 0 0', overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: `${shieldProgressPercent}%`, background: 'linear-gradient(90deg, #F43F5E 0%, #FB923C 100%)', transition: 'width 0.4s ease' }} />
           </div>
-          <div style={{ 
-            background: isShieldActive ? 'rgba(16,185,129,0.15)' : 'rgba(225,29,72,0.1)', 
-            color: isShieldActive ? '#059669' : '#E11D48', 
-            padding: '3px 10px', 
-            borderRadius: 12, 
-            fontSize: 10.5, 
-            fontWeight: 800,
-            border: `1px solid ${isShieldActive ? 'rgba(16,185,129,0.3)' : 'rgba(225,29,72,0.2)'}`
-          }}>
-            {isShieldActive ? 'Active' : 'Inactive'}
-          </div>
-        </div>
+        )}
 
-        {/* Shield Expiry Progress Bar Segment */}
-        <div style={{ background: 'rgba(0,0,0,0.08)', height: 4, borderRadius: 2, overflow: 'hidden', position: 'relative' }}>
-          <div style={{
-            background: isShieldActive 
-              ? 'linear-gradient(90deg, #0052FF 0%, #00C6FB 100%)' 
-              : 'transparent',
-            height: '100%',
-            width: isShieldActive ? `${shieldProgressPercent}%` : '0%',
-            transition: 'width 0.4s ease'
-          }} />
-        </div>
-
-        {/* Action / Buy Controls Row */}
-        <div style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'space-between', 
-          paddingTop: 8, 
-          borderTop: '1px solid rgba(147, 197, 253, 0.3)',
-          gap: 12
-        }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            <span style={{ fontSize: 9, color: '#4B7FCC', fontWeight: 600 }}>
-              {isShieldActive ? 'Remaining Protection' : 'Buy Shield'}
-            </span>
-            <span style={{ fontSize: 13, fontWeight: 900, color: '#0A0B0D' }}>
-              {isShieldActive ? shieldTimeLeft : '24h'}
-            </span>
-          </div>
-
-          {isShieldActive ? (
+        {/* IDLE / INACTIVE */}
+        <div style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 16, textAlign: 'left' }}>
+          {/* Animated shield icon */}
+          <div style={{ position: 'relative', width: 80, height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            {/* Outer glow rings */}
             <div style={{
-              background: 'rgba(0,0,0,0.06)',
-              color: '#94A3B8',
-              border: '1px solid rgba(0,0,0,0.08)',
-              borderRadius: 12,
-              padding: '6px 14px',
-              fontSize: 10,
-              fontWeight: 800,
+              position: 'absolute', inset: 0, borderRadius: '50%',
+              border: '1.5px solid rgba(220, 38, 80, 0.25)', pointerEvents: 'none',
+              animation: 'radarPulse 2.4s ease-in-out infinite'
+            }} />
+            <div style={{
+              position: 'absolute', inset: 6, borderRadius: '50%',
+              border: '1.5px solid rgba(220, 38, 80, 0.15)', pointerEvents: 'none',
+              animation: 'radarPulse 2.4s ease-in-out infinite 0.6s'
+            }} />
+            {/* Shield circle */}
+            <div style={{
+              width: 64, height: 64, borderRadius: '50%',
+              background: 'rgba(30, 5, 15, 0.9)',
+              border: '2.5px solid #F43F5E',
+              boxShadow: '0 0 18px rgba(244, 63, 94, 0.5)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              position: 'relative', overflow: 'hidden'
             }}>
-              Shield Active
+              {/* Sweep glow */}
+              <div className="radar-sweep" style={{
+                position: 'absolute', inset: 0,
+                background: 'conic-gradient(from 0deg at 50% 50%, rgba(244,63,94,0.3) 0deg, rgba(244,63,94,0) 100deg)',
+                borderRadius: '50%'
+              }} />
+              <span style={{ fontSize: 26, position: 'relative', zIndex: 2, filter: 'drop-shadow(0 0 6px rgba(244,63,94,0.8))' }}>🛡️</span>
             </div>
-          ) : (
-            <div style={{ display: 'flex', gap: 6, flex: 1, justifyContent: 'flex-end', maxWidth: 240 }}>
-              {/* Buy with USDC */}
-              <button
-                onClick={() => {
-                  setPayWithHh(false)
-                  setTxType('shield')
-                  setShowTxModal(true)
-                }}
-                disabled={isPending}
-                className="raid-btn"
-                style={{
-                  position: 'relative',
-                  padding: '7px 12px',
-                  borderRadius: 12,
-                  border: '1.5px solid rgba(255,255,255,0.7)',
-                  background: 'rgba(255,255,255,0.55)',
-                  backdropFilter: 'blur(8px)',
-                  WebkitBackdropFilter: 'blur(8px)',
-                  color: '#0A0B0D',
-                  fontSize: 11,
-                  fontWeight: 800,
-                  cursor: isPending ? 'not-allowed' : 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 4,
-                  boxShadow: '0 2px 8px rgba(0,82,255,0.06)',
-                  flex: 1
-                }}
-              >
-                <span>0.20</span>
-                <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, borderRadius: '50%' }} />
-              </button>
+          </div>
 
-              {/* Buy with $HH — -25% badge */}
-              <button
-                onClick={() => {
-                  setPayWithHh(true)
-                  setTxType('shield')
-                  setShowTxModal(true)
-                }}
-                disabled={isPending}
-                className="raid-btn"
-                style={{
-                  position: 'relative',
-                  padding: '7px 12px',
-                  borderRadius: 12,
-                  border: '1.5px solid rgba(255,255,255,0.7)',
-                  background: 'rgba(255,255,255,0.55)',
-                  backdropFilter: 'blur(8px)',
-                  WebkitBackdropFilter: 'blur(8px)',
-                  color: '#0A0B0D',
-                  fontSize: 11,
-                  fontWeight: 800,
-                  cursor: isPending ? 'not-allowed' : 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 4,
-                  boxShadow: '0 2px 8px rgba(0,82,255,0.06)',
-                  flex: 1
-                }}
-              >
-                <div style={{
-                  position: 'absolute',
-                  top: -8,
-                  right: -3,
-                  background: 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)',
-                  color: '#FFFFFF',
-                  fontSize: 7.5,
-                  fontWeight: 900,
-                  padding: '1px 4px',
-                  borderRadius: 5,
-                  boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
-                  border: '1px solid rgba(255,255,255,0.3)',
-                  lineHeight: 1,
-                  letterSpacing: '0.2px',
-                  whiteSpace: 'nowrap'
-                }}>
-                  -25%
-                </div>
-                <span>{formatConcise(0.15 / hhPrice)}</span>
-                <img src="/logo.jfif" alt="$HH" style={{ width: 12, height: 12, borderRadius: '50%', objectFit: 'cover' }} />
-              </button>
+          {/* Right side info & action */}
+          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 }}>
+              <h4 style={{ margin: 0, fontSize: 14, fontWeight: 800, color: '#FFFFFF', letterSpacing: -0.2 }}>
+                Raid Shield
+              </h4>
+              <div style={{
+                background: isShieldActive ? 'rgba(16,185,129,0.2)' : 'rgba(244,63,94,0.15)',
+                color: isShieldActive ? '#34D399' : '#FB7185',
+                padding: '2px 8px',
+                borderRadius: 10,
+                fontSize: 9.5,
+                fontWeight: 800,
+                border: `1px solid ${isShieldActive ? 'rgba(52,211,153,0.3)' : 'rgba(251,113,133,0.3)'}`
+              }}>
+                {isShieldActive ? `🟢 ${shieldTimeLeft}` : 'Inactive'}
+              </div>
             </div>
-          )}
+            <p style={{ margin: '0 0 10px', fontSize: 11, color: 'rgba(255,255,255,0.5)', lineHeight: 1.3, fontWeight: 400 }}>
+              Protect yourself from raids for 24 hours
+            </p>
+
+            {isShieldActive ? (
+              <div style={{
+                background: 'rgba(255,255,255,0.08)',
+                color: 'rgba(255,255,255,0.5)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 16,
+                padding: '8px 14px',
+                fontSize: 11,
+                fontWeight: 800,
+                textAlign: 'center'
+              }}>
+                Shield Active
+              </div>
+            ) : (
+              <div style={{ display: 'flex', gap: 8, width: '100%' }}>
+                {/* Buy USDC */}
+                <button
+                  onClick={() => { setPayWithHh(false); setTxType('shield'); setShowTxModal(true) }}
+                  disabled={isPending}
+                  className="raid-btn"
+                  style={{
+                    position: 'relative', flex: 1,
+                    background: 'rgba(255,255,255,0.1)',
+                    backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+                    color: '#fff', border: '1.5px solid rgba(255,255,255,0.18)',
+                    borderRadius: 20, padding: '9px 8px',
+                    fontSize: 11.5, fontWeight: 800,
+                    cursor: isPending ? 'not-allowed' : 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.2)'
+                  }}
+                  onMouseEnter={e => { if (!isPending) e.currentTarget.style.background = 'rgba(255,255,255,0.18)' }}
+                  onMouseLeave={e => { if (!isPending) e.currentTarget.style.background = 'rgba(255,255,255,0.1)' }}
+                >
+                  <span>0.20</span>
+                  <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, borderRadius: '50%' }} />
+                </button>
+
+                {/* Buy $HH — -25% badge */}
+                <button
+                  onClick={() => { setPayWithHh(true); setTxType('shield'); setShowTxModal(true) }}
+                  disabled={isPending}
+                  className="raid-btn"
+                  style={{
+                    position: 'relative', flex: 1,
+                    background: 'rgba(255,255,255,0.1)',
+                    backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+                    color: '#fff', border: '1.5px solid rgba(255,255,255,0.18)',
+                    borderRadius: 20, padding: '9px 8px',
+                    fontSize: 11.5, fontWeight: 800,
+                    cursor: isPending ? 'not-allowed' : 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.2)'
+                  }}
+                  onMouseEnter={e => { if (!isPending) e.currentTarget.style.background = 'rgba(255,255,255,0.18)' }}
+                  onMouseLeave={e => { if (!isPending) e.currentTarget.style.background = 'rgba(255,255,255,0.1)' }}
+                >
+                  <div style={{
+                    position: 'absolute', top: -8, right: -3,
+                    background: 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)',
+                    color: '#FFFFFF', fontSize: 7.5, fontWeight: 900,
+                    padding: '1px 4px', borderRadius: 5,
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.4)',
+                    border: '1px solid rgba(255,255,255,0.25)',
+                    lineHeight: 1, letterSpacing: '0.2px', whiteSpace: 'nowrap'
+                  }}>-25%</div>
+                  <span>{formatConcise(0.15 / hhPrice)}</span>
+                  <img src="/logo.jfif" alt="$HH" style={{ width: 12, height: 12, borderRadius: '50%', objectFit: 'cover' }} />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -842,7 +833,7 @@ export function RaidMode({ address }) {
                 Happy Raid
               </h4>
               <p style={{ margin: '0 0 10px', fontSize: 11, color: 'rgba(255,255,255,0.55)', lineHeight: 1.3, fontWeight: 400 }}>
-                Find your target and steal some <span style={{ color: '#60A5FA', fontWeight: 600 }}>HP</span>
+                Find your target and steal some HP
               </p>
 
               {isCooldownActive ? (
@@ -899,9 +890,8 @@ export function RaidMode({ address }) {
                     onMouseEnter={e => { if (!isPending) e.currentTarget.style.background = 'rgba(255,255,255,0.2)' }}
                     onMouseLeave={e => { if (!isPending) e.currentTarget.style.background = 'rgba(255,255,255,0.12)' }}
                   >
-                    <span>Raid</span>
-                    <span style={{ color: '#93C5FD', fontWeight: 900 }}>0.30</span>
-                    <img src="/usdc-logo.png" alt="USDC" style={{ width: 11, height: 11, borderRadius: '50%' }} />
+                    <span style={{ fontWeight: 900 }}>0.30</span>
+                    <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, borderRadius: '50%' }} />
                   </button>
 
                   {/* Raid $HH Button — -33% badge */}
@@ -953,9 +943,8 @@ export function RaidMode({ address }) {
                     }}>
                       -33%
                     </div>
-                    <span>Raid</span>
-                    <span style={{ color: '#93C5FD', fontWeight: 900 }}>{formatConcise(0.20 / hhPrice)}</span>
-                    <img src="/logo.jfif" alt="$HH" style={{ width: 11, height: 11, borderRadius: '50%', objectFit: 'cover' }} />
+                    <span style={{ fontWeight: 900 }}>{formatConcise(0.20 / hhPrice)}</span>
+                    <img src="/logo.jfif" alt="$HH" style={{ width: 12, height: 12, borderRadius: '50%', objectFit: 'cover' }} />
                   </button>
                 </div>
               )}
