@@ -449,9 +449,22 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
         @keyframes hbFadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
         @keyframes hbBob { 0%,100% { transform:translateY(0) scale(1); } 50% { transform:translateY(-4px) scale(1.03); } }
         @keyframes hbPulseGlow { 0%,100% { box-shadow: 0 0 12px rgba(139,92,246,0.15); } 50% { box-shadow: 0 0 24px rgba(139,92,246,0.4); } }
+        @keyframes hbGiftFloat { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
         @keyframes hbActivePulse { 
           0%, 100% { border-color: rgba(139,92,246,0.5); box-shadow: 0 0 8px rgba(139,92,246,0.2); } 
           50% { border-color: rgba(139,92,246,0.9); box-shadow: 0 0 18px rgba(139,92,246,0.45); } 
+        }
+        @keyframes flame-flicker-1 {
+          0% { transform: translateY(2px) scale(0.9) rotate(-3deg); opacity: 0.7; }
+          100% { transform: translateY(-6px) scale(1.1) rotate(5deg); opacity: 0.9; }
+        }
+        @keyframes flame-flicker-2 {
+          0% { transform: translateY(4px) scale(0.8) rotate(5deg); opacity: 0.8; }
+          100% { transform: translateY(-10px) scale(1.15) rotate(-5deg); opacity: 1; }
+        }
+        @keyframes flame-flicker-3 {
+          0% { transform: translateY(1px) scale(0.95) rotate(-2deg); opacity: 0.6; }
+          100% { transform: translateY(-5px) scale(1.05) rotate(4deg); opacity: 0.9; }
         }
         .chest-slot { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
         .chest-slot:hover { transform: translateY(-2px); }
@@ -505,9 +518,126 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
         </div>
       )}
 
+      {/* ═══ HERO BANNER ═══ */}
+      <div style={{
+        background: '#090514',
+        borderRadius: 24,
+        padding: '22px 20px',
+        marginBottom: 16,
+        position: 'relative',
+        minHeight: 144,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        boxShadow: '0 8px 32px rgba(46,16,101,0.3)',
+        overflow: 'hidden',
+        border: '1px solid rgba(139,92,246,0.2)'
+      }}>
+        {/* Branded background banner in purple tones */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'url(/banner.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          filter: 'hue-rotate(50deg) brightness(0.6) contrast(1.15)',
+          zIndex: 0,
+          pointerEvents: 'none'
+        }} />
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(135deg, rgba(9, 5, 20, 0.25) 0%, rgba(46, 16, 101, 0.7) 100%)',
+          zIndex: 0,
+          pointerEvents: 'none'
+        }} />
+
+        {/* Glow overlay */}
+        <div style={{
+          position: 'absolute',
+          top: '-20%',
+          right: '-10%',
+          width: '180px',
+          height: '180px',
+          background: 'radial-gradient(circle, rgba(139,92,246,0.25) 0%, transparent 70%)',
+          zIndex: 0,
+          pointerEvents: 'none'
+        }} />
+
+        {/* Floating gift background decorations */}
+        {[
+          { top: '-5px', left: '5%', size: 54, opacity: 0.14, r: '-12deg', blur: 0.5, dur: 4.2 },
+          { top: '10px', right: '25%', size: 40, opacity: 0.11, r: '14deg', blur: 0, dur: 4.8 },
+          { bottom: '5px', left: '40%', size: 48, opacity: 0.12, r: '22deg', blur: 1, dur: 5.4 },
+          { bottom: '15px', right: '5%', size: 62, opacity: 0.16, r: '8deg', blur: 1.2, dur: 4.6 }
+        ].map((s, i) => (
+          <div key={i} style={{
+            position: 'absolute',
+            top: s.top,
+            right: s.right,
+            left: s.left,
+            bottom: s.bottom,
+            zIndex: 1,
+            pointerEvents: 'none',
+            userSelect: 'none',
+            animation: `hbGiftFloat ${s.dur}s ease-in-out infinite`,
+          }}>
+            <div style={{
+              fontSize: `${s.size}px`,
+              opacity: s.opacity,
+              filter: s.blur > 0 ? `blur(${s.blur}px) drop-shadow(0 0 10px rgba(139,92,246,0.25))` : 'drop-shadow(0 0 10px rgba(139,92,246,0.25))',
+              transform: `rotate(${s.r})`,
+            }}>
+              🎁
+            </div>
+          </div>
+        ))}
+
+        <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'flex-start' }}>
+          <div style={{
+            fontSize: '26px',
+            fontWeight: 800,
+            color: '#fff',
+            letterSpacing: '0.5px',
+            marginBottom: '4px'
+          }}>
+            Happy Boxes
+          </div>
+          
+          <div style={{
+            fontSize: '11px',
+            color: 'rgba(255,255,255,0.75)',
+            marginTop: '8px',
+            letterSpacing: '0.1px',
+            fontWeight: 500,
+            lineHeight: 1.5,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '4px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '6px', color: '#8B5CF6' }}>●</span>
+              <span>Each box contains from 2 to 15 HP.</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '6px', color: '#8B5CF6' }}>●</span>
+              <span>Your boost is automatically applied.</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '6px', color: '#8B5CF6' }}>●</span>
+              <span>Each user can open up to 12 boxes per day.</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '6px', color: '#8B5CF6' }}>●</span>
+              <span>Burn $HH to unlock extra openings.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* ═══ CARD 1: DAILY LIMITS ═══ */}
       <div style={{
-        background: 'linear-gradient(145deg, rgba(13, 6, 32, 0.94) 0%, rgba(22, 11, 48, 0.90) 50%, rgba(8, 3, 20, 0.95) 100%)',
+        background: 'linear-gradient(145deg, rgba(38, 14, 88, 0.94) 0%, rgba(58, 20, 120, 0.90) 50%, rgba(20, 6, 52, 0.96) 100%)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         border: '1px solid rgba(139, 92, 246, 0.25)',
@@ -557,56 +687,112 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
         {/* Info & Buy Button Row */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 4, paddingTop: 4 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>Burn $HH for extra attempts</span>
-            <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)' }}>Each burn grants +1 box opening</span>
+            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.95)', fontWeight: 850 }}>Burn $HH for extra attempts</span>
+            <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.65)', fontWeight: 650 }}>Each burn grants +1 box opening</span>
           </div>
 
-          <button
-            onClick={handleBuyAttempt}
-            disabled={isBuyingAttemptLoading}
-            style={{
-              position: 'relative',
-              background: isBuyingAttemptLoading ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.20)',
-              backdropFilter: 'blur(12px)',
-              WebkitBackdropFilter: 'blur(12px)',
-              border: '1px solid rgba(255,255,255,0.42)',
-              color: '#FFF',
-              borderRadius: 12,
-              padding: '6px 14px',
-              cursor: isBuyingAttemptLoading ? 'not-allowed' : 'pointer',
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)',
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {/* Animated fire/flame background container */}
+            <div style={{
+              position: 'absolute',
+              bottom: '-6px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: '90%',
+              height: '115%',
+              pointerEvents: 'none',
+              zIndex: 0,
               display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              minWidth: 110,
-              outline: 'none',
-              transition: 'all 0.2s'
-            }}
-            onMouseEnter={e => {
-              if (!isBuyingAttemptLoading) {
-                e.currentTarget.style.background = 'rgba(255,255,255,0.30)'
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.60)'
-              }
-            }}
-            onMouseLeave={e => {
-              if (!isBuyingAttemptLoading) {
-                e.currentTarget.style.background = 'rgba(255,255,255,0.20)'
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.42)'
-              }
-            }}
-          >
-            {isBuyingAttemptLoading ? (
-              <span style={{ fontSize: 10, fontWeight: 800 }}>Processing...</span>
-            ) : (
-              <>
-                <span style={{ fontSize: 11, fontWeight: 900 }}>+1 Attempt</span>
-                <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.7)', marginTop: 1 }}>
-                  {formatConcise(0.10 / hhPrice)} $HH (≈$0.10)
-                </span>
-              </>
-            )}
-          </button>
+              justifyContent: 'space-around',
+              alignItems: 'flex-end',
+              overflow: 'visible'
+            }}>
+              {/* Flame 1 */}
+              <div style={{
+                width: 18,
+                height: 28,
+                background: 'radial-gradient(circle at bottom, #FBBF24, #F59E0B, #EF4444, transparent 70%)',
+                borderRadius: '50% 50% 20% 20%',
+                filter: 'blur(3px)',
+                opacity: 0.8,
+                animation: 'flame-flicker-1 0.9s infinite alternate ease-in-out'
+              }} />
+              {/* Flame 2 */}
+              <div style={{
+                width: 26,
+                height: 38,
+                background: 'radial-gradient(circle at bottom, #FFF, #FBBF24, #F59E0B, #EF4444, transparent 75%)',
+                borderRadius: '50% 50% 20% 20%',
+                filter: 'blur(4px)',
+                opacity: 0.95,
+                animation: 'flame-flicker-2 0.7s infinite alternate ease-in-out',
+                margin: '0 -6px'
+              }} />
+              {/* Flame 3 */}
+              <div style={{
+                width: 16,
+                height: 24,
+                background: 'radial-gradient(circle at bottom, #FBBF24, #F59E0B, #EF4444, transparent 70%)',
+                borderRadius: '50% 50% 20% 20%',
+                filter: 'blur(3px)',
+                opacity: 0.8,
+                animation: 'flame-flicker-3 1.1s infinite alternate ease-in-out'
+              }} />
+            </div>
+
+            <button
+              onClick={handleBuyAttempt}
+              disabled={isBuyingAttemptLoading}
+              style={{
+                position: 'relative',
+                zIndex: 1,
+                background: isBuyingAttemptLoading ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.18)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                border: '1px solid rgba(255,255,255,0.42)',
+                color: '#FFF',
+                borderRadius: 12,
+                padding: '6px 14px',
+                cursor: isBuyingAttemptLoading ? 'not-allowed' : 'pointer',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15), 0 0 15px rgba(239, 68, 68, 0.25)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minWidth: 110,
+                outline: 'none',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={e => {
+                if (!isBuyingAttemptLoading) {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.28)'
+                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.60)'
+                  e.currentTarget.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15), 0 0 25px rgba(239, 68, 68, 0.45)'
+                }
+              }}
+              onMouseLeave={e => {
+                if (!isBuyingAttemptLoading) {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.18)'
+                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.42)'
+                  e.currentTarget.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15), 0 0 15px rgba(239, 68, 68, 0.25)'
+                }
+              }}
+            >
+              {isBuyingAttemptLoading ? (
+                <span style={{ fontSize: 10, fontWeight: 800 }}>Processing...</span>
+              ) : (
+                <>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'center' }}>
+                    <span style={{ fontSize: 11, fontWeight: 900 }}>{formatConcise(0.10 / hhPrice)}</span>
+                    <img src="/logo.jfif" alt="HH" style={{ width: 10, height: 10, borderRadius: '50%', objectFit: 'cover' }} />
+                  </div>
+                  <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.7)', marginTop: 1 }}>
+                    (≈$0.10)
+                  </span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
