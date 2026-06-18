@@ -232,11 +232,11 @@ export function EarnSection({ setTab, address: propAddress }) {
         
         {/* Floating $HH Logos */}
         {[
-          { top: -10, right: '8%', size: 40, opacity: 0.16, r: '-12deg', blur: 0.5, dur: 4.2 },
-          { top: 35, right: '20%', size: 26, opacity: 0.14, r: '14deg', blur: 0, dur: 4.8 },
-          { top: -15, left: '10%', size: 36, opacity: 0.16, r: '22deg', blur: 0.8, dur: 5.4 },
-          { bottom: -8, left: '26%', size: 30, opacity: 0.14, r: '-15deg', blur: 0.5, dur: 4.0 },
-          { bottom: 10, right: '3%', size: 46, opacity: 0.18, r: '8deg', blur: 1.0, dur: 4.6 }
+          { top: -5, right: '8%', size: 48, opacity: 0.55, r: '-12deg', blur: 0, dur: 4.2 },
+          { top: 35, right: '22%', size: 32, opacity: 0.5, r: '14deg', blur: 0, dur: 4.8 },
+          { top: -10, left: '10%', size: 40, opacity: 0.55, r: '22deg', blur: 0, dur: 5.4 },
+          { bottom: -8, left: '26%', size: 34, opacity: 0.5, r: '-15deg', blur: 0, dur: 4.0 },
+          { bottom: 10, right: '3%', size: 52, opacity: 0.6, r: '8deg', blur: 0, dur: 4.6 }
         ].map((s, i) => (
           <div key={i} style={{
             position: 'absolute',
@@ -257,7 +257,6 @@ export function EarnSection({ setTab, address: propAddress }) {
                 height: s.size,
                 borderRadius: '50%',
                 opacity: s.opacity,
-                filter: s.blur > 0 ? `blur(${s.blur}px)` : 'none',
                 transform: `rotate(${s.r})`,
                 objectFit: 'cover'
               }}
@@ -311,8 +310,8 @@ export function EarnSection({ setTab, address: propAddress }) {
 
           <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
-              <div style={{ fontSize: 13.5, fontWeight: 800, color: '#FFFFFF' }}>Check-in</div>
-              <div style={{ fontSize: 10, color: 'rgba(255, 255, 255, 0.7)', marginTop: 2, fontWeight: 400 }}>daily free HP</div>
+              <div style={{ fontSize: 14.5, fontWeight: 800, color: '#FFFFFF' }}>Check-in</div>
+              <div style={{ fontSize: 10, color: 'rgba(255, 255, 255, 0.7)', marginTop: 2, fontWeight: 600 }}>daily free HP</div>
             </div>
             <span style={{ fontSize: 9, fontWeight: 900, background: 'rgba(255,255,255,0.15)', color: '#FFFFFF', padding: '2px 6px', borderRadius: 6 }}>
               +1 HP
@@ -375,8 +374,8 @@ export function EarnSection({ setTab, address: propAddress }) {
 
           <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
-              <div style={{ fontSize: 13.5, fontWeight: 800, color: '#FFFFFF' }}>Daily Boost</div>
-              <div style={{ fontSize: 10, color: 'rgba(255, 255, 255, 0.7)', marginTop: 2, fontWeight: 400 }}>daily boost HP</div>
+              <div style={{ fontSize: 14.5, fontWeight: 800, color: '#FFFFFF' }}>Daily Boost</div>
+              <div style={{ fontSize: 10, color: 'rgba(255, 255, 255, 0.7)', marginTop: 2, fontWeight: 600 }}>daily boost HP</div>
             </div>
             <span style={{ fontSize: 9, fontWeight: 900, background: 'rgba(255,255,255,0.15)', color: '#FFFFFF', padding: '2px 6px', borderRadius: 6 }}>
               +2 HP
@@ -504,7 +503,7 @@ export function EarnSection({ setTab, address: propAddress }) {
           
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{ fontSize: 14.5, fontWeight: 800, color: '#FFFFFF' }}>Happy Raids</div>
-            <div style={{ fontSize: 10, color: 'rgba(255, 255, 255, 0.7)', marginTop: 2, fontWeight: 400 }}>steal HP</div>
+            <div style={{ fontSize: 10, color: 'rgba(255, 255, 255, 0.7)', marginTop: 2, fontWeight: 600 }}>steal HP</div>
           </div>
           
           {/* Centered semi-transparent Play Badge */}
@@ -573,7 +572,7 @@ export function EarnSection({ setTab, address: propAddress }) {
 
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{ fontSize: 14.5, fontWeight: 800, color: '#FFFFFF' }}>Happy Boxes</div>
-            <div style={{ fontSize: 10, color: 'rgba(255, 255, 255, 0.7)', marginTop: 2, fontWeight: 400 }}>earn more HP</div>
+            <div style={{ fontSize: 10, color: 'rgba(255, 255, 255, 0.7)', marginTop: 2, fontWeight: 600 }}>earn more HP</div>
           </div>
 
           {/* Centered semi-transparent Open Badge */}
