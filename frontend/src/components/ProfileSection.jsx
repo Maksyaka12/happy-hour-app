@@ -562,14 +562,6 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
     )
   }, [sortedTokens, searchQuery])
 
-  const hhSupply = 276000000;
-  const marketCap = hhSupply * hhPrice;
-  const formatMarketCap = (val) => {
-    if (val >= 1000000) return `$${(val / 1000000).toFixed(1)}M`;
-    if (val >= 1000) return `$${(val / 1000).toFixed(0)}K`;
-    return `$${val.toFixed(2)}`;
-  };
-
   return (
     <div style={{ paddingBottom: 120, padding: '0 12px 120px', position: 'relative' }}>
       
@@ -689,6 +681,20 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Swap Zone Section Header */}
+      <div style={{
+        fontSize: 12,
+        fontWeight: 700,
+        color: '#64748B',
+        textTransform: 'uppercase',
+        letterSpacing: '0.8px',
+        marginTop: 18,
+        marginBottom: 8,
+        padding: '0 4px'
+      }}>
+        Swap Zone
       </div>
 
       {/* Premium Base App Style Swap Widget — Compact & Elegant */}
@@ -1000,8 +1006,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
             fontWeight: 800,
             color: 'rgba(255, 255, 255, 0.6)'
           }}>
-            <span>1 $HH = ${formatNumber(hhPrice, 6)}</span>
-            <span style={{ color: '#A5B4FC' }}>MC = {formatMarketCap(marketCap)}</span>
+            <span>1 $HH = ${formatNumber(hhPrice, 8)}</span>
             <span style={{ color: priceChange >= 0 ? '#10B981' : '#EF4444' }}>
               {priceChange >= 0 ? '▲' : '▼'} {priceChange}% (24h)
             </span>
