@@ -61,9 +61,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
   const swapTokens = [
     { symbol: 'ETH', name: 'Ethereum', logo: '🌐', logoBg: '#627EEA', priceUsd: 3500.00, balanceKey: 'eth_simulated_wallet', defaultBalance: 0.15 },
     { symbol: 'USDC', name: 'USD Coin', logo: '/usdc-logo.png', priceUsd: 1.00, balanceKey: 'usdc_simulated_wallet', defaultBalance: 500.00 },
-    { symbol: 'AERO', name: 'Aerodrome', logo: '✈️', logoBg: '#3B82F6', priceUsd: 1.15, balanceKey: 'aero_simulated_wallet', defaultBalance: 180.00 },
     { symbol: 'WETH', name: 'Wrapped Ether', logo: '🌐', logoBg: '#8C8C8C', priceUsd: 3500.00, balanceKey: 'weth_simulated_wallet', defaultBalance: 0.05 },
-    { symbol: 'DEGEN', name: 'Degen', logo: '🎩', logoBg: '#A78BFA', priceUsd: 0.012, balanceKey: 'degen_simulated_wallet', defaultBalance: 12000.00 },
   ]
 
   // Track simulated token balances
@@ -677,11 +675,11 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
         borderRadius: 24,
         padding: '16px 16px 14px',
         marginBottom: 16,
-        boxShadow: '0 8px 32px rgba(236, 72, 153, 0.15)',
+        boxShadow: '0 8px 32px rgba(236, 72, 153, 0.18)',
         position: 'relative',
         overflow: 'hidden',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
-        background: '#1A0815'
+        border: '1px solid rgba(255, 255, 255, 0.2)',
+        background: '#2D1225'
       }}>
         {/* Grayscaled background image overlay */}
         <div style={{
@@ -690,7 +688,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
           backgroundImage: 'url(/banner.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          filter: 'grayscale(100%) brightness(0.25) contrast(1.2)',
+          filter: 'grayscale(100%) brightness(0.38) contrast(1.15)',
           zIndex: 0,
           pointerEvents: 'none'
         }} />
@@ -699,7 +697,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.22) 0%, rgba(147, 51, 234, 0.22) 100%)',
+          background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.35) 0%, rgba(168, 85, 247, 0.35) 100%)',
           zIndex: 1,
           pointerEvents: 'none'
         }} />
@@ -751,9 +749,10 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
                     style={{
                       display: 'flex',
                       alignItems: 'center',
+                      justifyContent: 'center',
                       gap: 6,
                       background: 'rgba(255, 255, 255, 0.1)',
-                      padding: '6px 12px',
+                      padding: '6px 0',
                       borderRadius: 100,
                       border: '1px solid rgba(255, 255, 255, 0.15)',
                       boxShadow: '0 2px 4px rgba(0,0,0,0.01)',
@@ -761,6 +760,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
                       outline: 'none',
                       transition: 'all 0.2s',
                       height: 30,
+                      width: 100,
                       boxSizing: 'border-box'
                     }}
                     onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
@@ -778,24 +778,27 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
                         {activeSelectedToken.logo}
                       </span>
                     )}
-                    <span style={{ fontSize: 11.5, fontWeight: 800, color: '#FFFFFF' }}>{activeSelectedToken.symbol}</span>
+                    <span style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF' }}>{activeSelectedToken.symbol}</span>
                     <span style={{ fontSize: 7, color: 'rgba(255, 255, 255, 0.6)' }}>▼</span>
                   </button>
                 ) : (
                   <div style={{
                     display: 'flex',
                     alignItems: 'center',
+                    justifyContent: 'center',
                     gap: 6,
                     background: 'rgba(0, 82, 255, 0.25)',
-                    padding: '6px 12px',
+                    padding: '6px 0',
                     borderRadius: 100,
                     boxShadow: '0 2px 8px rgba(0,82,255,0.15)',
                     border: '1px solid rgba(0, 82, 255, 0.4)',
                     height: 30,
+                    width: 100,
                     boxSizing: 'border-box'
                   }}>
                     <img src="/logo.jfif" alt="" style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover' }} />
-                    <span style={{ fontSize: 11.5, fontWeight: 800, color: '#FFFFFF' }}>$HH</span>
+                    <span style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF' }}>$HH</span>
+                    <span style={{ fontSize: 7, color: 'transparent', userSelect: 'none' }}>▼</span>
                   </div>
                 )}
               </div>
@@ -872,9 +875,10 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
                     style={{
                       display: 'flex',
                       alignItems: 'center',
+                      justifyContent: 'center',
                       gap: 6,
                       background: 'rgba(255, 255, 255, 0.1)',
-                      padding: '6px 12px',
+                      padding: '6px 0',
                       borderRadius: 100,
                       border: '1px solid rgba(255, 255, 255, 0.15)',
                       boxShadow: '0 2px 4px rgba(0,0,0,0.01)',
@@ -882,6 +886,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
                       outline: 'none',
                       transition: 'all 0.2s',
                       height: 30,
+                      width: 100,
                       boxSizing: 'border-box'
                     }}
                     onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
@@ -899,24 +904,27 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
                         {activeSelectedToken.logo}
                       </span>
                     )}
-                    <span style={{ fontSize: 11.5, fontWeight: 800, color: '#FFFFFF' }}>{activeSelectedToken.symbol}</span>
+                    <span style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF' }}>{activeSelectedToken.symbol}</span>
                     <span style={{ fontSize: 7, color: 'rgba(255, 255, 255, 0.6)' }}>▼</span>
                   </button>
                 ) : (
                   <div style={{
                     display: 'flex',
                     alignItems: 'center',
+                    justifyContent: 'center',
                     gap: 6,
                     background: 'rgba(0, 82, 255, 0.25)',
-                    padding: '6px 12px',
+                    padding: '6px 0',
                     borderRadius: 100,
                     boxShadow: '0 2px 8px rgba(0,82,255,0.15)',
                     border: '1px solid rgba(0, 82, 255, 0.4)',
                     height: 30,
+                    width: 100,
                     boxSizing: 'border-box'
                   }}>
                     <img src="/logo.jfif" alt="" style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover' }} />
-                    <span style={{ fontSize: 11.5, fontWeight: 800, color: '#FFFFFF' }}>$HH</span>
+                    <span style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF' }}>$HH</span>
+                    <span style={{ fontSize: 7, color: 'transparent', userSelect: 'none' }}>▼</span>
                   </div>
                 )}
               </div>
