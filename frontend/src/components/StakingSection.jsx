@@ -301,7 +301,7 @@ export function StakingSection({ setTab }) {
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(145deg, rgba(245, 246, 250, 0.88) 0%, rgba(235, 237, 245, 0.82) 50%, rgba(220, 222, 232, 0.88) 100%)',
+          background: 'linear-gradient(145deg, rgba(165, 170, 185, 0.85) 0%, rgba(135, 140, 155, 0.82) 50%, rgba(110, 115, 130, 0.88) 100%)',
           zIndex: 1,
           pointerEvents: 'none'
         }} />
@@ -451,7 +451,7 @@ export function StakingSection({ setTab }) {
           backgroundImage: 'url(/banner.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          filter: 'grayscale(100%) brightness(0.28) contrast(1.1) opacity(0.24)',
+          filter: 'grayscale(100%) brightness(0.28) contrast(1.1)',
           zIndex: 0,
           pointerEvents: 'none'
         }} />
