@@ -232,11 +232,11 @@ export function EarnSection({ setTab, address: propAddress }) {
         
         {/* Floating $HH Logos */}
         {[
-          { top: -5, right: '8%', size: 48, opacity: 0.55, r: '-12deg', blur: 0, dur: 4.2 },
-          { top: 35, right: '22%', size: 32, opacity: 0.5, r: '14deg', blur: 0, dur: 4.8 },
-          { top: -10, left: '10%', size: 40, opacity: 0.55, r: '22deg', blur: 0, dur: 5.4 },
-          { bottom: -8, left: '26%', size: 34, opacity: 0.5, r: '-15deg', blur: 0, dur: 4.0 },
-          { bottom: 10, right: '3%', size: 52, opacity: 0.6, r: '8deg', blur: 0, dur: 4.6 }
+          { top: '10%', left: '8%', size: 38, opacity: 0.45, r: '-15deg', blur: 0.4, dur: 4.5 },
+          { bottom: '10%', left: '22%', size: 28, opacity: 0.4, r: '10deg', blur: 0, dur: 5.2 },
+          { top: '8%', right: '12%', size: 44, opacity: 0.5, r: '18deg', blur: 0.5, dur: 3.8 },
+          { top: '45%', right: '28%', size: 24, opacity: 0.35, r: '-8deg', blur: 0.8, dur: 6.0 },
+          { bottom: '8%', right: '6%', size: 48, opacity: 0.55, r: '12deg', blur: 0, dur: 4.4 }
         ].map((s, i) => (
           <div key={i} style={{
             position: 'absolute',
@@ -257,6 +257,7 @@ export function EarnSection({ setTab, address: propAddress }) {
                 height: s.size,
                 borderRadius: '50%',
                 opacity: s.opacity,
+                filter: s.blur > 0 ? `blur(${s.blur}px)` : 'none',
                 transform: `rotate(${s.r})`,
                 objectFit: 'cover'
               }}
@@ -410,7 +411,7 @@ export function EarnSection({ setTab, address: propAddress }) {
               onMouseEnter={e => { if (!boostedToday) e.currentTarget.style.background = 'rgba(255,255,255,0.2)' }}
               onMouseLeave={e => { if (!boostedToday) e.currentTarget.style.background = 'rgba(255,255,255,0.12)' }}
             >
-              <span>0.10</span>
+              <span>{BOOST_AMOUNT.toFixed(2)}</span>
               <img src="/usdc-logo.png" alt="USDC" style={{ width: 11, height: 11, borderRadius: '50%' }} />
             </button>
 
@@ -422,6 +423,7 @@ export function EarnSection({ setTab, address: propAddress }) {
               }}
               disabled={boostedToday}
               style={{
+                position: 'relative',
                 flex: 1,
                 height: 30,
                 borderRadius: 10,
@@ -441,6 +443,26 @@ export function EarnSection({ setTab, address: propAddress }) {
               onMouseEnter={e => { if (!boostedToday) e.currentTarget.style.background = 'rgba(255,255,255,0.2)' }}
               onMouseLeave={e => { if (!boostedToday) e.currentTarget.style.background = 'rgba(255,255,255,0.12)' }}
             >
+              {!boostedToday && (
+                <div style={{
+                  position: 'absolute',
+                  top: -8,
+                  right: -3,
+                  background: 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)',
+                  color: '#FFFFFF',
+                  fontSize: 7.5,
+                  fontWeight: 900,
+                  padding: '1px 4px',
+                  borderRadius: 5,
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.4)',
+                  border: '1px solid rgba(255,255,255,0.25)',
+                  lineHeight: 1,
+                  letterSpacing: '0.2px',
+                  whiteSpace: 'nowrap'
+                }}>
+                  -50%
+                </div>
+              )}
               <span>{formatConcise(0.10 / hhPrice)}</span>
               <img src="/logo.jfif" alt="$HH" style={{ width: 11, height: 11, borderRadius: '50%', objectFit: 'cover' }} />
             </button>
@@ -622,7 +644,7 @@ export function EarnSection({ setTab, address: propAddress }) {
         <TxModal
           title="Daily HP Boost"
           subtitle={`Increase your daily points instantly using ${payWithHh ? '$HH' : 'USDC'}`}
-          amount={payWithHh ? `${formatConcise(0.10 / hhPrice)} $HH` : "0.10 USDC"}
+          amount={payWithHh ? `${formatConcise(0.10 / hhPrice)} $HH` : `${BOOST_AMOUNT.toFixed(2)} USDC`}
           isPending={isPendingBoost}
           isConfirming={isConfirmingBoost}
           isSuccess={isSuccessBoost}
