@@ -10,6 +10,7 @@ import { TasksSection } from './components/TasksSection'
 import { HappyBoxesSection } from './components/HappyBoxesSection'
 import { LeaderboardSection } from './components/LeaderboardSection'
 import { EarnSection } from './components/EarnSection'
+import { RaidMode } from './components/RaidMode'
 import { AirdropChecklist } from './components/AirdropChecklist'
 import { ProfileSection } from './components/ProfileSection'
 import { BottomNav } from './components/BottomNav'
@@ -339,9 +340,46 @@ export default function App() {
         <div style={{ position: 'relative', zIndex: 1, maxWidth: 640, margin: '0 auto' }}>
           {tab === 'home' && <ProfileSection address={address} basename={basename} totalUsers={totalUsers} setTab={setTab} />}
           {tab === 'raffle' && <RaffleSection address={address} basename={basename} />}
-          {tab === 'earn' && <EarnSection />}
-          {tab === 'boxes' && <HappyBoxesSection address={address} />}
+          {tab === 'earn' && <EarnSection setTab={setTab} address={address} />}
+          {tab === 'boxes' && <HappyBoxesSection address={address} setTab={setTab} />}
           {tab === 'tasks' && <TasksSection address={address} />}
+          {tab === 'raid' && (
+            <div style={{ padding: '0 12px 100px' }}>
+              <button
+                onClick={() => setTab('earn')}
+                style={{
+                  background: '#FFFFFF',
+                  border: '1px solid rgba(226, 232, 240, 0.8)',
+                  borderRadius: 100,
+                  padding: '6px 14px',
+                  fontSize: 11,
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  marginBottom: 12,
+                  outline: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.01)',
+                  color: '#0A0B0D',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-0.5px)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+              >
+                ← Back to Earn
+              </button>
+              <div style={{
+                background: '#FFFFFF',
+                border: '1px solid #DEE1E7',
+                borderRadius: 24,
+                padding: '20px 8px',
+                boxShadow: '0 4px 16px rgba(10,11,13,0.04)'
+              }}>
+                <RaidMode address={address} />
+              </div>
+            </div>
+          )}
           {tab === 'leaderboard' && (
             <>
               {/* Premium sub-navigation switcher above the banners */}

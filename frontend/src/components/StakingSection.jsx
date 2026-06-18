@@ -256,305 +256,290 @@ export function StakingSection() {
   ].sort((a, b) => b.staked - a.staked).map((s, idx) => ({ ...s, rank: idx + 1 }))
 
   return (
-    <div style={{ padding: '0 16px 80px', maxWidth: 480, margin: '0 auto', animation: 'fadeIn 0.3s ease-out' }}>
+    <div style={{ animation: 'fadeIn 0.3s ease-out', width: '100%', display: 'flex', flexDirection: 'column', gap: 16 }}>
       
-      {/* Header Info Block */}
+      {/* Compact Header Info Block */}
       <div style={{
-        background: 'linear-gradient(135deg, #0052FF 0%, #1D4ED8 100%)',
-        borderRadius: 24,
-        padding: '20px 24px',
+        background: 'linear-gradient(135deg, #0052FF 0%, #0036B2 100%)',
+        borderRadius: 20,
+        padding: '12px 16px',
         color: '#FFFFFF',
-        boxShadow: '0 8px 32px rgba(0, 82, 255, 0.25)',
-        marginBottom: 20,
+        boxShadow: '0 4px 16px rgba(0, 82, 255, 0.15)',
         position: 'relative',
         overflow: 'hidden'
       }}>
-        {/* Background glow lines */}
-        <div style={{
-          position: 'absolute', top: '-50%', right: '-50%', width: '120%', height: '120%',
-          background: 'radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 60%)',
-          pointerEvents: 'none'
-        }} />
-
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', zIndex: 1 }}>
           <div>
-            <div style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1, color: 'rgba(255,255,255,0.75)', marginBottom: 4 }}>
+            <div style={{ fontSize: 9.5, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5, color: 'rgba(255,255,255,0.75)', marginBottom: 2 }}>
               Active Price $HH
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 24, fontWeight: 900, fontFamily: 'monospace' }}>
-                ${formatNumber(hhPrice, 5)}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ fontSize: 18, fontWeight: 900, fontFamily: 'monospace' }}>
+                ${formatNumber(hhPrice, 8)}
               </span>
               <span style={{
                 background: 'rgba(16, 185, 129, 0.2)',
                 color: '#10B981',
-                fontSize: 10,
+                fontSize: 9,
                 fontWeight: 800,
-                padding: '3px 8px',
-                borderRadius: 20,
-                border: '1.5px solid rgba(16, 185, 129, 0.3)'
+                padding: '2px 6px',
+                borderRadius: 20
               }}>
                 ▲ +{priceChange}%
               </span>
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1, color: 'rgba(255,255,255,0.75)', marginBottom: 4 }}>
+            <div style={{ fontSize: 9.5, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5, color: 'rgba(255,255,255,0.75)', marginBottom: 2 }}>
               Daily HP Yield
             </div>
-            <div style={{ fontSize: 22, fontWeight: 900, color: '#FCD34D' }}>
+            <div style={{ fontSize: 18, fontWeight: 900, color: '#FCD34D' }}>
               +{formatNumber(totalDailyPassiveHp, 2)} HP
             </div>
           </div>
         </div>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         
         {/* Card 1: Holding Status */}
         <div style={{
           background: '#FFFFFF',
           border: '1px solid #DEE1E7',
           borderRadius: 20,
-          padding: 20,
-          boxShadow: '0 4px 16px rgba(10,11,13,0.04)'
+          padding: 16,
+          boxShadow: '0 4px 16px rgba(10,11,13,0.02)'
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
             <div>
-              <h3 style={{ fontSize: 15, fontWeight: 800, color: '#0A0B0D', margin: 0 }}>💼 Wallet Hold Rewards</h3>
-              <p style={{ fontSize: 11, color: '#717886', marginTop: 2, marginBottom: 0 }}>Earn passive HP simply by holding $HH</p>
+              <h3 style={{ fontSize: 14, fontWeight: 850, color: '#0A0B0D', margin: 0 }}>💼 Wallet Hold Rewards</h3>
+              <p style={{ fontSize: 10.5, color: '#717886', marginTop: 2, marginBottom: 0 }}>Earn passive HP by holding $HH in your wallet</p>
             </div>
             <span style={{
-              background: '#F0F5FF', color: '#0052FF', fontSize: 10, fontWeight: 900,
+              background: '#F0F5FF', color: '#0052FF', fontSize: 9.5, fontWeight: 900,
               padding: '2px 8px', borderRadius: 12
             }}>
               10% HP / Day
             </span>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 12 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
             <div>
-              <span style={{ fontSize: 20, fontWeight: 900, color: '#0A0B0D' }}>
+              <span style={{ fontSize: 18, fontWeight: 900, color: '#0A0B0D' }}>
                 {formatConcise(walletBalance)}
               </span>
-              <span style={{ fontSize: 12, fontWeight: 800, color: '#717886', marginLeft: 4 }}>$HH</span>
+              <span style={{ fontSize: 11, fontWeight: 800, color: '#717886', marginLeft: 4 }}>$HH</span>
             </div>
-            <span style={{ fontSize: 13, fontWeight: 800, color: '#32353D' }}>
+            <span style={{ fontSize: 12, fontWeight: 800, color: '#32353D' }}>
               ${formatNumber(walletUsdValue, 2)} USD
             </span>
           </div>
 
           {/* Hold progress to cap */}
-          <div style={{ marginBottom: 8 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, fontWeight: 800, color: '#717886', marginBottom: 4 }}>
-              <span>Hold Reward Cap Progress</span>
+          <div style={{ marginBottom: 10 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9.5, fontWeight: 800, color: '#717886', marginBottom: 4 }}>
+              <span>Cap Progress</span>
               <span>${formatNumber(walletUsdValue, 2)} / $100.00</span>
             </div>
-            <div style={{ height: 6, background: '#EEF0F3', borderRadius: 4, overflow: 'hidden' }}>
+            <div style={{ height: 5, background: '#EEF0F3', borderRadius: 4, overflow: 'hidden' }}>
               <div style={{ height: '100%', width: `${holdCapPercent}%`, background: '#3B82F6', borderRadius: 4 }} />
             </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#F8F9FC', padding: '10px 14px', borderRadius: 12 }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#717886' }}>Daily HP Earnings:</span>
-            <span style={{ fontSize: 13, fontWeight: 900, color: '#059669' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#F8F9FC', padding: '8px 12px', borderRadius: 12 }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#717886' }}>Daily HP Earnings:</span>
+            <span style={{ fontSize: 12, fontWeight: 900, color: '#059669' }}>
               +{formatNumber(holdHpEarned, 2)} HP/day
             </span>
           </div>
         </div>
 
-        {/* Card 2: Hard Staking Status */}
+        {/* Card 2: Hard Staking Status & Form Unified */}
         <div style={{
           background: '#FFFFFF',
           border: '1px solid #DEE1E7',
           borderRadius: 20,
-          padding: 20,
-          boxShadow: '0 4px 16px rgba(10,11,13,0.04)',
+          padding: 16,
+          boxShadow: '0 4px 16px rgba(10,11,13,0.02)',
           position: 'relative'
         }}>
           <div style={{
-            position: 'absolute', top: -1, right: 24,
+            position: 'absolute', top: -1, right: 16,
             background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-            color: '#FFFFFF', fontSize: '8.5px', fontWeight: 900,
-            padding: '4px 10px', borderRadius: '0 0 8px 8px',
+            color: '#FFFFFF', fontSize: '8px', fontWeight: 900,
+            padding: '3px 8px', borderRadius: '0 0 8px 8px',
             textTransform: 'uppercase', letterSpacing: 0.5,
-            boxShadow: '0 2px 8px rgba(16,185,129,0.2)'
+            boxShadow: '0 2px 8px rgba(16,185,129,0.1)'
           }}>
             🔥 45.8% APR (Yield in $HH)
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
             <div>
-              <h3 style={{ fontSize: 15, fontWeight: 800, color: '#0A0B0D', margin: 0 }}>🥩 Lock Staking Rewards</h3>
-              <p style={{ fontSize: 11, color: '#717886', marginTop: 2, marginBottom: 0 }}>Lock tokens on contract for double HP yield</p>
+              <h3 style={{ fontSize: 14, fontWeight: 850, color: '#0A0B0D', margin: 0 }}>🥩 Locked Staking Rewards</h3>
+              <p style={{ fontSize: 10.5, color: '#717886', marginTop: 2, marginBottom: 0 }}>Lock tokens on contract for double HP yield</p>
             </div>
             <span style={{
-              background: '#D1FAE5', color: '#059669', fontSize: 10, fontWeight: 900,
+              background: '#D1FAE5', color: '#059669', fontSize: 9.5, fontWeight: 900,
               padding: '2px 8px', borderRadius: 12, marginRight: 85
             }}>
               20% HP / Day
             </span>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 12 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
             <div>
-              <span style={{ fontSize: 20, fontWeight: 900, color: '#0A0B0D' }}>
+              <span style={{ fontSize: 18, fontWeight: 900, color: '#0A0B0D' }}>
                 {formatConcise(stakedBalance)}
               </span>
-              <span style={{ fontSize: 12, fontWeight: 800, color: '#717886', marginLeft: 4 }}>$HH</span>
+              <span style={{ fontSize: 11, fontWeight: 800, color: '#717886', marginLeft: 4 }}>$HH</span>
             </div>
-            <span style={{ fontSize: 13, fontWeight: 800, color: '#32353D' }}>
+            <span style={{ fontSize: 12, fontWeight: 800, color: '#32353D' }}>
               ${formatNumber(stakedUsdValue, 2)} USD
             </span>
           </div>
 
           {/* Stake progress to cap */}
-          <div style={{ marginBottom: 8 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, fontWeight: 800, color: '#717886', marginBottom: 4 }}>
-              <span>Stake Reward Cap Progress</span>
+          <div style={{ marginBottom: 12 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9.5, fontWeight: 800, color: '#717886', marginBottom: 4 }}>
+              <span>Cap Progress</span>
               <span>${formatNumber(stakedUsdValue, 2)} / $100.00</span>
             </div>
-            <div style={{ height: 6, background: '#EEF0F3', borderRadius: 4, overflow: 'hidden' }}>
+            <div style={{ height: 5, background: '#EEF0F3', borderRadius: 4, overflow: 'hidden' }}>
               <div style={{ height: '100%', width: `${stakeCapPercent}%`, background: '#10B981', borderRadius: 4 }} />
             </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#F8F9FC', padding: '10px 14px', borderRadius: 12 }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#717886' }}>Daily HP Earnings:</span>
-            <span style={{ fontSize: 13, fontWeight: 900, color: '#059669' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#F8F9FC', padding: '8px 12px', borderRadius: 12, marginBottom: 16 }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#717886' }}>Daily HP Earnings:</span>
+            <span style={{ fontSize: 12, fontWeight: 900, color: '#059669' }}>
               +{formatNumber(stakeHpEarned, 2)} HP/day
             </span>
           </div>
-        </div>
 
-        {/* Interactive Staking Form */}
-        <div style={{
-          background: '#FFFFFF',
-          border: '1px solid #DEE1E7',
-          borderRadius: 20,
-          padding: 20,
-          boxShadow: '0 4px 16px rgba(10,11,13,0.04)'
-        }}>
-          <div style={{ display: 'flex', background: '#F8F9FC', padding: 4, borderRadius: 12, marginBottom: 16 }}>
-            <button
-              onClick={() => setStakeActionTab('stake')}
-              style={{
-                flex: 1, padding: '8px 12px', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 800,
-                background: stakeActionTab === 'stake' ? '#FFFFFF' : 'transparent',
-                color: stakeActionTab === 'stake' ? '#0052FF' : '#717886',
-                boxShadow: stakeActionTab === 'stake' ? '0 2px 6px rgba(0,0,0,0.05)' : 'none',
-                cursor: 'pointer'
-              }}
-            >
-              Stake $HH
-            </button>
-            <button
-              onClick={() => setStakeActionTab('unstake')}
-              style={{
-                flex: 1, padding: '8px 12px', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 800,
-                background: stakeActionTab === 'unstake' ? '#FFFFFF' : 'transparent',
-                color: stakeActionTab === 'unstake' ? '#0052FF' : '#717886',
-                boxShadow: stakeActionTab === 'unstake' ? '0 2px 6px rgba(0,0,0,0.05)' : 'none',
-                cursor: 'pointer'
-              }}
-            >
-              Unstake $HH
-            </button>
+          {/* Inline Action Form */}
+          <div style={{ borderTop: '1px solid #EEF0F3', paddingTop: 14 }}>
+            <div style={{ display: 'flex', background: '#F8F9FC', padding: 3, borderRadius: 10, marginBottom: 12 }}>
+              <button
+                onClick={() => setStakeActionTab('stake')}
+                style={{
+                  flex: 1, padding: '6px 10px', border: 'none', borderRadius: 7, fontSize: 11.5, fontWeight: 800,
+                  background: stakeActionTab === 'stake' ? '#FFFFFF' : 'transparent',
+                  color: stakeActionTab === 'stake' ? '#0052FF' : '#717886',
+                  boxShadow: stakeActionTab === 'stake' ? '0 1px 4px rgba(0,0,0,0.05)' : 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                Stake $HH
+              </button>
+              <button
+                onClick={() => setStakeActionTab('unstake')}
+                style={{
+                  flex: 1, padding: '6px 10px', border: 'none', borderRadius: 7, fontSize: 11.5, fontWeight: 800,
+                  background: stakeActionTab === 'unstake' ? '#FFFFFF' : 'transparent',
+                  color: stakeActionTab === 'unstake' ? '#0052FF' : '#717886',
+                  boxShadow: stakeActionTab === 'unstake' ? '0 1px 4px rgba(0,0,0,0.05)' : 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                Unstake $HH
+              </button>
+            </div>
+
+            {stakeActionTab === 'stake' ? (
+              <div>
+                <div style={{ position: 'relative', marginBottom: 10 }}>
+                  <input
+                    type="number"
+                    value={stakingAmount}
+                    onChange={(e) => setStakingAmount(e.target.value)}
+                    placeholder="Amount to stake"
+                    style={{
+                      width: '100%', padding: '10px 65px 10px 12px', borderRadius: 10,
+                      border: '1px solid #DEE1E7', fontSize: 13, fontWeight: 700, outline: 'none'
+                    }}
+                  />
+                  <button
+                    onClick={() => setStakingAmount(walletBalance.toString())}
+                    style={{
+                      position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
+                      background: '#F0F5FF', border: 'none', color: '#0052FF', fontSize: 10, fontWeight: 900,
+                      padding: '4px 8px', borderRadius: 6, cursor: 'pointer'
+                    }}
+                  >
+                    MAX
+                  </button>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10.5, color: '#717886', marginBottom: 12 }}>
+                  <span>Available: {formatConcise(walletBalance)} $HH</span>
+                  <span>Est: +{formatNumber(Math.min(20.0, (stakedUsdValue + (parseFloat(stakingAmount || 0) * hhPrice)) * 0.20), 1)} HP/day</span>
+                </div>
+
+                <button
+                  onClick={handleStake}
+                  disabled={!!txStep}
+                  style={{
+                    width: '100%', padding: '11px', border: 'none', borderRadius: 12,
+                    background: allowance < parseFloat(stakingAmount || 0) 
+                      ? 'linear-gradient(135deg, #4F46E5 0%, #3730A3 100%)'
+                      : 'linear-gradient(135deg, #0052FF 0%, #0043D0 100%)',
+                    color: '#FFFFFF', fontSize: 12.5, fontWeight: 800, cursor: 'pointer',
+                    boxShadow: '0 2px 8px rgba(0,82,255,0.08)'
+                  }}
+                >
+                  {allowance < parseFloat(stakingAmount || 0) ? 'Approve $HH (One-time)' : 'Stake $HH'}
+                </button>
+              </div>
+            ) : (
+              <div>
+                <div style={{ position: 'relative', marginBottom: 10 }}>
+                  <input
+                    type="number"
+                    value={unstakeAmount}
+                    onChange={(e) => setUnstakeAmount(e.target.value)}
+                    placeholder="Amount to unstake"
+                    style={{
+                      width: '100%', padding: '10px 65px 10px 12px', borderRadius: 10,
+                      border: '1px solid #DEE1E7', fontSize: 13, fontWeight: 700, outline: 'none'
+                    }}
+                  />
+                  <button
+                    onClick={() => setUnstakeAmount(stakedBalance.toString())}
+                    style={{
+                      position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
+                      background: '#F0F5FF', border: 'none', color: '#0052FF', fontSize: 10, fontWeight: 900,
+                      padding: '4px 8px', borderRadius: 6, cursor: 'pointer'
+                    }}
+                  >
+                    MAX
+                  </button>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10.5, color: '#717886', marginBottom: 12 }}>
+                  <span>Staked: {formatConcise(stakedBalance)} $HH</span>
+                  <span style={{ color: '#FC401F', fontWeight: 700 }}>⚠️ 3d Unstacking Cooldown</span>
+                </div>
+
+                <button
+                  onClick={handleUnstake}
+                  disabled={!!txStep}
+                  style={{
+                    width: '100%', padding: '11px', border: 'none', borderRadius: 12,
+                    background: 'linear-gradient(135deg, #32353D 0%, #1A1C20 100%)',
+                    color: '#FFFFFF', fontSize: 12.5, fontWeight: 800, cursor: 'pointer',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+                  }}
+                >
+                  Unstake & Begin Cooldown
+                </button>
+              </div>
+            )}
+
+            {txError && (
+              <div style={{ marginTop: 10, padding: 10, background: '#FEE2E2', border: '1px solid #FECACA', borderRadius: 8, color: '#DC2626', fontSize: 11, fontWeight: 750 }}>
+                ⚠️ {txError}
+              </div>
+            )}
           </div>
-
-          {stakeActionTab === 'stake' ? (
-            <div>
-              <div style={{ position: 'relative', marginBottom: 12 }}>
-                <input
-                  type="number"
-                  value={stakingAmount}
-                  onChange={(e) => setStakingAmount(e.target.value)}
-                  placeholder="Enter amount to stake"
-                  style={{
-                    width: '100%', padding: '12px 75px 12px 14px', borderRadius: 12,
-                    border: '1px solid #DEE1E7', fontSize: 14, fontWeight: 700, outline: 'none'
-                  }}
-                />
-                <button
-                  onClick={() => setStakingAmount(walletBalance.toString())}
-                  style={{
-                    position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
-                    background: '#F0F5FF', border: 'none', color: '#0052FF', fontSize: 11, fontWeight: 900,
-                    padding: '5px 10px', borderRadius: 8, cursor: 'pointer'
-                  }}
-                >
-                  MAX
-                </button>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#717886', marginBottom: 16 }}>
-                <span>Available: {formatConcise(walletBalance)} $HH</span>
-                <span>Est: +{formatNumber(Math.min(20.0, (stakedUsdValue + (parseFloat(stakingAmount || 0) * hhPrice)) * 0.20), 1)} HP/day</span>
-              </div>
-
-              <button
-                onClick={handleStake}
-                disabled={!!txStep}
-                style={{
-                  width: '100%', padding: '14px', border: 'none', borderRadius: 14,
-                  background: allowance < parseFloat(stakingAmount || 0) 
-                    ? 'linear-gradient(135deg, #4F46E5 0%, #3730A3 100%)'
-                    : 'linear-gradient(135deg, #0052FF 0%, #0043D0 100%)',
-                  color: '#FFFFFF', fontSize: 14, fontWeight: 800, cursor: 'pointer',
-                  boxShadow: '0 4px 12px rgba(0,82,255,0.15)'
-                }}
-              >
-                {allowance < parseFloat(stakingAmount || 0) ? 'Approve $HH (One-time)' : 'Stake $HH'}
-              </button>
-            </div>
-          ) : (
-            <div>
-              <div style={{ position: 'relative', marginBottom: 12 }}>
-                <input
-                  type="number"
-                  value={unstakeAmount}
-                  onChange={(e) => setUnstakeAmount(e.target.value)}
-                  placeholder="Enter amount to unstake"
-                  style={{
-                    width: '100%', padding: '12px 75px 12px 14px', borderRadius: 12,
-                    border: '1px solid #DEE1E7', fontSize: 14, fontWeight: 700, outline: 'none'
-                  }}
-                />
-                <button
-                  onClick={() => setUnstakeAmount(stakedBalance.toString())}
-                  style={{
-                    position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
-                    background: '#F0F5FF', border: 'none', color: '#0052FF', fontSize: 11, fontWeight: 900,
-                    padding: '5px 10px', borderRadius: 8, cursor: 'pointer'
-                  }}
-                >
-                  MAX
-                </button>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#717886', marginBottom: 16 }}>
-                <span>Staked: {formatConcise(stakedBalance)} $HH</span>
-                <span style={{ color: '#FC401F', fontWeight: 700 }}>⚠️ 3d Unstaking Cooldown</span>
-              </div>
-
-              <button
-                onClick={handleUnstake}
-                disabled={!!txStep}
-                style={{
-                  width: '100%', padding: '14px', border: 'none', borderRadius: 14,
-                  background: 'linear-gradient(135deg, #32353D 0%, #1A1C20 100%)',
-                  color: '#FFFFFF', fontSize: 14, fontWeight: 800, cursor: 'pointer',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                }}
-              >
-                Unstake & Begin Cooldown
-              </button>
-            </div>
-          )}
-
-          {txError && (
-            <div style={{ marginTop: 12, padding: 12, background: '#FEE2E2', border: '1px solid #FECACA', borderRadius: 10, color: '#DC2626', fontSize: 12, fontWeight: 750 }}>
-              ⚠️ {txError}
-            </div>
-          )}
         </div>
 
         {/* Pending Withdrawals list (3-day cooldown tracker) */}
@@ -563,11 +548,11 @@ export function StakingSection() {
             background: '#FFFFFF',
             border: '1px solid #DEE1E7',
             borderRadius: 20,
-            padding: 20,
-            boxShadow: '0 4px 16px rgba(10,11,13,0.04)'
+            padding: 16,
+            boxShadow: '0 4px 16px rgba(10,11,13,0.02)'
           }}>
-            <h3 style={{ fontSize: 14, fontWeight: 800, color: '#0A0B0D', marginBottom: 12, margin: 0 }}>⏳ Pending Withdrawals</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 12 }}>
+            <h3 style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D', marginBottom: 10, margin: 0 }}>⏳ Pending Withdrawals</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
               {pendingWithdrawals.map((w) => {
                 const isReady = Date.now() >= w.unlockTime
                 const secondsLeft = Math.max(0, Math.floor((w.unlockTime - Date.now()) / 1000))
@@ -578,13 +563,13 @@ export function StakingSection() {
                 return (
                   <div key={w.id} style={{
                     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                    background: '#F8F9FC', padding: 12, borderRadius: 12, border: '1px solid #EEF0F3'
+                    background: '#F8F9FC', padding: 10, borderRadius: 12, border: '1px solid #EEF0F3'
                   }}>
                     <div>
-                      <div style={{ fontSize: 13, fontWeight: 850, color: '#0A0B0D' }}>
+                      <div style={{ fontSize: 12.5, fontWeight: 850, color: '#0A0B0D' }}>
                         {formatConcise(w.amount)} $HH
                       </div>
-                      <div style={{ fontSize: 10, color: '#717886', marginTop: 2 }}>
+                      <div style={{ fontSize: 9.5, color: '#717886', marginTop: 2 }}>
                         {isReady ? 'Ready to claim!' : `Unlocks in: ${days}d ${hours}h ${minutes}m`}
                       </div>
                     </div>
@@ -593,8 +578,8 @@ export function StakingSection() {
                       disabled={!isReady}
                       style={{
                         background: isReady ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' : '#DEE1E7',
-                        color: '#FFFFFF', border: 'none', borderRadius: 8, padding: '6px 12px',
-                        fontSize: 11, fontWeight: 900, cursor: isReady ? 'pointer' : 'not-allowed',
+                        color: '#FFFFFF', border: 'none', borderRadius: 8, padding: '5px 10px',
+                        fontSize: 10.5, fontWeight: 900, cursor: isReady ? 'pointer' : 'not-allowed',
                         boxShadow: isReady ? '0 2px 6px rgba(16,185,129,0.15)' : 'none'
                       }}
                     >
@@ -607,51 +592,7 @@ export function StakingSection() {
           </div>
         )}
 
-        {/* Stakers Leaderboard */}
-        <div style={{
-          background: '#FFFFFF',
-          border: '1px solid #DEE1E7',
-          borderRadius: 20,
-          padding: 20,
-          boxShadow: '0 4px 16px rgba(10,11,13,0.04)'
-        }}>
-          <h3 style={{ fontSize: 15, fontWeight: 800, color: '#0A0B0D', marginBottom: 12, margin: 0 }}>🏆 Top Stakers Community</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12 }}>
-            {topStakers.map((staker) => (
-              <div key={staker.rank} style={{
-                display: 'flex', alignItems: 'center', justifyStyle: 'stretch',
-                background: staker.isUser ? '#F0F5FF' : 'transparent',
-                border: staker.isUser ? '1px solid rgba(0, 82, 255, 0.2)' : '1px solid transparent',
-                padding: '8px 12px', borderRadius: 12,
-                justifyContent: 'space-between'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <span style={{
-                    width: 20, height: 20, background: staker.rank === 1 ? '#FCD34D' : staker.rank === 2 ? '#B1B7C3' : staker.rank === 3 ? '#F59E0B' : '#EEF0F3',
-                    borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 10, fontWeight: 900, color: staker.rank <= 3 ? '#FFFFFF' : '#717886'
-                  }}>
-                    {staker.rank}
-                  </span>
-                  <div>
-                    <div style={{ fontSize: 12, fontWeight: 800, color: '#0A0B0D' }}>
-                      {staker.username}
-                    </div>
-                    <div style={{ fontSize: 9, color: '#717886' }}>{staker.address}</div>
-                  </div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: 12, fontWeight: 900, color: '#0052FF' }}>
-                    {formatConcise(staker.staked)} $HH
-                  </div>
-                  <div style={{ fontSize: 9, fontWeight: 800, color: '#059669' }}>
-                    +{formatNumber(staker.hp, 1)} HP/day
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+
 
       </div>
 

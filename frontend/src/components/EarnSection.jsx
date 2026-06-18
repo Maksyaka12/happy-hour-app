@@ -12,8 +12,9 @@ import { StakingSection } from './StakingSection'
 // Helper for date
 const todayUTC = () => new Date().toISOString().split('T')[0]
 
-export function EarnSection() {
-  const { address } = useAccount()
+export function EarnSection({ setTab, address: propAddress }) {
+  const { address: accountAddress } = useAccount()
+  const address = propAddress || accountAddress
   const chainId = useChainId()
   const { switchChain } = useSwitchChain()
   
@@ -156,166 +157,204 @@ export function EarnSection() {
   }
 
   return (
-    <div style={{ maxWidth: 640, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 24, padding: '0 12px 120px', animation: 'fadeIn 0.3s ease-out' }}>
+    <div style={{ maxWidth: 640, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 16, padding: '0 12px 120px', animation: 'fadeIn 0.3s ease-out' }}>
       
       {/* Section Header */}
-      <div style={{ padding: '0 4px' }}>
+      <div style={{ padding: '0 4px', marginBottom: 4 }}>
         <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0A0B0D', letterSpacing: '-0.5px', margin: 0 }}>
           Earn HP
         </h2>
-        <p style={{ fontSize: 13, color: '#717886', marginTop: 4, marginBottom: 0 }}>
+        <p style={{ fontSize: 12.5, color: '#717886', marginTop: 4, marginBottom: 0 }}>
           Maximize your Season 2 points with active tasks, raids, and staking rewards.
         </p>
       </div>
 
-      {/* 1. Daily Check-in & Boost (2-Column Grid) */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-        {/* Daily Check-in Card */}
-        <div style={{
-          background: '#FFFFFF',
-          border: '1px solid #DEE1E7',
-          borderRadius: 20,
-          padding: 18,
-          boxShadow: '0 4px 16px rgba(10,11,13,0.04)',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between'
-        }}>
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <span style={{ fontSize: 28 }}>📆</span>
-              <span style={{
-                background: '#F0F5FF', color: '#0052FF', fontSize: 10, fontWeight: 900,
-                padding: '3px 8px', borderRadius: 12, border: '1px solid rgba(0, 82, 255, 0.15)'
-              }}>
-                Streak: {streakCount}d
-              </span>
+      {/* Daily Actions Stack — Clean & Concise */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {/* Check-in Button */}
+        <div>
+          <button
+            onClick={() => setTxModal('checkin')}
+            disabled={checkedToday}
+            style={{
+              width: '100%',
+              padding: '14px 20px',
+              borderRadius: 16,
+              border: checkedToday ? '1px solid #E5E9F0' : 'none',
+              background: checkedToday ? '#F8F9FC' : 'linear-gradient(135deg, #0052FF 0%, #0043D0 100%)',
+              color: checkedToday ? '#94A3B8' : '#FFFFFF',
+              fontSize: 13,
+              fontWeight: 800,
+              cursor: checkedToday ? 'not-allowed' : 'pointer',
+              boxShadow: checkedToday ? 'none' : '0 4px 16px rgba(0,82,255,0.15)',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              transition: 'all 0.2s',
+              outline: 'none'
+            }}
+            onMouseEnter={e => { if (!checkedToday) e.currentTarget.style.transform = 'translateY(-1px)' }}
+            onMouseLeave={e => { if (!checkedToday) e.currentTarget.style.transform = 'none' }}
+          >
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span>📆</span>
+              <span>Daily Check-in</span>
+              {streakCount > 0 && (
+                <span style={{
+                  background: checkedToday ? 'rgba(148, 163, 184, 0.15)' : 'rgba(255,255,255,0.2)',
+                  color: checkedToday ? '#64748B' : '#FFFFFF',
+                  fontSize: 10,
+                  fontWeight: 900,
+                  padding: '2px 8px',
+                  borderRadius: 10,
+                  border: checkedToday ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1.5px solid rgba(255,255,255,0.4)',
+                  marginLeft: 4
+                }}>
+                  {streakCount}d streak
+                </span>
+              )}
+            </span>
+            <span>{checkedToday ? 'Checked In ✓' : 'Claim +1 HP →'}</span>
+          </button>
+          {checkinError && (
+            <div style={{ marginTop: 6, color: '#FC401F', fontSize: 10.5, fontWeight: 700, paddingLeft: 12 }}>
+              ⚠️ {checkinError}
             </div>
-            <h3 style={{ fontSize: 14, fontWeight: 900, color: '#0A0B0D', margin: 0 }}>Daily Check-in</h3>
-            <p style={{ fontSize: 10.5, color: '#717886', marginTop: 4, marginBottom: 16, lineHeight: 1.4 }}>
-              Check-in daily to build your streak and earn +1.00 HP.
-            </p>
-          </div>
-
-          <div>
-            <button
-              onClick={() => setTxModal('checkin')}
-              disabled={checkedToday}
-              style={{
-                width: '100%',
-                padding: '10px 12px',
-                borderRadius: 10,
-                border: 'none',
-                background: checkedToday ? '#EEF0F3' : 'linear-gradient(135deg, #0052FF 0%, #0043D0 100%)',
-                color: checkedToday ? '#94A3B8' : '#FFFFFF',
-                fontSize: 11.5,
-                fontWeight: 800,
-                cursor: checkedToday ? 'not-allowed' : 'pointer',
-                boxShadow: checkedToday ? 'none' : '0 2px 8px rgba(0,82,255,0.15)'
-              }}
-            >
-              {checkedToday ? 'Checked In' : 'Check In (+1 HP)'}
-            </button>
-            {checkinError && (
-              <div style={{ marginTop: 8, color: '#FC401F', fontSize: 10, fontWeight: 700 }}>
-                ⚠️ {checkinError}
-              </div>
-            )}
-          </div>
+          )}
         </div>
 
-        {/* Daily HP Boost Card */}
-        <div style={{
-          background: '#FFFFFF',
-          border: '1px solid #DEE1E7',
-          borderRadius: 20,
-          padding: 18,
-          boxShadow: '0 4px 16px rgba(10,11,13,0.04)',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between'
-        }}>
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <span style={{ fontSize: 28 }}>⚡</span>
+        {/* Boost Button */}
+        <div>
+          <button
+            onClick={() => setTxModal('boost')}
+            disabled={boostedToday}
+            style={{
+              width: '100%',
+              padding: '14px 20px',
+              borderRadius: 16,
+              border: boostedToday ? '1px solid #E5E9F0' : 'none',
+              background: boostedToday ? '#F8F9FC' : 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+              color: boostedToday ? '#94A3B8' : '#FFFFFF',
+              fontSize: 13,
+              fontWeight: 800,
+              cursor: boostedToday ? 'not-allowed' : 'pointer',
+              boxShadow: boostedToday ? 'none' : '0 4px 16px rgba(16,185,129,0.15)',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              transition: 'all 0.2s',
+              outline: 'none'
+            }}
+            onMouseEnter={e => { if (!boostedToday) e.currentTarget.style.transform = 'translateY(-1px)' }}
+            onMouseLeave={e => { if (!boostedToday) e.currentTarget.style.transform = 'none' }}
+          >
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span>⚡</span>
+              <span>Daily HP Boost</span>
               <span style={{
-                background: '#D1FAE5', color: '#059669', fontSize: 10, fontWeight: 900,
-                padding: '3px 8px', borderRadius: 12
+                background: boostedToday ? 'rgba(148, 163, 184, 0.15)' : 'rgba(255,255,255,0.2)',
+                color: boostedToday ? '#64748B' : '#FFFFFF',
+                fontSize: 10,
+                fontWeight: 900,
+                padding: '2px 8px',
+                borderRadius: 10,
+                border: boostedToday ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1.5px solid rgba(255,255,255,0.4)',
+                marginLeft: 4
               }}>
                 Cost: $0.10
               </span>
+            </span>
+            <span>{boostedToday ? 'Boost Claimed ✓' : 'Get +2 HP →'}</span>
+          </button>
+          {boostError && (
+            <div style={{ marginTop: 6, color: '#FC401F', fontSize: 10.5, fontWeight: 700, paddingLeft: 12 }}>
+              ⚠️ {boostError}
             </div>
-            <h3 style={{ fontSize: 14, fontWeight: 900, color: '#0A0B0D', margin: 0 }}>Daily HP Boost</h3>
-            <p style={{ fontSize: 10.5, color: '#717886', marginTop: 4, marginBottom: 16, lineHeight: 1.4 }}>
-              Claim daily paid boost to get +2.00 HP instantly.
-            </p>
-          </div>
+          )}
+        </div>
+      </div>
 
+      {/* Feature Blocks (2-Column Grid) */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        {/* Block 1: Happy Raids */}
+        <div
+          onClick={() => setTab('raid')}
+          style={{
+            background: 'linear-gradient(135deg, rgba(0, 82, 255, 0.03) 0%, rgba(228, 198, 255, 0.05) 100%)',
+            border: '1px solid #E5E9F0',
+            borderRadius: 24,
+            padding: '16px 14px',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.01)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between'
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.transform = 'translateY(-2px)'
+            e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 82, 255, 0.05)'
+            e.currentTarget.style.borderColor = 'rgba(0, 82, 255, 0.15)'
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.transform = 'none'
+            e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.01)'
+            e.currentTarget.style.borderColor = '#E5E9F0'
+          }}
+        >
           <div>
-            <button
-              onClick={() => setTxModal('boost')}
-              disabled={boostedToday}
-              style={{
-                width: '100%',
-                padding: '10px 12px',
-                borderRadius: 10,
-                border: 'none',
-                background: boostedToday ? '#EEF0F3' : 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-                color: boostedToday ? '#94A3B8' : '#FFFFFF',
-                fontSize: 11.5,
-                fontWeight: 800,
-                cursor: boostedToday ? 'not-allowed' : 'pointer',
-                boxShadow: boostedToday ? 'none' : '0 2px 8px rgba(16,185,129,0.15)'
-              }}
-            >
-              {boostedToday ? 'Boost Claimed' : 'HP Boost (+2 HP)'}
-            </button>
-            {boostError && (
-              <div style={{ marginTop: 8, color: '#FC401F', fontSize: 10, fontWeight: 700 }}>
-                ⚠️ {boostError}
-              </div>
-            )}
+            <div style={{ fontSize: 13.5, fontWeight: 900, color: '#0A0B0D', marginBottom: 4 }}>⚔️ Happy Raids</div>
+            <div style={{ fontSize: 9.5, color: '#64748B', lineHeight: 1.4, fontWeight: 500 }}>
+              Fight for USDC/HH pools. Win huge rewards & passive HP points.
+            </div>
+          </div>
+          <div style={{ fontSize: 10, fontWeight: 800, color: '#0052FF', marginTop: 16, display: 'flex', alignItems: 'center', gap: 2 }}>
+            <span>Play now</span>
+            <span>→</span>
+          </div>
+        </div>
+
+        {/* Block 2: Happy Boxes */}
+        <div
+          onClick={() => setTab('boxes')}
+          style={{
+            background: 'linear-gradient(135deg, rgba(0, 82, 255, 0.03) 0%, rgba(228, 198, 255, 0.05) 100%)',
+            border: '1px solid #E5E9F0',
+            borderRadius: 24,
+            padding: '16px 14px',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.01)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between'
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.transform = 'translateY(-2px)'
+            e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 82, 255, 0.05)'
+            e.currentTarget.style.borderColor = 'rgba(0, 82, 255, 0.15)'
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.transform = 'none'
+            e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.01)'
+            e.currentTarget.style.borderColor = '#E5E9F0'
+          }}
+        >
+          <div>
+            <div style={{ fontSize: 13.5, fontWeight: 900, color: '#0A0B0D', marginBottom: 4 }}>🎁 Happy Boxes</div>
+            <div style={{ fontSize: 9.5, color: '#64748B', lineHeight: 1.4, fontWeight: 500 }}>
+              Open mystery chests to claim high multiplier passive rewards.
+            </div>
+          </div>
+          <div style={{ fontSize: 10, fontWeight: 800, color: '#0052FF', marginTop: 16, display: 'flex', alignItems: 'center', gap: 2 }}>
+            <span>Open now</span>
+            <span>→</span>
           </div>
         </div>
       </div>
 
-      {/* 2. Happy Raids Block */}
-      <div style={{
-        background: '#FFFFFF',
-        border: '1px solid #DEE1E7',
-        borderRadius: 24,
-        padding: '20px 8px',
-        boxShadow: '0 4px 16px rgba(10,11,13,0.04)'
-      }}>
-        <div style={{ padding: '0 12px' }}>
-          <h3 style={{ fontSize: 16, fontWeight: 900, color: '#0A0B0D', margin: 0 }}>
-            ⚔️ Happy Raids
-          </h3>
-          <p style={{ fontSize: 12, color: '#717886', marginTop: 4, marginBottom: 20 }}>
-            Fight for pools with USDC or $HH. Win huge rewards and earn HP.
-          </p>
-        </div>
-        <RaidMode address={address} />
-      </div>
-
-      {/* 3. HH Staking & Hold Block */}
-      <div style={{
-        background: '#FFFFFF',
-        border: '1px solid #DEE1E7',
-        borderRadius: 24,
-        padding: '20px 8px',
-        boxShadow: '0 4px 16px rgba(10,11,13,0.04)'
-      }}>
-        <div style={{ padding: '0 12px' }}>
-          <h3 style={{ fontSize: 16, fontWeight: 900, color: '#0A0B0D', margin: 0 }}>
-            🥩 $HH Staking & Hold Yields
-          </h3>
-          <p style={{ fontSize: 12, color: '#717886', marginTop: 4, marginBottom: 20 }}>
-            Hold $HH or lock it in the staking contract to generate passive HP daily.
-          </p>
-        </div>
-        <StakingSection />
-      </div>
+      {/* Yield & Staking details */}
+      <StakingSection />
 
       {/* Transaction Modals */}
       {txModal === 'checkin' && (
