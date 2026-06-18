@@ -565,12 +565,6 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
   return (
     <div style={{ paddingBottom: 120, padding: '0 12px 120px', position: 'relative' }}>
       
-      {/* Home Title */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, padding: '0 4px' }}>
-        <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0A0B0D', letterSpacing: '-0.5px' }}>
-          Home
-        </h2>
-      </div>
 
       {/* Crystal Clear Player Passport */}
       <div
@@ -685,11 +679,10 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
 
       {/* Swap Zone Section Header */}
       <div style={{
-        fontSize: 12,
-        fontWeight: 700,
-        color: '#64748B',
-        textTransform: 'uppercase',
-        letterSpacing: '0.8px',
+        fontSize: 20,
+        fontWeight: 500,
+        color: '#0A0B0D',
+        letterSpacing: '-0.3px',
         marginTop: 18,
         marginBottom: 8,
         padding: '0 4px'
