@@ -726,7 +726,7 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
                 height: 28,
                 background: 'radial-gradient(circle at bottom, #FBBF24, #F59E0B, #EF4444, transparent 70%)',
                 borderRadius: '50% 50% 20% 20%',
-                filter: 'blur(3px)',
+                filter: 'blur(1.2px)',
                 opacity: 0.8,
                 animation: 'flame-flicker-1 0.9s infinite alternate ease-in-out'
               }} />
@@ -736,7 +736,7 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
                 height: 38,
                 background: 'radial-gradient(circle at bottom, #FFF, #FBBF24, #F59E0B, #EF4444, transparent 75%)',
                 borderRadius: '50% 50% 20% 20%',
-                filter: 'blur(4px)',
+                filter: 'blur(1.6px)',
                 opacity: 0.95,
                 animation: 'flame-flicker-2 0.7s infinite alternate ease-in-out',
                 margin: '0 -6px'
@@ -747,7 +747,7 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
                 height: 24,
                 background: 'radial-gradient(circle at bottom, #FBBF24, #F59E0B, #EF4444, transparent 70%)',
                 borderRadius: '50% 50% 20% 20%',
-                filter: 'blur(3px)',
+                filter: 'blur(1.2px)',
                 opacity: 0.8,
                 animation: 'flame-flicker-3 1.1s infinite alternate ease-in-out'
               }} />
@@ -1104,17 +1104,17 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
               border: '1px solid rgba(255,255,255,0.42)',
               color: '#FFF',
               borderRadius: 14,
-              padding: '12px 10px',
+              padding: 0,
+              height: 52,
+              overflow: 'hidden',
               cursor: (boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0) ? 'not-allowed' : 'pointer',
               boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)',
               opacity: (boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0) ? 0.4 : 1,
               outline: 'none',
               transition: 'all 0.2s',
               display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 2
+              flexDirection: 'row',
+              alignItems: 'center'
             }}
             onMouseEnter={e => {
               if (!(boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0)) {
@@ -1129,26 +1129,35 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
               }
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '0 4px' }}>
-              <div style={{
-                background: 'rgba(255,255,255,0.12)',
-                padding: '3px 6px',
-                borderRadius: 8,
-                fontSize: 9.5,
-                fontWeight: 900,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 2.5
-              }}>
-                1 🎁
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.08)',
+              height: '100%',
+              padding: '0 14px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRight: '1px solid rgba(255, 255, 255, 0.20)',
+              fontSize: 11,
+              fontWeight: 900,
+              gap: 3
+            }}>
+              1 🎁
+            </div>
+            <div style={{
+              flex: 1,
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '0 10px',
+              gap: 1
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 3.5 }}>
+                <span style={{ fontSize: 11.5, fontWeight: 900 }}>0.30</span>
+                <img src="/usdc-logo.png" alt="USDC" style={{ width: 10, height: 10 }} />
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 3.5 }}>
-                  <span style={{ fontSize: 11.5, fontWeight: 900 }}>0.30</span>
-                  <img src="/usdc-logo.png" alt="USDC" style={{ width: 10, height: 10 }} />
-                </div>
-                <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.48)', fontWeight: 600 }}>≈$0.30</span>
-              </div>
+              <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.48)', fontWeight: 600 }}>≈$0.30</span>
             </div>
           </button>
 
@@ -1167,17 +1176,17 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
               border: '1px solid rgba(255,255,255,0.42)',
               color: '#FFF',
               borderRadius: 14,
-              padding: '12px 10px',
+              padding: 0,
+              height: 52,
+              overflow: 'hidden',
               cursor: (boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0) ? 'not-allowed' : 'pointer',
               boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)',
               opacity: (boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0) ? 0.4 : 1,
               outline: 'none',
               transition: 'all 0.2s',
               display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 2
+              flexDirection: 'row',
+              alignItems: 'center'
             }}
             onMouseEnter={e => {
               if (!(boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0)) {
@@ -1210,26 +1219,35 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
               zIndex: 10
             }}>-33%</span>
 
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '0 4px' }}>
-              <div style={{
-                background: 'rgba(255,255,255,0.12)',
-                padding: '3px 6px',
-                borderRadius: 8,
-                fontSize: 9.5,
-                fontWeight: 900,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 2.5
-              }}>
-                1 🎁
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.08)',
+              height: '100%',
+              padding: '0 14px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRight: '1px solid rgba(255, 255, 255, 0.20)',
+              fontSize: 11,
+              fontWeight: 900,
+              gap: 3
+            }}>
+              1 🎁
+            </div>
+            <div style={{
+              flex: 1,
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '0 10px',
+              gap: 1
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 3.5 }}>
+                <span style={{ fontSize: 11.5, fontWeight: 900 }}>{formatConcise(0.20 / hhPrice)}</span>
+                <img src="/logo.jfif" alt="$HH" style={{ width: 10, height: 10, borderRadius: '50%', objectFit: 'cover' }} />
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 3.5 }}>
-                  <span style={{ fontSize: 11.5, fontWeight: 900 }}>{formatConcise(0.20 / hhPrice)}</span>
-                  <img src="/logo.jfif" alt="$HH" style={{ width: 10, height: 10, borderRadius: '50%', objectFit: 'cover' }} />
-                </div>
-                <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.48)', fontWeight: 600 }}>≈$0.20</span>
-              </div>
+              <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.48)', fontWeight: 600 }}>≈$0.20</span>
             </div>
           </button>
 
@@ -1248,17 +1266,17 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
               border: '1px solid rgba(255,255,255,0.42)',
               color: '#FFF',
               borderRadius: 14,
-              padding: '12px 10px',
+              padding: 0,
+              height: 52,
+              overflow: 'hidden',
               cursor: (boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6) ? 'not-allowed' : 'pointer',
               boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)',
               opacity: (boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6) ? 0.4 : 1,
               outline: 'none',
               transition: 'all 0.2s',
               display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 2
+              flexDirection: 'row',
+              alignItems: 'center'
             }}
             onMouseEnter={e => {
               if (!(boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6)) {
@@ -1288,26 +1306,35 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
               zIndex: 10
             }}>1 Free Box</span>
 
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '0 4px' }}>
-              <div style={{
-                background: 'rgba(255,255,255,0.12)',
-                padding: '3px 6px',
-                borderRadius: 8,
-                fontSize: 9.5,
-                fontWeight: 900,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 2.5
-              }}>
-                6 🎁
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.08)',
+              height: '100%',
+              padding: '0 14px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRight: '1px solid rgba(255, 255, 255, 0.20)',
+              fontSize: 11,
+              fontWeight: 900,
+              gap: 3
+            }}>
+              6 🎁
+            </div>
+            <div style={{
+              flex: 1,
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '0 10px',
+              gap: 1
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 3.5 }}>
+                <span style={{ fontSize: 11.5, fontWeight: 900 }}>1.50</span>
+                <img src="/usdc-logo.png" alt="USDC" style={{ width: 10, height: 10 }} />
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 3.5 }}>
-                  <span style={{ fontSize: 11.5, fontWeight: 900 }}>1.50</span>
-                  <img src="/usdc-logo.png" alt="USDC" style={{ width: 10, height: 10 }} />
-                </div>
-                <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.48)', fontWeight: 600 }}>≈$1.50</span>
-              </div>
+              <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.48)', fontWeight: 600 }}>≈$1.50</span>
             </div>
           </button>
 
@@ -1326,17 +1353,17 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
               border: '1px solid rgba(255,255,255,0.42)',
               color: '#FFF',
               borderRadius: 14,
-              padding: '12px 10px',
+              padding: 0,
+              height: 52,
+              overflow: 'hidden',
               cursor: (boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6) ? 'not-allowed' : 'pointer',
               boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)',
               opacity: (boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6) ? 0.4 : 1,
               outline: 'none',
               transition: 'all 0.2s',
               display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 2
+              flexDirection: 'row',
+              alignItems: 'center'
             }}
             onMouseEnter={e => {
               if (!(boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6)) {
@@ -1366,26 +1393,35 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
               zIndex: 10
             }}>1 Free Box</span>
 
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '0 4px' }}>
-              <div style={{
-                background: 'rgba(255,255,255,0.12)',
-                padding: '3px 6px',
-                borderRadius: 8,
-                fontSize: 9.5,
-                fontWeight: 900,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 2.5
-              }}>
-                6 🎁
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.08)',
+              height: '100%',
+              padding: '0 14px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRight: '1px solid rgba(255, 255, 255, 0.20)',
+              fontSize: 11,
+              fontWeight: 900,
+              gap: 3
+            }}>
+              6 🎁
+            </div>
+            <div style={{
+              flex: 1,
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '0 10px',
+              gap: 1
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 3.5 }}>
+                <span style={{ fontSize: 11.5, fontWeight: 900 }}>{formatConcise(1.00 / hhPrice)}</span>
+                <img src="/logo.jfif" alt="$HH" style={{ width: 10, height: 10, borderRadius: '50%', objectFit: 'cover' }} />
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 3.5 }}>
-                  <span style={{ fontSize: 11.5, fontWeight: 900 }}>{formatConcise(1.00 / hhPrice)}</span>
-                  <img src="/logo.jfif" alt="$HH" style={{ width: 10, height: 10, borderRadius: '50%', objectFit: 'cover' }} />
-                </div>
-                <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.48)', fontWeight: 600 }}>≈$1.00</span>
-              </div>
+              <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.48)', fontWeight: 600 }}>≈$1.00</span>
             </div>
           </button>
         </div>
