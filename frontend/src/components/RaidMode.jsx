@@ -49,10 +49,8 @@ export function RaidMode({ address }) {
   const [showTxModal, setShowTxModal] = useState(false)
   const [txType, setTxType] = useState('raid') // raid or shield
 
-  // Web3 write hook
   const { data: txHash, writeContract, isPending, isConfirming, isSuccess, error: writeError, reset } = useBuilderWrite()
-
-  const [paymentCurrency, setPaymentCurrency] = useState('USDC')
+  const [payWithHh, setPayWithHh] = useState(false)
   const [hhPrice, setHhPrice] = useState(0.00025)
 
   // Fetch HH price from DexScreener
@@ -80,7 +78,7 @@ export function RaidMode({ address }) {
     abi: HH_ABI,
     functionName: 'allowance',
     args: address && CHECKIN_TARGET ? [address, CHECKIN_TARGET] : undefined,
-    query: { enabled: !!address && paymentCurrency === 'HH', refetchInterval: 10000 }
+    query: { enabled: !!address && payWithHh, refetchInterval: 10000 }
   })
   
   const currentAllowance = allowanceRaw !== undefined
@@ -277,7 +275,7 @@ export function RaidMode({ address }) {
     if (wrongChain) { switchChain({ chainId: base.id }); return }
     setErrorMessage('')
     
-    if (paymentCurrency === 'HH') {
+    if (payWithHh) {
       const hhAmount = 0.15 / hhPrice
       // Check allowance
       if (currentAllowance < hhAmount) {
@@ -315,7 +313,7 @@ export function RaidMode({ address }) {
     if (wrongChain) { switchChain({ chainId: base.id }); return }
     setErrorMessage('')
 
-    if (paymentCurrency === 'HH') {
+    if (payWithHh) {
       const hhAmount = 0.20 / hhPrice
       // Check allowance
       if (currentAllowance < hhAmount) {
@@ -554,58 +552,6 @@ export function RaidMode({ address }) {
         </div>
       </div>
 
-      {/* ═══ PAYMENT CURRENCY SWITCHER ═══ */}
-      <div style={{
-        display: 'flex',
-        background: '#EEF0F3',
-        border: '1px solid #DEE1E7',
-        borderRadius: 16,
-        padding: 4,
-        marginBottom: 16,
-        gap: 6
-      }}>
-        <button
-          onClick={() => setPaymentCurrency('USDC')}
-          style={{
-            flex: 1,
-            padding: '8px 10px',
-            borderRadius: 12,
-            border: paymentCurrency === 'USDC' ? 'none' : '1px solid rgba(255,255,255,0.8)',
-            background: paymentCurrency === 'USDC' 
-              ? 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)' 
-              : 'rgba(255, 255, 255, 0.6)',
-            color: paymentCurrency === 'USDC' ? '#fff' : '#717886',
-            fontWeight: 850,
-            fontSize: 11.5,
-            cursor: 'pointer',
-            transition: 'all 0.2s',
-            boxShadow: paymentCurrency === 'USDC' ? '0 2px 8px rgba(0,82,255,0.15)' : 'none'
-          }}
-        >
-          💵 Pay with USDC
-        </button>
-        <button
-          onClick={() => setPaymentCurrency('HH')}
-          style={{
-            flex: 1,
-            padding: '8px 10px',
-            borderRadius: 12,
-            border: paymentCurrency === 'HH' ? 'none' : '1px solid rgba(255,255,255,0.8)',
-            background: paymentCurrency === 'HH' 
-              ? 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)' 
-              : 'rgba(255, 255, 255, 0.6)',
-            color: paymentCurrency === 'HH' ? '#fff' : '#717886',
-            fontWeight: 850,
-            fontSize: 11.5,
-            cursor: 'pointer',
-            transition: 'all 0.2s',
-            boxShadow: paymentCurrency === 'HH' ? '0 2px 8px rgba(0,82,255,0.15)' : 'none'
-          }}
-        >
-          💎 Pay with $HH
-        </button>
-      </div>
-
       {/* ═══ RAID SHIELD CARD ═══ */}
       <div style={{
         background: '#fff',
@@ -662,61 +608,88 @@ export function RaidMode({ address }) {
         }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             <span style={{ fontSize: 9, color: '#717886', fontWeight: 600 }}>
-              {isShieldActive ? 'Remaining Protection' : 'Protection Cost'}
+              {isShieldActive ? 'Remaining Protection' : 'Buy Shield'}
             </span>
-            <span style={{ fontSize: 13, fontWeight: 900, color: '#0A0B0D', display: 'flex', alignItems: 'center', gap: 4 }}>
-              {isShieldActive ? (
-                shieldTimeLeft
-              ) : (
-                paymentCurrency === 'HH' ? (
-                  <>
-                    <span>{formatConcise(Math.round(0.15 / hhPrice))}</span>
-                    <span style={{ fontSize: 10, fontWeight: 900, color: '#0052FF', marginLeft: 2 }}>$HH</span>
-                    <span>/ 24h</span>
-                  </>
-                ) : (
-                  <>
-                    <span>0.15</span>
-                    <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, display: 'inline-block', verticalAlign: 'middle' }} />
-                    <span>/ 24h</span>
-                  </>
-                )
-              )}
+            <span style={{ fontSize: 13, fontWeight: 900, color: '#0A0B0D' }}>
+              {isShieldActive ? shieldTimeLeft : '24h'}
             </span>
           </div>
 
-          <button
-            onClick={handlePurchaseShieldClick}
-            disabled={isPending || isShieldActive}
-            className="raid-btn"
-            style={{
-              background: isShieldActive 
-                ? '#EEF0F3' 
-                : '#0000FF',
-              color: isShieldActive ? '#94A3B8' : '#fff',
-              border: isShieldActive ? '1px solid #DEE1E7' : 'none',
+          {isShieldActive ? (
+            <div style={{
+              background: '#EEF0F3',
+              color: '#94A3B8',
+              border: '1px solid #DEE1E7',
               borderRadius: 12,
-              padding: '7px 12px',
-              fontSize: 9.5,
+              padding: '6px 14px',
+              fontSize: 10,
               fontWeight: 800,
-              cursor: (isPending || isShieldActive) ? 'not-allowed' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4,
-              boxShadow: (isPending || isShieldActive) ? 'none' : '0 4px 12px rgba(0,0,255,0.15)',
-              opacity: isPending ? 0.6 : 1,
-            }}
-          >
-            {isShieldActive ? (
-              <span>🛡️ Shield Active</span>
-            ) : (
-              <>
-                <span>Buy</span>
-                <span style={{ color: '#A5B4FC', fontWeight: 900, marginLeft: 2 }}>0.15</span>
-                <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, flexShrink: 0 }} />
-              </>
-            )}
-          </button>
+            }}>
+              Active
+            </div>
+          ) : (
+            <div style={{ display: 'flex', gap: 6, flex: 1, justifyContent: 'flex-end', maxWidth: 220 }}>
+              {/* Buy with USDC */}
+              <button
+                onClick={() => {
+                  setPayWithHh(false)
+                  setTxType('shield')
+                  setShowTxModal(true)
+                }}
+                disabled={isPending}
+                className="raid-btn"
+                style={{
+                  padding: '6px 10px',
+                  borderRadius: 10,
+                  border: '1px solid #DEE1E7',
+                  background: '#FFFFFF',
+                  color: '#0A0B0D',
+                  fontSize: 10.5,
+                  fontWeight: 800,
+                  cursor: isPending ? 'not-allowed' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 3,
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
+                  flex: 1
+                }}
+              >
+                <span>0.15</span>
+                <img src="/usdc-logo.png" alt="USDC" style={{ width: 11, height: 11, borderRadius: '50%' }} />
+              </button>
+
+              {/* Buy with $HH */}
+              <button
+                onClick={() => {
+                  setPayWithHh(true)
+                  setTxType('shield')
+                  setShowTxModal(true)
+                }}
+                disabled={isPending}
+                className="raid-btn"
+                style={{
+                  padding: '6px 10px',
+                  borderRadius: 10,
+                  border: '1px solid #DEE1E7',
+                  background: '#FFFFFF',
+                  color: '#0A0B0D',
+                  fontSize: 10.5,
+                  fontWeight: 800,
+                  cursor: isPending ? 'not-allowed' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 3,
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
+                  flex: 1
+                }}
+              >
+                <span>{formatConcise(0.15 / hhPrice)}</span>
+                <img src="/logo.jfif" alt="$HH" style={{ width: 11, height: 11, borderRadius: '50%', objectFit: 'cover' }} />
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -849,52 +822,91 @@ export function RaidMode({ address }) {
                 Find your target and steal some <span style={{ color: '#0052FF', fontWeight: 600 }}>HP</span>
               </p>
 
-              <button
-                className="raid-btn"
-                onClick={handleInitiateRaidClick}
-                disabled={isPending || isCooldownActive}
-                style={{
-                  width: '100%',
-                  background: isCooldownActive ? '#EEF0F3' : '#0000FF',
-                  color: isCooldownActive ? '#94A3B8' : '#fff',
-                  border: isCooldownActive ? '1px solid #DEE1E7' : 'none',
-                  borderRadius: 20,
-                  padding: '10px 18px',
-                  fontSize: 12,
-                  fontWeight: 800,
-                  cursor: (isPending || isCooldownActive) ? 'not-allowed' : 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 6,
-                  boxShadow: (isPending || isCooldownActive) ? 'none' : '0 6px 18px rgba(0,0,255,0.2)',
-                  opacity: isPending ? 0.5 : 1,
-                  transition: 'transform 0.2s, box-shadow 0.2s'
-                }}
-              >
-                {isCooldownActive ? (
-                  <span style={{ fontWeight: 500 }}>
-                    next raid: <strong style={{ fontWeight: 800 }}>{cooldownText}</strong>
-                  </span>
-                ) : (
-                  <>
+              {isCooldownActive ? (
+                <button
+                  disabled
+                  style={{
+                    width: '100%',
+                    background: '#EEF0F3',
+                    color: '#94A3B8',
+                    border: '1px solid #DEE1E7',
+                    borderRadius: 20,
+                    padding: '10px 18px',
+                    fontSize: 12,
+                    fontWeight: 800,
+                    cursor: 'not-allowed',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  next raid: <strong>{cooldownText}</strong>
+                </button>
+              ) : (
+                <div style={{ display: 'flex', gap: 8, width: '100%' }}>
+                  {/* Raid USDC Button */}
+                  <button
+                    onClick={() => {
+                      setPayWithHh(false)
+                      setTxType('raid')
+                      setShowTxModal(true)
+                    }}
+                    disabled={isPending}
+                    className="raid-btn"
+                    style={{
+                      flex: 1,
+                      background: '#0000FF',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: 20,
+                      padding: '10px 8px',
+                      fontSize: 11.5,
+                      fontWeight: 800,
+                      cursor: isPending ? 'not-allowed' : 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 4,
+                      boxShadow: '0 4px 12px rgba(0,0,255,0.15)',
+                    }}
+                  >
                     <span>Raid</span>
-                    {paymentCurrency === 'HH' ? (
-                      <>
-                        <span style={{ color: '#A5B4FC', fontWeight: 900, marginLeft: 2 }}>
-                          {formatConcise(0.20 / hhPrice)}
-                        </span>
-                        <span style={{ fontSize: 10, fontWeight: 900, color: '#A5B4FC', marginLeft: 1 }}>$HH</span>
-                      </>
-                    ) : (
-                      <>
-                        <span style={{ color: '#A5B4FC', fontWeight: 900, marginLeft: 2 }}>0.20</span>
-                        <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, flexShrink: 0 }} />
-                      </>
-                    )}
-                  </>
-                )}
-              </button>
+                    <span style={{ color: '#A5B4FC', fontWeight: 900 }}>0.20</span>
+                    <img src="/usdc-logo.png" alt="USDC" style={{ width: 11, height: 11, borderRadius: '50%' }} />
+                  </button>
+
+                  {/* Raid $HH Button */}
+                  <button
+                    onClick={() => {
+                      setPayWithHh(true)
+                      setTxType('raid')
+                      setShowTxModal(true)
+                    }}
+                    disabled={isPending}
+                    className="raid-btn"
+                    style={{
+                      flex: 1,
+                      background: '#0000FF',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: 20,
+                      padding: '10px 8px',
+                      fontSize: 11.5,
+                      fontWeight: 800,
+                      cursor: isPending ? 'not-allowed' : 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 4,
+                      boxShadow: '0 4px 12px rgba(0,0,255,0.15)',
+                    }}
+                  >
+                    <span>Raid</span>
+                    <span style={{ color: '#A5B4FC', fontWeight: 900 }}>{formatConcise(0.20 / hhPrice)}</span>
+                    <img src="/logo.jfif" alt="$HH" style={{ width: 11, height: 11, borderRadius: '50%', objectFit: 'cover' }} />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -1180,11 +1192,11 @@ export function RaidMode({ address }) {
           title={txType === 'shield' ? 'Purchase Raid Shield' : 'Purchase Raid'}
           subtitle={txType === 'shield' ? 'Get 24h of absolute protection from HP raids' : ''}
           amount={
-            paymentCurrency === 'HH'
-              ? (txType === 'shield' ? Math.round(0.15 / hhPrice).toString() : Math.round(0.20 / hhPrice).toString())
+            payWithHh
+              ? (txType === 'shield' ? formatConcise(0.15 / hhPrice) : formatConcise(0.20 / hhPrice))
               : (txType === 'shield' ? '0.15' : '0.20')
           }
-          currency={paymentCurrency === 'HH' ? '$HH' : 'USDC'}
+          currency={payWithHh ? '$HH' : 'USDC'}
           isPending={isPending}
           isConfirming={isConfirming}
           isSuccess={isSuccess}

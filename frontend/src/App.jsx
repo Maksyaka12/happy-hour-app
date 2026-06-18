@@ -369,15 +369,7 @@ export default function App() {
               >
                 ← Back to Earn
               </button>
-              <div style={{
-                background: '#FFFFFF',
-                border: '1px solid #DEE1E7',
-                borderRadius: 24,
-                padding: '20px 8px',
-                boxShadow: '0 4px 16px rgba(10,11,13,0.04)'
-              }}>
-                <RaidMode address={address} />
-              </div>
+              <RaidMode address={address} />
             </div>
           )}
           {tab === 'leaderboard' && (
