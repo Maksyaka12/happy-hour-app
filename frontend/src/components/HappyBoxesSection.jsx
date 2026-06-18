@@ -465,17 +465,15 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
             transform: scale(1.03);
           }
         }
-        @keyframes flame-flicker-1 {
-          0% { transform: translateY(2px) scale(0.9) rotate(-3deg); opacity: 0.7; }
-          100% { transform: translateY(-6px) scale(1.1) rotate(5deg); opacity: 0.9; }
-        }
-        @keyframes flame-flicker-2 {
-          0% { transform: translateY(4px) scale(0.8) rotate(5deg); opacity: 0.8; }
-          100% { transform: translateY(-10px) scale(1.15) rotate(-5deg); opacity: 1; }
-        }
-        @keyframes flame-flicker-3 {
-          0% { transform: translateY(1px) scale(0.95) rotate(-2deg); opacity: 0.6; }
-          100% { transform: translateY(-5px) scale(1.05) rotate(4deg); opacity: 0.9; }
+        @keyframes single-flame-flicker {
+          0%, 100% {
+            transform: translateX(-50%) scale(0.97) rotate(-1deg);
+            opacity: 0.8;
+          }
+          50% {
+            transform: translateX(-50%) scale(1.03) rotate(1.5deg);
+            opacity: 0.95;
+          }
         }
         .chest-slot { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
         .chest-slot:hover { transform: translateY(-2px); }
@@ -705,53 +703,23 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
           </div>
 
           <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            {/* Animated fire/flame background container */}
+            {/* Single animated flame starting from the bottom of the card */}
             <div style={{
               position: 'absolute',
-              bottom: '-6px',
+              bottom: '-16px', // aligns with the bottom border of Card 1 (padding is 16px)
               left: '50%',
               transform: 'translateX(-50%)',
-              width: '90%',
-              height: '115%',
+              width: 130,
+              height: 92,
               pointerEvents: 'none',
               zIndex: 0,
-              display: 'flex',
-              justifyContent: 'space-around',
-              alignItems: 'flex-end',
-              overflow: 'visible'
-            }}>
-              {/* Flame 1 */}
-              <div style={{
-                width: 18,
-                height: 28,
-                background: 'radial-gradient(circle at bottom, #FBBF24, #F59E0B, #EF4444, transparent 70%)',
-                borderRadius: '50% 50% 20% 20%',
-                filter: 'blur(1.2px)',
-                opacity: 0.8,
-                animation: 'flame-flicker-1 0.9s infinite alternate ease-in-out'
-              }} />
-              {/* Flame 2 */}
-              <div style={{
-                width: 26,
-                height: 38,
-                background: 'radial-gradient(circle at bottom, #FFF, #FBBF24, #F59E0B, #EF4444, transparent 75%)',
-                borderRadius: '50% 50% 20% 20%',
-                filter: 'blur(1.6px)',
-                opacity: 0.95,
-                animation: 'flame-flicker-2 0.7s infinite alternate ease-in-out',
-                margin: '0 -6px'
-              }} />
-              {/* Flame 3 */}
-              <div style={{
-                width: 16,
-                height: 24,
-                background: 'radial-gradient(circle at bottom, #FBBF24, #F59E0B, #EF4444, transparent 70%)',
-                borderRadius: '50% 50% 20% 20%',
-                filter: 'blur(1.2px)',
-                opacity: 0.8,
-                animation: 'flame-flicker-3 1.1s infinite alternate ease-in-out'
-              }} />
-            </div>
+              background: 'radial-gradient(ellipse at bottom, rgba(255, 255, 255, 0.45) 0%, rgba(251, 191, 36, 0.65) 25%, rgba(245, 158, 11, 0.5) 50%, rgba(239, 68, 68, 0.3) 75%, transparent 90%)',
+              borderRadius: '50% 50% 20% 20% / 75% 75% 25% 25%',
+              filter: 'blur(6px) drop-shadow(0 -4px 12px rgba(245, 158, 11, 0.4))',
+              opacity: 0.9,
+              animation: 'single-flame-flicker 1.8s infinite ease-in-out',
+              transformOrigin: 'bottom center'
+            }} />
 
             <button
               onClick={handleBuyAttempt}
@@ -1106,7 +1074,6 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
               borderRadius: 14,
               padding: 0,
               height: 52,
-              overflow: 'hidden',
               cursor: (boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0) ? 'not-allowed' : 'pointer',
               boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)',
               opacity: (boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0) ? 0.4 : 1,
@@ -1114,7 +1081,7 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
               transition: 'all 0.2s',
               display: 'flex',
               flexDirection: 'row',
-              alignItems: 'center'
+              alignItems: 'stretch'
             }}
             onMouseEnter={e => {
               if (!(boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0)) {
@@ -1130,16 +1097,17 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
             }}
           >
             <div style={{
-              background: 'rgba(255, 255, 255, 0.08)',
+              background: 'rgba(255, 255, 255, 0.12)',
               height: '100%',
-              padding: '0 14px',
+              minWidth: 54,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               borderRight: '1px solid rgba(255, 255, 255, 0.20)',
-              fontSize: 11,
+              borderRadius: '13px 0 0 13px',
+              fontSize: 20,
               fontWeight: 900,
-              gap: 3
+              gap: 4
             }}>
               1 🎁
             </div>
@@ -1178,7 +1146,6 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
               borderRadius: 14,
               padding: 0,
               height: 52,
-              overflow: 'hidden',
               cursor: (boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0) ? 'not-allowed' : 'pointer',
               boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)',
               opacity: (boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0) ? 0.4 : 1,
@@ -1186,7 +1153,7 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
               transition: 'all 0.2s',
               display: 'flex',
               flexDirection: 'row',
-              alignItems: 'center'
+              alignItems: 'stretch'
             }}
             onMouseEnter={e => {
               if (!(boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0)) {
@@ -1220,16 +1187,17 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
             }}>-33%</span>
 
             <div style={{
-              background: 'rgba(255, 255, 255, 0.08)',
+              background: 'rgba(255, 255, 255, 0.12)',
               height: '100%',
-              padding: '0 14px',
+              minWidth: 54,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               borderRight: '1px solid rgba(255, 255, 255, 0.20)',
-              fontSize: 11,
+              borderRadius: '13px 0 0 13px',
+              fontSize: 20,
               fontWeight: 900,
-              gap: 3
+              gap: 4
             }}>
               1 🎁
             </div>
@@ -1268,7 +1236,6 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
               borderRadius: 14,
               padding: 0,
               height: 52,
-              overflow: 'hidden',
               cursor: (boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6) ? 'not-allowed' : 'pointer',
               boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)',
               opacity: (boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6) ? 0.4 : 1,
@@ -1276,7 +1243,7 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
               transition: 'all 0.2s',
               display: 'flex',
               flexDirection: 'row',
-              alignItems: 'center'
+              alignItems: 'stretch'
             }}
             onMouseEnter={e => {
               if (!(boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6)) {
@@ -1307,16 +1274,17 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
             }}>1 Free Box</span>
 
             <div style={{
-              background: 'rgba(255, 255, 255, 0.08)',
+              background: 'rgba(255, 255, 255, 0.12)',
               height: '100%',
-              padding: '0 14px',
+              minWidth: 54,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               borderRight: '1px solid rgba(255, 255, 255, 0.20)',
-              fontSize: 11,
+              borderRadius: '13px 0 0 13px',
+              fontSize: 20,
               fontWeight: 900,
-              gap: 3
+              gap: 4
             }}>
               6 🎁
             </div>
@@ -1355,7 +1323,6 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
               borderRadius: 14,
               padding: 0,
               height: 52,
-              overflow: 'hidden',
               cursor: (boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6) ? 'not-allowed' : 'pointer',
               boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)',
               opacity: (boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6) ? 0.4 : 1,
@@ -1363,7 +1330,7 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
               transition: 'all 0.2s',
               display: 'flex',
               flexDirection: 'row',
-              alignItems: 'center'
+              alignItems: 'stretch'
             }}
             onMouseEnter={e => {
               if (!(boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6)) {
@@ -1394,16 +1361,17 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
             }}>1 Free Box</span>
 
             <div style={{
-              background: 'rgba(255, 255, 255, 0.08)',
+              background: 'rgba(255, 255, 255, 0.12)',
               height: '100%',
-              padding: '0 14px',
+              minWidth: 54,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               borderRight: '1px solid rgba(255, 255, 255, 0.20)',
-              fontSize: 11,
+              borderRadius: '13px 0 0 13px',
+              fontSize: 20,
               fontWeight: 900,
-              gap: 3
+              gap: 4
             }}>
               6 🎁
             </div>
