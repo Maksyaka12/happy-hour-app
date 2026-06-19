@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useChainId, useSwitchChain, useReadContract } from 'wagmi'
 import { parseUnits, formatUnits } from 'viem'
 import { base } from 'wagmi/chains'
-import { CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI } from '../config/constants'
+import { CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI, HH_MANAGER_ADDRESS } from '../config/constants'
 import { db } from '../config/supabase'
 import { useBuilderWrite } from '../hooks/useBuilderWrite'
 import { TxModal } from './TxModal'
@@ -109,7 +109,7 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
     address: HH_ADDRESS,
     abi: HH_ABI,
     functionName: 'allowance',
-    args: address && CHECKIN_TARGET ? [address, CHECKIN_TARGET] : undefined,
+    args: address && HH_MANAGER_ADDRESS ? [address, HH_MANAGER_ADDRESS] : undefined,
     query: { enabled: !!address, refetchInterval: 10000 }
   })
   
@@ -208,16 +208,24 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
   // Watch for buy attempt transaction success
   useEffect(() => {
     if (buyAttemptWrite.isSuccess && buyAttemptWrite.data && !isProcessingBuyAttempt) {
+      const hhAmount = 0.10 / hhPrice
+      if (currentAllowance < hhAmount) {
+        // This was approval tx. Just reset and return.
+        buyAttemptWrite.reset()
+        return
+      }
       handleRegisterBuyAttempt(buyAttemptWrite.data)
     }
-  }, [buyAttemptWrite.isSuccess, buyAttemptWrite.data])
+  }, [buyAttemptWrite.isSuccess, buyAttemptWrite.data, currentAllowance, hhPrice])
 
   const handleRegisterBuyAttempt = async (hash) => {
     setIsProcessingBuyAttempt(true)
+    const hhAmount = 0.10 / hhPrice
     try {
-      const { data, error } = await db.rpc('buy_extra_attempt', {
+      const { data, error } = await db.rpc('burn_hh_for_boxes', {
         p_address: address.toLowerCase(),
-        p_tx_hash: hash
+        p_tx_hash: hash,
+        p_amount: hhAmount
       })
       if (error) throw error
       if (data?.ok) {
@@ -245,15 +253,23 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
         address: HH_ADDRESS,
         abi: HH_ABI,
         functionName: 'approve',
-        args: [CHECKIN_TARGET, parseUnits('115792089237316195423570985008687907853269984665640564039457584007913129639935', 18)], // max uint256
+        args: [HH_MANAGER_ADDRESS, parseUnits('115792089237316195423570985008687907853269984665640564039457584007913129639935', 18)], // max uint256
         chainId: base.id
       })
     } else {
       buyAttemptWrite.writeContract({
-        address: HH_ADDRESS,
-        abi: HH_ABI,
-        functionName: 'transfer',
-        args: [CHECKIN_TARGET, parseUnits(hhAmount.toFixed(18), 18)],
+        address: HH_MANAGER_ADDRESS,
+        abi: [
+          {
+            name: 'burnHHForBoxes',
+            type: 'function',
+            inputs: [{ name: '_amount', type: 'uint256' }],
+            outputs: [],
+            stateMutability: 'nonpayable',
+          }
+        ],
+        functionName: 'burnHHForBoxes',
+        args: [parseUnits(hhAmount.toFixed(18), 18)],
         chainId: base.id
       })
     }
@@ -262,13 +278,22 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
   // Handle successful box transactions
   useEffect(() => {
     if (boxWrite.isSuccess && boxWrite.data) {
+      if (paymentCurrency === 'HH') {
+        const hhAmount = txModal === 'bundle' ? (1.00 / hhPrice) : (0.20 / hhPrice)
+        if (currentAllowance < hhAmount) {
+          // This was approval tx. Reset and return.
+          boxWrite.reset()
+          return
+        }
+      }
+
       if (txModal === 'bundle') {
         handleOpenAllChests(boxWrite.data)
       } else if (txModal === 'single' && clickedBoxIndex !== null) {
         handleSelectChest(clickedBoxIndex, boxWrite.data)
       }
     }
-  }, [boxWrite.isSuccess, boxWrite.data, txModal, clickedBoxIndex])
+  }, [boxWrite.isSuccess, boxWrite.data, txModal, clickedBoxIndex, paymentCurrency, currentAllowance, hhPrice])
 
   // Single chest transaction confirm
   const handleSinglePayment = () => {
@@ -282,15 +307,26 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
           address: HH_ADDRESS,
           abi: HH_ABI,
           functionName: 'approve',
-          args: [CHECKIN_TARGET, parseUnits('115792089237316195423570985008687907853269984665640564039457584007913129639935', 18)], // max uint256
+          args: [HH_MANAGER_ADDRESS, parseUnits('115792089237316195423570985008687907853269984665640564039457584007913129639935', 18)], // max uint256
           chainId: base.id
         })
       } else {
         boxWrite.writeContract({
-          address: HH_ADDRESS,
-          abi: HH_ABI,
-          functionName: 'transfer',
-          args: [CHECKIN_TARGET, parseUnits(hhAmount.toFixed(18), 18)],
+          address: HH_MANAGER_ADDRESS,
+          abi: [
+            {
+              name: 'payWithHH',
+              type: 'function',
+              inputs: [
+                { name: '_amount', type: 'uint256' },
+                { name: '_serviceType', type: 'string' }
+              ],
+              outputs: [],
+              stateMutability: 'nonpayable',
+            }
+          ],
+          functionName: 'payWithHH',
+          args: [parseUnits(hhAmount.toFixed(18), 18), 'box_open'],
           chainId: base.id
         })
       }
@@ -317,15 +353,26 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
           address: HH_ADDRESS,
           abi: HH_ABI,
           functionName: 'approve',
-          args: [CHECKIN_TARGET, parseUnits('115792089237316195423570985008687907853269984665640564039457584007913129639935', 18)], // max uint256
+          args: [HH_MANAGER_ADDRESS, parseUnits('115792089237316195423570985008687907853269984665640564039457584007913129639935', 18)], // max uint256
           chainId: base.id
         })
       } else {
         boxWrite.writeContract({
-          address: HH_ADDRESS,
-          abi: HH_ABI,
-          functionName: 'transfer',
-          args: [CHECKIN_TARGET, parseUnits(hhAmount.toFixed(18), 18)],
+          address: HH_MANAGER_ADDRESS,
+          abi: [
+            {
+              name: 'payWithHH',
+              type: 'function',
+              inputs: [
+                { name: '_amount', type: 'uint256' },
+                { name: '_serviceType', type: 'string' }
+              ],
+              outputs: [],
+              stateMutability: 'nonpayable',
+            }
+          ],
+          functionName: 'payWithHH',
+          args: [parseUnits(hhAmount.toFixed(18), 18), 'box_bundle'],
           chainId: base.id
         })
       }
@@ -351,7 +398,8 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
     localStorage.removeItem('happy_boxes_pending')
 
     try {
-      const { data, error } = await db.rpc('open_standard_chest', {
+      const rpcName = paymentCurrency === 'HH' ? 'open_standard_chest_hh' : 'open_standard_chest'
+      const { data, error } = await db.rpc(rpcName, {
         p_address: address.toLowerCase(),
         p_tx_hash: txHashToUse
       })
@@ -398,7 +446,8 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
     setRevealingIndex('all')
 
     try {
-      const { data, error } = await db.rpc('open_all_chests', {
+      const rpcName = paymentCurrency === 'HH' ? 'open_all_chests_hh' : 'open_all_chests'
+      const { data, error } = await db.rpc(rpcName, {
         p_address: address.toLowerCase(),
         p_tx_hash: hash
       })

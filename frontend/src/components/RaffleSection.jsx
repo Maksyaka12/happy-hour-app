@@ -13,7 +13,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useWaitForTransactionReceipt, useChainId, useSwitchChain, useReadContract } from 'wagmi'
 import { parseUnits, formatUnits } from 'viem'
 import { base } from 'wagmi/chains'
-import { FOUNDATION, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI, BET_OPTS, TICKET_UNIT, CLOSE_BEFORE_MS, WINNER_SHARE } from '../config/constants'
+import { FOUNDATION, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI, BET_OPTS, TICKET_UNIT, CLOSE_BEFORE_MS, WINNER_SHARE, HH_RAFFLE_VAULT_ADDRESS } from '../config/constants'
 import { db } from '../config/supabase'
 import { useRoundState } from '../hooks/useRoundState'
 import { useBuilderWrite } from '../hooks/useBuilderWrite'
@@ -85,7 +85,7 @@ export function RaffleSection({ address, basename }) {
     address: HH_ADDRESS,
     abi: HH_ABI,
     functionName: 'allowance',
-    args: address && FOUNDATION ? [address, FOUNDATION] : undefined,
+    args: address && HH_RAFFLE_VAULT_ADDRESS ? [address, HH_RAFFLE_VAULT_ADDRESS] : undefined,
     query: { enabled: !!address && raffleType === 'hh', refetchInterval: 10000 }
   })
   const hhAllowance = hhAllowanceRaw !== undefined ? parseFloat(formatUnits(hhAllowanceRaw, 18)) : 0
@@ -291,16 +291,24 @@ export function RaffleSection({ address, basename }) {
           address: HH_ADDRESS,
           abi: HH_ABI,
           functionName: 'approve',
-          args: [FOUNDATION, parseUnits('115792089237316195423570985008687907853269984665640564039457584007913129639935', 18)], // max uint256
+          args: [HH_RAFFLE_VAULT_ADDRESS, parseUnits('115792089237316195423570985008687907853269984665640564039457584007913129639935', 18)], // max uint256
           chainId: base.id,
         })
       } else {
-        // Trigger transfer
+        // Trigger deposit contract transaction
         writeContract({
-          address: HH_ADDRESS,
-          abi: HH_ABI,
-          functionName: 'transfer',
-          args: [FOUNDATION, parseUnits(hhCost.toFixed(18), 18)],
+          address: HH_RAFFLE_VAULT_ADDRESS,
+          abi: [
+            {
+              name: 'depositHH',
+              type: 'function',
+              inputs: [{ name: '_amount', type: 'uint256' }],
+              outputs: [],
+              stateMutability: 'nonpayable',
+            }
+          ],
+          functionName: 'depositHH',
+          args: [parseUnits(hhCost.toFixed(18), 18)],
           chainId: base.id,
         })
       }

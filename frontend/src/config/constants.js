@@ -53,8 +53,15 @@ export const USDC_ABI = [
 export const HH_ADDRESS =
   env.VITE_HH_ADDRESS || '0x8235EdF32a1e10Bd1867ad622915AB613664cbA3'
 
+export const HH_RAFFLE_VAULT_ADDRESS =
+  env.VITE_HH_RAFFLE_VAULT_ADDRESS || '0x5E861466bC2845C9f57051fb9652bC4a56d95542'
+
+export const HH_MANAGER_ADDRESS =
+  env.VITE_HH_MANAGER_ADDRESS || '0xC6f16466bC2845C9f57051fb9652bC4a56d95542'
+
 export const STAKING_ADDRESS =
-  env.VITE_STAKING_ADDRESS || '0xE6f16466bC2845C9f57051fb9652bC4a56d95542' // Placeholder
+  env.VITE_STAKING_ADDRESS || '0xE6f16466bC2845C9f57051fb9652bC4a56d95542'
+
 
 export const HH_ABI = [
   ...USDC_ABI,
@@ -84,23 +91,46 @@ export const STAKING_ABI = [
   {
     name: 'stake',
     type: 'function',
-    inputs: [{ name: 'amount', type: 'uint256' }],
+    inputs: [
+      { name: '_amount', type: 'uint256' },
+      { name: '_durationDays', type: 'uint256' }
+    ],
     outputs: [],
     stateMutability: 'nonpayable',
   },
   {
     name: 'unstake',
     type: 'function',
-    inputs: [{ name: 'amount', type: 'uint256' }],
+    inputs: [{ name: '_positionIndex', type: 'uint256' }],
     outputs: [],
     stateMutability: 'nonpayable',
   },
   {
-    name: 'stakedBalances',
+    name: 'getUserPositions',
     type: 'function',
-    inputs: [{ name: 'account', type: 'address' }],
+    inputs: [{ name: '_user', type: 'address' }],
+    outputs: [
+      {
+        components: [
+          { name: 'amount', type: 'uint256' },
+          { name: 'startTime', type: 'uint256' },
+          { name: 'endTime', type: 'uint256' },
+          { name: 'apr', type: 'uint256' },
+          { name: 'durationDays', type: 'uint256' },
+          { name: 'active', type: 'bool' }
+        ],
+        type: 'tuple[]'
+      }
+    ],
+    stateMutability: 'view',
+  },
+  {
+    name: 'totalActiveStaked',
+    type: 'function',
+    inputs: [{ name: '_user', type: 'address' }],
     outputs: [{ type: 'uint256' }],
     stateMutability: 'view',
   },
 ]
+
 

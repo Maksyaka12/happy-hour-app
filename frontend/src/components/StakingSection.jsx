@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useAccount, useReadContract } from 'wagmi'
-import { formatUnits } from 'viem'
+import { base } from 'wagmi/chains'
+import { parseUnits, formatUnits } from 'viem'
 import { HH_ADDRESS, STAKING_ADDRESS, HH_ABI, STAKING_ABI } from '../config/constants'
+import { useBuilderWrite } from '../hooks/useBuilderWrite'
 
 // Format helper
 const formatNumber = (num, decimals = 2) => {
@@ -62,8 +64,28 @@ export function StakingSection({ setTab }) {
     localStorage.setItem('hh_simulated_stakes_list', JSON.stringify(simulatedStakes))
   }, [simulatedStakes])
 
-  // Custom Transaction UX Simulation States
-  const [txStep, setTxStep] = useState(null) // 'approve_signing', 'approve_pending', 'action_signing', 'action_pending', 'success'
+  // Custom Transaction states & WAGMI writes
+  const {
+    data: stakeTxHash,
+    writeContract: writeStake,
+    isPending: stakePending,
+    isConfirming: stakeConfirming,
+    isSuccess: stakeSuccess,
+    error: stakeError,
+    reset: resetStake
+  } = useBuilderWrite()
+
+  const {
+    data: unstakeTxHash,
+    writeContract: writeUnstake,
+    isPending: unstakePending,
+    isConfirming: unstakeConfirming,
+    isSuccess: unstakeSuccess,
+    error: unstakeError,
+    reset: resetUnstake
+  } = useBuilderWrite()
+
+  const [txStep, setTxStep] = useState(null)
   const [txError, setTxError] = useState('')
   const [simulatedAllowance, setSimulatedAllowance] = useState(() => {
     try {
@@ -128,7 +150,15 @@ export function StakingSection({ setTab }) {
   const { data: stakedBalanceRaw } = useReadContract({
     address: STAKING_ADDRESS,
     abi: STAKING_ABI,
-    functionName: 'stakedBalances',
+    functionName: 'totalActiveStaked',
+    args: address ? [address] : undefined,
+    query: { enabled: !!address, refetchInterval: 15000 }
+  })
+
+  const { data: contractPositionsRaw } = useReadContract({
+    address: STAKING_ADDRESS,
+    abi: STAKING_ABI,
+    functionName: 'getUserPositions',
     args: address ? [address] : undefined,
     query: { enabled: !!address, refetchInterval: 15000 }
   })
@@ -146,13 +176,38 @@ export function StakingSection({ setTab }) {
     ? parseFloat(formatUnits(hhBalanceRaw, 18))
     : simulatedWalletBalance
 
-  const stakedBalance = stakedBalanceRaw !== undefined
-    ? parseFloat(formatUnits(stakedBalanceRaw, 18))
-    : simulatedStakedBalance
-
   const allowance = allowanceRaw !== undefined
     ? parseFloat(formatUnits(allowanceRaw, 18))
     : simulatedAllowance
+
+  // Process user positions (real vs simulated)
+  const contractPositions = useMemo(() => {
+    if (!contractPositionsRaw || !Array.isArray(contractPositionsRaw)) return []
+    return contractPositionsRaw.map((pos, idx) => {
+      const amount = pos.amount !== undefined ? pos.amount : pos[0]
+      const startTime = pos.startTime !== undefined ? pos.startTime : pos[1]
+      const endTime = pos.endTime !== undefined ? pos.endTime : pos[2]
+      const apr = pos.apr !== undefined ? pos.apr : pos[3]
+      const durationDays = pos.durationDays !== undefined ? pos.durationDays : pos[4]
+      const active = pos.active !== undefined ? pos.active : pos[5]
+
+      return {
+        id: idx,
+        amount: parseFloat(formatUnits(amount || 0n, 18)),
+        startTime: Number(startTime || 0n) * 1000,
+        unlockTime: Number(endTime || 0n) * 1000,
+        apr: Number(apr || 0n),
+        durationDays: Number(durationDays || 0n).toString(),
+        active: active
+      }
+    })
+  }, [contractPositionsRaw])
+
+  const activeStakes = contractPositionsRaw !== undefined ? contractPositions : simulatedStakes
+
+  const stakedBalance = stakedBalanceRaw !== undefined
+    ? parseFloat(formatUnits(stakedBalanceRaw, 18))
+    : activeStakes.reduce((acc, s) => s.active ? acc + s.amount : acc, 0)
 
   // USD Calculations
   const walletUsdValue = walletBalance * hhPrice
@@ -167,22 +222,7 @@ export function StakingSection({ setTab }) {
   const holdCapPercent = Math.min(100, (walletUsdValue / 100) * 100)
   const stakeCapPercent = Math.min(100, (stakedUsdValue / 100) * 100)
 
-  // Infinite Approval UX flow
-  const handleApprove = async () => {
-    setTxError('')
-    setTxStep('approve_signing')
-    
-    setTimeout(() => {
-      setTxStep('approve_pending')
-      setTimeout(() => {
-        setSimulatedAllowance(999999999)
-        setTxStep('action_signing')
-        setTxStep(null)
-      }, 2000)
-    }, 1500)
-  }
-
-  // Handle Stake Action
+  // Stake Action
   const handleStake = async () => {
     const amount = parseFloat(stakingAmount)
     if (isNaN(amount) || amount <= 0) {
@@ -198,45 +238,66 @@ export function StakingSection({ setTab }) {
     
     // Check if allowance is sufficient
     if (allowance < amount) {
-      await handleApprove()
+      const isSimulated = contractPositionsRaw === undefined
+      if (isSimulated) {
+        setSimulatedAllowance(999999999)
+        return
+      }
+
+      writeStake({
+        address: HH_ADDRESS,
+        abi: HH_ABI,
+        functionName: 'approve',
+        args: [STAKING_ADDRESS, parseUnits('115792089237316195423570985008687907853269984665640564039457584007913129639935', 18)], // max uint256
+        chainId: base.id,
+      })
       return
     }
 
-    setTxStep('action_signing')
-    
-    setTimeout(() => {
-      setTxStep('action_pending')
-      setTimeout(() => {
-        const unlockTime = Date.now() + parseInt(lockPeriod) * 24 * 60 * 60 * 1000
-        const newStake = {
-          id: Math.random().toString(36).substring(2, 9),
-          amount: amount,
-          lockPeriod: lockPeriod,
-          unlockTime: unlockTime,
-          startTime: Date.now()
-        }
-        
-        setSimulatedStakes(prev => [...prev, newStake])
-        setSimulatedWalletBalance(prev => prev - amount)
-        setStakingAmount('')
-        setTxStep('success')
-      }, 2000)
-    }, 1500)
+    const isSimulated = contractPositionsRaw === undefined
+    if (isSimulated) {
+      const unlockTime = Date.now() + parseInt(lockPeriod) * 24 * 60 * 60 * 1000
+      const newStake = {
+        id: Math.random().toString(36).substring(2, 9),
+        amount: amount,
+        lockPeriod: lockPeriod,
+        unlockTime: unlockTime,
+        startTime: Date.now(),
+        active: true
+      }
+      setSimulatedStakes(prev => [...prev, newStake])
+      setSimulatedWalletBalance(prev => prev - amount)
+      setStakingAmount('')
+      return
+    }
+
+    writeStake({
+      address: STAKING_ADDRESS,
+      abi: STAKING_ABI,
+      functionName: 'stake',
+      args: [parseUnits(stakingAmount, 18), BigInt(lockPeriod)],
+      chainId: base.id,
+    })
   }
 
-  // Handle Unstake position
-  const handleUnstakePosition = (id, amount) => {
+  // Unstake position
+  const handleUnstakePosition = (positionIndex, amount) => {
     setTxError('')
-    setTxStep('action_signing')
+    
+    const isSimulated = contractPositionsRaw === undefined
+    if (isSimulated) {
+      setSimulatedStakes(prev => prev.map(s => s.id === positionIndex ? { ...s, active: false } : s))
+      setSimulatedWalletBalance(prev => prev + amount)
+      return
+    }
 
-    setTimeout(() => {
-      setTxStep('action_pending')
-      setTimeout(() => {
-        setSimulatedStakes(prev => prev.filter(s => s.id !== id))
-        setSimulatedWalletBalance(prev => prev + amount)
-        setTxStep('success')
-      }, 2000)
-    }, 1500)
+    writeUnstake({
+      address: STAKING_ADDRESS,
+      abi: STAKING_ABI,
+      functionName: 'unstake',
+      args: [BigInt(positionIndex)],
+      chainId: base.id,
+    })
   }
 
   // Remaining lock duration countdown text helper
@@ -262,7 +323,7 @@ export function StakingSection({ setTab }) {
   }
 
   // Calculate earliest remaining lock time for Period display
-  const activeLockedStakes = simulatedStakes.filter(s => Date.now() < s.unlockTime)
+  const activeLockedStakes = activeStakes.filter(s => s.active && Date.now() < s.unlockTime)
   let periodText = '—'
   if (stakedBalance > 0) {
     if (activeLockedStakes.length > 0) {
@@ -273,6 +334,44 @@ export function StakingSection({ setTab }) {
     } else {
       periodText = 'Unlocked'
     }
+  }
+
+  // Compute txStep and modal messages based on actual Web3 hooks
+  let activeTxStep = null
+  let activeTxError = ''
+  let activeTxTitle = ''
+  let activeTxSubtitle = ''
+
+  if (stakePending) {
+    activeTxStep = 'signing'
+    activeTxTitle = 'Confirm Transaction'
+    activeTxSubtitle = 'Please approve/sign the transaction in your wallet.'
+  } else if (stakeConfirming) {
+    activeTxStep = 'pending'
+    activeTxTitle = 'Transaction Pending'
+    activeTxSubtitle = 'Processing staking / approval transaction on Base...'
+  } else if (stakeSuccess) {
+    activeTxStep = 'success'
+    activeTxTitle = 'Transaction Confirmed'
+    activeTxSubtitle = 'Your stake / approval transaction was successfully confirmed!'
+  } else if (stakeError) {
+    activeTxError = stakeError?.message || 'Transaction failed.'
+  }
+
+  if (unstakePending) {
+    activeTxStep = 'signing'
+    activeTxTitle = 'Confirm Transaction'
+    activeTxSubtitle = 'Please sign the unstake transaction in your wallet.'
+  } else if (unstakeConfirming) {
+    activeTxStep = 'pending'
+    activeTxTitle = 'Transaction Pending'
+    activeTxSubtitle = 'Processing unstake transaction on Base...'
+  } else if (unstakeSuccess) {
+    activeTxStep = 'success'
+    activeTxTitle = 'Transaction Confirmed'
+    activeTxSubtitle = 'Successfully unstaked! Tokens have been returned to your wallet.'
+  } else if (unstakeError) {
+    activeTxError = unstakeError?.message || 'Unstake transaction failed.'
   }
 
   // Mock Leaderboard for Top Stakers
@@ -730,13 +829,13 @@ export function StakingSection({ setTab }) {
         ) : (
           <div style={{ position: 'relative', zIndex: 2 }}>
             {/* Unstake positions list */}
-            {simulatedStakes.length === 0 ? (
+            {activeStakes.filter(s => s.active).length === 0 ? (
               <div style={{
                 textAlign: 'center',
                 padding: '24px 16px',
                 color: 'rgba(255, 255, 255, 0.45)',
                 fontSize: 12.5,
-                fontWeight: 700,
+                fontWeight: 750,
                 background: 'rgba(255,255,255,0.02)',
                 borderRadius: 14,
                 border: '1px dashed rgba(255,255,255,0.1)'
@@ -757,13 +856,13 @@ export function StakingSection({ setTab }) {
                   color: 'rgba(255,255,255,0.7)',
                   border: '1px solid rgba(255,255,255,0.08)'
                 }}>
-                  <span>Locked: <strong style={{ color: '#FFFFFF' }}>{formatConcise(simulatedStakes.filter(s => Date.now() < s.unlockTime).reduce((acc, s) => acc + s.amount, 0))} $HH</strong></span>
-                  <span>Unlocked: <strong style={{ color: '#10B981' }}>{formatConcise(simulatedStakes.filter(s => Date.now() >= s.unlockTime).reduce((acc, s) => acc + s.amount, 0))} $HH</strong></span>
+                  <span>Locked: <strong style={{ color: '#FFFFFF' }}>{formatConcise(activeStakes.filter(s => s.active && Date.now() < s.unlockTime).reduce((acc, s) => acc + s.amount, 0))} $HH</strong></span>
+                  <span>Unlocked: <strong style={{ color: '#10B981' }}>{formatConcise(activeStakes.filter(s => s.active && Date.now() >= s.unlockTime).reduce((acc, s) => acc + s.amount, 0))} $HH</strong></span>
                 </div>
 
                 {/* Scrollable list */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 180, overflowY: 'auto', paddingRight: 2 }}>
-                  {simulatedStakes.map((s) => {
+                  {activeStakes.filter(s => s.active).map((s) => {
                     const isLocked = Date.now() < s.unlockTime
                     
                     return (
@@ -805,23 +904,25 @@ export function StakingSection({ setTab }) {
                               <span style={{ fontSize: 10.5, color: '#A0AEC0', fontWeight: 800 }}>
                                 {getRemainingTimeText(s.unlockTime)}
                               </span>
-                              <button
-                                onClick={() => {
-                                  // Instantly unlock for testing
-                                  setSimulatedStakes(prev => prev.map(p => p.id === s.id ? { ...p, unlockTime: Date.now() } : p))
-                                }}
-                                style={{
-                                  background: 'none', border: 'none', color: '#A78BFA', fontSize: 8, fontWeight: 800,
-                                  cursor: 'pointer', padding: 0, textDecoration: 'underline', outline: 'none'
-                                }}
-                              >
-                                [dev: unlock]
-                              </button>
+                              {contractPositionsRaw === undefined && (
+                                <button
+                                  onClick={() => {
+                                    // Instantly unlock for testing in simulated mode
+                                    setSimulatedStakes(prev => prev.map(p => p.id === s.id ? { ...p, unlockTime: Date.now() } : p))
+                                  }}
+                                  style={{
+                                    background: 'none', border: 'none', color: '#A78BFA', fontSize: 8, fontWeight: 800,
+                                    cursor: 'pointer', padding: 0, textDecoration: 'underline', outline: 'none'
+                                  }}
+                                >
+                                  [dev: unlock]
+                                </button>
+                              )}
                             </div>
                           ) : (
                             <button
                               onClick={() => handleUnstakePosition(s.id, s.amount)}
-                              disabled={!!txStep}
+                              disabled={unstakePending}
                               style={{
                                 background: '#FFFFFF',
                                 color: '#090514',
@@ -844,21 +945,23 @@ export function StakingSection({ setTab }) {
                   })}
                 </div>
               </div>
+                </div>
+              </div>
             )}
           </div>
         )}
 
-        {txError && (
+        {(txError || activeTxError) && (
           <div style={{ position: 'relative', zIndex: 2, marginTop: 10, padding: 10, background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: 8, color: '#EF4444', fontSize: 11, fontWeight: 750 }}>
-            ⚠️ {txError}
+            ⚠️ {txError || activeTxError}
           </div>
         )}
       </div>
 
       {/* Pending Withdrawals list has been integrated inside the Unstake positions list above */}
 
-      {/* Custom Simulated Transaction Modal Overlay */}
-      {txStep && (
+      {/* Custom Transaction Modal Overlay */}
+      {(txStep || activeTxStep) && (
         <div style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
           background: 'rgba(10,11,13,0.85)', backdropFilter: 'blur(8px)',
@@ -872,7 +975,7 @@ export function StakingSection({ setTab }) {
           }}>
             {/* Spinning Loader / Icons */}
             <div style={{ marginBottom: 20 }}>
-              {txStep === 'success' ? (
+              {(txStep === 'success' || activeTxStep === 'success') ? (
                 <span style={{ fontSize: 54 }}>🎉</span>
               ) : (
                 <div style={{
@@ -883,24 +986,37 @@ export function StakingSection({ setTab }) {
             </div>
 
             <h3 style={{ fontSize: 18, fontWeight: 900, color: '#0A0B0D', marginBottom: 8 }}>
-              {txStep === 'approve_signing' && 'Confirming Allowance'}
-              {txStep === 'approve_pending' && 'Approving $HH Token'}
-              {txStep === 'action_signing' && 'Signing Contract Call'}
-              {txStep === 'action_pending' && 'Executing Staking transaction'}
-              {txStep === 'success' && 'Transaction Confirmed!'}
+              {activeTxTitle || (
+                <>
+                  {txStep === 'approve_signing' && 'Confirming Allowance'}
+                  {txStep === 'approve_pending' && 'Approving $HH Token'}
+                  {txStep === 'action_signing' && 'Signing Contract Call'}
+                  {txStep === 'action_pending' && 'Executing Staking transaction'}
+                  {txStep === 'success' && 'Transaction Confirmed!'}
+                </>
+              )}
             </h3>
 
             <p style={{ fontSize: 12.5, color: '#717886', lineHeight: 1.5, marginBottom: 20 }}>
-              {txStep === 'approve_signing' && 'Please sign the one-time approval in your wallet to enable staking.'}
-              {txStep === 'approve_pending' && 'Approving spending limit on Base Network...'}
-              {txStep === 'action_signing' && 'Please confirm the transaction to lock your $HH tokens in the staking pool.'}
-              {txStep === 'action_pending' && 'Processing transaction on Base blockchain...'}
-              {txStep === 'success' && 'Your transaction has been processed. Your balances and daily HP stats have updated successfully.'}
+              {activeTxSubtitle || (
+                <>
+                  {txStep === 'approve_signing' && 'Please sign the one-time approval in your wallet to enable staking.'}
+                  {txStep === 'approve_pending' && 'Approving spending limit on Base Network...'}
+                  {txStep === 'action_signing' && 'Please confirm the transaction to lock your $HH tokens in the staking pool.'}
+                  {txStep === 'action_pending' && 'Processing transaction on Base blockchain...'}
+                  {txStep === 'success' && 'Your transaction has been processed. Your balances and daily HP stats have updated successfully.'}
+                </>
+              )}
             </p>
 
-            {txStep === 'success' && (
+            {(txStep === 'success' || activeTxStep === 'success') && (
               <button
-                onClick={() => setTxStep(null)}
+                onClick={() => {
+                  setTxStep(null)
+                  resetStake()
+                  resetUnstake()
+                  setStakingAmount('')
+                }}
                 style={{
                   background: 'linear-gradient(135deg, #0052FF 0%, #0043D0 100%)',
                   color: '#FFFFFF', border: 'none', borderRadius: 12, padding: '10px 24px',

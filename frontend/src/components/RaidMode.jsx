@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useChainId, useSwitchChain, useReadContract } from 'wagmi'
 import { parseUnits, formatUnits } from 'viem'
 import { base } from 'wagmi/chains'
-import { CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI } from '../config/constants'
+import { CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI, HH_MANAGER_ADDRESS } from '../config/constants'
 import { db } from '../config/supabase'
 import { useBuilderWrite } from '../hooks/useBuilderWrite'
 import { TxModal } from './TxModal'
@@ -77,7 +77,7 @@ export function RaidMode({ address }) {
     address: HH_ADDRESS,
     abi: HH_ABI,
     functionName: 'allowance',
-    args: address && CHECKIN_TARGET ? [address, CHECKIN_TARGET] : undefined,
+    args: address && HH_MANAGER_ADDRESS ? [address, HH_MANAGER_ADDRESS] : undefined,
     query: { enabled: !!address && payWithHh, refetchInterval: 10000 }
   })
   
@@ -251,13 +251,23 @@ export function RaidMode({ address }) {
   // Process transaction state
   useEffect(() => {
     if (isSuccess && txHash) {
+      if (payWithHh) {
+        const hhAmount = txType === 'shield' ? (0.20 / hhPrice) : (0.30 / hhPrice)
+        if (currentAllowance < hhAmount) {
+          // This was approval tx. Just reset and return.
+          reset()
+          setShowTxModal(false)
+          return
+        }
+      }
+
       if (txType === 'shield') {
         handleConfirmShieldPurchase(txHash)
       } else if (txType === 'raid') {
         handleConfirmRaid(txHash)
       }
     }
-  }, [isSuccess, txHash])
+  }, [isSuccess, txHash, payWithHh, txType, currentAllowance, hhPrice])
 
   const handlePurchaseShieldClick = () => {
     setErrorMessage('')
@@ -276,7 +286,7 @@ export function RaidMode({ address }) {
     setErrorMessage('')
     
     if (payWithHh) {
-      const hhAmount = 0.15 / hhPrice
+      const hhAmount = 0.20 / hhPrice
       // Check allowance
       if (currentAllowance < hhAmount) {
         // Trigger infinite approve
@@ -284,15 +294,26 @@ export function RaidMode({ address }) {
           address: HH_ADDRESS,
           abi: HH_ABI,
           functionName: 'approve',
-          args: [CHECKIN_TARGET, parseUnits('115792089237316195423570985008687907853269984665640564039457584007913129639935', 18)], // max uint256
+          args: [HH_MANAGER_ADDRESS, parseUnits('115792089237316195423570985008687907853269984665640564039457584007913129639935', 18)], // max uint256
           chainId: base.id
         })
       } else {
         writeContract({
-          address: HH_ADDRESS,
-          abi: HH_ABI,
-          functionName: 'transfer',
-          args: [CHECKIN_TARGET, parseUnits(hhAmount.toFixed(18), 18)],
+          address: HH_MANAGER_ADDRESS,
+          abi: [
+            {
+              name: 'payWithHH',
+              type: 'function',
+              inputs: [
+                { name: '_amount', type: 'uint256' },
+                { name: '_serviceType', type: 'string' }
+              ],
+              outputs: [],
+              stateMutability: 'nonpayable',
+            }
+          ],
+          functionName: 'payWithHH',
+          args: [parseUnits(hhAmount.toFixed(18), 18), 'shield'],
           chainId: base.id
         })
       }
@@ -313,7 +334,7 @@ export function RaidMode({ address }) {
     setErrorMessage('')
 
     if (payWithHh) {
-      const hhAmount = 0.20 / hhPrice
+      const hhAmount = 0.30 / hhPrice
       // Check allowance
       if (currentAllowance < hhAmount) {
         // Trigger infinite approve
@@ -321,15 +342,26 @@ export function RaidMode({ address }) {
           address: HH_ADDRESS,
           abi: HH_ABI,
           functionName: 'approve',
-          args: [CHECKIN_TARGET, parseUnits('115792089237316195423570985008687907853269984665640564039457584007913129639935', 18)], // max uint256
+          args: [HH_MANAGER_ADDRESS, parseUnits('115792089237316195423570985008687907853269984665640564039457584007913129639935', 18)], // max uint256
           chainId: base.id
         })
       } else {
         writeContract({
-          address: HH_ADDRESS,
-          abi: HH_ABI,
-          functionName: 'transfer',
-          args: [CHECKIN_TARGET, parseUnits(hhAmount.toFixed(18), 18)],
+          address: HH_MANAGER_ADDRESS,
+          abi: [
+            {
+              name: 'payWithHH',
+              type: 'function',
+              inputs: [
+                { name: '_amount', type: 'uint256' },
+                { name: '_serviceType', type: 'string' }
+              ],
+              outputs: [],
+              stateMutability: 'nonpayable',
+            }
+          ],
+          functionName: 'payWithHH',
+          args: [parseUnits(hhAmount.toFixed(18), 18), 'raid'],
           chainId: base.id
         })
       }
@@ -347,7 +379,8 @@ export function RaidMode({ address }) {
 
   const handleConfirmShieldPurchase = async (hash) => {
     try {
-      const { data, error } = await db.rpc('purchase_raid_shield', {
+      const rpcName = payWithHh ? 'purchase_raid_shield_hh' : 'purchase_raid_shield'
+      const { data, error } = await db.rpc(rpcName, {
         p_buyer_address: address.toLowerCase(),
         p_tx_hash: hash
       })
@@ -370,7 +403,8 @@ export function RaidMode({ address }) {
       setGameState('scanning')
       setShowTxModal(false)
 
-      const { data, error } = await db.rpc('perform_raid_attempt', {
+      const rpcName = payWithHh ? 'perform_raid_attempt_hh' : 'perform_raid_attempt'
+      const { data, error } = await db.rpc(rpcName, {
         p_raider_address: address.toLowerCase(),
         p_tx_hash: hash
       })

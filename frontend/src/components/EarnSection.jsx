@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { useAccount, useReadContract, useChainId, useSwitchChain } from 'wagmi'
-import { parseUnits } from 'viem'
+import { parseUnits, formatUnits } from 'viem'
 import { base } from 'wagmi/chains'
 import { db } from '../config/supabase'
-import { CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, CHECKIN_AMOUNT, BOOST_AMOUNT, HH_ADDRESS } from '../config/constants'
+import { CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, CHECKIN_AMOUNT, BOOST_AMOUNT, HH_ADDRESS, HH_MANAGER_ADDRESS, HH_ABI } from '../config/constants'
 import { useBuilderWrite } from '../hooks/useBuilderWrite'
 import { TxModal } from './TxModal'
 import { RaidMode } from './RaidMode'
@@ -39,6 +39,17 @@ export function EarnSection({ setTab, address: propAddress }) {
   const today = todayUTC()
   const processedTxRef = useRef(null)
   const processedBoostTxRef = useRef(null)
+
+  // Read HH allowance for HH_MANAGER_ADDRESS
+  const { data: hhAllowanceRaw } = useReadContract({
+    address: HH_ADDRESS,
+    abi: HH_ABI,
+    functionName: 'allowance',
+    args: address && HH_MANAGER_ADDRESS ? [address, HH_MANAGER_ADDRESS] : undefined,
+    query: { enabled: !!address, refetchInterval: 10000 }
+  })
+  const hhAllowance = hhAllowanceRaw !== undefined ? parseFloat(formatUnits(hhAllowanceRaw, 18)) : 0
+
 
   // Fetch HH price from DexScreener
   useEffect(() => {
@@ -126,12 +137,24 @@ export function EarnSection({ setTab, address: propAddress }) {
     processedBoostTxRef.current = boostTxHash
     setBoostError('')
 
-    db.rpc('process_hp_boost', {
+    if (payWithHh) {
+      const hhCost = 0.10 / hhPrice
+      if (hhAllowance < hhCost) {
+        // This was approval tx. Just close modal and reset.
+        setTxModal(false)
+        resetBoost()
+        return
+      }
+    }
+
+    const rpcName = payWithHh ? 'process_hp_boost_hh' : 'process_hp_boost'
+
+    db.rpc(rpcName, {
       p_address: address.toLowerCase(),
       p_tx_hash: boostTxHash,
     }).then(async ({ data, error }) => {
       if (error) {
-        console.error('process_hp_boost:', error)
+        console.error(rpcName, error)
         setBoostError('Boost saved onchain, but database sync failed.')
         await loadProfile()
         return
@@ -176,15 +199,37 @@ export function EarnSection({ setTab, address: propAddress }) {
     }
 
     if (payWithHh) {
-      // Pay with $HH (18 decimals)
       const hhCost = 0.10 / hhPrice
-      writeBoost({
-        address: HH_ADDRESS,
-        abi: USDC_ABI, // standard ERC20 transfer interface works identically
-        functionName: 'transfer',
-        args: [CHECKIN_TARGET, parseUnits(hhCost.toFixed(8), 18)],
-        chainId: base.id,
-      })
+      if (hhAllowance < hhCost) {
+        // Trigger infinite approve
+        writeBoost({
+          address: HH_ADDRESS,
+          abi: HH_ABI,
+          functionName: 'approve',
+          args: [HH_MANAGER_ADDRESS, parseUnits('115792089237316195423570985008687907853269984665640564039457584007913129639935', 18)], // max uint256
+          chainId: base.id,
+        })
+      } else {
+        // Trigger payWithHH contract call
+        writeBoost({
+          address: HH_MANAGER_ADDRESS,
+          abi: [
+            {
+              name: 'payWithHH',
+              type: 'function',
+              inputs: [
+                { name: '_amount', type: 'uint256' },
+                { name: '_serviceType', type: 'string' }
+              ],
+              outputs: [],
+              stateMutability: 'nonpayable',
+            }
+          ],
+          functionName: 'payWithHH',
+          args: [parseUnits(hhCost.toFixed(18), 18), 'boost'],
+          chainId: base.id,
+        })
+      }
     } else {
       // Pay with USDC (6 decimals)
       writeBoost({

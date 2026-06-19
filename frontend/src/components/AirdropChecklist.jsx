@@ -82,7 +82,7 @@ export function AirdropChecklist() {
   const { data: stakedBalanceRaw } = useReadContract({
     address: STAKING_ADDRESS,
     abi: STAKING_ABI,
-    functionName: 'stakedBalances',
+    functionName: 'totalActiveStaked',
     args: address ? [address] : undefined,
     query: { enabled: !!address, refetchInterval: 15000 }
   })
