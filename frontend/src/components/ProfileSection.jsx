@@ -223,8 +223,9 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
   const [isBuying, setIsBuying] = useState(true) // true: SelectToken -> $HH, false: $HH -> SelectToken
   const [payAmount, setPayAmount] = useState('')
   const [receiveAmount, setReceiveAmount] = useState('')
-  const [txStep, setTxStep] = useState(null) // 'action_signing' | 'action_pending' | 'success' | null
+  const [txStep, setTxStep] = useState(null) // 'action_signing' | 'action_pending' | 'success' | 'redirected' | null
   const [swapError, setSwapError] = useState('')
+  const [uniswapUrl, setUniswapUrl] = useState('')
   
   // Selectable Token State (defaults to USDC)
   const [selectedSymbol, setSelectedSymbol] = useState('USDC')
@@ -329,24 +330,20 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
       }
     }
 
-    setTxStep('action_signing')
-    setTimeout(() => {
-      setTxStep('action_pending')
-      setTimeout(() => {
-        const inputToken = isBuying 
-          ? (activeSelectedToken.symbol === 'ETH' ? 'ETH' : USDC_ADDRESS) 
-          : HH_ADDRESS
-        const outputToken = isBuying 
-          ? HH_ADDRESS 
-          : (activeSelectedToken.symbol === 'ETH' ? 'ETH' : USDC_ADDRESS)
-        const url = `https://app.uniswap.org/swap?inputCurrency=${inputToken}&outputCurrency=${outputToken}&chain=base`
-        window.open(url, '_blank', 'noopener,noreferrer')
-        
-        setPayAmount('')
-        setReceiveAmount('')
-        setTxStep('success')
-      }, 1500)
-    }, 1000)
+    const inputToken = isBuying 
+      ? (activeSelectedToken.symbol === 'ETH' ? 'ETH' : USDC_ADDRESS) 
+      : HH_ADDRESS
+    const outputToken = isBuying 
+      ? HH_ADDRESS 
+      : (activeSelectedToken.symbol === 'ETH' ? 'ETH' : USDC_ADDRESS)
+    const url = `https://app.uniswap.org/swap?inputCurrency=${inputToken}&outputCurrency=${outputToken}&chain=base`
+    
+    setUniswapUrl(url)
+    window.open(url, '_blank', 'noopener,noreferrer')
+    
+    setPayAmount('')
+    setReceiveAmount('')
+    setTxStep('redirected')
   }
 
   // Diagnostic Simulation State
@@ -1693,6 +1690,8 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
             <div style={{ marginBottom: 20 }}>
               {txStep === 'success' ? (
                 <span style={{ fontSize: 54 }}>🎉</span>
+              ) : txStep === 'redirected' ? (
+                <span style={{ fontSize: 54 }}>🦄</span>
               ) : (
                 <div style={{
                   width: 50, height: 50, border: '4px solid #F0F5FF', borderTopColor: '#0052FF',
@@ -1705,12 +1704,14 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
               {txStep === 'action_signing' && 'Confirming Swap'}
               {txStep === 'action_pending' && 'Executing Swap Transaction'}
               {txStep === 'success' && 'Swap Confirmed!'}
+              {txStep === 'redirected' && 'Redirected to Uniswap'}
             </h3>
 
             <p style={{ fontSize: 12.5, color: '#717886', lineHeight: 1.5, marginBottom: 20 }}>
               {txStep === 'action_signing' && 'Please confirm the swap transaction in your wallet.'}
               {txStep === 'action_pending' && 'Updating simulated balances on Base Network...'}
               {txStep === 'success' && 'Your swap was executed successfully! Your wallet balances have updated.'}
+              {txStep === 'redirected' && 'Please complete your swap on the Uniswap interface in the new tab.'}
             </p>
 
             {txStep === 'success' && (
@@ -1725,6 +1726,37 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
               >
                 Close
               </button>
+            )}
+
+            {txStep === 'redirected' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <button
+                  onClick={() => window.open(uniswapUrl, '_blank', 'noopener,noreferrer')}
+                  style={{
+                    background: 'linear-gradient(135deg, #FF007A 0%, #CC0062 100%)',
+                    color: '#FFFFFF', border: 'none', borderRadius: 12, padding: '10px 24px',
+                    fontSize: 13, fontWeight: 800, cursor: 'pointer',
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 6
+                  }}
+                >
+                  <span>Open Uniswap</span>
+                </button>
+                <button
+                  onClick={() => setTxStep(null)}
+                  style={{
+                    background: '#F0F2F5',
+                    color: '#0A0B0D', border: 'none', borderRadius: 12, padding: '10px 24px',
+                    fontSize: 13, fontWeight: 800, cursor: 'pointer',
+                    width: '100%'
+                  }}
+                >
+                  Close
+                </button>
+              </div>
             )}
           </div>
         </div>

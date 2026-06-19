@@ -51,19 +51,19 @@ export function AirdropChecklist() {
         const { count: checkinsCount } = await db
           .from('checkins')
           .select('*', { count: 'exact', head: true })
-          .eq('user_address', userAddr)
+          .eq('address', userAddr)
 
         // 2. Fetch raids count (bets)
         const { count: raidsCount } = await db
           .from('bets')
           .select('*', { count: 'exact', head: true })
-          .eq('user_address', userAddr)
+          .eq('address', userAddr)
 
         // 3. Fetch opened boxes count
         const { count: boxesCount } = await db
           .from('opened_boxes')
           .select('*', { count: 'exact', head: true })
-          .eq('user_address', userAddr)
+          .eq('address', userAddr)
 
         setChecklistStats({
           checkins: checkinsCount || 0,
