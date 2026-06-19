@@ -42,6 +42,7 @@ export default function App() {
       return saved
     } catch { return 'usdc' }
   })
+  const [caCopied, setCaCopied] = useState(false)
 
   useEffect(() => {
     try { localStorage.setItem('happy_leaderboard_subtab', leaderboardSubTab) } catch { }
@@ -574,6 +575,183 @@ export default function App() {
             */
           )}
         </div>
+
+        {/* Footer Section */}
+        <footer style={{
+          maxWidth: 640,
+          margin: '40px auto 140px',
+          padding: '24px 16px',
+          borderTop: '1px solid var(--border2)',
+          textAlign: 'center',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 16,
+          opacity: 0.85
+        }}>
+          {/* Social Icons Row */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {/* Telegram Link */}
+            <a 
+              href="https://t.me/happyhourapp" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              title="Telegram Channel"
+              style={{
+                width: 28,
+                height: 28,
+                borderRadius: '50%',
+                background: 'rgba(0, 136, 204, 0.08)',
+                border: '1px solid rgba(0, 136, 204, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                textDecoration: 'none'
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(0, 136, 204, 0.16)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(0, 136, 204, 0.08)'}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#0088cc' }}>
+                <path d="M21.9 2.19a1 1 0 0 0-.99-.08l-19 8a1 1 0 0 0-.1 1.82l4.9 2.2 3.1 7.1a1 1 0 0 0 1.77.16l2.9-3.8 4.7 3.3a1 1 0 0 0 1.51-.55l4-17a1 1 0 0 0-.39-.85zM8.62 13.12l8.28-5.28-6.4 6.72-.4 2.88z"/>
+              </svg>
+            </a>
+
+            {/* X Link */}
+            <a 
+              href="https://x.com/happyhour_base" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              title="Follow us on X"
+              style={{
+                width: 28,
+                height: 28,
+                borderRadius: '50%',
+                background: 'rgba(0, 0, 0, 0.05)',
+                border: '1px solid var(--border2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                textDecoration: 'none'
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(0, 0, 0, 0.1)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(0, 0, 0, 0.05)'}
+            >
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" style={{ color: 'var(--text)' }}>
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+            </a>
+
+            {/* DexScreener Link */}
+            <a 
+              href="https://dexscreener.com/base/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              title="DexScreener Chart"
+              style={{
+                width: 28,
+                height: 28,
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                textDecoration: 'none',
+                overflow: 'hidden',
+                border: '1px solid var(--border2)',
+              }}
+              onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
+              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+            >
+              <img src="/dexscreener.jpg" alt="DexScreener" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </a>
+
+            {/* GeckoTerminal Link */}
+            <a 
+              href="https://www.geckoterminal.com/uk/base/pools/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              title="GeckoTerminal Chart"
+              style={{
+                width: 28,
+                height: 28,
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                textDecoration: 'none',
+                overflow: 'hidden',
+                border: '1px solid var(--border2)',
+              }}
+              onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
+              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+            >
+              <img src="/geckoterminal.jpg" alt="GeckoTerminal" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </a>
+          </div>
+
+          {/* CA / Token Contract block */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            background: 'rgba(0, 82, 255, 0.05)',
+            border: '1px solid rgba(0, 82, 255, 0.12)',
+            borderRadius: 12,
+            padding: '6px 12px',
+            maxWidth: '100%',
+            boxSizing: 'border-box'
+          }}>
+            <span style={{ fontSize: 10, fontWeight: 800, color: '#0052FF', textTransform: 'uppercase', letterSpacing: '0.5px' }}>$HH CA:</span>
+            <span style={{ fontSize: 11, fontWeight: 700, fontFamily: 'monospace', color: '#0A0B0D' }}>
+              {caCopied ? 'Copied! ✅' : '0x8235...cBA3'}
+            </span>
+            <button 
+              onClick={() => {
+                navigator.clipboard.writeText('0x8235EdF32a1e10Bd1867ad622915AB613664cbA3');
+                setCaCopied(true);
+                setTimeout(() => setCaCopied(false), 2000);
+              }}
+              title="Copy Contract Address"
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#0052FF',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'}
+              onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+          </div>
+
+          {/* Docs (Soon) and Copyright */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, fontWeight: 750, color: '#717886' }}>
+              <span style={{ cursor: 'not-allowed', display: 'inline-flex', alignItems: 'center', gap: 4, opacity: 0.6 }}>
+                📖 Docs <span style={{ fontSize: 8, background: '#EEF0F3', border: '1px solid #DEE1E7', borderRadius: 6, padding: '1px 4px', fontWeight: 900, textTransform: 'uppercase', color: '#717886' }}>Soon</span>
+              </span>
+            </div>
+            <div style={{ fontSize: 9.5, color: '#717886', fontWeight: 650 }}>
+              &copy; {new Date().getFullYear()} Happy Hour. All rights reserved.
+            </div>
+          </div>
+        </footer>
 
         <BottomNav tab={tab} setTab={setTab} />
       </div>
