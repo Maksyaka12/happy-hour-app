@@ -11,7 +11,7 @@ export const BUILDER_CODE = env.VITE_BUILDER_CODE || 'bc_prbyi4yj'
 
 export const SUPABASE_URL = env.VITE_SUPABASE_URL || 'https://xiyrzftdeefszsiukkjc.supabase.co'
 export const SUPABASE_ANON = env.VITE_SUPABASE_ANON || 'sb_publishable_C1OnF0Bi-L1hcIsPfQ8_BQ_-eT3XLzK'
-export const APP_URL = env.VITE_APP_URL || 'https://happy-hour-based.vercel.app'
+export const APP_URL = env.VITE_APP_URL || 'https://happy-hour-based.app'
 export const HAS_SUPABASE_CONFIG = Boolean(SUPABASE_URL && SUPABASE_ANON)
 
 export const WINNER_SHARE = 0.85
