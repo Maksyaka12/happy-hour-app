@@ -4,7 +4,7 @@ import { SUPABASE_ANON, SUPABASE_URL } from '../config/constants'
 
 const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
 
-export function useRoundState(address) {
+export function useRoundState(address, currency = 'USDC') {
   const [round, setRound] = useState(null)
   const [participants, setParticipants] = useState([])
   const [lastWinner, setLastWinner] = useState(null)
@@ -16,7 +16,11 @@ export function useRoundState(address) {
     if (!SUPABASE_URL || !SUPABASE_ANON) return
 
     try {
-      const params = address ? `?address=${address.toLowerCase()}` : ''
+      const queryParams = []
+      if (address) queryParams.push(`address=${address.toLowerCase()}`)
+      if (currency) queryParams.push(`currency=${currency}`)
+      const params = queryParams.length > 0 ? `?${queryParams.join('&')}` : ''
+
       const response = await fetch(`${SUPABASE_URL}/functions/v1/get-state${params}`, {
         headers: {
           apikey: SUPABASE_ANON,
@@ -49,7 +53,7 @@ export function useRoundState(address) {
     } finally {
       setLoading(false)
     }
-  }, [address])
+  }, [address, currency])
 
   useEffect(() => {
     fetchState()

@@ -53,12 +53,12 @@ const formatConcise = (num) => {
 }
 
 export function RaffleSection({ address, basename }) {
-  const { round, participants, lastWinner, myTickets, myAmount, refetch } = useRoundState(address)
+  const [raffleType, setRaffleType] = useState('usdc') // 'usdc' | 'hh'
+  const { round, participants, lastWinner, myTickets, myAmount, refetch } = useRoundState(address, raffleType.toUpperCase())
   const [msLeft,       setMsLeft]       = useState(0)
   const [txModal,      setTxModal]      = useState(null) // { amount }
   const [spinData, setSpinData] = useState(null)
 
-  const [raffleType, setRaffleType] = useState('usdc') // 'usdc' | 'hh'
   const [hhPrice, setHhPrice] = useState(0.00025)
 
   // Fetch HH price from DexScreener
@@ -89,49 +89,6 @@ export function RaffleSection({ address, basename }) {
     query: { enabled: !!address && raffleType === 'hh', refetchInterval: 10000 }
   })
   const hhAllowance = hhAllowanceRaw !== undefined ? parseFloat(formatUnits(hhAllowanceRaw, 18)) : 0
-
-  // Simulated HH Raffle states
-  const [myHhTickets, setMyHhTickets] = useState(() => {
-    try {
-      const saved = localStorage.getItem(`hh_raffle_my_tickets_${round?.id || 'default'}`)
-      return saved ? parseInt(saved) : 0
-    } catch {
-      return 0
-    }
-  })
-  const [hhParticipants, setHhParticipants] = useState(() => {
-    try {
-      const saved = localStorage.getItem(`hh_raffle_participants_${round?.id || 'default'}`)
-      if (saved) return JSON.parse(saved)
-    } catch {}
-    return [
-      { address: '0x32b2745cf82a174c3d8e9a9017dfe447bf050a41', name: 'BaseChad', amount: 8000, tickets: 20 },
-      { address: '0x12a84920b3c8174c3d8e9a9017dfe447bf050a42', name: 'HH_Enjoyer', amount: 4000, tickets: 10 },
-      { address: '0x98f9a0d7120c174c3d8e9a9017dfe447bf050a43', name: 'BasedAnon', amount: 12000, tickets: 30 },
-    ]
-  })
-
-  // Sync simulated HH raffle state on round changes
-  useEffect(() => {
-    if (!round?.id) return
-    try {
-      const savedTickets = localStorage.getItem(`hh_raffle_my_tickets_${round.id}`)
-      setMyHhTickets(savedTickets ? parseInt(savedTickets) : 0)
-      
-      const savedParts = localStorage.getItem(`hh_raffle_participants_${round.id}`)
-      if (savedParts) {
-        setHhParticipants(JSON.parse(savedParts))
-      } else {
-        const mockParts = [
-          { address: '0x32b274' + Math.random().toString(16).slice(2, 6) + '8e9a9017dfe447bf050a41', name: 'BaseChad', amount: 8000, tickets: 20 },
-          { address: '0x12a849' + Math.random().toString(16).slice(2, 6) + 'd8e9a9017dfe447bf050a42', name: 'HH_Enjoyer', amount: 4000, tickets: 10 },
-          { address: '0x98f9a0' + Math.random().toString(16).slice(2, 6) + '3d8e9a9017dfe447bf050a43', name: 'BasedAnon', amount: 12000, tickets: 30 },
-        ]
-        setHhParticipants(mockParts)
-        localStorage.setItem(`hh_raffle_participants_${round.id}`, JSON.stringify(mockParts))
-      }
-    } catch {}
-  }, [round?.id])
 
   // ── Chain check ──────────────────────────────────────────
   const chainId = useChainId()
@@ -203,59 +160,23 @@ export function RaffleSection({ address, basename }) {
           reset()
           return
         }
-        
-        // This was transfer tx!
-        const ticketsBought = Math.round(amountUsdc / TICKET_UNIT)
-        const newTickets = myHhTickets + ticketsBought
-        setMyHhTickets(newTickets)
-        localStorage.setItem(`hh_raffle_my_tickets_${round?.id}`, newTickets.toString())
-        
-        const userAddr = address?.toLowerCase() || '0xuser'
-        const userShort = address ? `${address.slice(0, 6)}…${address.slice(-4)}` : 'You'
-        
-        let exists = false
-        const nextParts = hhParticipants.map(p => {
-          if (p.address?.toLowerCase() === userAddr) {
-            exists = true
-            return { ...p, amount: p.amount + hhCost, tickets: p.tickets + ticketsBought }
-          }
-          return p
-        })
-        
-        if (!exists) {
-          nextParts.push({
-            address: address || '0xuser',
-            name: basename || userShort,
-            amount: hhCost,
-            tickets: ticketsBought
-          })
-        }
-        
-        setHhParticipants(nextParts)
-        localStorage.setItem(`hh_raffle_participants_${round?.id}`, JSON.stringify(nextParts))
-        setTxModal(null)
-        reset()
-      } else {
-        // USDC raffle
-        setTxModal(null)
-        reset()
-        setTimeout(() => refetch(), 3000) // Alchemy webhook ~2-3s
       }
+      
+      setTxModal(null)
+      reset()
+      setTimeout(() => refetch(), 3000) // Alchemy webhook ~2-3s
     }
-  }, [isSuccess, txHash, raffleType, txModal, hhPrice, hhAllowance, myHhTickets, hhParticipants, address, basename, round?.id])
+  }, [isSuccess, txHash, raffleType, txModal, hhPrice, hhAllowance, address, basename, round?.id])
 
   const displayTotalPot = useMemo(() => {
-    return raffleType === 'hh'
-      ? hhParticipants.reduce((s, p) => s + p.amount, 0)
-      : participants.reduce((s, p) => s + p.amount, 0)
-  }, [raffleType, hhParticipants, participants])
+    return participants.reduce((s, p) => s + p.amount, 0)
+  }, [participants])
 
   const isClosed = msLeft <= CLOSE_BEFORE_MS || round?.status === 'closed' || round?.status === 'spinning'
   
   const displayMyEntry = useMemo(() => {
-    const list = raffleType === 'hh' ? hhParticipants : participants
-    return list.find(p => p.address?.toLowerCase() === address?.toLowerCase())
-  }, [raffleType, hhParticipants, participants, address])
+    return participants.find(p => p.address?.toLowerCase() === address?.toLowerCase())
+  }, [participants, address])
 
   const displayMyChance = useMemo(() => {
     if (displayTotalPot <= 0 || !displayMyEntry) return '0.0'
@@ -263,16 +184,16 @@ export function RaffleSection({ address, basename }) {
   }, [displayTotalPot, displayMyEntry])
 
   const displayParticipants = useMemo(() => {
-    return raffleType === 'hh' ? hhParticipants : participants
-  }, [raffleType, hhParticipants, participants])
+    return participants
+  }, [participants])
 
   const displayMyTickets = useMemo(() => {
-    return raffleType === 'hh' ? myHhTickets : (myTickets || 0)
-  }, [raffleType, myHhTickets, myTickets])
+    return myTickets || 0
+  }, [myTickets])
 
   const displayMyAmount = useMemo(() => {
-    return raffleType === 'hh' ? (displayMyEntry ? displayMyEntry.amount : 0) : (myAmount || 0)
-  }, [raffleType, displayMyEntry, myAmount])
+    return myAmount || 0
+  }, [myAmount])
 
   const timerColor = isClosed ? '#FC401F' : '#0A0B0D'
 

@@ -64,25 +64,47 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
     { symbol: 'WETH', name: 'Wrapped Ether', logo: '🌐', logoBg: '#8C8C8C', priceUsd: 3500.00, balanceKey: 'weth_simulated_wallet', defaultBalance: 0.05 },
   ]
 
-  // Track simulated token balances
-  const [tokenBalances, setTokenBalances] = useState(() => {
-    const list = {}
-    swapTokens.forEach(t => {
-      try {
-        const saved = localStorage.getItem(t.balanceKey)
-        list[t.symbol] = saved !== null ? parseFloat(saved) : t.defaultBalance
-      } catch {
-        list[t.symbol] = t.defaultBalance
-      }
-    })
-    return list
+  // Read real native ETH balance
+  const { data: ethBalanceRaw } = useBalance({
+    address: address ? address : undefined,
+    query: { enabled: !!address, refetchInterval: 15000 }
   })
+  const realEthBalance = ethBalanceRaw !== undefined
+    ? parseFloat(ethBalanceRaw.formatted)
+    : 0.15
 
-  // Sync state USDC to localStorage
-  useEffect(() => {
-    localStorage.setItem('usdc_simulated_wallet', simulatedUsdcBalance.toString())
-    setTokenBalances(prev => ({ ...prev, USDC: simulatedUsdcBalance }))
-  }, [simulatedUsdcBalance])
+  // Read real contract balance for USDC
+  const { data: usdcBalanceRaw } = useReadContract({
+    address: USDC_ADDRESS,
+    abi: USDC_ABI,
+    functionName: 'balanceOf',
+    args: address ? [address] : undefined,
+    query: { enabled: !!address, refetchInterval: 15000 }
+  })
+  const realUsdcBalance = usdcBalanceRaw !== undefined
+    ? parseFloat(formatUnits(usdcBalanceRaw, 6))
+    : simulatedUsdcBalance
+
+  // Read real WETH balance (WETH address is 0x4200000000000000000000000000000000000006 on Base)
+  const WETH_ADDRESS = '0x4200000000000000000000000000000000000006'
+  const { data: wethBalanceRaw } = useReadContract({
+    address: WETH_ADDRESS,
+    abi: USDC_ABI,
+    functionName: 'balanceOf',
+    args: address ? [address] : undefined,
+    query: { enabled: !!address, refetchInterval: 15000 }
+  })
+  const realWethBalance = wethBalanceRaw !== undefined
+    ? parseFloat(formatUnits(wethBalanceRaw, 18))
+    : 0.05
+
+  const tokenBalances = useMemo(() => {
+    return {
+      ETH: realEthBalance,
+      USDC: realUsdcBalance,
+      WETH: realWethBalance,
+    }
+  }, [realEthBalance, realUsdcBalance, realWethBalance])
 
   // Read real contract balance
   const { data: hhBalanceRaw } = useReadContract({
@@ -311,44 +333,20 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
     setTimeout(() => {
       setTxStep('action_pending')
       setTimeout(() => {
-        if (isBuying) {
-          const newTokenBal = tokenBal - pay
-          const newHh = walletBalance + recv
-
-          localStorage.setItem(activeSelectedToken.balanceKey, newTokenBal.toString())
-          localStorage.setItem('hh_simulated_wallet', newHh.toString())
-          setSimulatedWalletBalance(newHh)
-          
-          setTokenBalances(prev => ({
-            ...prev,
-            [activeSelectedToken.symbol]: newTokenBal
-          }))
-          
-          if (activeSelectedToken.symbol === 'USDC') {
-            setSimulatedUsdcBalance(newTokenBal)
-          }
-        } else {
-          const newHh = walletBalance - pay
-          const newTokenBal = tokenBal + recv
-
-          localStorage.setItem('hh_simulated_wallet', newHh.toString())
-          localStorage.setItem(activeSelectedToken.balanceKey, newTokenBal.toString())
-          setSimulatedWalletBalance(newHh)
-
-          setTokenBalances(prev => ({
-            ...prev,
-            [activeSelectedToken.symbol]: newTokenBal
-          }))
-
-          if (activeSelectedToken.symbol === 'USDC') {
-            setSimulatedUsdcBalance(newTokenBal)
-          }
-        }
+        const inputToken = isBuying 
+          ? (activeSelectedToken.symbol === 'ETH' ? 'ETH' : USDC_ADDRESS) 
+          : HH_ADDRESS
+        const outputToken = isBuying 
+          ? HH_ADDRESS 
+          : (activeSelectedToken.symbol === 'ETH' ? 'ETH' : USDC_ADDRESS)
+        const url = `https://app.uniswap.org/swap?inputCurrency=${inputToken}&outputCurrency=${outputToken}&chain=base`
+        window.open(url, '_blank', 'noopener,noreferrer')
+        
         setPayAmount('')
         setReceiveAmount('')
         setTxStep('success')
-      }, 2000)
-    }, 1500)
+      }, 1500)
+    }, 1000)
   }
 
   // Diagnostic Simulation State
