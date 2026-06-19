@@ -528,16 +528,14 @@ export function EarnSection({ setTab, address: propAddress }) {
 
       {/* Feature Blocks Grid — Themed Custom Section Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 4 }}>
-        {/* Block 1: Happy Raids (Dark Red/Orange theme) */}
+        {/* Block 1: Happy Raids (Coming Soon overlay) */}
         <div
-          onClick={() => setTab('raid')}
           style={{
             background: '#140505',
             borderRadius: 20,
             padding: '14px 14px 12px',
-            cursor: 'pointer',
-            transition: 'all 0.2s',
-            boxShadow: '0 8px 32px rgba(101,16,16,0.2)',
+            cursor: 'default',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
             height: 126,
             boxSizing: 'border-box',
             display: 'flex',
@@ -545,15 +543,7 @@ export function EarnSection({ setTab, address: propAddress }) {
             justifyContent: 'space-between',
             position: 'relative',
             overflow: 'hidden',
-            border: '1px solid rgba(239,68,68,0.25)'
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.transform = 'translateY(-1.5px)'
-            e.currentTarget.style.boxShadow = '0 12px 36px rgba(101,16,16,0.3)'
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.transform = 'none'
-            e.currentTarget.style.boxShadow = '0 8px 32px rgba(101,16,16,0.2)'
+            border: '1px solid rgba(255,255,255,0.08)'
           }}
         >
           {/* Graded background image */}
@@ -563,12 +553,12 @@ export function EarnSection({ setTab, address: propAddress }) {
             backgroundImage: 'url(/banner.jpg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            filter: 'hue-rotate(330deg) brightness(0.45) contrast(1.2)',
+            filter: 'hue-rotate(330deg) brightness(0.2) contrast(1.2) grayscale(0.5)',
             zIndex: 0,
             pointerEvents: 'none'
           }} />
           
-          <div style={{ position: 'relative', zIndex: 1 }}>
+          <div style={{ position: 'relative', zIndex: 1, opacity: 0.4 }}>
             <div style={{ fontSize: 14.5, fontWeight: 800, color: '#FFFFFF' }}>Happy Raids</div>
             <div style={{ fontSize: 10, color: 'rgba(255, 255, 255, 0.7)', marginTop: 2, fontWeight: 600 }}>steal HP</div>
           </div>
@@ -579,21 +569,39 @@ export function EarnSection({ setTab, address: propAddress }) {
             zIndex: 1,
             width: '100%',
             height: 30,
-            background: 'rgba(255, 255, 255, 0.12)',
-            border: '1px solid rgba(255, 255, 255, 0.25)',
+            background: 'rgba(255, 255, 255, 0.05)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
             borderRadius: 10,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#FFFFFF',
+            color: 'rgba(255, 255, 255, 0.3)',
             fontSize: 12.5,
-            fontWeight: 800,
-            transition: 'background 0.2s'
+            fontWeight: 800
           }}
-          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
-          onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
           >
             Play →
+          </div>
+
+          {/* Coming Soon Overlay */}
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'rgba(20, 20, 20, 0.65)',
+            backdropFilter: 'blur(3px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#FFFFFF',
+            fontSize: 13,
+            fontWeight: 900,
+            letterSpacing: '1px',
+            zIndex: 2,
+            textTransform: 'uppercase',
+            border: '1px solid rgba(255,255,255,0.05)',
+            borderRadius: 20
+          }}>
+            🔒 Coming Soon
           </div>
         </div>
 

@@ -13,7 +13,7 @@ interface IERC20 {
 /**
  * @title HappyHourStaking
  * @dev Smart contract for staking $HH tokens.
- * Users can stake for 7 days (20% APR) or 10 days (45% APR) to earn yield.
+ * Users can stake for 7 days (103% APR) or 10 days (166% APR) to earn yield.
  * Staked positions are locked for the duration. Users unstake themselves after lock expiry.
  */
 contract HappyHourStaking {
@@ -66,7 +66,7 @@ contract HappyHourStaking {
         require(_amount > 0, "Staking amount must be greater than zero");
         require(_durationDays == 7 || _durationDays == 10, "Staking duration must be 7 or 10 days");
 
-        uint256 apr = _durationDays == 7 ? 20 : 45;
+        uint256 apr = _durationDays == 7 ? 103 : 166;
 
         // Pull tokens from user to contract
         require(hhToken.transferFrom(msg.sender, address(this), _amount), "Staking transfer failed");

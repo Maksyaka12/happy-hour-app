@@ -739,7 +739,7 @@ export function StakingSection({ setTab }) {
                   transition: 'all 0.15s'
                 }}
               >
-                7 Days (20% APR)
+                7 Days (103% APR)
               </button>
               <button
                 onClick={() => setLockPeriod('10')}
@@ -757,7 +757,7 @@ export function StakingSection({ setTab }) {
                   transition: 'all 0.15s'
                 }}
               >
-                10 Days (45% APR)
+                10 Days (166% APR)
               </button>
             </div>
 
