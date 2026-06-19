@@ -8,9 +8,10 @@ import { ConnectScreen } from './components/ConnectScreen'
 import { RaffleSection } from './components/RaffleSection'
 import { TasksSection } from './components/TasksSection'
 import { HappyBoxesSection } from './components/HappyBoxesSection'
-import { RaidMode } from './components/RaidMode'
 import { LeaderboardSection } from './components/LeaderboardSection'
-import { DailyRewardsSection } from './components/DailyRewardsSection'
+import { EarnSection } from './components/EarnSection'
+import { RaidMode } from './components/RaidMode'
+import { AirdropChecklist } from './components/AirdropChecklist'
 import { ProfileSection } from './components/ProfileSection'
 import { BottomNav } from './components/BottomNav'
 import { HappyHourLogo } from './components/HappyHourLogo'
@@ -27,10 +28,19 @@ function getReferralCode() {
 
 export default function App() {
   const [tab, setTab] = useState(() => {
-    try { return localStorage.getItem('happy_tab') || 'raffle' } catch { return 'raffle' }
+    try {
+      let saved = localStorage.getItem('happy_tab') || 'raffle'
+      if (saved === 'profile') saved = 'home'
+      if (saved === 'staking' || saved === 'raid') saved = 'earn'
+      return saved
+    } catch { return 'raffle' }
   })
   const [leaderboardSubTab, setLeaderboardSubTab] = useState(() => {
-    try { return localStorage.getItem('happy_leaderboard_subtab') || 'usdc' } catch { return 'usdc' }
+    try {
+      let saved = localStorage.getItem('happy_leaderboard_subtab') || 'usdc'
+      if (saved === 'hp') saved = 'hh'
+      return saved
+    } catch { return 'usdc' }
   })
 
   useEffect(() => {
@@ -55,19 +65,38 @@ export default function App() {
     query: { enabled: !!address, refetchInterval: 10000 },
   })
 
+  const [simulatedUsdcHeader, setSimulatedUsdcHeader] = useState(() => {
+    try {
+      return parseFloat(localStorage.getItem('usdc_simulated_wallet') || '500')
+    } catch {
+      return 500
+    }
+  })
+
+  useEffect(() => {
+    if (usdcBalanceRaw !== undefined) return
+    const interval = setInterval(() => {
+      try {
+        const val = parseFloat(localStorage.getItem('usdc_simulated_wallet') || '500')
+        setSimulatedUsdcHeader(val)
+      } catch {}
+    }, 2000)
+    return () => clearInterval(interval)
+  }, [usdcBalanceRaw])
+
   const usdcBalance = usdcBalanceRaw !== undefined
     ? Number(formatUnits(usdcBalanceRaw, 6)).toFixed(2)
-    : '0.00'
+    : simulatedUsdcHeader.toFixed(2)
 
   const referralCode = useMemo(() => getReferralCode(), [])
 
   const tabLabels = {
+    home: 'Home',
     raffle: 'Happy Raffle',
-    raid: 'Happy Raids',
+    earn: 'Earn',
     boxes: 'Happy Boxes',
     tasks: 'Tasks',
     leaderboard: 'Leaderboard',
-    profile: 'Profile',
   }
 
   useEffect(() => {
@@ -309,10 +338,41 @@ export default function App() {
         {/* <ContestBanner onClick={() => setTab('boxes')} /> */}
 
         <div style={{ position: 'relative', zIndex: 1, maxWidth: 640, margin: '0 auto' }}>
+          {tab === 'home' && <ProfileSection address={address} basename={basename} totalUsers={totalUsers} setTab={setTab} />}
           {tab === 'raffle' && <RaffleSection address={address} basename={basename} />}
-          {tab === 'raid' && <RaidMode address={address} />}
-          {tab === 'boxes' && <HappyBoxesSection address={address} />}
+          {tab === 'earn' && <EarnSection setTab={setTab} address={address} />}
+          {tab === 'boxes' && <HappyBoxesSection address={address} setTab={setTab} />}
           {tab === 'tasks' && <TasksSection address={address} />}
+          {tab === 'raid' && (
+            <div style={{ padding: '0 0 100px' }}>
+              <div style={{ padding: '0 12px', marginBottom: 12 }}>
+                <button
+                  onClick={() => setTab('earn')}
+                  style={{
+                    background: '#FFFFFF',
+                    border: '1px solid rgba(226, 232, 240, 0.8)',
+                    borderRadius: 100,
+                    padding: '6px 14px',
+                    fontSize: 11,
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    outline: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.01)',
+                    color: '#0A0B0D',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-0.5px)'}
+                  onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+                >
+                  ← Back to Earn
+                </button>
+              </div>
+              <RaidMode address={address} />
+            </div>
+          )}
           {tab === 'leaderboard' && (
             <>
               {/* Premium sub-navigation switcher above the banners */}
@@ -340,7 +400,7 @@ export default function App() {
                         ? 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)' 
                         : 'rgba(255, 255, 255, 0.6)',
                       color: leaderboardSubTab === 'usdc' ? '#fff' : '#717886',
-                      fontWeight: 800,
+                      fontWeight: 850,
                       fontSize: 11.5,
                       cursor: 'pointer',
                       transition: 'all 0.2s',
@@ -352,26 +412,26 @@ export default function App() {
                     🏆 USDC Rewards
                   </button>
                   <button
-                    onClick={() => setLeaderboardSubTab('hp')}
+                    onClick={() => setLeaderboardSubTab('hh')}
                     style={{
                       flex: 1,
                       padding: '8px 10px',
                       borderRadius: 12,
-                      border: leaderboardSubTab === 'hp' ? 'none' : '1px solid rgba(255,255,255,0.8)',
-                      background: leaderboardSubTab === 'hp' 
+                      border: leaderboardSubTab === 'hh' ? 'none' : '1px solid rgba(255,255,255,0.8)',
+                      background: leaderboardSubTab === 'hh' 
                         ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' 
                         : 'rgba(255, 255, 255, 0.6)',
-                      color: leaderboardSubTab === 'hp' ? '#fff' : '#717886',
-                      fontWeight: 800,
+                      color: leaderboardSubTab === 'hh' ? '#fff' : '#717886',
+                      fontWeight: 850,
                       fontSize: 11.5,
                       cursor: 'pointer',
                       transition: 'all 0.2s',
-                      boxShadow: leaderboardSubTab === 'hp' 
+                      boxShadow: leaderboardSubTab === 'hh' 
                         ? '0 4px 12px rgba(16,185,129,0.2)' 
                         : '0 2px 4px rgba(10,11,13,0.02)'
                     }}
                   >
-                    ⚡ HP Rewards (Daily)
+                    🪂 $HH Rewards
                   </button>
                 </div>
               </div>
@@ -379,11 +439,10 @@ export default function App() {
               {leaderboardSubTab === 'usdc' ? (
                 <LeaderboardSection address={address} />
               ) : (
-                <DailyRewardsSection address={address} />
+                <AirdropChecklist address={address} />
               )}
             </>
           )}
-          {tab === 'profile' && <ProfileSection address={address} basename={basename} totalUsers={totalUsers} />}
         </div>
 
         <BottomNav tab={tab} setTab={setTab} />

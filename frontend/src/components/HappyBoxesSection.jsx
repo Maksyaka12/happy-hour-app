@@ -1,13 +1,30 @@
 import React, { useState, useEffect } from 'react'
-import { useChainId, useSwitchChain } from 'wagmi'
-import { parseUnits } from 'viem'
+import { useChainId, useSwitchChain, useReadContract } from 'wagmi'
+import { parseUnits, formatUnits } from 'viem'
 import { base } from 'wagmi/chains'
-import { CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI } from '../config/constants'
+import { CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI, HH_MANAGER_ADDRESS } from '../config/constants'
 import { db } from '../config/supabase'
 import { useBuilderWrite } from '../hooks/useBuilderWrite'
 import { TxModal } from './TxModal'
 
-export function HappyBoxesSection({ address, profile, onUpdate }) {
+const formatConcise = (num) => {
+  const n = parseFloat(num || 0)
+  if (n >= 1e9) {
+    const val = (n / 1e9).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'b' : val.endsWith('0') ? val.slice(0, -1) + 'b' : val + 'b'
+  }
+  if (n >= 1e6) {
+    const val = (n / 1e6).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'm' : val.endsWith('0') ? val.slice(0, -1) + 'm' : val + 'm'
+  }
+  if (n >= 1e3) {
+    const val = (n / 1e3).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'k' : val.endsWith('0') ? val.slice(0, -1) + 'k' : val + 'k'
+  }
+  return n.toFixed(2).replace(/\.00$/, '')
+}
+
+export function HappyBoxesSection({ address, onUpdate, setTab }) {
   // State for the 6 chest cells
   const [chests, setChests] = useState([
     { id: 1, status: 'locked', hp: null, mult: null },
@@ -18,27 +35,27 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
     { id: 6, status: 'locked', hp: null, mult: null },
   ])
 
-  // Color logic and premium styles for opened boxes (matches ProfileSection boost colors)
+  // Color logic for multiplier badges
   const getOpenedCardDetails = (mult) => {
     const m = parseFloat(mult) || 1.0
     if (m >= 2.0) {
       return {
-        badgeBg: 'linear-gradient(135deg, #34D399, #059669)', // green
-        badgeColor: '#000000', // black text
-        badgeText: '⚡ 2.0x Boost'
+        badgeBg: 'linear-gradient(135deg, #10B981, #059669)', // green
+        badgeColor: '#FFFFFF',
+        badgeText: `⚡ ${m}x`
       }
     }
     if (m > 1.0) {
       return {
-        badgeBg: 'linear-gradient(135deg, #F4C81B, #F97316)', // orange
-        badgeColor: '#000000', // black text
-        badgeText: `⚡ ${m}x Boost`
+        badgeBg: 'linear-gradient(135deg, #F59E0B, #D97706)', // orange/amber
+        badgeColor: '#FFFFFF',
+        badgeText: `⚡ ${m}x`
       }
     }
     return {
-      badgeBg: 'linear-gradient(135deg, #94A3B8, #64748B)', // gray
-      badgeColor: '#000000', // black text
-      badgeText: '⚡ 1.0x Boost'
+      badgeBg: 'linear-gradient(135deg, #6B7280, #4B5563)', // gray
+      badgeColor: '#FFFFFF',
+      badgeText: `⚡ 1x`
     }
   }
 
@@ -47,13 +64,6 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
   const [txModal, setTxModal] = useState(false) // 'single' | 'bundle' | false
   const [revealingIndex, setRevealingIndex] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
-
-  const chainId = useChainId()
-  const { switchChain, isPending: isSwitching } = useSwitchChain()
-  const wrongChain = chainId !== base.id
-
-  const { data: txHash, writeContract, isPending, isConfirming, isSuccess, error: writeError, reset } = useBuilderWrite()
-
   const [clickedBoxIndex, setClickedBoxIndex] = useState(null)
 
   const [dailyStats, setDailyStats] = useState({
@@ -62,9 +72,50 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
     ap_burned: 0,
     score: 0
   })
-  const [isBurningAp, setIsBurningAp] = useState(false)
-  const [apBurnError, setApBurnError] = useState('')
-  const [apBurnSuccess, setApBurnSuccess] = useState(false)
+
+  const [paymentCurrency, setPaymentCurrency] = useState('USDC')
+  const [hhPrice, setHhPrice] = useState(0.00025)
+  const [isProcessingBuyAttempt, setIsProcessingBuyAttempt] = useState(false)
+
+  const chainId = useChainId()
+  const { switchChain, isPending: isSwitching } = useSwitchChain()
+  const wrongChain = chainId !== base.id
+
+  // Separate write hooks for box opening and buying attempts
+  const boxWrite = useBuilderWrite()
+  const buyAttemptWrite = useBuilderWrite()
+
+  // Fetch HH price from DexScreener
+  useEffect(() => {
+    const getPrice = async () => {
+      try {
+        const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${HH_ADDRESS}`)
+        const data = await res.json()
+        const pair = data.pairs?.[0]
+        if (pair) {
+          setHhPrice(parseFloat(pair.priceUsd) || 0.00025)
+        }
+      } catch (err) {
+        console.error('DexScreener API error in HappyBoxes:', err)
+      }
+    }
+    getPrice()
+    const interval = setInterval(getPrice, 30000)
+    return () => clearInterval(interval)
+  }, [])
+
+  // Read allowance
+  const { data: allowanceRaw } = useReadContract({
+    address: HH_ADDRESS,
+    abi: HH_ABI,
+    functionName: 'allowance',
+    args: address && HH_MANAGER_ADDRESS ? [address, HH_MANAGER_ADDRESS] : undefined,
+    query: { enabled: !!address, refetchInterval: 10000 }
+  })
+  
+  const currentAllowance = allowanceRaw !== undefined
+    ? parseFloat(formatUnits(allowanceRaw, 18))
+    : 0
 
   const loadDailyStats = async () => {
     if (!address) return
@@ -97,36 +148,10 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
     loadDailyStats()
   }, [address])
 
-  const handleBurnAp = async () => {
-    if (!address) return
-    setIsBurningAp(true)
-    setApBurnError('')
-    setApBurnSuccess(false)
-    try {
-      const { data, error } = await db.rpc('burn_ap_for_boxes', {
-        p_address: address.toLowerCase()
-      })
-      if (error) throw error
-      if (data?.ok) {
-        setApBurnSuccess(true)
-        await loadDailyStats()
-        if (onUpdate) onUpdate()
-        setTimeout(() => setApBurnSuccess(false), 3000)
-      } else {
-        setApBurnError(data?.error || 'Failed to burn AP.')
-      }
-    } catch (e) {
-      console.error(e)
-      setApBurnError('Failed to execute AP burn.')
-    } finally {
-      setIsBurningAp(false)
-    }
-  }
-
   const maxDailyOpens = 12 + dailyStats.bonus_opens
   const remainingOpens = Math.max(0, maxDailyOpens - dailyStats.boxes_opened)
 
-  // Recovery of pending choice across tab unmounts (Option 2)
+  // Recovery of pending choice across tab unmounts
   useEffect(() => {
     const pendingHash = localStorage.getItem('happy_boxes_pending')
     if (pendingHash) {
@@ -147,7 +172,6 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       }
       setChests(prev => prev.map(c => c.status === 'locked' ? { ...c, status: 'active' } : c))
     } else {
-      // Variant 1: No pending transaction, clear saved board to start fresh
       localStorage.removeItem('happy_boxes_board')
     }
   }, [])
@@ -177,55 +201,190 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
     setRevealingIndex(null)
     setClickedBoxIndex(null)
     setErrorMessage('')
-    reset()
+    boxWrite.reset()
+    buyAttemptWrite.reset()
   }
 
-  // Handle successful USDC transactions
+  // Watch for buy attempt transaction success
   useEffect(() => {
-    if (isSuccess && txHash) {
-      if (txModal === 'single') {
-        setTxModal(false)
-        if (clickedBoxIndex !== null) {
-          // Option 1: User pre-clicked a chest card badge. Open it directly!
-          handleSelectChest(clickedBoxIndex, txHash)
-        } else {
-          // Standard flow: User clicked main bottom button. Give them a choice.
-          setActiveTxHash(txHash)
-          setHasActiveChoice(true)
-          setChests(prev => prev.map(c => c.status === 'locked' ? { ...c, status: 'active' } : c))
-          localStorage.setItem('happy_boxes_pending', txHash)
+    if (buyAttemptWrite.isSuccess && buyAttemptWrite.data && !isProcessingBuyAttempt) {
+      const hhAmount = 0.10 / hhPrice
+      if (currentAllowance < hhAmount) {
+        // This was approval tx. Just reset and return.
+        buyAttemptWrite.reset()
+        return
+      }
+      handleRegisterBuyAttempt(buyAttemptWrite.data)
+    }
+  }, [buyAttemptWrite.isSuccess, buyAttemptWrite.data, currentAllowance, hhPrice])
+
+  const handleRegisterBuyAttempt = async (hash) => {
+    setIsProcessingBuyAttempt(true)
+    const hhAmount = 0.10 / hhPrice
+    try {
+      const { data, error } = await db.rpc('burn_hh_for_boxes', {
+        p_address: address.toLowerCase(),
+        p_tx_hash: hash,
+        p_amount: hhAmount
+      })
+      if (error) throw error
+      if (data?.ok) {
+        await loadDailyStats()
+        if (onUpdate) onUpdate()
+        buyAttemptWrite.reset()
+      } else {
+        setErrorMessage(data?.error || 'Failed to register extra attempt.')
+      }
+    } catch (e) {
+      console.error(e)
+      setErrorMessage('Failed to register extra attempt in database.')
+    } finally {
+      setIsProcessingBuyAttempt(false)
+    }
+  }
+
+  const handleBuyAttempt = () => {
+    if (wrongChain) { switchChain({ chainId: base.id }); return }
+    setErrorMessage('')
+    
+    const hhAmount = 0.10 / hhPrice
+    if (currentAllowance < hhAmount) {
+      buyAttemptWrite.writeContract({
+        address: HH_ADDRESS,
+        abi: HH_ABI,
+        functionName: 'approve',
+        args: [HH_MANAGER_ADDRESS, parseUnits('115792089237316195423570985008687907853269984665640564039457584007913129639935', 18)], // max uint256
+        chainId: base.id
+      })
+    } else {
+      buyAttemptWrite.writeContract({
+        address: HH_MANAGER_ADDRESS,
+        abi: [
+          {
+            name: 'burnHHForBoxes',
+            type: 'function',
+            inputs: [{ name: '_amount', type: 'uint256' }],
+            outputs: [],
+            stateMutability: 'nonpayable',
+          }
+        ],
+        functionName: 'burnHHForBoxes',
+        args: [parseUnits(hhAmount.toFixed(18), 18)],
+        chainId: base.id
+      })
+    }
+  }
+
+  // Handle successful box transactions
+  useEffect(() => {
+    if (boxWrite.isSuccess && boxWrite.data) {
+      if (paymentCurrency === 'HH') {
+        const hhAmount = txModal === 'bundle' ? (1.00 / hhPrice) : (0.20 / hhPrice)
+        if (currentAllowance < hhAmount) {
+          // This was approval tx. Reset and return.
+          boxWrite.reset()
+          return
         }
-      } else if (txModal === 'bundle') {
-        setTxModal(false)
-        handleOpenAllChests(txHash)
+      }
+
+      if (txModal === 'bundle') {
+        handleOpenAllChests(boxWrite.data)
+      } else if (txModal === 'single' && clickedBoxIndex !== null) {
+        handleSelectChest(clickedBoxIndex, boxWrite.data)
       }
     }
-  }, [isSuccess, txHash, txModal, clickedBoxIndex])
+  }, [boxWrite.isSuccess, boxWrite.data, txModal, clickedBoxIndex, paymentCurrency, currentAllowance, hhPrice])
 
   // Single chest transaction confirm
   const handleSinglePayment = () => {
     if (wrongChain) { switchChain({ chainId: base.id }); return }
     setErrorMessage('')
-    writeContract({
-      address: USDC_ADDRESS,
-      abi: USDC_ABI,
-      functionName: 'transfer',
-      args: [CHECKIN_TARGET, parseUnits('0.30', 6)],
-      chainId: base.id
-    })
+    
+    if (paymentCurrency === 'HH') {
+      const hhAmount = 0.20 / hhPrice
+      if (currentAllowance < hhAmount) {
+        boxWrite.writeContract({
+          address: HH_ADDRESS,
+          abi: HH_ABI,
+          functionName: 'approve',
+          args: [HH_MANAGER_ADDRESS, parseUnits('115792089237316195423570985008687907853269984665640564039457584007913129639935', 18)], // max uint256
+          chainId: base.id
+        })
+      } else {
+        boxWrite.writeContract({
+          address: HH_MANAGER_ADDRESS,
+          abi: [
+            {
+              name: 'payWithHH',
+              type: 'function',
+              inputs: [
+                { name: '_amount', type: 'uint256' },
+                { name: '_serviceType', type: 'string' }
+              ],
+              outputs: [],
+              stateMutability: 'nonpayable',
+            }
+          ],
+          functionName: 'payWithHH',
+          args: [parseUnits(hhAmount.toFixed(18), 18), 'box_open'],
+          chainId: base.id
+        })
+      }
+    } else {
+      boxWrite.writeContract({
+        address: USDC_ADDRESS,
+        abi: USDC_ABI,
+        functionName: 'transfer',
+        args: [CHECKIN_TARGET, parseUnits('0.30', 6)],
+        chainId: base.id
+      })
+    }
   }
 
-  // Bundle transaction confirm (Open All)
+  // Bundle transaction confirm
   const handleBundlePayment = () => {
     if (wrongChain) { switchChain({ chainId: base.id }); return }
     setErrorMessage('')
-    writeContract({
-      address: USDC_ADDRESS,
-      abi: USDC_ABI,
-      functionName: 'transfer',
-      args: [CHECKIN_TARGET, parseUnits('1.50', 6)],
-      chainId: base.id
-    })
+
+    if (paymentCurrency === 'HH') {
+      const hhAmount = 1.00 / hhPrice
+      if (currentAllowance < hhAmount) {
+        boxWrite.writeContract({
+          address: HH_ADDRESS,
+          abi: HH_ABI,
+          functionName: 'approve',
+          args: [HH_MANAGER_ADDRESS, parseUnits('115792089237316195423570985008687907853269984665640564039457584007913129639935', 18)], // max uint256
+          chainId: base.id
+        })
+      } else {
+        boxWrite.writeContract({
+          address: HH_MANAGER_ADDRESS,
+          abi: [
+            {
+              name: 'payWithHH',
+              type: 'function',
+              inputs: [
+                { name: '_amount', type: 'uint256' },
+                { name: '_serviceType', type: 'string' }
+              ],
+              outputs: [],
+              stateMutability: 'nonpayable',
+            }
+          ],
+          functionName: 'payWithHH',
+          args: [parseUnits(hhAmount.toFixed(18), 18), 'box_bundle'],
+          chainId: base.id
+        })
+      }
+    } else {
+      boxWrite.writeContract({
+        address: USDC_ADDRESS,
+        abi: USDC_ABI,
+        functionName: 'transfer',
+        args: [CHECKIN_TARGET, parseUnits('1.50', 6)],
+        chainId: base.id
+      })
+    }
   }
 
   // User selects an active chest to open
@@ -235,11 +394,12 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
     if (!hash && (!hasActiveChoice || chests[index].status !== 'active')) return
 
     setRevealingIndex(index)
-    setHasActiveChoice(false) // Lock other clicks
-    localStorage.removeItem('happy_boxes_pending') // clear immediately!
+    setHasActiveChoice(false)
+    localStorage.removeItem('happy_boxes_pending')
 
     try {
-      const { data, error } = await db.rpc('open_standard_chest', {
+      const rpcName = paymentCurrency === 'HH' ? 'open_standard_chest_hh' : 'open_standard_chest'
+      const { data, error } = await db.rpc(rpcName, {
         p_address: address.toLowerCase(),
         p_tx_hash: txHashToUse
       })
@@ -253,7 +413,6 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             : { ...c, status: c.status === 'active' ? 'locked' : c.status }
           )
           
-          // Auto reset check: Option 3!
           const allOpen = nextChests.every(c => c.status === 'opened')
           if (allOpen) {
             setTimeout(() => {
@@ -277,18 +436,18 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       setRevealingIndex(null)
       setActiveTxHash(null)
       setClickedBoxIndex(null)
-      reset()
+      boxWrite.reset()
     }
   }
 
   // Open all 6 chests automatically with bundle transaction
   const handleOpenAllChests = async (hash) => {
     setErrorMessage('')
-    // Set all chests to revealing status
     setRevealingIndex('all')
 
     try {
-      const { data, error } = await db.rpc('open_all_chests', {
+      const rpcName = paymentCurrency === 'HH' ? 'open_all_chests_hh' : 'open_all_chests'
+      const { data, error } = await db.rpc(rpcName, {
         p_address: address.toLowerCase(),
         p_tx_hash: hash
       })
@@ -296,7 +455,6 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       if (error) throw error
 
       if (data?.ok && data.rewards) {
-        // Stagger reveal of chests for a premium feel
         const rewards = data.rewards
         const newChests = [...chests]
         
@@ -308,7 +466,6 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             hp: rewardObj ? rewardObj.hp_won : 0,
             mult: rewardObj ? rewardObj.applied_multiplier : 1.0
           }
-          // Delay each slot update by 120ms
           await new Promise(r => setTimeout(r, 120))
           setChests([...newChests])
         }
@@ -316,7 +473,6 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         if (onUpdate) onUpdate()
         loadDailyStats()
 
-        // Auto reset for Option 3!
         setTimeout(() => {
           handleResetBoard()
         }, 2500)
@@ -328,30 +484,50 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
       setErrorMessage('Something went wrong opening all boxes.')
     } finally {
       setRevealingIndex(null)
-      reset()
+      boxWrite.reset()
     }
   }
 
   const allOpened = chests.every(c => c.status === 'opened')
   const anyOpened = chests.some(c => c.status === 'opened')
+  const isBuyingAttemptLoading = buyAttemptWrite.isPending || buyAttemptWrite.isConfirming || isProcessingBuyAttempt
 
   return (
     <div style={{ padding: '0 16px 120px', animation: 'hbFadeIn 0.4s ease' }}>
       <style>{`
         @keyframes hbFadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
-        @keyframes hbBob { 0%,100% { transform:translateY(0) scale(1); } 50% { transform:translateY(-5px) scale(1.05); } }
-        @keyframes hbPulseGlow { 0%,100% { box-shadow: 0 0 12px rgba(139,92,246,0.15); } 50% { box-shadow: 0 0 24px rgba(139,92,246,0.4); } }
+        @keyframes hbBob { 0%,100% { transform:translateY(0) scale(1); } 50% { transform:translateY(-4px) scale(1.03); } }
+        @keyframes hbPulseGlow { 0%,100% { box-shadow: 0 0 12px rgba(167,139,250,0.15); } 50% { box-shadow: 0 0 24px rgba(167,139,250,0.4); } }
         @keyframes hbGiftFloat { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
-        @keyframes hbPulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
         @keyframes hbActivePulse { 
-          0%, 100% { border-color: rgba(139,92,246,0.6); box-shadow: 0 0 8px rgba(139,92,246,0.25); } 
-          50% { border-color: rgba(139,92,246,1); box-shadow: 0 0 20px rgba(139,92,246,0.5); } 
+          0%, 100% { border-color: rgba(167, 139, 250, 0.5); box-shadow: 0 0 8px rgba(167, 139, 250, 0.2); } 
+          50% { border-color: rgba(167, 139, 250, 0.9); box-shadow: 0 0 18px rgba(167, 139, 250, 0.45); } 
+        }
+        @keyframes hbBurnFlame {
+          0%, 100% {
+            box-shadow: 0 0 10px rgba(255, 61, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(0,0,0,0.15);
+            border-color: rgba(245, 158, 11, 0.5);
+          }
+          50% {
+            box-shadow: 0 0 25px rgba(255, 61, 0, 0.95), inset 0 1px 0 rgba(255,255,255,0.60), inset 0 -1px 0 rgba(0,0,0,0.15);
+            border-color: rgba(239, 68, 68, 0.9);
+            transform: scale(1.03);
+          }
+        }
+        @keyframes flame-float {
+          0%, 100% {
+            transform: translateX(-50%) translateY(0px) scale(1.0) rotate(-0.5deg);
+            opacity: 0.55;
+            filter: blur(1.2px) drop-shadow(0 0 10px rgba(245, 158, 11, 0.4));
+          }
+          50% {
+            transform: translateX(-50%) translateY(-6px) scale(1.06) rotate(1deg);
+            opacity: 0.8;
+            filter: blur(1.5px) drop-shadow(0 0 18px rgba(245, 158, 11, 0.7));
+          }
         }
         .chest-slot { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
-        .chest-slot:hover { transform: translateY(-3px); }
-        .chest-btn { transition: all 0.2s ease; }
-        .chest-btn:hover { filter: brightness(1.05); transform: scale(1.01); }
-        .chest-btn:active { transform: scale(0.98); }
+        .chest-slot:hover { transform: translateY(-2px); }
         
         .card-inner {
           transform-style: preserve-3d;
@@ -364,6 +540,33 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
           backface-visibility: hidden;
         }
       `}</style>
+
+      {setTab && (
+        <button
+          onClick={() => setTab('earn')}
+          style={{
+            background: '#FFFFFF',
+            border: '1px solid rgba(226, 232, 240, 0.8)',
+            borderRadius: 100,
+            padding: '6px 14px',
+            fontSize: 11,
+            fontWeight: 800,
+            cursor: 'pointer',
+            marginBottom: 12,
+            outline: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+            boxShadow: '0 2px 4px rgba(0,0,0,0.01)',
+            color: '#0A0B0D',
+            transition: 'all 0.2s'
+          }}
+          onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-0.5px)'}
+          onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+        >
+          ← Back to Earn
+        </button>
+      )}
 
       {/* Wrong Chain Banner */}
       {wrongChain && (
@@ -386,7 +589,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        boxShadow: '0 8px 32px rgba(46,16,101,0.3)',
+        boxShadow: '0 8px 32px rgba(32,10,60,0.4)',
         overflow: 'hidden',
         border: '1px solid rgba(139,92,246,0.2)'
       }}>
@@ -404,7 +607,7 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(135deg, rgba(9, 5, 20, 0.25) 0%, rgba(46, 16, 101, 0.7) 100%)',
+          background: 'linear-gradient(135deg, rgba(9, 5, 20, 0.25) 0%, rgba(46, 16, 101, 0.75) 100%)',
           zIndex: 0,
           pointerEvents: 'none'
         }} />
@@ -473,523 +676,809 @@ export function HappyBoxesSection({ address, profile, onUpdate }) {
             gap: '4px'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '6px', color: '#8B5CF6' }}>●</span>
-              <span>Each box contains from 2 to 15 HP.</span>
+              <span style={{ fontSize: '6px', color: '#A78BFA' }}>●</span>
+              <span>Each box contains from 2 to 5 HP.</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '6px', color: '#8B5CF6' }}>●</span>
-              <span>Your boost is automatically applied.</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '6px', color: '#8B5CF6' }}>●</span>
+              <span style={{ fontSize: '6px', color: '#A78BFA' }}>●</span>
               <span>Each user can open up to 12 boxes per day.</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '6px', color: '#8B5CF6' }}>●</span>
-              <span>Burn Activity Points to unlock extra openings.</span>
+              <span style={{ fontSize: '6px', color: '#A78BFA' }}>●</span>
+              <span>Burn $HH to unlock extra openings.</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ═══ DAILY LIMITS & AP BURN CARD ═══ */}
+      {/* ═══ CARD 1: DAILY LIMITS ═══ */}
       <div style={{
-        background: '#fff',
-        border: '1px solid #DEE1E7',
-        borderRadius: 18,
-        padding: '14px 18px',
+        background: 'linear-gradient(145deg, rgba(20, 10, 40, 0.94) 0%, rgba(35, 15, 70, 0.90) 50%, rgba(10, 5, 25, 0.96) 100%)',
+        borderRadius: 20,
+        padding: 16,
         marginBottom: 16,
-        boxShadow: '0 4px 16px rgba(10,11,13,0.015)',
+        border: '1px solid rgba(139, 92, 246, 0.25)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        boxShadow: '0 8px 32px rgba(20, 6, 40, 0.5), inset 0 1px 0 rgba(139, 92, 246, 0.10)',
         display: 'flex',
         flexDirection: 'column',
-        gap: 10
+        gap: 12,
+        position: 'relative',
+        overflow: 'hidden'
       }}>
-        {/* Scale Row */}
+        {/* Shimmer accent */}
+        <div style={{ position: 'absolute', top: -30, right: -30, width: 120, height: 120, borderRadius: '50%', background: 'radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+        {/* Title + Indicator Row */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 900, color: '#0A0B0D' }}>🎁 Daily Box Limits</div>
-            <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>
-              Remaining opens for today
-            </div>
+            <div style={{ fontSize: 13, fontWeight: 900, color: '#FFFFFF', letterSpacing: '0.2px' }}>Daily Box Limits</div>
           </div>
           <div style={{ 
-            background: remainingOpens === 0 ? '#FEF2F2' : '#F5F3FF', 
-            color: remainingOpens === 0 ? '#DC2626' : '#8B5CF6', 
+            background: remainingOpens === 0 ? 'rgba(239, 68, 68, 0.15)' : 'rgba(139, 92, 246, 0.12)', 
+            color: remainingOpens === 0 ? '#EF4444' : '#C084FC', 
             padding: '3px 10px', 
             borderRadius: 12, 
             fontSize: 11, 
             fontWeight: 800,
-            border: `1px solid ${remainingOpens === 0 ? '#FCA5A5' : '#DDD6FE'}`
+            border: `1px solid ${remainingOpens === 0 ? 'rgba(239, 68, 68, 0.3)' : 'rgba(139, 92, 246, 0.25)'}`
           }}>
             {remainingOpens} / {maxDailyOpens} left
           </div>
         </div>
 
-        {/* Progress bar scale visual segment */}
-        <div style={{ background: '#F1F5F9', height: 4, borderRadius: 2, overflow: 'hidden', position: 'relative' }}>
+        {/* Progress Bar */}
+        <div style={{ background: 'rgba(255,255,255,0.06)', height: 4, borderRadius: 2, overflow: 'hidden', position: 'relative' }}>
           <div style={{
             background: remainingOpens === 0 
               ? '#EF4444' 
-              : 'linear-gradient(90deg, #8B5CF6 0%, #D946EF 100%)',
+              : 'linear-gradient(90deg, #A78BFA 0%, #EC4899 100%)',
             height: '100%',
             width: `${(remainingOpens / maxDailyOpens) * 100}%`,
             transition: 'width 0.4s ease'
           }} />
         </div>
 
-        {/* AP Burn Controller Row */}
-        <div style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'space-between', 
-          paddingTop: 8, 
-          borderTop: '1px solid #F1F5F9',
-          gap: 12
-        }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            <span style={{ fontSize: 9, color: '#717886', fontWeight: 600 }}>Your Activity Points</span>
-            <span style={{ fontSize: 13, fontWeight: 900, color: '#0A0B0D', display: 'flex', alignItems: 'center', gap: 2 }}>
-              ⚡ {dailyStats.score} Points
+        {/* Info & Buy Button Row */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 4, paddingTop: 4 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.95)', fontWeight: 500 }}>
+              Burn <span style={{ color: '#FFD700', fontWeight: 900, textShadow: '0 0 8px rgba(255, 215, 0, 0.5)' }}>$HH</span> for extra attempts
             </span>
+            <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.65)', fontWeight: 650 }}>Each burn grants +1 box opening</span>
           </div>
 
-          <button
-            onClick={handleBurnAp}
-            disabled={isBurningAp || dailyStats.score < 100}
-            className="chest-btn"
-            style={{
-              background: apBurnSuccess
-                ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
-                : (dailyStats.score < 100 
-                    ? '#F1F5F9' 
-                    : 'linear-gradient(135deg, #F97316 0%, #EA580C 100%)'),
-              color: apBurnSuccess
-                ? '#fff'
-                : (dailyStats.score < 100 ? '#94A3B8' : '#fff'),
-              border: (apBurnSuccess || dailyStats.score >= 100) ? 'none' : '1px solid #E2E8F0',
-              borderRadius: 12,
-              padding: '7px 12px',
-              fontSize: 9.5,
-              fontWeight: 800,
-              cursor: (isBurningAp || dailyStats.score < 100) ? 'not-allowed' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4,
-              boxShadow: (isBurningAp || dailyStats.score < 100) ? 'none' : '0 4px 12px rgba(249,115,22,0.2)',
-              opacity: isBurningAp ? 0.6 : 1,
-            }}
-          >
-            <span>{isBurningAp ? 'Burning...' : (apBurnSuccess ? '🔥 +6 Opens Activated!' : '🔥 Burn 100 points to get +6 opens')}</span>
-          </button>
-        </div>
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {/* Floating fire emoji behind the button */}
+            <div style={{
+              position: 'absolute',
+              bottom: '-12px', // aligns nicely with the bottom area
+              left: '50%',
+              transform: 'translateX(-50%)',
+              pointerEvents: 'none',
+              zIndex: 0,
+              fontSize: '54px',
+              lineHeight: 1,
+              opacity: 0.65,
+              filter: 'blur(1.2px) drop-shadow(0 0 10px rgba(245, 158, 11, 0.45))',
+              animation: 'flame-float 2.4s ease-in-out infinite',
+              userSelect: 'none'
+            }}>
+              🔥
+            </div>
 
-        {/* AP Burn Error Msg */}
-        {apBurnError && (
-          <div style={{ fontSize: 9, color: '#DC2626', fontWeight: 700, textAlign: 'right' }}>
-            ⚠️ {apBurnError}
-          </div>
-        )}
-      </div>
-
-      {/* Status Banner */}
-      {hasActiveChoice && (
-        <div style={{
-          background: 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)',
-          color: '#fff',
-          borderRadius: 16,
-          padding: '12px 16px',
-          marginBottom: 16,
-          textAlign: 'center',
-          fontSize: 12,
-          fontWeight: 800,
-          boxShadow: '0 4px 16px rgba(139,92,246,0.3)',
-          animation: 'hbFadeIn 0.3s ease, hbPulseGlow 2s infinite'
-        }}>
-          🎉 Paid! Tap any box to reveal!
-        </div>
-      )}
-
-      {errorMessage && (
-        <div style={{ background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: 16, padding: '12px 16px', marginBottom: 16, fontSize: 11, color: '#DC2626', fontWeight: 700, textAlign: 'center' }}>
-          ⚠️ {errorMessage}
-        </div>
-      )}
-
-      {/* ═══ CHESTS 3x2 GRID ═══ */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: 12,
-        marginBottom: 20
-      }}>
-        {chests.map((chest, index) => {
-          const isRevealing = revealingIndex === index || revealingIndex === 'all'
-          const details = chest.status === 'opened' ? getOpenedCardDetails(chest.mult) : null
-          const anyOpened = chests.some(c => c.status === 'opened')
-          
-          let imageFilter = 'drop-shadow(0 6px 12px rgba(139,92,246,0.15))'
-          let imageOpacity = 1
-
-          if (chest.status === 'locked') {
-            if (anyOpened) {
-              imageFilter = 'blur(2px) grayscale(30%) drop-shadow(0 4px 10px rgba(0,0,0,0.1))'
-              imageOpacity = 0.65
-            } else {
-              imageFilter = 'grayscale(60%) brightness(0.9) drop-shadow(0 4px 8px rgba(0,0,0,0.05))'
-              imageOpacity = 0.3
-            }
-          }
-          
-          return (
-            <div
-              key={chest.id}
-              onClick={() => {
-                if (chest.status === 'active') {
-                  handleSelectChest(index)
-                } else if (chest.status === 'locked' && !hasActiveChoice && !allOpened && anyOpened) {
-                  // Direct click triggers single box payment only if board is already active with openings
-                  setClickedBoxIndex(index)
-                  setTxModal('single')
+            <button
+              onClick={handleBuyAttempt}
+              disabled={isBuyingAttemptLoading}
+              style={{
+                position: 'relative',
+                zIndex: 1,
+                background: isBuyingAttemptLoading 
+                  ? 'rgba(255, 255, 255, 0.08)' 
+                  : 'rgba(255, 255, 255, 0.18)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                border: '1px solid rgba(255, 255, 255, 0.42)',
+                color: '#FFF',
+                borderRadius: 12,
+                padding: '6px 14px',
+                cursor: isBuyingAttemptLoading ? 'not-allowed' : 'pointer',
+                boxShadow: '0 0 15px rgba(255, 61, 0, 0.45), inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minWidth: 110,
+                outline: 'none',
+                animation: isBuyingAttemptLoading ? 'none' : 'hbBurnFlame 1.8s infinite ease-in-out',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={e => {
+                if (!isBuyingAttemptLoading) {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.28)'
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.60)'
+                  e.currentTarget.style.boxShadow = '0 0 25px rgba(255, 61, 0, 0.8), inset 0 1px 0 rgba(255,255,255,0.40), inset 0 -1px 0 rgba(0,0,0,0.15)'
                 }
               }}
-              className="chest-slot"
-              style={{
-                aspectRatio: '1',
-                position: 'relative',
-                perspective: '1000px',
-                cursor: (chest.status === 'active' || (chest.status === 'locked' && !hasActiveChoice && !allOpened && anyOpened)) ? 'pointer' : 'default',
-                opacity: (hasActiveChoice && chest.status !== 'active' && chest.status !== 'opened') ? 0.45 : 1,
+              onMouseLeave={e => {
+                if (!isBuyingAttemptLoading) {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.18)'
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.42)'
+                  e.currentTarget.style.boxShadow = '0 0 15px rgba(255, 61, 0, 0.45), inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)'
+                }
               }}
             >
-              <div 
-                className={`card-inner ${chest.status === 'opened' ? 'flipped' : ''}`}
+              {isBuyingAttemptLoading ? (
+                <span style={{ fontSize: 10, fontWeight: 800 }}>Processing...</span>
+              ) : (
+                <>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'center' }}>
+                    <span style={{ fontSize: 11, fontWeight: 900 }}>{formatConcise(0.10 / hhPrice)}</span>
+                    <img src="/logo.jfif" alt="HH" style={{ width: 10, height: 10, borderRadius: '50%', objectFit: 'cover' }} />
+                  </div>
+                  <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.7)', marginTop: 1 }}>
+                    (≈$0.10)
+                  </span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ═══ CARD 2: HAPPY BOXES ═══ */}
+      <div style={{
+        background: 'linear-gradient(145deg, rgba(12, 10, 45, 0.94) 0%, rgba(24, 18, 75, 0.90) 50%, rgba(6, 5, 25, 0.96) 100%)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        border: '1px solid rgba(167, 139, 250, 0.25)',
+        borderRadius: 20,
+        padding: '16px 20px',
+        boxShadow: '0 8px 32px rgba(15, 6, 45, 0.5), inset 0 1px 0 rgba(167, 139, 250, 0.10)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 16,
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        {/* Shimmer accent */}
+        <div style={{ position: 'absolute', top: -30, right: -30, width: 120, height: 120, borderRadius: '50%', background: 'radial-gradient(circle, rgba(167, 139, 250, 0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+        {/* Card Header */}
+        <div style={{ position: 'relative', zIndex: 2 }}>
+          <div style={{ fontSize: 16, fontWeight: 900, color: '#FFFFFF' }}>Happy Boxes</div>
+          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>
+            Open boxes to earn random HP rewards from 2 to 5.
+          </div>
+        </div>
+
+        {/* Paid Active / State Banners */}
+        {hasActiveChoice && (
+          <div style={{
+            background: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
+            color: '#fff',
+            borderRadius: 14,
+            padding: '10px 14px',
+            textAlign: 'center',
+            fontSize: 11,
+            fontWeight: 800,
+            boxShadow: '0 4px 16px rgba(99,102,241,0.3)',
+            animation: 'hbFadeIn 0.3s ease, hbPulseGlow 2s infinite',
+            position: 'relative',
+            zIndex: 2
+          }}>
+            Paid! Tap any box to reveal!
+          </div>
+        )}
+
+        {errorMessage && (
+          <div style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: 14, padding: '10px 14px', fontSize: 11, color: '#EF4444', fontWeight: 700, textAlign: 'center', position: 'relative', zIndex: 2 }}>
+            ⚠️ {errorMessage}
+          </div>
+        )}
+
+        {/* 3x2 Grid (Compact Boxes) */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: 10,
+          position: 'relative',
+          zIndex: 2
+        }}>
+          {chests.map((chest, index) => {
+            const isRevealing = revealingIndex === index || revealingIndex === 'all'
+            const details = chest.status === 'opened' ? getOpenedCardDetails(chest.mult) : null
+            const anyOpened = chests.some(c => c.status === 'opened')
+            
+            let imageFilter = 'drop-shadow(0 4px 8px rgba(139, 92, 246, 0.15))'
+            let imageOpacity = 1
+
+            if (chest.status === 'locked') {
+              if (anyOpened) {
+                imageFilter = 'blur(1px) grayscale(30%)'
+                imageOpacity = 0.55
+              } else {
+                imageFilter = 'grayscale(50%) brightness(0.8)'
+                imageOpacity = 0.25
+              }
+            }
+            
+            return (
+              <div
+                key={chest.id}
+                onClick={() => {
+                  if (chest.status === 'active') {
+                    handleSelectChest(index)
+                  } else if (chest.status === 'locked' && !hasActiveChoice && !allOpened && anyOpened) {
+                    setClickedBoxIndex(index)
+                    setPaymentCurrency('USDC')
+                    setTxModal('single')
+                  }
+                }}
+                className="chest-slot"
                 style={{
-                  width: '100%',
-                  height: '100%',
+                  aspectRatio: '1',
                   position: 'relative',
-                  transformStyle: 'preserve-3d',
-                  transition: 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)'
+                  perspective: '1000px',
+                  cursor: (chest.status === 'active' || (chest.status === 'locked' && !hasActiveChoice && !allOpened && anyOpened)) ? 'pointer' : 'default',
+                  opacity: (hasActiveChoice && chest.status !== 'active' && chest.status !== 'opened') ? 0.45 : 1,
                 }}
               >
-                {/* ─── FRONT FACE ─── */}
                 <div 
-                  className="card-face card-front"
+                  className={`card-inner ${chest.status === 'opened' ? 'flipped' : ''}`}
                   style={{
-                    position: 'absolute',
-                    inset: 0,
-                    backfaceVisibility: 'hidden',
-                    borderRadius: 22,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    overflow: 'hidden',
-                    background: chest.status === 'active'
-                      ? 'linear-gradient(135deg, #FFFFFF 0%, #F5F3FF 100%)'
-                      : 'linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%)',
-                    border: chest.status === 'active'
-                      ? '2.5px solid #8B5CF6'
-                      : '1.5px dashed #CBD5E1',
-                    boxShadow: chest.status === 'active'
-                      ? '0 8px 24px rgba(139,92,246,0.22)'
-                      : '0 4px 10px rgba(0,0,0,0.01)',
-                    animation: chest.status === 'active' ? 'hbBob 1.6s ease-in-out infinite, hbActivePulse 2s infinite' : 'none',
-                    transform: chest.status === 'active' ? 'scale(1.02)' : 'none',
-                    zIndex: 2
+                    width: '100%',
+                    height: '100%',
+                    position: 'relative',
+                    transformStyle: 'preserve-3d',
+                    transition: 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)'
                   }}
                 >
-                  {isRevealing ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-                      <div style={{
-                        width: 24, height: 24,
-                        border: '3px solid #E2E8F0',
-                        borderTop: '3px solid #8B5CF6',
-                        borderRadius: '50%',
-                        animation: 'spin 0.8s linear infinite'
-                      }} />
-                      <span style={{ fontSize: 8, fontWeight: 900, color: '#6D28D9', textTransform: 'uppercase', letterSpacing: 0.5 }}>Opening...</span>
-                    </div>
-                  ) : (
-                    <>
-                      <img
-                        src="/box2.png"
-                        alt="Happy Box"
-                        style={{
-                          width: '84%',
-                          height: '84%',
-                          objectFit: 'contain',
-                          filter: imageFilter,
-                          opacity: imageOpacity,
-                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                        }}
-                      />
+                  {/* FRONT FACE */}
+                  <div 
+                    className="card-face card-front"
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      backfaceVisibility: 'hidden',
+                      borderRadius: 16,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      overflow: 'hidden',
+                      background: chest.status === 'active'
+                        ? 'linear-gradient(135deg, rgba(167, 139, 250, 0.20) 0%, rgba(167, 139, 250, 0.05) 100%)'
+                        : 'linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%)',
+                      border: chest.status === 'active'
+                        ? '2px solid rgba(167, 139, 250, 0.8)'
+                        : '1px dashed rgba(255, 255, 255, 0.15)',
+                      boxShadow: chest.status === 'active'
+                        ? '0 0 16px rgba(167, 139, 250, 0.35)'
+                        : 'none',
+                      animation: chest.status === 'active' ? 'hbBob 1.6s ease-in-out infinite, hbActivePulse 2s infinite' : 'none',
+                      transform: chest.status === 'active' ? 'scale(1.01)' : 'none',
+                      zIndex: 2
+                    }}
+                  >
+                    {isRevealing ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+                        <div style={{
+                          width: 20, height: 20,
+                          border: '2px solid rgba(255,255,255,0.1)',
+                          borderTop: '2px solid #A78BFA',
+                          borderRadius: '50%',
+                          animation: 'spin 0.8s linear infinite'
+                        }} />
+                        <span style={{ fontSize: 7, fontWeight: 900, color: '#A78BFA', textTransform: 'uppercase', letterSpacing: 0.5 }}>Opening...</span>
+                      </div>
+                    ) : (
+                      <>
+                        <img
+                          src="/box2.png"
+                          alt="Box"
+                          style={{
+                            width: '76%',
+                            height: '76%',
+                            objectFit: 'contain',
+                            filter: imageFilter,
+                            opacity: imageOpacity,
+                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                          }}
+                        />
 
-                      {chest.status === 'locked' && !hasActiveChoice && anyOpened && (
+                        {chest.status === 'locked' && !hasActiveChoice && anyOpened && (
+                          <div style={{
+                            position: 'absolute',
+                            inset: 0,
+                            background: 'rgba(5, 10, 20, 0.7)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 4,
+                            borderRadius: 14,
+                            zIndex: 10
+                          }}>
+                            <span style={{ fontSize: 9, fontWeight: 800, color: '#FFF' }}>Open</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 2, background: 'rgba(255,255,255,0.15)', padding: '2px 6px', borderRadius: 20 }}>
+                              <span style={{ fontSize: 8, fontWeight: 900, color: '#A78BFA' }}>0.30</span>
+                              <img src="/usdc-logo.png" alt="USDC" style={{ width: 8, height: 8 }} />
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+
+                  {/* BACK FACE */}
+                  <div 
+                    className="card-face card-back"
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      backfaceVisibility: 'hidden',
+                      borderRadius: 16,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      overflow: 'hidden',
+                      transform: 'rotateY(180deg)',
+                      background: 'linear-gradient(135deg, rgba(167, 139, 250, 0.25) 0%, rgba(79, 70, 229, 0.15) 100%)',
+                      border: '1px solid rgba(167, 139, 250, 0.4)',
+                      boxShadow: '0 4px 16px rgba(167, 139, 250, 0.15)',
+                      zIndex: 1
+                    }}
+                  >
+                    {chest.status === 'opened' && details && (
+                      <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', position: 'relative' }}>
+                        {/* Radial dots decoration */}
                         <div style={{
                           position: 'absolute',
-                          top: '50%',
-                          left: '50%',
-                          transform: 'translate(-50%, -50%)',
-                          background: '#0000FF',
-                          color: '#ffffff',
-                          borderRadius: 50,
-                          padding: '8px 12px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 4,
-                          boxShadow: '0 4px 12px rgba(0,0,255,0.2)',
-                          fontSize: 11,
-                          fontWeight: 800,
-                          cursor: 'pointer',
-                          zIndex: 10,
-                          whiteSpace: 'nowrap'
-                        }}>
-                          <span>Open · 0.30</span> <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12 }} />
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
+                          inset: 0,
+                          opacity: 0.08,
+                          pointerEvents: 'none',
+                          backgroundImage: 'radial-gradient(circle, #FFFFFF 1.2px, transparent 1.2px)',
+                          backgroundSize: '10px 10px'
+                        }} />
 
-                {/* ─── BACK FACE ─── */}
-                <div 
-                  className="card-face card-back"
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    backfaceVisibility: 'hidden',
-                    borderRadius: 22,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    overflow: 'hidden',
-                    transform: 'rotateY(180deg)',
-                    background: 'linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)',
-                    border: '1.5px solid #C7D2FE',
-                    boxShadow: '0 8px 24px rgba(99, 102, 241, 0.08)',
-                    zIndex: 1
-                  }}
-                >
-                  {chest.status === 'opened' && details && (
-                    <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', position: 'relative' }}>
-                      
-                      {/* Confetti / Sparkle background decoration */}
-                      <div style={{
-                        position: 'absolute',
-                        inset: 0,
-                        opacity: 0.15,
-                        pointerEvents: 'none',
-                        backgroundImage: 'radial-gradient(circle, #C7D2FE 1.5px, transparent 1.5px)',
-                        backgroundSize: '12px 12px'
-                      }} />
+                        {/* Multiplier Badge */}
+                        {chest.mult && parseFloat(chest.mult) > 0 && (
+                          <div style={{
+                            position: 'absolute',
+                            top: 6,
+                            background: details.badgeBg,
+                            color: details.badgeColor,
+                            padding: '1.5px 6px',
+                            borderRadius: 20,
+                            fontSize: 7,
+                            fontWeight: 900,
+                            letterSpacing: '0.1px',
+                            textTransform: 'uppercase',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                          }}>
+                            {details.badgeText}
+                          </div>
+                        )}
 
-                      {/* Multiplier badge — floating top center */}
-                      {chest.mult && parseFloat(chest.mult) > 0 && (
-                        <div style={{
-                          position: 'absolute',
-                          top: 8,
-                          background: details.badgeBg,
-                          color: details.badgeColor,
-                          padding: '2.5px 10px',
-                          borderRadius: 20,
-                          fontSize: 8,
-                          fontWeight: 900,
-                          letterSpacing: '0.2px',
-                          textTransform: 'uppercase',
-                          boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
-                          zIndex: 5,
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 2
-                        }}>
-                          {details.badgeText}
-                        </div>
-                      )}
-
-                      {/* HP reward — large centered with unit */}
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, marginTop: 12 }}>
-                        <div style={{
-                          fontSize: 32,
-                          fontWeight: 950,
-                          fontFamily: "'Outfit', 'Inter', sans-serif",
-                          letterSpacing: '-1.5px',
-                          lineHeight: 1,
-                          background: 'linear-gradient(135deg, #0052FF 0%, #4F46E5 100%)',
-                          WebkitBackgroundClip: 'text',
-                          WebkitTextFillColor: 'transparent'
-                        }}>
-                          {chest.hp}
-                        </div>
-                        <div style={{
-                          fontSize: 8,
-                          fontWeight: 900,
-                          color: '#4F46E5',
-                          opacity: 0.8,
-                          letterSpacing: '1px',
-                          marginTop: 4,
-                          textTransform: 'uppercase'
-                        }}>
-                          HP Points
+                        {/* HP amount */}
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, marginTop: 8 }}>
+                          <div style={{
+                            fontSize: 22,
+                            fontWeight: 950,
+                            fontFamily: "'Outfit', 'Inter', sans-serif",
+                            letterSpacing: '-1px',
+                            lineHeight: 1,
+                            color: '#FFFFFF'
+                          }}>
+                            {chest.hp}
+                          </div>
+                          <div style={{
+                            fontSize: 8,
+                            fontWeight: 900,
+                            color: '#A78BFA',
+                            letterSpacing: '1px',
+                            marginTop: 2,
+                            textTransform: 'uppercase'
+                          }}>
+                            HP
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          )
-        })}
-      </div>
+            )
+          })}
+        </div>
 
-      {/* ═══ BUTTONS ═══ */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {/* Main Single Open Button */}
-        <button
-          className="chest-btn"
-          onClick={() => setTxModal('single')}
-          disabled={isPending || isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0}
-          style={{
-            width: '100%',
-            background: '#0000FF',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 20,
-            padding: '12px 18px',
-            fontSize: 13,
-            fontWeight: 800,
-            cursor: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0) ? 'not-allowed' : 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 4,
-            boxShadow: '0 8px 24px rgba(0,0,255,0.2)',
-            opacity: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0) ? 0.5 : 1,
-            transition: 'transform 0.2s, box-shadow 0.2s'
-          }}
-        >
-          <span>{remainingOpens === 0 ? 'Daily Limit Reached' : 'Open Box'}</span>
-          {remainingOpens > 0 && <span style={{ color: '#A5B4FC', fontWeight: 900, marginLeft: 4 }}>0.30</span>}
-          {remainingOpens > 0 && <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14, flexShrink: 0 }} />}
-        </button>
-
-        {/* Bundle Open All Button */}
-        <button
-          className="chest-btn"
-          onClick={() => setTxModal('bundle')}
-          disabled={isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6}
-          style={{
-            width: '100%',
-            background: 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 20,
-            padding: '12px 18px',
-            cursor: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6) ? 'not-allowed' : 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            boxShadow: '0 8px 24px rgba(139,92,246,0.3)',
-            opacity: (isPending || isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6) ? 0.4 : 1,
-            position: 'relative',
-            overflow: 'hidden',
-            transition: 'transform 0.2s, box-shadow 0.2s',
-          }}
-        >
-          {/* Shine effect reflect line */}
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            left: '-100%',
-            width: '50%',
-            height: '100%',
-            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent)',
-            transform: 'skewX(-25deg)',
-            animation: 'shine 4s infinite ease-in-out',
-            pointerEvents: 'none'
-          }} />
-
-          {/* Left Block: Offer Title & Subtitle */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2, textAlign: 'left' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 13, fontWeight: 900, letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-                Open All 6
-              </span>
-              <span style={{ 
-                fontSize: 8, 
-                background: '#FCD34D', 
-                color: '#1E1B4B', 
-                padding: '2px 8px', 
-                borderRadius: 20, 
-                fontWeight: 900,
-                letterSpacing: '0.3px',
-                boxShadow: '0 2px 6px rgba(252,211,77,0.3)',
-                whiteSpace: 'nowrap'
-              }}>
-                1 BOX FREE!
-              </span>
-            </div>
-            <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.85)', fontWeight: 500 }}>
-              {remainingOpens < 6 ? 'Requires at least 6 daily opens remaining' : 'Unlock all rewards in one click!'}
-            </span>
-          </div>
-
-          {/* Right Block: Price Tag with Sale Indicator */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-            {/* Crossed Out Original Price */}
-            <span style={{ 
-              fontSize: 11, 
-              color: 'rgba(255,255,255,0.5)', 
-              textDecoration: 'line-through', 
-              fontWeight: 600,
-              letterSpacing: '0.2px'
+        {/* 2x2 Buttons Grid */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: 12,
+          marginTop: 8,
+          position: 'relative',
+          zIndex: 2
+        }}>
+          {/* Button 1: Single USDC (0.30 USDC) */}
+          <button
+            onClick={() => {
+              setPaymentCurrency('USDC')
+              setTxModal('single')
+            }}
+            disabled={boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0}
+            style={{
+              position: 'relative',
+              background: 'rgba(255,255,255,0.20)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255,255,255,0.42)',
+              color: '#FFF',
+              borderRadius: 14,
+              padding: 0,
+              height: 52,
+              cursor: (boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0) ? 'not-allowed' : 'pointer',
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)',
+              opacity: (boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0) ? 0.4 : 1,
+              outline: 'none',
+              transition: 'all 0.2s',
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'stretch'
+            }}
+            onMouseEnter={e => {
+              if (!(boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0)) {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.30)'
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.60)'
+              }
+            }}
+            onMouseLeave={e => {
+              if (!(boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0)) {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.20)'
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.42)'
+              }
+            }}
+          >
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.12)',
+              height: '100%',
+              minWidth: 54,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRight: '1px solid rgba(255, 255, 255, 0.20)',
+              borderRadius: '13px 0 0 13px',
+              fontSize: 20,
+              fontWeight: 900,
+              gap: 4
             }}>
-              1.80
-            </span>
-            {/* Promo Price */}
-            <div style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: 4, 
-              background: 'rgba(255, 255, 255, 0.12)', 
-              padding: '6px 12px', 
-              borderRadius: 12,
-              border: '1px solid rgba(255,255,255,0.2)'
-            }}>
-              <span style={{ fontSize: 14, fontWeight: 900, color: '#fff' }}>
-                1.50
-              </span>
-              <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14, flexShrink: 0 }} />
+              1 🎁
             </div>
-          </div>
-        </button>
+            <div style={{
+              flex: 1,
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '0 10px',
+              gap: 1
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 3.5 }}>
+                <span style={{ fontSize: 11.5, fontWeight: 900 }}>0.30</span>
+                <img src="/usdc-logo.png" alt="USDC" style={{ width: 10, height: 10 }} />
+              </div>
+              <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.48)', fontWeight: 600 }}>≈$0.30</span>
+            </div>
+          </button>
+
+          {/* Button 2: Single $HH (0.20$ equivalent in HH, -33% Badge) */}
+          <button
+            onClick={() => {
+              setPaymentCurrency('HH')
+              setTxModal('single')
+            }}
+            disabled={boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0}
+            style={{
+              position: 'relative',
+              background: 'rgba(255,255,255,0.20)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255,255,255,0.42)',
+              color: '#FFF',
+              borderRadius: 14,
+              padding: 0,
+              height: 52,
+              cursor: (boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0) ? 'not-allowed' : 'pointer',
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)',
+              opacity: (boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0) ? 0.4 : 1,
+              outline: 'none',
+              transition: 'all 0.2s',
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'stretch'
+            }}
+            onMouseEnter={e => {
+              if (!(boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0)) {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.30)'
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.60)'
+              }
+            }}
+            onMouseLeave={e => {
+              if (!(boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || allOpened || remainingOpens === 0)) {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.20)'
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.42)'
+              }
+            }}
+          >
+            <span style={{
+              position: 'absolute',
+              top: -8,
+              right: -3,
+              background: 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)',
+              color: '#FFFFFF',
+              fontSize: 7.5,
+              fontWeight: 900,
+              padding: '1px 4px',
+              borderRadius: 5,
+              boxShadow: '0 2px 6px rgba(0,0,0,0.4)',
+              border: '1px solid rgba(255,255,255,0.25)',
+              lineHeight: 1,
+              letterSpacing: '0.2px',
+              whiteSpace: 'nowrap',
+              zIndex: 10
+            }}>-33%</span>
+
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.12)',
+              height: '100%',
+              minWidth: 54,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRight: '1px solid rgba(255, 255, 255, 0.20)',
+              borderRadius: '13px 0 0 13px',
+              fontSize: 20,
+              fontWeight: 900,
+              gap: 4
+            }}>
+              1 🎁
+            </div>
+            <div style={{
+              flex: 1,
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '0 10px',
+              gap: 1
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 3.5 }}>
+                <span style={{ fontSize: 11.5, fontWeight: 900 }}>{formatConcise(0.20 / hhPrice)}</span>
+                <img src="/logo.jfif" alt="$HH" style={{ width: 10, height: 10, borderRadius: '50%', objectFit: 'cover' }} />
+              </div>
+              <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.48)', fontWeight: 600 }}>≈$0.20</span>
+            </div>
+          </button>
+
+          {/* Button 3: Bundle USDC (1.50 USDC, "1 free box" Badge) */}
+          <button
+            onClick={() => {
+              setPaymentCurrency('USDC')
+              setTxModal('bundle')
+            }}
+            disabled={boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6}
+            style={{
+              position: 'relative',
+              background: 'rgba(255,255,255,0.20)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255,255,255,0.42)',
+              color: '#FFF',
+              borderRadius: 14,
+              padding: 0,
+              height: 52,
+              cursor: (boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6) ? 'not-allowed' : 'pointer',
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)',
+              opacity: (boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6) ? 0.4 : 1,
+              outline: 'none',
+              transition: 'all 0.2s',
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'stretch'
+            }}
+            onMouseEnter={e => {
+              if (!(boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6)) {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.30)'
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.60)'
+              }
+            }}
+            onMouseLeave={e => {
+              if (!(boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6)) {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.20)'
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.42)'
+              }
+            }}
+          >
+            <span style={{
+              position: 'absolute',
+              top: -8,
+              right: -3,
+              background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+              color: '#FFF',
+              fontSize: 7.5,
+              fontWeight: 950,
+              padding: '1px 5px',
+              borderRadius: 6,
+              boxShadow: '0 2px 6px rgba(0,0,0,0.4)',
+              border: '1px solid rgba(255,255,255,0.25)',
+              zIndex: 10
+            }}>1 Free Box</span>
+
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.12)',
+              height: '100%',
+              minWidth: 54,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRight: '1px solid rgba(255, 255, 255, 0.20)',
+              borderRadius: '13px 0 0 13px',
+              fontSize: 20,
+              fontWeight: 900,
+              gap: 4
+            }}>
+              6 🎁
+            </div>
+            <div style={{
+              flex: 1,
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '0 10px',
+              gap: 1
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 3.5 }}>
+                <span style={{ fontSize: 11.5, fontWeight: 900 }}>1.50</span>
+                <img src="/usdc-logo.png" alt="USDC" style={{ width: 10, height: 10 }} />
+              </div>
+              <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.48)', fontWeight: 600 }}>≈$1.50</span>
+            </div>
+          </button>
+
+          {/* Button 4: Bundle $HH (1.00$ equivalent in HH, "1 free box" Badge) */}
+          <button
+            onClick={() => {
+              setPaymentCurrency('HH')
+              setTxModal('bundle')
+            }}
+            disabled={boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6}
+            style={{
+              position: 'relative',
+              background: 'rgba(255,255,255,0.20)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255,255,255,0.42)',
+              color: '#FFF',
+              borderRadius: 14,
+              padding: 0,
+              height: 52,
+              cursor: (boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6) ? 'not-allowed' : 'pointer',
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)',
+              opacity: (boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6) ? 0.4 : 1,
+              outline: 'none',
+              transition: 'all 0.2s',
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'stretch'
+            }}
+            onMouseEnter={e => {
+              if (!(boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6)) {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.30)'
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.60)'
+              }
+            }}
+            onMouseLeave={e => {
+              if (!(boxWrite.isPending || boxWrite.isConfirming || hasActiveChoice || revealingIndex !== null || anyOpened || allOpened || remainingOpens < 6)) {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.20)'
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.42)'
+              }
+            }}
+          >
+            <span style={{
+              position: 'absolute',
+              top: -8,
+              right: -3,
+              background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+              color: '#FFF',
+              fontSize: 7.5,
+              fontWeight: 950,
+              padding: '1px 5px',
+              borderRadius: 6,
+              boxShadow: '0 2px 6px rgba(0,0,0,0.4)',
+              border: '1px solid rgba(255,255,255,0.25)',
+              zIndex: 10
+            }}>1 Free Box</span>
+
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.12)',
+              height: '100%',
+              minWidth: 54,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRight: '1px solid rgba(255, 255, 255, 0.20)',
+              borderRadius: '13px 0 0 13px',
+              fontSize: 20,
+              fontWeight: 900,
+              gap: 4
+            }}>
+              6 🎁
+            </div>
+            <div style={{
+              flex: 1,
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '0 10px',
+              gap: 1
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 3.5 }}>
+                <span style={{ fontSize: 11.5, fontWeight: 900 }}>{formatConcise(1.00 / hhPrice)}</span>
+                <img src="/logo.jfif" alt="$HH" style={{ width: 10, height: 10, borderRadius: '50%', objectFit: 'cover' }} />
+              </div>
+              <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.48)', fontWeight: 600 }}>≈$1.00</span>
+            </div>
+          </button>
+        </div>
       </div>
-
-
 
       {/* ═══ TX MODAL ═══ */}
       {txModal && (
         <TxModal
-          title={txModal === 'single' ? 'Open Box' : 'Open All 6 Boxes'}
-          subtitle={txModal === 'single' ? 'Pick a box to reveal your reward!' : 'Unlock all 6 boxes instantly with 1 box FREE!'}
-          amount={txModal === 'single' ? '0.30' : '1.50'}
-          isPending={isPending}
-          isConfirming={isConfirming}
-          isSuccess={isSuccess}
-          error={writeError}
+          title={
+            txModal === 'single'
+              ? 'Open Box'
+              : 'Open All 6 Boxes'
+          }
+          subtitle={
+            txModal === 'single'
+              ? 'Pick a box to reveal your reward!'
+              : 'Unlock all 6 boxes instantly with 1 box FREE!'
+          }
+          amount={
+            txModal === 'single'
+              ? (paymentCurrency === 'HH' ? formatConcise(0.20 / hhPrice) : '0.30')
+              : (paymentCurrency === 'HH' ? formatConcise(1.00 / hhPrice) : '1.50')
+          }
+          currency={
+            paymentCurrency === 'HH' ? '$HH' : 'USDC'
+          }
+          isPending={boxWrite.isPending}
+          isConfirming={boxWrite.isConfirming}
+          isSuccess={boxWrite.isSuccess}
+          error={boxWrite.error}
           onConfirm={txModal === 'single' ? handleSinglePayment : handleBundlePayment}
-          onCancel={() => { setTxModal(false); reset(); setClickedBoxIndex(null) }}
+          onCancel={() => {
+            setTxModal(false);
+            boxWrite.reset();
+            setClickedBoxIndex(null);
+          }}
         />
       )}
 
-      {/* Spin and Shine styles */}
+      {/* Spin Animation Style */}
       <style>{`
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes shine {
-          0% { left: -100%; }
-          15% { left: 100%; }
-          100% { left: 100%; }
-        }
       `}</style>
     </div>
   )

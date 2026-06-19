@@ -1,15 +1,32 @@
 // src/components/RaidMode.jsx
 import React, { useState, useEffect, useRef } from 'react'
-import { useChainId, useSwitchChain } from 'wagmi'
-import { parseUnits } from 'viem'
+import { useChainId, useSwitchChain, useReadContract } from 'wagmi'
+import { parseUnits, formatUnits } from 'viem'
 import { base } from 'wagmi/chains'
-import { CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI } from '../config/constants'
+import { CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI, HH_MANAGER_ADDRESS } from '../config/constants'
 import { db } from '../config/supabase'
 import { useBuilderWrite } from '../hooks/useBuilderWrite'
 import { TxModal } from './TxModal'
 import { UserAvatar } from './UserAvatar'
 
 const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
+
+const formatConcise = (num) => {
+  const n = parseFloat(num || 0)
+  if (n >= 1e9) {
+    const val = (n / 1e9).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'b' : val.endsWith('0') ? val.slice(0, -1) + 'b' : val + 'b'
+  }
+  if (n >= 1e6) {
+    const val = (n / 1e6).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'm' : val.endsWith('0') ? val.slice(0, -1) + 'm' : val + 'm'
+  }
+  if (n >= 1e3) {
+    const val = (n / 1e3).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'k' : val.endsWith('0') ? val.slice(0, -1) + 'k' : val + 'k'
+  }
+  return n.toFixed(2).replace(/\.00$/, '')
+}
 
 export function RaidMode({ address }) {
   const [user, setUser] = useState(null)
@@ -32,8 +49,41 @@ export function RaidMode({ address }) {
   const [showTxModal, setShowTxModal] = useState(false)
   const [txType, setTxType] = useState('raid') // raid or shield
 
-  // Web3 write hook
   const { data: txHash, writeContract, isPending, isConfirming, isSuccess, error: writeError, reset } = useBuilderWrite()
+  const [payWithHh, setPayWithHh] = useState(false)
+  const [hhPrice, setHhPrice] = useState(0.00025)
+
+  // Fetch HH price from DexScreener
+  useEffect(() => {
+    const getPrice = async () => {
+      try {
+        const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${HH_ADDRESS}`)
+        const data = await res.json()
+        const pair = data.pairs?.[0]
+        if (pair) {
+          setHhPrice(parseFloat(pair.priceUsd) || 0.00025)
+        }
+      } catch (err) {
+        console.error('DexScreener API error in RaidMode:', err)
+      }
+    }
+    getPrice()
+    const interval = setInterval(getPrice, 30000)
+    return () => clearInterval(interval)
+  }, [])
+
+  // Read allowance
+  const { data: allowanceRaw } = useReadContract({
+    address: HH_ADDRESS,
+    abi: HH_ABI,
+    functionName: 'allowance',
+    args: address && HH_MANAGER_ADDRESS ? [address, HH_MANAGER_ADDRESS] : undefined,
+    query: { enabled: !!address && payWithHh, refetchInterval: 10000 }
+  })
+  
+  const currentAllowance = allowanceRaw !== undefined
+    ? parseFloat(formatUnits(allowanceRaw, 18))
+    : 0
 
   // Scanning timeout ref
   const scanTimeoutRef = useRef(null)
@@ -201,13 +251,23 @@ export function RaidMode({ address }) {
   // Process transaction state
   useEffect(() => {
     if (isSuccess && txHash) {
+      if (payWithHh) {
+        const hhAmount = txType === 'shield' ? (0.20 / hhPrice) : (0.30 / hhPrice)
+        if (currentAllowance < hhAmount) {
+          // This was approval tx. Just reset and return.
+          reset()
+          setShowTxModal(false)
+          return
+        }
+      }
+
       if (txType === 'shield') {
         handleConfirmShieldPurchase(txHash)
       } else if (txType === 'raid') {
         handleConfirmRaid(txHash)
       }
     }
-  }, [isSuccess, txHash])
+  }, [isSuccess, txHash, payWithHh, txType, currentAllowance, hhPrice])
 
   const handlePurchaseShieldClick = () => {
     setErrorMessage('')
@@ -224,30 +284,103 @@ export function RaidMode({ address }) {
   const handlePurchaseShieldPayment = () => {
     if (wrongChain) { switchChain({ chainId: base.id }); return }
     setErrorMessage('')
-    writeContract({
-      address: USDC_ADDRESS,
-      abi: USDC_ABI,
-      functionName: 'transfer',
-      args: [CHECKIN_TARGET, parseUnits('0.15', 6)],
-      chainId: base.id
-    })
+    
+    if (payWithHh) {
+      const hhAmount = 0.20 / hhPrice
+      // Check allowance
+      if (currentAllowance < hhAmount) {
+        // Trigger infinite approve
+        writeContract({
+          address: HH_ADDRESS,
+          abi: HH_ABI,
+          functionName: 'approve',
+          args: [HH_MANAGER_ADDRESS, parseUnits('115792089237316195423570985008687907853269984665640564039457584007913129639935', 18)], // max uint256
+          chainId: base.id
+        })
+      } else {
+        writeContract({
+          address: HH_MANAGER_ADDRESS,
+          abi: [
+            {
+              name: 'payWithHH',
+              type: 'function',
+              inputs: [
+                { name: '_amount', type: 'uint256' },
+                { name: '_serviceType', type: 'string' }
+              ],
+              outputs: [],
+              stateMutability: 'nonpayable',
+            }
+          ],
+          functionName: 'payWithHH',
+          args: [parseUnits(hhAmount.toFixed(18), 18), 'shield'],
+          chainId: base.id
+        })
+      }
+    } else {
+      // USDC payment (0.20)
+      writeContract({
+        address: USDC_ADDRESS,
+        abi: USDC_ABI,
+        functionName: 'transfer',
+        args: [CHECKIN_TARGET, parseUnits('0.20', 6)],
+        chainId: base.id
+      })
+    }
   }
 
   const handleInitiateRaidPayment = () => {
     if (wrongChain) { switchChain({ chainId: base.id }); return }
     setErrorMessage('')
-    writeContract({
-      address: USDC_ADDRESS,
-      abi: USDC_ABI,
-      functionName: 'transfer',
-      args: [CHECKIN_TARGET, parseUnits('0.25', 6)],
-      chainId: base.id
-    })
+
+    if (payWithHh) {
+      const hhAmount = 0.30 / hhPrice
+      // Check allowance
+      if (currentAllowance < hhAmount) {
+        // Trigger infinite approve
+        writeContract({
+          address: HH_ADDRESS,
+          abi: HH_ABI,
+          functionName: 'approve',
+          args: [HH_MANAGER_ADDRESS, parseUnits('115792089237316195423570985008687907853269984665640564039457584007913129639935', 18)], // max uint256
+          chainId: base.id
+        })
+      } else {
+        writeContract({
+          address: HH_MANAGER_ADDRESS,
+          abi: [
+            {
+              name: 'payWithHH',
+              type: 'function',
+              inputs: [
+                { name: '_amount', type: 'uint256' },
+                { name: '_serviceType', type: 'string' }
+              ],
+              outputs: [],
+              stateMutability: 'nonpayable',
+            }
+          ],
+          functionName: 'payWithHH',
+          args: [parseUnits(hhAmount.toFixed(18), 18), 'raid'],
+          chainId: base.id
+        })
+      }
+    } else {
+      // USDC payment (Season 2: $0.30)
+      writeContract({
+        address: USDC_ADDRESS,
+        abi: USDC_ABI,
+        functionName: 'transfer',
+        args: [CHECKIN_TARGET, parseUnits('0.30', 6)],
+        chainId: base.id
+      })
+    }
   }
 
   const handleConfirmShieldPurchase = async (hash) => {
     try {
-      const { data, error } = await db.rpc('purchase_raid_shield', {
+      const rpcName = payWithHh ? 'purchase_raid_shield_hh' : 'purchase_raid_shield'
+      const { data, error } = await db.rpc(rpcName, {
         p_buyer_address: address.toLowerCase(),
         p_tx_hash: hash
       })
@@ -270,7 +403,8 @@ export function RaidMode({ address }) {
       setGameState('scanning')
       setShowTxModal(false)
 
-      const { data, error } = await db.rpc('perform_raid_attempt', {
+      const rpcName = payWithHh ? 'perform_raid_attempt_hh' : 'perform_raid_attempt'
+      const { data, error } = await db.rpc(rpcName, {
         p_raider_address: address.toLowerCase(),
         p_tx_hash: hash
       })
@@ -311,7 +445,7 @@ export function RaidMode({ address }) {
   }
 
   return (
-    <div style={{ padding: '0 16px 120px', color: '#0A0B0D', fontFamily: "'Outfit', 'Inter', sans-serif", animation: 'raidFadeIn 0.4s ease' }}>
+    <div style={{ padding: '0 12px 120px', color: '#0A0B0D', fontFamily: "'Outfit', 'Inter', sans-serif", animation: 'raidFadeIn 0.4s ease' }}>
       <style>{`
         @keyframes raidFadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
       `}</style>
@@ -452,118 +586,14 @@ export function RaidMode({ address }) {
 
       {/* ═══ RAID SHIELD CARD ═══ */}
       <div style={{
-        background: '#fff',
-        border: '1px solid #DEE1E7',
-        borderRadius: 18,
-        padding: '14px 18px',
-        marginBottom: 16,
-        boxShadow: '0 4px 16px rgba(10,11,13,0.015)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 10
-      }}>
-        {/* Shield Status Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>🛡️ Raid Shield Status</div>
-            <div style={{ fontSize: 9.5, color: '#717886', marginTop: 1, fontWeight: 500 }}>
-              Protects your <span style={{ color: '#0052FF', fontWeight: 600 }}>HP</span> from raids for 24h
-            </div>
-          </div>
-          <div style={{ 
-            background: isShieldActive ? '#ECFDF5' : '#FFF1F2', 
-            color: isShieldActive ? '#059669' : '#E11D48', 
-            padding: '3px 10px', 
-            borderRadius: 12, 
-            fontSize: 10.5, 
-            fontWeight: 800,
-            border: `1px solid ${isShieldActive ? '#A7F3D0' : '#FECDD3'}`
-          }}>
-            {isShieldActive ? 'Active' : 'Inactive'}
-          </div>
-        </div>
-
-        {/* Shield Expiry Progress Bar Segment */}
-        <div style={{ background: '#F1F5F9', height: 4, borderRadius: 2, overflow: 'hidden', position: 'relative' }}>
-          <div style={{
-            background: isShieldActive 
-              ? 'linear-gradient(90deg, #0052FF 0%, #00C6FB 100%)' 
-              : '#E2E8F0',
-            height: '100%',
-            width: isShieldActive ? `${shieldProgressPercent}%` : '0%',
-            transition: 'width 0.4s ease'
-          }} />
-        </div>
-
-        {/* Action / Buy Controls Row */}
-        <div style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'space-between', 
-          paddingTop: 8, 
-          borderTop: '1px solid #F1F5F9',
-          gap: 12
-        }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            <span style={{ fontSize: 9, color: '#717886', fontWeight: 600 }}>
-              {isShieldActive ? 'Remaining Protection' : 'Protection Cost'}
-            </span>
-            <span style={{ fontSize: 13, fontWeight: 900, color: '#0A0B0D', display: 'flex', alignItems: 'center', gap: 4 }}>
-              {isShieldActive ? (
-                shieldTimeLeft
-              ) : (
-                <>
-                  <span>0.15</span>
-                  <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, display: 'inline-block', verticalAlign: 'middle' }} />
-                  <span>/ 24h</span>
-                </>
-              )}
-            </span>
-          </div>
-
-          <button
-            onClick={handlePurchaseShieldClick}
-            disabled={isPending || isShieldActive}
-            className="raid-btn"
-            style={{
-              background: isShieldActive 
-                ? '#EEF0F3' 
-                : '#0000FF',
-              color: isShieldActive ? '#94A3B8' : '#fff',
-              border: isShieldActive ? '1px solid #DEE1E7' : 'none',
-              borderRadius: 12,
-              padding: '7px 12px',
-              fontSize: 9.5,
-              fontWeight: 800,
-              cursor: (isPending || isShieldActive) ? 'not-allowed' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4,
-              boxShadow: (isPending || isShieldActive) ? 'none' : '0 4px 12px rgba(0,0,255,0.15)',
-              opacity: isPending ? 0.6 : 1,
-            }}
-          >
-            {isShieldActive ? (
-              <span>🛡️ Shield Active</span>
-            ) : (
-              <>
-                <span>Buy</span>
-                <span style={{ color: '#A5B4FC', fontWeight: 900, marginLeft: 2 }}>0.15</span>
-                <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, flexShrink: 0 }} />
-              </>
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* ═══ INTERACTIVE GAMEPLAY BOARD (Matches standard card style) ═══ */}
-      <div style={{
-        background: '#fff',
-        border: '1px solid #DEE1E7',
-        borderRadius: 18,
+        background: 'linear-gradient(145deg, rgba(4, 18, 50, 0.94) 0%, rgba(6, 28, 70, 0.90) 50%, rgba(2, 35, 55, 0.95) 100%)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(56, 189, 248, 0.2)',
+        borderRadius: 20,
         padding: '16px 20px',
-        marginBottom: 20,
-        boxShadow: '0 4px 16px rgba(10,11,13,0.015)',
+        marginBottom: 16,
+        boxShadow: '0 8px 32px rgba(0, 60, 140, 0.4), inset 0 1px 0 rgba(56,189,248,0.08)',
         minHeight: 120,
         display: 'flex',
         flexDirection: 'column',
@@ -571,13 +601,195 @@ export function RaidMode({ address }) {
         position: 'relative',
         overflow: 'hidden'
       }}>
+        {/* Subtle teal shimmer accent */}
+        <div style={{ position: 'absolute', top: -30, right: -30, width: 120, height: 120, borderRadius: '50%', background: 'radial-gradient(circle, rgba(56,189,248,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+        {/* Active shield progress bar at top */}
+        {isShieldActive && (
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'rgba(255,255,255,0.06)', borderRadius: '20px 20px 0 0', overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: `${shieldProgressPercent}%`, background: 'linear-gradient(90deg, #0EA5E9 0%, #38BDF8 60%, #7DD3FC 100%)', transition: 'width 0.4s ease' }} />
+          </div>
+        )}
+
+        {/* Content row */}
+        <div style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 16, textAlign: 'left' }}>
+          {/* Animated shield icon — same size as radar: 96×96 wrapper, 80×80 inner */}
+          <div style={{ position: 'relative', width: 96, height: 96, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            {/* Pulse rings */}
+            <div style={{
+              position: 'absolute', inset: 0, borderRadius: '50%',
+              border: '1.5px solid rgba(56, 189, 248, 0.2)', pointerEvents: 'none',
+              animation: 'radarPulse 2.4s ease-in-out infinite'
+            }} />
+            <div style={{
+              position: 'absolute', inset: 5, borderRadius: '50%',
+              border: '1.5px solid rgba(56, 189, 248, 0.12)', pointerEvents: 'none',
+              animation: 'radarPulse 2.4s ease-in-out infinite 0.7s'
+            }} />
+            {/* Shield circle — 80×80 matching radar */}
+            <div style={{
+              width: 80, height: 80, borderRadius: '50%',
+              background: '#040E28',
+              border: '2.5px solid #38BDF8',
+              boxShadow: '0 0 18px rgba(56, 189, 248, 0.45)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              position: 'relative', overflow: 'hidden'
+            }}>
+              {/* Grid lines */}
+              <div style={{ position: 'absolute', width: '100%', height: '0.5px', background: 'rgba(56,189,248,0.2)' }} />
+              <div style={{ position: 'absolute', width: '0.5px', height: '100%', background: 'rgba(56,189,248,0.2)' }} />
+              {/* Dashed rings */}
+              <div style={{ position: 'absolute', width: 54, height: 54, borderRadius: '50%', border: '0.8px dashed rgba(56,189,248,0.22)' }} />
+              <div style={{ position: 'absolute', width: 28, height: 28, borderRadius: '50%', border: '0.8px dashed rgba(56,189,248,0.22)' }} />
+              {/* Sweep glow */}
+              <div className="radar-sweep" style={{
+                position: 'absolute', inset: 0,
+                background: 'conic-gradient(from 0deg at 50% 50%, rgba(56,189,248,0.3) 0deg, rgba(56,189,248,0) 120deg)',
+                borderRadius: '50%'
+              }} />
+              <span style={{ fontSize: 46, position: 'relative', zIndex: 2, filter: 'drop-shadow(0 0 10px rgba(56,189,248,1)) drop-shadow(0 0 20px rgba(56,189,248,0.5))' }}>🛡️</span>
+            </div>
+          </div>
+
+          {/* Right side info & action */}
+          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            {/* Title + badge immediately after text, no gap stretch */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 6, marginBottom: 4 }}>
+              <h4 style={{ margin: 0, fontSize: 14, fontWeight: 800, color: '#FFFFFF', letterSpacing: -0.2, flexShrink: 0 }}>
+                Raid Shield
+              </h4>
+              <div style={{
+                background: isShieldActive ? 'rgba(16,185,129,0.2)' : 'rgba(225,29,72,0.2)',
+                color: isShieldActive ? '#34D399' : '#F87171',
+                padding: '2px 7px',
+                borderRadius: 8,
+                fontSize: 9.5,
+                fontWeight: 800,
+                border: `1px solid ${isShieldActive ? 'rgba(52,211,153,0.35)' : 'rgba(248,113,113,0.35)'}`,
+                whiteSpace: 'nowrap',
+                flexShrink: 0
+              }}>
+                {isShieldActive ? `⏱ ${shieldTimeLeft}` : 'Inactive'}
+              </div>
+            </div>
+            <p style={{ margin: '0 0 10px', fontSize: 11, color: 'rgba(255,255,255,0.48)', lineHeight: 1.3, fontWeight: 400 }}>
+              Protect yourself from raids for 24h
+            </p>
+
+            {isShieldActive ? (
+              <div style={{
+                background: 'rgba(52,211,153,0.1)',
+                color: '#34D399',
+                border: '1px solid rgba(52,211,153,0.25)',
+                borderRadius: 14,
+                padding: '8px 14px',
+                fontSize: 11,
+                fontWeight: 800,
+                textAlign: 'center'
+              }}>
+                🛡️ Shield Active · {shieldTimeLeft} remaining
+              </div>
+            ) : (
+              <div style={{ display: 'flex', gap: 8, width: '100%' }}>
+                {/* Buy USDC */}
+                <button
+                  onClick={() => { setPayWithHh(false); setTxType('shield'); setShowTxModal(true) }}
+                  disabled={isPending}
+                  className="raid-btn"
+                  style={{
+                    position: 'relative', flex: 1,
+                    background: 'rgba(255,255,255,0.20)',
+                    backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+                    color: '#fff',
+                    border: '1px solid rgba(255,255,255,0.42)',
+                    borderRadius: 14, padding: '7px 8px',
+                    fontSize: 11.5, fontWeight: 800,
+                    cursor: isPending ? 'not-allowed' : 'pointer',
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2,
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)'
+                  }}
+                  onMouseEnter={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.30)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.60)' }}}
+                  onMouseLeave={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.20)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.42)' }}}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <span style={{ fontWeight: 900 }}>0.20</span>
+                    <img src="/usdc-logo.png" alt="USDC" style={{ width: 13, height: 13, borderRadius: '50%' }} />
+                  </div>
+                  <div style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.48)', fontWeight: 600, marginTop: -2 }}>
+                    ≈$0.20
+                  </div>
+                </button>
+
+                {/* Buy $HH — -25% badge */}
+                <button
+                  onClick={() => { setPayWithHh(true); setTxType('shield'); setShowTxModal(true) }}
+                  disabled={isPending}
+                  className="raid-btn"
+                  style={{
+                    position: 'relative', flex: 1,
+                    background: 'rgba(255,255,255,0.20)',
+                    backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+                    color: '#fff',
+                    border: '1px solid rgba(255,255,255,0.42)',
+                    borderRadius: 14, padding: '7px 8px',
+                    fontSize: 11.5, fontWeight: 800,
+                    cursor: isPending ? 'not-allowed' : 'pointer',
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2,
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)'
+                  }}
+                  onMouseEnter={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.30)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.60)' }}}
+                  onMouseLeave={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.20)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.42)' }}}
+                >
+                  <div style={{
+                    position: 'absolute', top: -8, right: -3,
+                    background: 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)',
+                    color: '#FFFFFF', fontSize: 7.5, fontWeight: 900,
+                    padding: '1px 4px', borderRadius: 5,
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.4)',
+                    border: '1px solid rgba(255,255,255,0.25)',
+                    lineHeight: 1, letterSpacing: '0.2px', whiteSpace: 'nowrap',
+                    zIndex: 10
+                  }}>-25%</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <span style={{ fontWeight: 900 }}>{formatConcise(0.15 / hhPrice)}</span>
+                    <img src="/logo.jfif" alt="$HH" style={{ width: 13, height: 13, borderRadius: '50%', objectFit: 'cover' }} />
+                  </div>
+                  <div style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.48)', fontWeight: 600, marginTop: -2 }}>
+                    ≈$0.15
+                  </div>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ═══ INTERACTIVE GAMEPLAY BOARD ═══ */}
+      <div style={{
+        background: 'linear-gradient(145deg, rgba(60, 6, 12, 0.94) 0%, rgba(90, 8, 18, 0.90) 50%, rgba(40, 4, 12, 0.96) 100%)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(248, 113, 113, 0.2)',
+        borderRadius: 20,
+        padding: '16px 20px',
+        marginBottom: 20,
+        boxShadow: '0 8px 32px rgba(140, 10, 20, 0.4), inset 0 1px 0 rgba(248,113,113,0.06)',
+        minHeight: 120,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        {/* Subtle red shimmer accent */}
+        <div style={{ position: 'absolute', top: -30, right: -30, width: 130, height: 130, borderRadius: '50%', background: 'radial-gradient(circle, rgba(248,113,113,0.07) 0%, transparent 70%)', pointerEvents: 'none' }} />
         {errorMessage && (
           <div style={{
-            background: 'rgba(252, 64, 31, 0.08)',
-            border: '1px solid rgba(252, 64, 31, 0.2)',
+            background: 'rgba(252, 64, 31, 0.12)',
+            border: '1px solid rgba(252, 64, 31, 0.3)',
             borderRadius: 12,
             padding: '8px 12px',
-            color: '#FC401F',
+            color: '#FF6B6B',
             fontSize: 11,
             fontWeight: 700,
             marginBottom: 12,
@@ -594,83 +806,75 @@ export function RaidMode({ address }) {
           <div style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 16, textAlign: 'left' }}>
             {/* Holographic pulsing radar ring and dial */}
             <div style={{ position: 'relative', width: 96, height: 96, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              {/* Concentric pulsing glow rings */}
+              {/* Concentric pulsing glow rings — red theme */}
               <div className="radar-pulse" style={{
                 position: 'absolute',
                 inset: 0,
                 borderRadius: '50%',
-                border: '1.5px solid rgba(0, 82, 255, 0.18)',
+                border: '1.5px solid rgba(248, 113, 113, 0.2)',
                 pointerEvents: 'none'
               }} />
               <div className="radar-pulse-delayed" style={{
                 position: 'absolute',
                 inset: 5,
                 borderRadius: '50%',
-                border: '1.5px solid rgba(0, 82, 255, 0.12)',
+                border: '1.5px solid rgba(248, 113, 113, 0.12)',
                 pointerEvents: 'none'
               }} />
               
-              {/* Tech Radar Container */}
+              {/* Tech Radar Container — red theme */}
               <div style={{
                 width: 80,
                 height: 80,
                 borderRadius: '50%',
-                background: '#080A10',
-                border: '2.5px solid #0052FF',
-                boxShadow: '0 0 15px rgba(0, 82, 255, 0.35)',
+                background: '#150204',
+                border: '2.5px solid #F87171',
+                boxShadow: '0 0 15px rgba(248, 113, 113, 0.4)',
                 position: 'relative',
                 overflow: 'hidden',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-                {/* Radar Grid Lines */}
-                <div style={{ position: 'absolute', width: '100%', height: '0.5px', background: 'rgba(0, 82, 255, 0.2)' }} />
-                <div style={{ position: 'absolute', width: '0.5px', height: '100%', background: 'rgba(0, 82, 255, 0.2)' }} />
+                {/* Radar Grid Lines — red */}
+                <div style={{ position: 'absolute', width: '100%', height: '0.5px', background: 'rgba(248, 113, 113, 0.22)' }} />
+                <div style={{ position: 'absolute', width: '0.5px', height: '100%', background: 'rgba(248, 113, 113, 0.22)' }} />
                 
-                {/* Concentric Dashed Radar Rings */}
-                <div style={{ position: 'absolute', width: 54, height: 54, borderRadius: '50%', border: '0.8px dashed rgba(0, 82, 255, 0.25)' }} />
-                <div style={{ position: 'absolute', width: 28, height: 28, borderRadius: '50%', border: '0.8px dashed rgba(0, 82, 255, 0.25)' }} />
+                {/* Concentric Dashed Radar Rings — red */}
+                <div style={{ position: 'absolute', width: 54, height: 54, borderRadius: '50%', border: '0.8px dashed rgba(248, 113, 113, 0.25)' }} />
+                <div style={{ position: 'absolute', width: 28, height: 28, borderRadius: '50%', border: '0.8px dashed rgba(248, 113, 113, 0.25)' }} />
                 
-                {/* Radar Sweep Line */}
+                {/* Radar Sweep Line — red */}
                 <div className="radar-sweep" style={{
                   position: 'absolute',
                   inset: 0,
-                  background: 'conic-gradient(from 0deg at 50% 50%, rgba(0, 82, 255, 0.35) 0deg, rgba(0, 82, 255, 0) 120deg)',
+                  background: 'conic-gradient(from 0deg at 50% 50%, rgba(248, 113, 113, 0.38) 0deg, rgba(248, 113, 113, 0) 120deg)',
                   borderRadius: '50%',
                 }} />
                 
-                {/* Target Blips */}
+                {/* Target Blips — orange/amber */}
                 <div className="radar-blip-1" style={{
                   position: 'absolute',
-                  width: 5,
-                  height: 5,
-                  borderRadius: '50%',
-                  background: '#10B981',
-                  boxShadow: '0 0 6px #10B981',
-                  top: '25%',
-                  left: '60%',
+                  width: 5, height: 5, borderRadius: '50%',
+                  background: '#FB923C',
+                  boxShadow: '0 0 6px #FB923C',
+                  top: '25%', left: '60%',
                   animation: 'radarBlipBlink 2.2s infinite ease-in-out'
                 }} />
                 <div className="radar-blip-2" style={{
                   position: 'absolute',
-                  width: 4,
-                  height: 4,
-                  borderRadius: '50%',
-                  background: '#EF4444',
-                  boxShadow: '0 0 6px #EF4444',
-                  bottom: '30%',
-                  left: '25%',
+                  width: 4, height: 4, borderRadius: '50%',
+                  background: '#FBBF24',
+                  boxShadow: '0 0 6px #FBBF24',
+                  bottom: '30%', left: '25%',
                   animation: 'radarBlipBlink 1.8s infinite ease-in-out 0.6s'
                 }} />
 
-                {/* Center Crosshair Dot */}
+                {/* Center Crosshair Dot — red */}
                 <div style={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: '50%',
-                  background: '#0052FF',
-                  boxShadow: '0 0 8px #0052FF',
+                  width: 6, height: 6, borderRadius: '50%',
+                  background: '#F87171',
+                  boxShadow: '0 0 8px #F87171',
                   zIndex: 2
                 }} />
               </div>
@@ -678,48 +882,138 @@ export function RaidMode({ address }) {
 
             {/* Right side info & action */}
             <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <h4 style={{ margin: '0 0 4px', fontSize: 14, fontWeight: 800, color: '#0A0B0D', letterSpacing: -0.2 }}>
+              <h4 style={{ margin: '0 0 3px', fontSize: 14, fontWeight: 800, color: '#FFFFFF', letterSpacing: -0.2 }}>
                 Happy Raid
               </h4>
-              <p style={{ margin: '0 0 10px', fontSize: 11, color: '#717886', lineHeight: 1.3, fontWeight: 400 }}>
-                Find your target and steal some <span style={{ color: '#0052FF', fontWeight: 600 }}>HP</span>
+              <p style={{ margin: '0 0 10px', fontSize: 11, color: 'rgba(255,255,255,0.48)', lineHeight: 1.3, fontWeight: 400 }}>
+                Find your target and steal some HP
               </p>
 
-              <button
-                className="raid-btn"
-                onClick={handleInitiateRaidClick}
-                disabled={isPending || isCooldownActive}
-                style={{
-                  width: '100%',
-                  background: isCooldownActive ? '#EEF0F3' : '#0000FF',
-                  color: isCooldownActive ? '#94A3B8' : '#fff',
-                  border: isCooldownActive ? '1px solid #DEE1E7' : 'none',
-                  borderRadius: 20,
-                  padding: '10px 18px',
-                  fontSize: 12,
-                  fontWeight: 800,
-                  cursor: (isPending || isCooldownActive) ? 'not-allowed' : 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 6,
-                  boxShadow: (isPending || isCooldownActive) ? 'none' : '0 6px 18px rgba(0,0,255,0.2)',
-                  opacity: isPending ? 0.5 : 1,
-                  transition: 'transform 0.2s, box-shadow 0.2s'
-                }}
-              >
-                {isCooldownActive ? (
-                  <span style={{ fontWeight: 500 }}>
-                    next raid: <strong style={{ fontWeight: 800 }}>{cooldownText}</strong>
-                  </span>
-                ) : (
-                  <>
-                    <span>Raid</span>
-                    <span style={{ color: '#A5B4FC', fontWeight: 900, marginLeft: 2 }}>0.25</span>
-                    <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12, flexShrink: 0 }} />
-                  </>
-                )}
-              </button>
+              {isCooldownActive ? (
+                <button
+                  disabled
+                  style={{
+                    width: '100%',
+                    background: 'rgba(255,255,255,0.07)',
+                    color: 'rgba(255,255,255,0.38)',
+                    border: '1px solid rgba(255,255,255,0.12)',
+                    borderRadius: 14,
+                    padding: '10px 18px',
+                    fontSize: 12,
+                    fontWeight: 800,
+                    cursor: 'not-allowed',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 4
+                  }}
+                >
+                  next raid: <strong style={{ color: 'rgba(255,255,255,0.65)' }}>{cooldownText}</strong>
+                </button>
+              ) : (
+                <div style={{ display: 'flex', gap: 8, width: '100%' }}>
+                  {/* Raid USDC Button */}
+                  <button
+                    onClick={() => {
+                      setPayWithHh(false)
+                      setTxType('raid')
+                      setShowTxModal(true)
+                    }}
+                    disabled={isPending}
+                    className="raid-btn"
+                    style={{
+                      position: 'relative',
+                      flex: 1,
+                      background: 'rgba(255,255,255,0.20)',
+                      backdropFilter: 'blur(16px)',
+                      WebkitBackdropFilter: 'blur(16px)',
+                      color: '#fff',
+                      border: '1px solid rgba(255,255,255,0.42)',
+                      borderRadius: 14,
+                      padding: '7px 8px',
+                      fontSize: 11.5,
+                      fontWeight: 800,
+                      cursor: isPending ? 'not-allowed' : 'pointer',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 2,
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)',
+                    }}
+                    onMouseEnter={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.30)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.60)' }}}
+                    onMouseLeave={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.20)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.42)' }}}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <span style={{ fontWeight: 900 }}>0.30</span>
+                      <img src="/usdc-logo.png" alt="USDC" style={{ width: 13, height: 13, borderRadius: '50%' }} />
+                    </div>
+                    <div style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.48)', fontWeight: 600, marginTop: -2 }}>
+                      ≈$0.30
+                    </div>
+                  </button>
+
+                  {/* Raid $HH Button — -33% badge */}
+                  <button
+                    onClick={() => {
+                      setPayWithHh(true)
+                      setTxType('raid')
+                      setShowTxModal(true)
+                    }}
+                    disabled={isPending}
+                    className="raid-btn"
+                    style={{
+                      position: 'relative',
+                      flex: 1,
+                      background: 'rgba(255,255,255,0.20)',
+                      backdropFilter: 'blur(16px)',
+                      WebkitBackdropFilter: 'blur(16px)',
+                      color: '#fff',
+                      border: '1px solid rgba(255,255,255,0.42)',
+                      borderRadius: 14,
+                      padding: '7px 8px',
+                      fontSize: 11.5,
+                      fontWeight: 800,
+                      cursor: isPending ? 'not-allowed' : 'pointer',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 2,
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)',
+                    }}
+                    onMouseEnter={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.30)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.60)' }}}
+                    onMouseLeave={e => { if (!isPending) { e.currentTarget.style.background = 'rgba(255,255,255,0.20)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.42)' }}}
+                  >
+                    <div style={{
+                      position: 'absolute',
+                      top: -8,
+                      right: -3,
+                      background: 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)',
+                      color: '#FFFFFF',
+                      fontSize: 7.5,
+                      fontWeight: 900,
+                      padding: '1px 4px',
+                      borderRadius: 5,
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.4)',
+                      border: '1px solid rgba(255,255,255,0.25)',
+                      lineHeight: 1,
+                      letterSpacing: '0.2px',
+                      whiteSpace: 'nowrap',
+                      zIndex: 10
+                    }}>
+                      -33%
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <span style={{ fontWeight: 900 }}>{formatConcise(0.20 / hhPrice)}</span>
+                      <img src="/logo.jfif" alt="$HH" style={{ width: 13, height: 13, borderRadius: '50%', objectFit: 'cover' }} />
+                    </div>
+                    <div style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.48)', fontWeight: 600, marginTop: -2 }}>
+                      ≈$0.20
+                    </div>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -1004,7 +1298,12 @@ export function RaidMode({ address }) {
         <TxModal
           title={txType === 'shield' ? 'Purchase Raid Shield' : 'Purchase Raid'}
           subtitle={txType === 'shield' ? 'Get 24h of absolute protection from HP raids' : ''}
-          amount={txType === 'shield' ? '0.15' : '0.25'}
+          amount={
+            payWithHh
+              ? (txType === 'shield' ? formatConcise(0.15 / hhPrice) : formatConcise(0.20 / hhPrice))
+              : (txType === 'shield' ? '0.20' : '0.30')
+          }
+          currency={payWithHh ? '$HH' : 'USDC'}
           isPending={isPending}
           isConfirming={isConfirming}
           isSuccess={isSuccess}

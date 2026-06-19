@@ -1,56 +1,105 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useWaitForTransactionReceipt, useDisconnect, useChainId, useSwitchChain, useWriteContract, useBalance } from 'wagmi'
-import { parseUnits } from 'viem'
-import { base } from 'wagmi/chains'
-import { APP_URL, FOUNDATION, CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, CHECKIN_AMOUNT, BOOST_AMOUNT, BOOST_HP, STREAK_REWARDS } from '../config/constants'
+import { useDisconnect, useWriteContract, useBalance, useReadContract } from 'wagmi'
+import { formatUnits } from 'viem'
+import { APP_URL, FOUNDATION, CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI } from '../config/constants'
 import { db } from '../config/supabase'
-import { TxModal } from './TxModal'
 import { UserAvatar } from './UserAvatar'
 import { HistorySection } from './HistorySection'
-import { useBuilderWrite } from '../hooks/useBuilderWrite'
 
 const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
-const todayUTC = () => new Date().toISOString().slice(0, 10)
-const colors = ['#FF6B6B', '#FFD93D', '#6BCB77', '#4D96FF', '#C77DFF', '#FF9F1C', '#00B4D8', '#F72585', '#3A86FF', '#8338EC']
-const pColor = (addr) => colors[parseInt(addr?.slice(2, 4) || '0', 16) % colors.length]
 
-function normalizeUserRow(data) {
-  return {
-    streak: data?.streak ?? 0,
-    streak_last: data?.streak_last ?? null,
-    points: data?.points ?? 0,
-    wins: data?.wins ?? 0,
-    entries: data?.entries ?? 0,
-    referral_count: data?.referral_count ?? 0,
-    referral_points: data?.referral_points ?? 0,
-    ref_code: data?.ref_code ?? null,
-    boost_last: data?.boost_last ?? null,
-    active_multiplier: data?.active_multiplier ?? 1.0,
-    multiplier_expires_at: data?.multiplier_expires_at ?? null,
-    account_level: data?.account_level ?? 1,
-    activity_level: data?.activity_level ?? 1,
-  }
+const formatNumber = (num, decimals = 2) => {
+  return parseFloat(num || 0).toLocaleString('en-US', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
+  })
 }
 
-const LEVELS = [
-  { level: 1, name: 'Basic', mult: 1.0, price: 0.00 },
-  { level: 2, name: 'Bronze', mult: 1.2, price: 0.95 },
-  { level: 3, name: 'Silver', mult: 1.5, price: 1.75 },
-  { level: 4, name: 'Gold', mult: 1.7, price: 3.00 },
-  { level: 5, name: 'MAX', mult: 2.0, price: 5.00 },
-]
+const formatConcise = (num) => {
+  const n = parseFloat(num || 0)
+  if (n >= 1e9) {
+    const val = (n / 1e9).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'b' : val.endsWith('0') ? val.slice(0, -1) + 'b' : val + 'b'
+  }
+  if (n >= 1e6) {
+    const val = (n / 1e6).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'm' : val.endsWith('0') ? val.slice(0, -1) + 'm' : val + 'm'
+  }
+  if (n >= 1e3) {
+    const val = (n / 1e3).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'k' : val.endsWith('0') ? val.slice(0, -1) + 'k' : val + 'k'
+  }
+  return n.toFixed(2).replace(/\.00$/, '')
+}
 
-const ACTIVITY_LEVELS = [
-  { level: 1, name: 'Basic', mult: 1.0, price: 0.00 },
-  { level: 2, name: 'Bronze', mult: 1.2, price: 0.10 },
-  { level: 3, name: 'Silver', mult: 1.5, price: 0.25 },
-  { level: 4, name: 'Gold', mult: 1.7, price: 0.50 },
-  { level: 5, name: 'MAX', mult: 2.0, price: 1.00 },
-]
-
-export function ProfileSection({ address, basename, totalUsers }) {
+export function ProfileSection({ address, basename, totalUsers, setTab }) {
   const { disconnect } = useDisconnect()
   const { writeContract: wagmiWriteContract } = useWriteContract()
+
+  // DexScreener States
+  const [hhPrice, setHhPrice] = useState(0.00025)
+  const [priceChange, setPriceChange] = useState(8.4)
+
+  // Token Balance Fallbacks (LocalStorage mock)
+  const [simulatedWalletBalance, setSimulatedWalletBalance] = useState(() => {
+    try {
+      return parseFloat(localStorage.getItem('hh_simulated_wallet') || '250000')
+    } catch {
+      return 250000
+    }
+  })
+
+  const [simulatedUsdcBalance, setSimulatedUsdcBalance] = useState(() => {
+    try {
+      return parseFloat(localStorage.getItem('usdc_simulated_wallet') || '500')
+    } catch {
+      return 500
+    }
+  })
+
+  // List of swap-eligible tokens in Base Network
+  const swapTokens = [
+    { symbol: 'ETH', name: 'Ethereum', logo: '🌐', logoBg: '#627EEA', priceUsd: 3500.00, balanceKey: 'eth_simulated_wallet', defaultBalance: 0.15 },
+    { symbol: 'USDC', name: 'USD Coin', logo: '/usdc-logo.png', priceUsd: 1.00, balanceKey: 'usdc_simulated_wallet', defaultBalance: 500.00 },
+    { symbol: 'WETH', name: 'Wrapped Ether', logo: '🌐', logoBg: '#8C8C8C', priceUsd: 3500.00, balanceKey: 'weth_simulated_wallet', defaultBalance: 0.05 },
+  ]
+
+  // Track simulated token balances
+  const [tokenBalances, setTokenBalances] = useState(() => {
+    const list = {}
+    swapTokens.forEach(t => {
+      try {
+        const saved = localStorage.getItem(t.balanceKey)
+        list[t.symbol] = saved !== null ? parseFloat(saved) : t.defaultBalance
+      } catch {
+        list[t.symbol] = t.defaultBalance
+      }
+    })
+    return list
+  })
+
+  // Sync state USDC to localStorage
+  useEffect(() => {
+    localStorage.setItem('usdc_simulated_wallet', simulatedUsdcBalance.toString())
+    setTokenBalances(prev => ({ ...prev, USDC: simulatedUsdcBalance }))
+  }, [simulatedUsdcBalance])
+
+  // Read real contract balance
+  const { data: hhBalanceRaw } = useReadContract({
+    address: HH_ADDRESS,
+    abi: HH_ABI,
+    functionName: 'balanceOf',
+    args: address ? [address] : undefined,
+    query: { enabled: !!address, refetchInterval: 15000 }
+  })
+
+  const walletBalance = hhBalanceRaw !== undefined
+    ? parseFloat(formatUnits(hhBalanceRaw, 18))
+    : simulatedWalletBalance
+
+  // Admin states
+  const [refundAmount, setRefundAmount] = useState('')
+  const [paymentsRefundAmount, setPaymentsRefundAmount] = useState('')
 
   const rescueMyFunds = () => {
     if (!refundAmount || isNaN(refundAmount)) return;
@@ -77,9 +126,6 @@ export function ProfileSection({ address, basename, totalUsers }) {
       ]
     })
   }
-
-  const [refundAmount, setRefundAmount] = useState('')
-  const [paymentsRefundAmount, setPaymentsRefundAmount] = useState('')
 
   const sweepPaymentsVault = () => {
     wagmiWriteContract({
@@ -116,18 +162,11 @@ export function ProfileSection({ address, basename, totalUsers }) {
       functionName: 'rescueToken',
       args: [
         USDC_ADDRESS,
-        '0xf76365c4157eE3f08fBAb77E9d57B965892D137d', // Cold Wallet
+        '0xf76365c4157eE3f08fBAb77E9d57B965892D137d',
         amountBigInt
       ]
     })
   }
-
-  const chainId = useChainId()
-  const { switchChain } = useSwitchChain()
-  const [txModal, setTxModal] = useState(false)
-  const [linkCopied, setLinkCopied] = useState(false)
-  const [codeCopied, setCodeCopied] = useState(false)
-  const [copiedCode, setCopiedCode] = useState(false)
 
   const { data: vaultBalanceData } = useBalance({
     address: FOUNDATION,
@@ -144,7 +183,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
       refetchInterval: 5000,
     }
   })
-  const [streak, setStreak] = useState({ count: 0, last: null })
+
   const [userStats, setUserStats] = useState({
     points: 0,
     wins: 0,
@@ -154,34 +193,162 @@ export function ProfileSection({ address, basename, totalUsers }) {
     ref_code: null,
     referrer: null
   })
-  const [checkedToday, setCheckedToday] = useState(false)
-  const [boostedToday, setBoostedToday] = useState(false)
-  const [activeMultiplier, setActiveMultiplier] = useState(1.0)
-  const [multiplierExpiresAt, setMultiplierExpiresAt] = useState(null)
-  const [accountLevel, setAccountLevel] = useState(1)
-  const [timeLeft, setTimeLeft] = useState('')
-  const [checkinError, setCheckinError] = useState('')
-  const [boostError, setBoostError] = useState('')
-  const [upgradeError, setUpgradeError] = useState('')
-  const [apUpgradeError, setApUpgradeError] = useState('')
 
-  const [activityLevel, setActivityLevel] = useState(1)
-  const [selectedApLevel, setSelectedApLevel] = useState(null)
-  const confirmApUpgrade = () => {
-    if (!selectedApLevel) return
-    setApUpgradeError(null)
-    if (chainId !== base.id) {
-      switchChain({ chainId: base.id })
+  const [linkCopied, setLinkCopied] = useState(false)
+  const [codeCopied, setCodeCopied] = useState(false)
+
+  // Swap Widget states
+  const [isBuying, setIsBuying] = useState(true) // true: SelectToken -> $HH, false: $HH -> SelectToken
+  const [payAmount, setPayAmount] = useState('')
+  const [receiveAmount, setReceiveAmount] = useState('')
+  const [txStep, setTxStep] = useState(null) // 'action_signing' | 'action_pending' | 'success' | null
+  const [swapError, setSwapError] = useState('')
+  
+  // Selectable Token State (defaults to USDC)
+  const [selectedSymbol, setSelectedSymbol] = useState('USDC')
+  const [isSelectorOpen, setIsSelectorOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+
+  // Sort tokens by descending USD Value
+  const sortedTokens = useMemo(() => {
+    return swapTokens.map(t => {
+      const bal = tokenBalances[t.symbol] ?? t.defaultBalance
+      return {
+        ...t,
+        balance: bal,
+        usdValue: bal * t.priceUsd
+      }
+    }).sort((a, b) => b.usdValue - a.usdValue)
+  }, [tokenBalances])
+
+  const activeSelectedToken = useMemo(() => {
+    return sortedTokens.find(t => t.symbol === selectedSymbol) || sortedTokens[0]
+  }, [sortedTokens, selectedSymbol])
+
+  // Handle Input Changes
+  const handlePayChange = (val) => {
+    setPayAmount(val)
+    if (!val || isNaN(val)) {
+      setReceiveAmount('')
+      return
+    }
+    const pay = parseFloat(val)
+    if (isBuying) {
+      // Token -> $HH
+      const hhAmt = (pay * activeSelectedToken.priceUsd) / hhPrice
+      setReceiveAmount(hhAmt.toFixed(2))
+    } else {
+      // $HH -> Token
+      const tokenAmt = (pay * hhPrice) / activeSelectedToken.priceUsd
+      const decimals = activeSelectedToken.symbol === 'ETH' || activeSelectedToken.symbol === 'WETH' ? 6 : 2
+      setReceiveAmount(tokenAmt.toFixed(decimals))
+    }
+  }
+
+  const handlePercentClick = (pct) => {
+    const maxBal = isBuying 
+      ? (tokenBalances[activeSelectedToken.symbol] ?? 0)
+      : walletBalance;
+
+    let multiplier = 0.25;
+    if (pct === '50%') multiplier = 0.50;
+    if (pct === 'MAX') multiplier = 1.0;
+
+    const val = maxBal * multiplier;
+    handlePayChange(val.toFixed(6).replace(/\.?0+$/, ''));
+  }
+
+  const handleReceiveChange = (val) => {
+    setReceiveAmount(val)
+    if (!val || isNaN(val)) {
+      setPayAmount('')
+      return
+    }
+    const recv = parseFloat(val)
+    if (isBuying) {
+      // Token -> $HH
+      const tokenAmt = (recv * hhPrice) / activeSelectedToken.priceUsd
+      const decimals = activeSelectedToken.symbol === 'ETH' || activeSelectedToken.symbol === 'WETH' ? 6 : 2
+      setPayAmount(tokenAmt.toFixed(decimals))
+    } else {
+      // $HH -> Token
+      const hhAmt = (recv * activeSelectedToken.priceUsd) / hhPrice
+      setPayAmount(hhAmt.toFixed(2))
+    }
+  }
+
+  const handleSwapDirection = () => {
+    setIsBuying(!isBuying)
+    setPayAmount('')
+    setReceiveAmount('')
+    setSwapError('')
+  }
+
+  const handleSwapExecute = () => {
+    setSwapError('')
+    const pay = parseFloat(payAmount)
+    const recv = parseFloat(receiveAmount)
+    if (isNaN(pay) || pay <= 0) {
+      setSwapError('Please enter a valid amount.')
       return
     }
 
-    writeApUpgrade({
-      address: USDC_ADDRESS,
-      abi: USDC_ABI,
-      functionName: 'transfer',
-      args: [CHECKIN_TARGET, parseUnits(selectedApLevel.price.toFixed(6), 6)],
-      chainId: base.id,
-    })
+    const tokenBal = tokenBalances[activeSelectedToken.symbol] ?? activeSelectedToken.defaultBalance
+
+    if (isBuying) {
+      if (pay > tokenBal) {
+        setSwapError(`Insufficient ${activeSelectedToken.symbol} balance.`)
+        return
+      }
+    } else {
+      if (pay > walletBalance) {
+        setSwapError('Insufficient $HH balance.')
+        return
+      }
+    }
+
+    setTxStep('action_signing')
+    setTimeout(() => {
+      setTxStep('action_pending')
+      setTimeout(() => {
+        if (isBuying) {
+          const newTokenBal = tokenBal - pay
+          const newHh = walletBalance + recv
+
+          localStorage.setItem(activeSelectedToken.balanceKey, newTokenBal.toString())
+          localStorage.setItem('hh_simulated_wallet', newHh.toString())
+          setSimulatedWalletBalance(newHh)
+          
+          setTokenBalances(prev => ({
+            ...prev,
+            [activeSelectedToken.symbol]: newTokenBal
+          }))
+          
+          if (activeSelectedToken.symbol === 'USDC') {
+            setSimulatedUsdcBalance(newTokenBal)
+          }
+        } else {
+          const newHh = walletBalance - pay
+          const newTokenBal = tokenBal + recv
+
+          localStorage.setItem('hh_simulated_wallet', newHh.toString())
+          localStorage.setItem(activeSelectedToken.balanceKey, newTokenBal.toString())
+          setSimulatedWalletBalance(newHh)
+
+          setTokenBalances(prev => ({
+            ...prev,
+            [activeSelectedToken.symbol]: newTokenBal
+          }))
+
+          if (activeSelectedToken.symbol === 'USDC') {
+            setSimulatedUsdcBalance(newTokenBal)
+          }
+        }
+        setPayAmount('')
+        setReceiveAmount('')
+        setTxStep('success')
+      }, 2000)
+    }, 1500)
   }
 
   // Diagnostic Simulation State
@@ -190,7 +357,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
   const [simMinHP, setSimMinHP] = useState(100)
   const [simMaxHP, setSimMaxHP] = useState(1000)
   const [isSimulating, setIsSimulating] = useState(false)
-  const [editingSim, setEditingSim] = useState(null) // { address, points }
+  const [editingSim, setEditingSim] = useState(null)
   
   // Admin Points Adjustment State
   const [adminUserAddress, setAdminUserAddress] = useState('')
@@ -202,17 +369,11 @@ export function ProfileSection({ address, basename, totalUsers }) {
   const [isAdminAdjusting, setIsAdminAdjusting] = useState(false)
   const [adminAdjustStatus, setAdminAdjustStatus] = useState(null)
 
-  const processedTxRef = useRef(null)
-  const processedBoostTxRef = useRef(null)
-  const processedMultTxRef = useRef(null)
-  const today = todayUTC()
-
-  const displayName = basename || short(address)
   const referralLink = useMemo(() => {
     const baseUrl = APP_URL.replace(/\/$/, '')
     return userStats.ref_code
       ? `${baseUrl}/r?ref=${userStats.ref_code}`
-      : `${baseUrl}/r?ref=${address}` // Fallback while loading
+      : `${baseUrl}/r?ref=${address}`
   }, [address, userStats.ref_code])
 
   const isAdmin = address && atob('MHg0YzkxZDNiZWQzNzJjMTE3OTViOWNlOWE5MDE3ZGZlNDQ3YmYwNTBh') === address.toLowerCase()
@@ -221,7 +382,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
     if (!address) return
     const { data, error } = await db
       .from('users')
-      .select('streak, streak_last, boost_last, points, wins, entries, referral_count, referral_points, ref_code, active_multiplier, multiplier_expires_at, referrer, account_level, activity_level')
+      .select('points, wins, entries, referral_count, referral_points, ref_code, referrer')
       .eq('address', address.toLowerCase())
       .maybeSingle()
 
@@ -230,29 +391,41 @@ export function ProfileSection({ address, basename, totalUsers }) {
       return
     }
 
-    const user = normalizeUserRow(data)
-    setStreak({ count: user.streak, last: user.streak_last })
-    setCheckedToday(user.streak_last === today)
-    setBoostedToday(user.boost_last === today)
-    setActiveMultiplier(user.active_multiplier)
-    setMultiplierExpiresAt(user.multiplier_expires_at)
-    setAccountLevel(user.account_level)
-    setActivityLevel(user.activity_level)
     setUserStats({
-      points: user.points,
-      wins: user.wins,
-      entries: user.entries,
-      referral_count: user.referral_count,
-      referral_points: user.referral_points,
-      ref_code: user.ref_code,
+      points: data?.points ?? 0,
+      wins: data?.wins ?? 0,
+      entries: data?.entries ?? 0,
+      referral_count: data?.referral_count ?? 0,
+      referral_points: data?.referral_points ?? 0,
+      ref_code: data?.ref_code ?? null,
       referrer: data?.referrer || null
     })
   }
 
+  // Fetch real $HH price from DexScreener
+  useEffect(() => {
+    const getPrice = async () => {
+      try {
+        const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${HH_ADDRESS}`)
+        const data = await res.json()
+        const pair = data.pairs?.[0]
+        if (pair) {
+          setHhPrice(parseFloat(pair.priceUsd) || 0.00025)
+          setPriceChange(parseFloat(pair.priceChange?.h24) || 8.4)
+        }
+      } catch (err) {
+        console.error('DexScreener API error, using fallback:', err)
+      }
+    }
+    getPrice()
+    const interval = setInterval(getPrice, 30000)
+    return () => clearInterval(interval)
+  }, [])
+
   useEffect(() => {
     loadProfile()
     if (isAdmin) loadSimulations()
-  }, [address, today])
+  }, [address])
 
   const loadSimulations = async () => {
     const { data } = await db.from('users').select('*').eq(atob('aXNfYm90'), true).order('points', { ascending: false })
@@ -271,7 +444,6 @@ export function ProfileSection({ address, basename, totalUsers }) {
   }
 
   const handleUpdateSimHP = async (simAddr, newPts) => {
-    // Handle both dot and comma as decimal separators
     const val = String(newPts).replace(',', '.');
     const points = parseFloat(val);
 
@@ -304,8 +476,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
   }
 
   const handleResetSim = async () => {
-    console.log('Resetting simulations...')
-    const { data, error } = await db.rpc(atob('ZGVsZXRlX2FsbF9ib3Rz'), { p_admin_address: address.toLowerCase() })
+    const { error } = await db.rpc(atob('ZGVsZXRlX2FsbF9ib3Rz'), { p_admin_address: address.toLowerCase() })
     if (error) console.error('Reset error:', error)
     await loadSimulations()
   }
@@ -343,11 +514,9 @@ export function ProfileSection({ address, basename, totalUsers }) {
           success: true, 
           message: `Successfully added ${data.final_points} HP (multiplier: ${data.multiplier}x) to ${short(adminUserAddress)}` 
         })
-        // Clear form
         setAdminUserAddress('')
         setAdminPts('')
         setAdminBadge('')
-        // Reload statistics if we just updated ourselves
         if (adminUserAddress.trim().toLowerCase() === address.toLowerCase()) {
           loadProfile()
         }
@@ -358,230 +527,6 @@ export function ProfileSection({ address, basename, totalUsers }) {
       setAdminAdjustStatus({ success: false, message: err.message })
     } finally {
       setIsAdminAdjusting(false)
-    }
-  }
-
-  // --- Timer Effect ---
-
-  useEffect(() => {
-    if (!multiplierExpiresAt || activeMultiplier <= 1) {
-      setTimeLeft('')
-      return
-    }
-    const interval = setInterval(() => {
-      const diff = new Date(multiplierExpiresAt).getTime() - new Date().getTime()
-      if (diff <= 0) {
-        setTimeLeft('')
-        setActiveMultiplier(1.0)
-        clearInterval(interval)
-      } else {
-        const h = Math.floor(diff / (1000 * 60 * 60))
-        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-        const s = Math.floor((diff % (1000 * 60)) / 1000)
-        setTimeLeft(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`)
-      }
-    }, 1000)
-    return () => clearInterval(interval)
-  }, [multiplierExpiresAt, activeMultiplier])
-
-  const canCheckin = !checkedToday
-  const canBoost = !boostedToday
-
-  const { data: txHash, writeContract, isPending, isConfirming, isSuccess, error: writeError, reset } = useBuilderWrite()
-  const { data: boostTxHash, writeContract: writeBoost, isPending: isPendingBoost, isConfirming: isConfirmingBoost, isSuccess: isSuccessBoost, error: boostWriteError, reset: resetBoost } = useBuilderWrite()
-  const { data: upgradeTxHash, writeContract: writeUpgrade, isPending: isPendingUpgrade, isConfirming: isConfirmingUpgrade, isSuccess: isSuccessUpgrade, error: upgradeWriteError, reset: resetUpgrade } = useBuilderWrite()
-  const { data: apUpgradeTxHash, writeContract: writeApUpgrade, isPending: isPendingApUpgrade, isConfirming: isConfirmingApUpgrade, isSuccess: isSuccessApUpgrade, error: apUpgradeWriteError, reset: resetApUpgrade } = useBuilderWrite()
-
-  const [selectedLevel, setSelectedLevel] = useState(null)
-
-  useEffect(() => {
-    if (!isSuccess || !txHash || processedTxRef.current === txHash || !address) return
-
-    processedTxRef.current = txHash
-    setCheckinError('')
-
-    db.rpc('process_checkin', {
-      p_address: address.toLowerCase(),
-      p_tx_hash: txHash,
-    }).then(async ({ data, error }) => {
-      if (error) {
-        console.error('process_checkin:', error)
-        setCheckinError('Check-in saved onchain, but database sync failed. Reloading profile…')
-        await loadProfile()
-        return
-      }
-
-      if (!data?.ok) {
-        setCheckinError(data?.error || 'Check-in was not accepted.')
-        await loadProfile()
-        return
-      }
-
-      setCheckedToday(true)
-      setStreak({ count: data.newStreak, last: today })
-      setUserStats((stats) => ({ ...stats, points: stats.points + (data.ptsEarned ?? 0) }))
-      setTxModal(false)
-    }).finally(() => {
-      reset()
-    })
-  }, [address, isSuccess, txHash, today, reset])
-
-  // --- Boost Effect ---
-  useEffect(() => {
-    if (!isSuccessBoost || !boostTxHash || processedBoostTxRef.current === boostTxHash || !address) return
-
-    processedBoostTxRef.current = boostTxHash
-    setBoostError('')
-
-    db.rpc('process_hp_boost', {
-      p_address: address.toLowerCase(),
-      p_tx_hash: boostTxHash,
-    }).then(async ({ data, error }) => {
-      if (error) {
-        console.error('process_hp_boost:', error)
-        setBoostError('Boost saved onchain, but database sync failed.')
-        await loadProfile()
-        return
-      }
-
-      if (!data?.ok) {
-        setBoostError(data?.error || 'Boost was not accepted.')
-        await loadProfile()
-        return
-      }
-
-      setBoostedToday(true)
-      setUserStats((stats) => ({ ...stats, points: stats.points + BOOST_HP }))
-      setTxModal(false)
-    }).finally(() => {
-      resetBoost()
-    })
-  }, [address, isSuccessBoost, boostTxHash, today, resetBoost])
-
-  // --- Account Upgrade Effect ---
-  useEffect(() => {
-    if (!isSuccessUpgrade || !upgradeTxHash || processedMultTxRef.current === upgradeTxHash || !address || !selectedLevel) return
-
-    processedMultTxRef.current = upgradeTxHash
-    setUpgradeError('')
-
-    db.rpc('buy_account_level', {
-      p_address: address.toLowerCase(),
-      p_tx_hash: upgradeTxHash,
-      p_target_level: selectedLevel.level,
-    }).then(async ({ data, error }) => {
-      if (error) {
-        console.error('buy_account_level:', error)
-        setUpgradeError('Transaction saved onchain, but database sync failed.')
-        await loadProfile()
-        return
-      }
-
-      if (!data?.ok) {
-        setUpgradeError(data?.error || 'Upgrade was not accepted.')
-        await loadProfile()
-        return
-      }
-
-      await loadProfile()
-      setTxModal(false)
-      setSelectedLevel(null)
-    }).finally(() => {
-      resetUpgrade()
-    })
-  }, [address, isSuccessUpgrade, upgradeTxHash, selectedLevel, resetUpgrade])
-
-  const processedApMultTxRef = useRef(null)
-
-  // --- Activity Upgrade Effect ---
-  useEffect(() => {
-    if (!isSuccessApUpgrade || !apUpgradeTxHash || processedApMultTxRef.current === apUpgradeTxHash || !address || !selectedApLevel) return
-
-    processedApMultTxRef.current = apUpgradeTxHash
-    setApUpgradeError('')
-
-    db.rpc('buy_activity_level', {
-      p_address: address.toLowerCase(),
-      p_tx_hash: apUpgradeTxHash,
-      p_target_level: selectedApLevel.level,
-    }).then(async ({ data, error }) => {
-      if (error) {
-        console.error('buy_activity_level:', error)
-        setApUpgradeError('Transaction saved onchain, but database sync failed.')
-        await loadProfile()
-        return
-      }
-
-      if (!data?.ok) {
-        setApUpgradeError(data?.error || 'Upgrade was not accepted.')
-        await loadProfile()
-        return
-      }
-
-      await loadProfile()
-      setTxModal(false)
-      setSelectedApLevel(null)
-    }).finally(() => {
-      resetApUpgrade()
-    })
-  }, [address, isSuccessApUpgrade, apUpgradeTxHash, selectedApLevel, resetApUpgrade])
-
-  const sendCheckin = () => {
-    setCheckinError('')
-    if (chainId !== base.id) {
-      switchChain({ chainId: base.id })
-      return
-    }
-
-    writeContract({
-      address: USDC_ADDRESS,
-      abi: USDC_ABI,
-      functionName: 'transfer',
-      args: [CHECKIN_TARGET, parseUnits(CHECKIN_AMOUNT.toFixed(6), 6)],
-      chainId: base.id,
-    })
-  }
-
-  const sendBoost = () => {
-    setBoostError('')
-    if (chainId !== base.id) {
-      switchChain({ chainId: base.id })
-      return
-    }
-
-    writeBoost({
-      address: USDC_ADDRESS,
-      abi: USDC_ABI,
-      functionName: 'transfer',
-      args: [CHECKIN_TARGET, parseUnits(BOOST_AMOUNT.toFixed(6), 6)],
-      chainId: base.id,
-    })
-  }
-
-  const sendUpgrade = () => {
-    if (!selectedLevel) return
-    setUpgradeError('')
-    if (chainId !== base.id) {
-      switchChain({ chainId: base.id })
-      return
-    }
-
-    writeUpgrade({
-      address: USDC_ADDRESS,
-      abi: USDC_ABI,
-      functionName: 'transfer',
-      args: [CHECKIN_TARGET, parseUnits(selectedLevel.price.toFixed(6), 6)],
-      chainId: base.id,
-    })
-  }
-
-  const copyRef = async () => {
-    try {
-      await navigator.clipboard?.writeText(referralLink)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch {
-      setCopied(false)
     }
   }
 
@@ -609,79 +554,44 @@ export function ProfileSection({ address, basename, totalUsers }) {
     setRefLoading(false)
   }
 
-  const copyCode = async () => {
-    try {
-      await navigator.clipboard?.writeText(userStats.ref_code)
-      setCopiedCode(true)
-      setTimeout(() => setCopiedCode(false), 2000)
-    } catch {
-      setCopiedCode(false)
-    }
-  }
+  // Filtered Tokens for Modal search
+  const filteredTokens = useMemo(() => {
+    return sortedTokens.filter(t => 
+      t.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      t.name.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  }, [sortedTokens, searchQuery])
 
   return (
     <div style={{ paddingBottom: 120, padding: '0 12px 120px', position: 'relative' }}>
-      {/* Disconnect button positioned to align with the main Profile title in App.jsx */}
-      {/* Disconnect button - Hidden during event
-      <button
-        onClick={() => disconnect()}
-        style={{
-          position: 'absolute',
-          top: -44, // Align with App.jsx title
-          right: 16,
-          background: '#EEF0F3',
-          border: '1px solid #DEE1E7',
-          color: '#717886',
-          borderRadius: 50,
-          padding: '6px 14px',
-          fontSize: 12,
-          fontWeight: 700,
-          cursor: 'pointer',
-          zIndex: 100,
-        }}
-      >
-        Disconnect
-      </button>
-      */}
+      
 
-      {/* Senior Dev Redesign v8.3: Crystal Clear Player Passport */}
+      {/* Crystal Clear Player Passport */}
       <div
         style={{
           backgroundImage: 'url(/banner.jpg)',
-          backgroundColor: '#0000FF', // Fallback
+          backgroundColor: '#0052FF',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           borderRadius: 24,
           padding: '24px 20px',
-          marginBottom: 14,
+          marginBottom: 16,
           position: 'relative',
           overflow: 'hidden',
-          boxShadow: '0 12px 40px rgba(0,0,255,0.25)',
+          boxShadow: '0 12px 40px rgba(0,82,255,0.25)',
           border: '1px solid rgba(255,255,255,0.15)',
         }}
       >
-        {/* Subtler Dark Glass Overlay for Clarity */}
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(0, 0, 80, 0.35)', zIndex: 0 }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,0,255,0.1) 100%)', zIndex: 0 }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,82,255,0.1) 100%)', zIndex: 0 }} />
 
         {/* Top Bar: Player Identity Passport */}
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
-
-          {/* Left: Upscaled Avatar & HP Balance Hub */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            background: 'rgba(255, 255, 255, 0.08)',
-            backdropFilter: 'blur(10px)',
-            padding: '6px 20px 6px 6px',
-            borderRadius: 60,
-            border: '1px solid rgba(255,255,255,0.12)',
-            gap: 16,
-            boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-          }}>
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+          {/* Avatar & User Address/Basename */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{
-              width: 48,
-              height: 48,
+              width: 44,
+              height: 44,
               borderRadius: '50%',
               overflow: 'hidden',
               border: '2px solid rgba(255,255,255,0.2)',
@@ -690,602 +600,658 @@ export function ProfileSection({ address, basename, totalUsers }) {
               alignItems: 'center',
               justifyContent: 'center'
             }}>
-              <UserAvatar address={address} size={48} />
+              <UserAvatar address={address} size={44} />
             </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-              <div style={{
-                fontFamily: "'Barlow Condensed',sans-serif",
-                fontSize: 32,
-                fontWeight: 900,
-                color: '#fff',
-                lineHeight: 1,
-                textShadow: '0 2px 15px rgba(0,0,0,0.5)'
-              }}>
-                {userStats.points.toLocaleString()}
-              </div>
-              <div style={{
-                fontSize: 12,
-                fontWeight: 900,
-                color: '#A5B4FC',
-                opacity: 0.9,
-                letterSpacing: 0.5
-              }}>
-                HP
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 900, color: '#fff', letterSpacing: -0.3 }}>
+                {basename || short(address)}
               </div>
             </div>
           </div>
-
-          {/* Right: Account Utilities (Disconnect & Address) */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
-            <div style={{
+          
+          {/* Disconnect Button */}
+          <button
+            onClick={() => disconnect()}
+            style={{
+              background: 'rgba(255,255,255,0.1)',
+              backdropFilter: 'blur(8px)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              color: 'rgba(255,255,255,0.9)',
+              borderRadius: 50,
+              padding: '6px 14px',
               fontSize: 9,
-              fontWeight: 800,
-              color: '#fff',
-              opacity: 0.4,
-              letterSpacing: 0.8,
-              padding: '0 4px'
-            }}>
-              {basename ? basename : short(address)}
-            </div>
-            <button
-              onClick={() => disconnect()}
-              style={{
-                background: 'rgba(255,255,255,0.1)',
-                backdropFilter: 'blur(8px)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                color: 'rgba(255,255,255,0.8)',
-                borderRadius: 50,
-                padding: '4px 14px',
-                fontSize: 8,
-                fontWeight: 900,
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-              }}
-            >
-              DISCONNECT
-            </button>
-          </div>
+              fontWeight: 900,
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              outline: 'none'
+            }}
+          >
+            DISCONNECT
+          </button>
         </div>
 
-        {/* Progression Status Area */}
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        {/* Divider */}
+        <div style={{ position: 'relative', zIndex: 1, height: 1, background: 'rgba(255,255,255,0.15)', margin: '16px 0' }} />
 
-          {/* Left: HP Multiplier Status */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>HP BOOST</div>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              background: 'rgba(255, 255, 255, 0.08)',
-              backdropFilter: 'blur(12px)',
-              padding: '8px 12px',
-              borderRadius: 14,
-              border: '1px solid rgba(255,255,255,0.1)',
-              minWidth: 95,
-              height: 38,
-              justifyContent: 'center',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
-            }}>
-              <div style={{ fontSize: 16, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>{LEVELS.find(l => l.level === accountLevel)?.name}</div>
-              <div style={{
-                background: (LEVELS.find(l => l.level === accountLevel)?.mult || 1.0) === 1.0
-                  ? 'linear-gradient(135deg, #94A3B8, #64748B)'
-                  : (LEVELS.find(l => l.level === accountLevel)?.mult || 1.0) === 2.0
-                    ? 'linear-gradient(135deg, #34D399, #059669)'
-                    : 'linear-gradient(135deg, #F4C81B, #F97316)',
-                color: '#000',
-                padding: '1px 5px',
-                borderRadius: 4,
-                fontSize: 9,
-                fontWeight: 900
-              }}>
-                {LEVELS.find(l => l.level === accountLevel)?.mult}x
-              </div>
+        {/* Two-column balance stats */}
+        <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          {/* HP Balance */}
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.05)',
+            backdropFilter: 'blur(12px)',
+            padding: '16px 14px',
+            borderRadius: 16,
+            border: '1px solid rgba(255,255,255,0.08)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+              <span style={{ fontSize: 30, fontWeight: 900, color: '#fff', fontFamily: "'Barlow Condensed',sans-serif" }}>
+                {userStats.points.toLocaleString()}
+              </span>
+              <span style={{ fontSize: 14, fontWeight: 900, color: '#A5B4FC' }}>HP</span>
             </div>
           </div>
 
-          {/* Center: Activity Multiplier Status */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>ACTIVITY BOOST</div>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              background: 'rgba(255, 255, 255, 0.08)',
-              backdropFilter: 'blur(12px)',
-              padding: '8px 12px',
-              borderRadius: 14,
-              border: '1px solid rgba(255,255,255,0.1)',
-              minWidth: 95,
-              height: 38,
-              justifyContent: 'center',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
-            }}>
-              <div style={{ fontSize: 16, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>{ACTIVITY_LEVELS.find(l => l.level === activityLevel)?.name}</div>
-              <div style={{
-                background: (ACTIVITY_LEVELS.find(l => l.level === activityLevel)?.mult || 1.0) === 1.0
-                  ? 'linear-gradient(135deg, #94A3B8, #64748B)'
-                  : (ACTIVITY_LEVELS.find(l => l.level === activityLevel)?.mult || 1.0) === 2.0
-                    ? 'linear-gradient(135deg, #34D399, #059669)'
-                    : 'linear-gradient(135deg, #F4C81B, #F97316)',
-                color: '#000',
-                padding: '1px 5px',
-                borderRadius: 4,
-                fontSize: 9,
-                fontWeight: 900
-              }}>
-                {ACTIVITY_LEVELS.find(l => l.level === activityLevel)?.mult}x
-              </div>
+          {/* $HH Wallet Balance */}
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.05)',
+            backdropFilter: 'blur(12px)',
+            padding: '16px 14px',
+            borderRadius: 16,
+            border: '1px solid rgba(255,255,255,0.08)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+              <span style={{ fontSize: 30, fontWeight: 900, color: '#fff', fontFamily: "'Barlow Condensed',sans-serif" }}>
+                {formatConcise(walletBalance)}
+              </span>
+              <span style={{ fontSize: 14, fontWeight: 900, color: '#A5B4FC' }}>$HH</span>
             </div>
           </div>
-
-          {/* Right: Streak Status */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ fontSize: 8, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>Streak</div>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 5,
-              background: 'rgba(255, 255, 255, 0.08)',
-              backdropFilter: 'blur(12px)',
-              padding: '8px 12px',
-              borderRadius: 14,
-              border: '1px solid rgba(255,255,255,0.1)',
-              minWidth: 95,
-              height: 38,
-              justifyContent: 'center',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
-            }}>
-              <span style={{ fontSize: 16 }}>🔥</span>
-              <div style={{ fontSize: 16, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>{streak.count}<span style={{ fontSize: 12, marginLeft: 1, opacity: 0.6 }}>d</span></div>
-            </div>
-          </div>
-
         </div>
       </div>
 
-      {/* 2-Column Grid: HP Boost & Activity Boost (Senior Dev Premium Overhaul) */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
-        
-        {/* HP Boost Card */}
+      {/* Premium Base App Style Swap Widget — Compact & Elegant */}
+      <div style={{
+        borderRadius: 24,
+        padding: '16px 16px 14px',
+        marginBottom: 16,
+        boxShadow: '0 8px 32px rgba(236, 72, 153, 0.15)',
+        position: 'relative',
+        overflow: 'hidden',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
+        background: '#1A0815'
+      }}>
+        {/* Grayscaled background image overlay */}
         <div style={{
-          background: '#fff',
-          border: '1px solid #DEE1E7',
-          borderRadius: 24,
-          padding: 16,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          boxShadow: '0 4px 20px rgba(0,0,255,0.02)',
-          position: 'relative',
-          overflow: 'hidden'
-        }}>
-          <div>
-            {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>HP Boost</div>
-              </div>
-              <div style={{
-                background: (LEVELS.find(l => l.level === accountLevel)?.mult || 1.0) === 1.0
-                  ? 'linear-gradient(135deg, #94A3B8, #64748B)'
-                  : (LEVELS.find(l => l.level === accountLevel)?.mult || 1.0) === 2.0
-                    ? 'linear-gradient(135deg, #34D399, #059669)'
-                    : 'linear-gradient(135deg, #F4C81B, #F97316)',
-                color: '#000',
-                padding: '2px 8px',
-                borderRadius: 50,
-                fontSize: 10,
-                fontWeight: 900,
-              }}>
-                {LEVELS.find(l => l.level === accountLevel)?.mult}x
-              </div>
-            </div>
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'url(/banner.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          filter: 'grayscale(100%) brightness(0.25) contrast(1.2)',
+          zIndex: 0,
+          pointerEvents: 'none'
+        }} />
 
-            {/* Subtext */}
-            <div style={{ fontSize: 9, color: '#717886', fontWeight: 500, marginBottom: 14, lineHeight: 1.3 }}>
-              Permanent boost<br />on all <strong style={{ color: '#0000FF' }}>Happy Points</strong> earned
-            </div>
-
-            {/* Sleek pill progress bar (5 segments) */}
-            <div style={{ display: 'flex', gap: 3, marginBottom: 16 }}>
-              {[1, 2, 3, 4, 5].map((lvl) => {
-                const active = lvl <= accountLevel;
-                return (
-                  <div
-                    key={lvl}
-                    style={{
-                      flex: 1,
-                      height: 4,
-                      borderRadius: 2,
-                      background: active ? '#0000FF' : '#E2E8F0',
-                      transition: 'background 0.3s ease'
-                    }}
-                  />
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Upgrade Button / Max Level Badge */}
-          <div>
-            {accountLevel < 5 ? (
-              <button
-                onClick={() => {
-                  const next = LEVELS.find(l => l.level === accountLevel + 1)
-                  setSelectedLevel(next)
-                  setTxModal('upgrade')
-                }}
-                style={{
-                  width: '100%',
-                  background: '#0000FF',
-                  color: '#fff',
-                  borderRadius: 50,
-                  padding: '10px 10px',
-                  fontSize: 11,
-                  fontWeight: 800,
-                  border: 'none',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 12px rgba(0,0,255,0.2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 4
-                }}
-              >
-                <span>Upgrade</span>
-                <span style={{ color: '#A5B4FC', fontWeight: 900 }}>{LEVELS.find(l => l.level === accountLevel + 1)?.price.toFixed(2)}</span>
-                <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12 }} />
-              </button>
-            ) : (
-              <div style={{
-                textAlign: 'center',
-                padding: '9px',
-                background: '#ECFDF5',
-                borderRadius: 50,
-                border: '1px solid #D1FAE5',
-                fontSize: 9,
-                color: '#059669',
-                fontWeight: 800,
-                letterSpacing: 0.5
-              }}>
-                ✓ MAX BOOST
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Activity Boost Card */}
+        {/* Pink/plum gradient overlay */}
         <div style={{
-          background: '#fff',
-          border: '1px solid #DEE1E7',
-          borderRadius: 24,
-          padding: 16,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          boxShadow: '0 4px 20px rgba(16,185,129,0.02)',
-          position: 'relative',
-          overflow: 'hidden'
-        }}>
-          <div>
-            {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Activity Boost</div>
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.22) 0%, rgba(147, 51, 234, 0.22) 100%)',
+          zIndex: 1,
+          pointerEvents: 'none'
+        }} />
+
+        {/* Content Container */}
+        <div style={{ position: 'relative', zIndex: 2 }}>
+          {/* Swap Panel Stack */}
+          <div style={{ position: 'relative' }}>
+            
+            {/* FROM FIELD */}
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.06)',
+              backdropFilter: 'blur(8px)',
+              borderRadius: 18,
+              padding: '10px 14px 8px',
+              marginBottom: 4,
+              border: '1px solid rgba(255, 255, 255, 0.08)'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, fontWeight: 800, color: 'rgba(255, 255, 255, 0.6)', marginBottom: 4 }}>
+                <span>From</span>
+                <span>
+                  Balance: {isBuying 
+                    ? `${formatConcise(tokenBalances[activeSelectedToken.symbol])} ${activeSelectedToken.symbol}` 
+                    : `${formatConcise(walletBalance)} $HH`}
+                </span>
               </div>
-              <div style={{
-                background: (ACTIVITY_LEVELS.find(l => l.level === activityLevel)?.mult || 1.0) === 1.0
-                  ? 'linear-gradient(135deg, #94A3B8, #64748B)'
-                  : (ACTIVITY_LEVELS.find(l => l.level === activityLevel)?.mult || 1.0) === 2.0
-                    ? 'linear-gradient(135deg, #34D399, #059669)'
-                    : 'linear-gradient(135deg, #F4C81B, #F97316)',
-                color: '#000',
-                padding: '2px 8px',
-                borderRadius: 50,
-                fontSize: 10,
-                fontWeight: 900,
-              }}>
-                {ACTIVITY_LEVELS.find(l => l.level === activityLevel)?.mult}x
-              </div>
-            </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <input
+                  type="number"
+                  placeholder="0.00"
+                  value={payAmount}
+                  onChange={(e) => handlePayChange(e.target.value)}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    outline: 'none',
+                    fontSize: 20,
+                    fontWeight: 800,
+                    color: '#FFFFFF',
+                    width: '55%',
+                    fontFamily: 'monospace'
+                  }}
+                />
+                
+                {/* Right Stack: Token Selector + Percentage shortcuts */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+                  {isBuying ? (
+                    <button
+                      onClick={() => setIsSelectorOpen(true)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 6,
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        padding: '6px 0',
+                        borderRadius: 10,
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.01)',
+                        cursor: 'pointer',
+                        outline: 'none',
+                        transition: 'all 0.2s',
+                        height: 30,
+                        width: 100,
+                        boxSizing: 'border-box'
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
+                      onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+                    >
+                      {activeSelectedToken.logo.startsWith('/') ? (
+                        <img src={activeSelectedToken.logo} alt="" style={{ width: 16, height: 16, borderRadius: '50%' }} />
+                      ) : (
+                        <span style={{
+                          width: 16, height: 16, borderRadius: '50%',
+                          background: activeSelectedToken.logoBg || '#8C8C8C',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontSize: 9, color: '#fff'
+                        }}>
+                          {activeSelectedToken.logo}
+                        </span>
+                      )}
+                      <span style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF' }}>{activeSelectedToken.symbol}</span>
+                      <span style={{ fontSize: 7, color: 'rgba(255, 255, 255, 0.6)' }}>▼</span>
+                    </button>
+                  ) : (
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 6,
+                      background: 'rgba(0, 82, 255, 0.25)',
+                      padding: '6px 0',
+                      borderRadius: 10,
+                      boxShadow: '0 2px 8px rgba(0,82,255,0.15)',
+                      border: '1px solid rgba(0, 82, 255, 0.4)',
+                      height: 30,
+                      width: 100,
+                      boxSizing: 'border-box'
+                    }}>
+                      <img src="/logo.jfif" alt="" style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover' }} />
+                      <span style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF' }}>$HH</span>
+                      <span style={{ fontSize: 7, color: 'transparent', userSelect: 'none' }}>▼</span>
+                    </div>
+                  )}
 
-            {/* Subtext */}
-            <div style={{ fontSize: 9, color: '#717886', fontWeight: 500, marginBottom: 14, lineHeight: 1.3 }}>
-              Permanent boost<br />on all <strong style={{ color: '#10B981' }}>Activity Points</strong> earned
-            </div>
-
-            {/* Sleek pill progress bar (5 segments) */}
-            <div style={{ display: 'flex', gap: 3, marginBottom: 16 }}>
-              {[1, 2, 3, 4, 5].map((lvl) => {
-                const active = lvl <= activityLevel;
-                return (
-                  <div
-                    key={lvl}
-                    style={{
-                      flex: 1,
-                      height: 4,
-                      borderRadius: 2,
-                      background: active ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' : '#E2E8F0',
-                      transition: 'background 0.3s ease'
-                    }}
-                  />
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Upgrade Button / Max Level Badge */}
-          <div>
-            {activityLevel < 5 ? (
-              <button
-                onClick={() => {
-                  const next = ACTIVITY_LEVELS.find(l => l.level === activityLevel + 1)
-                  setSelectedApLevel(next)
-                  setTxModal('upgrade_ap')
-                }}
-                style={{
-                  width: '100%',
-                  background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-                  color: '#fff',
-                  borderRadius: 50,
-                  padding: '10px 10px',
-                  fontSize: 11,
-                  fontWeight: 800,
-                  border: 'none',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 12px rgba(16,185,129,0.2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 4
-                }}
-              >
-                <span>Upgrade</span>
-                <span style={{ color: '#fff', fontWeight: 900 }}>{ACTIVITY_LEVELS.find(l => l.level === activityLevel + 1)?.price.toFixed(2)}</span>
-                <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12 }} />
-              </button>
-            ) : (
-              <div style={{
-                textAlign: 'center',
-                padding: '9px',
-                background: '#ECFDF5',
-                borderRadius: 50,
-                border: '1px solid #D1FAE5',
-                fontSize: 9,
-                color: '#059669',
-                fontWeight: 800,
-                letterSpacing: 0.5
-              }}>
-                ✓ MAX BOOST
-              </div>
-            )}
-          </div>
-        </div>
-
-      </div>
-
-      {/* 2-Column Action Grid: Daily Rewards */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
-        {/* Check-in Tile */}
-        <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Daily Check-in</div>
-              <div style={{ background: '#0000FF', color: '#fff', padding: '1px 6px', borderRadius: 50, fontSize: 8, fontWeight: 900 }}>+1 HP</div>
-            </div>
-            <div style={{ fontSize: 9, color: '#717886', marginTop: 4, fontWeight: 500 }}>Build your streak</div>
-          </div>
-          <div style={{ marginTop: 14 }}>
-            {canCheckin ? (
-              <button
-                onClick={() => setTxModal('checkin')}
-                style={{ width: '100%', background: '#0000FF', color: '#fff', borderRadius: 50, padding: '10px', fontSize: 11, fontWeight: 800, border: 'none', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,255,0.2)' }}
-              >
-                ✓ Claim <span style={{ color: '#A5B4FC', textTransform: 'lowercase' }}>free</span>
-              </button>
-            ) : (
-              <div style={{ textAlign: 'center', padding: '10px 4px', background: '#ECFDF5', borderRadius: 50, border: '1px solid #D1FAE5', fontSize: 8, color: '#059669', fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                RESETS AT 00:00 UTC
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Daily Claim Tile */}
-        <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Daily Claim</div>
-              <div style={{ background: '#0000FF', color: '#fff', padding: '1px 6px', borderRadius: 50, fontSize: 8, fontWeight: 900 }}>+2 HP</div>
-            </div>
-            <div style={{ fontSize: 9, color: '#717886', marginTop: 4, fontWeight: 500 }}>Climb the top</div>
-          </div>
-          <div style={{ marginTop: 14 }}>
-            {canBoost ? (
-              <button
-                onClick={() => setTxModal('boost')}
-                style={{ width: '100%', background: '#0000FF', color: '#fff', borderRadius: 50, padding: '10px', fontSize: 11, fontWeight: 800, border: 'none', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}
-              >
-                ✓ Claim <span style={{ color: '#A5B4FC' }}>0.10</span><img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14 }} />
-              </button>
-            ) : (
-              <div style={{ textAlign: 'center', padding: '10px 4px', background: '#ECFDF5', borderRadius: 50, border: '1px solid #D1FAE5', fontSize: 8, color: '#059669', fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                RESETS AT 00:00 UTC
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Streak Milestone Row (Compact) */}
-      <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: '14px 16px', marginBottom: 12 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Daily Streak Progress</div>
-            <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>Don't miss a day.</div>
-          </div>
-          <div style={{ background: '#0000FF', color: '#fff', padding: '2px 8px', borderRadius: 50, fontSize: 8, fontWeight: 900, display: 'flex', alignItems: 'center', gap: 4, marginTop: 1 }}>
-            🔥 {streak.count} DAYS
-          </div>
-        </div>
-        <div style={{ position: 'relative', height: 50, padding: '0 10px' }}>
-          {/* Background Line: Perfectly centered between circles */}
-          <div style={{ position: 'absolute', top: 26, left: 22, right: 22, height: 2, background: '#F1F5F9', borderRadius: 1 }} />
-
-          {/* Progress Line: Pixel-perfect segmented logic */}
-          {(() => {
-            const milestones = [1, 3, 7, 14, 30];
-            let progressFactor = 0; // 0 to 100
-
-            if (streak.count >= milestones[milestones.length - 1]) {
-              progressFactor = 100;
-            } else if (streak.count > milestones[0]) {
-              for (let i = 0; i < milestones.length - 1; i++) {
-                const start = milestones[i];
-                const end = milestones[i + 1];
-                if (streak.count >= start && streak.count < end) {
-                  const segmentBase = i * 25; // 4 segments = 25% each
-                  const segmentRatio = (streak.count - start) / (end - start);
-                  progressFactor = segmentBase + (segmentRatio * 25);
-                  break;
-                }
-              }
-            }
-
-            return (
-              <div style={{
-                position: 'absolute',
-                top: 26,
-                left: 22,
-                height: 2,
-                background: '#0000FF',
-                borderRadius: 1,
-                width: `calc(${progressFactor}% - ${(progressFactor / 100) * 44}px)`,
-                transition: 'width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)'
-              }} />
-            );
-          })()}
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', zIndex: 1 }}>
-            {[
-              { days: 1, pts: 0 },
-              { days: 3, pts: 1 },
-              { days: 7, pts: 3 },
-              { days: 14, pts: 7 },
-              { days: 30, pts: 15 }
-            ].map(reward => {
-              const reached = streak.count >= reward.days
-              return (
-                <div key={reward.days} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-                  <div style={{ fontSize: 7, fontWeight: 900, color: reached ? '#059669' : '#94A3B8', textTransform: 'uppercase', minHeight: 10 }}>
-                    {reward.pts > 0 ? `+${reward.pts} HP` : ''}
-                  </div>
-                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: reached ? '#0000FF' : '#fff', border: reached ? 'none' : '2px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: reached ? '0 4px 10px rgba(0,0,255,0.2)' : 'none' }}>
-                    {reached ? <span style={{ fontSize: 10, color: '#fff' }}>✓</span> : <span style={{ fontSize: 8, color: '#94A3B8', fontWeight: 800 }}>{reward.days}d</span>}
+                  {/* Percentage buttons shortcut row */}
+                  <div style={{ display: 'flex', gap: 3 }}>
+                    {['25%', '50%', 'MAX'].map(pct => (
+                      <button
+                        key={pct}
+                        onClick={() => handlePercentClick(pct)}
+                        style={{
+                          background: 'rgba(255,255,255,0.08)',
+                          border: '1px solid rgba(255,255,255,0.12)',
+                          color: 'rgba(255,255,255,0.7)',
+                          fontSize: 7.5,
+                          fontWeight: 900,
+                          padding: '1px 4px',
+                          borderRadius: 6,
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          outline: 'none'
+                        }}
+                        onMouseEnter={e => {
+                          e.currentTarget.style.background = 'rgba(255,255,255,0.18)';
+                          e.currentTarget.style.color = '#FFFFFF';
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+                          e.currentTarget.style.color = 'rgba(255,255,255,0.7)';
+                        }}
+                      >
+                        {pct}
+                      </button>
+                    ))}
                   </div>
                 </div>
-              )
-            })}
+              </div>
+              <div style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.4)', marginTop: 2, fontFamily: 'monospace' }}>
+                {payAmount ? `~$${formatNumber(parseFloat(payAmount) * (isBuying ? activeSelectedToken.priceUsd : hhPrice), 2)}` : '$0.00'}
+              </div>
+            </div>
+
+            {/* Direction Switcher Button in middle */}
+            <div style={{ display: 'flex', justifyContent: 'center', margin: '-12px 0', position: 'relative', zIndex: 10 }}>
+              <button
+                onClick={handleSwapDirection}
+                style={{
+                  width: 30,
+                  height: 30,
+                  borderRadius: '50%',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 14,
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                  color: '#FFFFFF',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  outline: 'none'
+                }}
+                onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1) rotate(180deg)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+              >
+                ⇅
+              </button>
+            </div>
+
+            {/* TO FIELD */}
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.06)',
+              backdropFilter: 'blur(8px)',
+              borderRadius: 18,
+              padding: '10px 14px 8px',
+              marginTop: 4,
+              border: '1px solid rgba(255, 255, 255, 0.08)'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, fontWeight: 800, color: 'rgba(255, 255, 255, 0.6)', marginBottom: 4 }}>
+                <span>To</span>
+                <span>
+                  Balance: {isBuying 
+                    ? `${formatConcise(walletBalance)} $HH` 
+                    : `${formatConcise(tokenBalances[activeSelectedToken.symbol])} ${activeSelectedToken.symbol}`}
+                </span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <input
+                  type="number"
+                  placeholder="0.00"
+                  value={receiveAmount}
+                  onChange={(e) => handleReceiveChange(e.target.value)}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    outline: 'none',
+                    fontSize: 20,
+                    fontWeight: 800,
+                    color: '#FFFFFF',
+                    width: '55%',
+                    fontFamily: 'monospace'
+                  }}
+                />
+
+                {!isBuying ? (
+                  <button
+                    onClick={() => setIsSelectorOpen(true)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 6,
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      padding: '6px 0',
+                      borderRadius: 10,
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.01)',
+                      cursor: 'pointer',
+                      outline: 'none',
+                      transition: 'all 0.2s',
+                      height: 30,
+                      width: 100,
+                      boxSizing: 'border-box'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
+                    onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+                  >
+                    {activeSelectedToken.logo.startsWith('/') ? (
+                      <img src={activeSelectedToken.logo} alt="" style={{ width: 16, height: 16, borderRadius: '50%' }} />
+                    ) : (
+                      <span style={{
+                        width: 16, height: 16, borderRadius: '50%',
+                        background: activeSelectedToken.logoBg || '#8C8C8C',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 9, color: '#fff'
+                      }}>
+                        {activeSelectedToken.logo}
+                      </span>
+                    )}
+                    <span style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF' }}>{activeSelectedToken.symbol}</span>
+                    <span style={{ fontSize: 7, color: 'rgba(255, 255, 255, 0.6)' }}>▼</span>
+                  </button>
+                ) : (
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 6,
+                    background: 'rgba(0, 82, 255, 0.25)',
+                    padding: '6px 0',
+                    borderRadius: 10,
+                    boxShadow: '0 2px 8px rgba(0,82,255,0.15)',
+                    border: '1px solid rgba(0, 82, 255, 0.4)',
+                    height: 30,
+                    width: 100,
+                    boxSizing: 'border-box'
+                  }}>
+                    <img src="/logo.jfif" alt="" style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover' }} />
+                    <span style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF' }}>$HH</span>
+                    <span style={{ fontSize: 7, color: 'transparent', userSelect: 'none' }}>▼</span>
+                  </div>
+                )}
+              </div>
+              <div style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.4)', marginTop: 2, fontFamily: 'monospace' }}>
+                {receiveAmount ? `~$${formatNumber(parseFloat(receiveAmount) * (isBuying ? hhPrice : activeSelectedToken.priceUsd), 2)}` : '$0.00'}
+              </div>
+            </div>
           </div>
+
+          {/* Compact Price / Information Line */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginTop: 8,
+            padding: '0 4px',
+            fontSize: 9.5,
+            fontWeight: 800,
+            color: 'rgba(255, 255, 255, 0.6)'
+          }}>
+            <span>1 $HH = ${formatNumber(hhPrice, 8)}</span>
+            <span style={{ color: priceChange >= 0 ? '#10B981' : '#EF4444' }}>
+              {priceChange >= 0 ? '▲' : '▼'} {priceChange}% (24h)
+            </span>
+          </div>
+
+          {swapError && (
+            <div style={{ marginTop: 8, padding: 8, background: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.4)', borderRadius: 12, color: '#FCA5A5', fontSize: 10.5, fontWeight: 700 }}>
+              ⚠️ {swapError}
+            </div>
+          )}
+
+          {/* Action Button */}
+          <button
+            onClick={handleSwapExecute}
+            style={{
+              width: '100%',
+              padding: '11px',
+              background: 'linear-gradient(135deg, #EC4899 0%, #C084FC 100%)',
+              color: '#FFFFFF',
+              border: 'none',
+              borderRadius: 10,
+              fontSize: 13,
+              fontWeight: 800,
+              cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(236, 72, 153, 0.25)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 6,
+              marginTop: 10,
+              marginBottom: 8,
+              transition: 'all 0.2s',
+              outline: 'none'
+            }}
+            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+            onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+          >
+            <span>
+              Swap {isBuying ? activeSelectedToken.symbol : '$HH'} ⇄ {isBuying ? '$HH' : activeSelectedToken.symbol}
+            </span>
+          </button>
+
+          {/* Uniswap direct link */}
+          <a
+            href="https://app.uniswap.org/swap?inputCurrency=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913&outputCurrency=0x8235edf32a1e10bd1867ad622915ab613664cba3&chain=base"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ textDecoration: 'none', display: 'block', textAlign: 'center', fontSize: 9.5, fontWeight: 800, color: '#F472B6', marginTop: 6 }}
+          >
+            Trade directly on Uniswap 🦄
+          </a>
         </div>
       </div>
 
-      {checkinError && (
-        <div style={{ background: '#FEF3C7', border: '1px solid #D97706', borderRadius: 12, padding: '8px 12px', marginBottom: 12, fontSize: 10, color: '#B45309', fontWeight: 600, textAlign: 'center' }}>
-          ⚠️ {checkinError}
-        </div>
-      )}
-
-      {boostError && (
-        <div style={{ background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: 12, padding: '8px 12px', marginBottom: 12, fontSize: 10, color: '#DC2626', fontWeight: 600, textAlign: 'center' }}>
-          ⚠️ {boostError}
-        </div>
-      )}
-
       {/* Referral Program: Senior Hub */}
-      <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderRadius: 20, padding: 16, marginBottom: 12 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 800, color: '#0A0B0D' }}>Referral Hub</div>
-            <div style={{ fontSize: 9, color: '#717886', marginTop: 1, fontWeight: 500 }}>
-              Invite friends and <span style={{ color: '#0000FF', fontWeight: 700 }}>earn 20% of their HP</span> forever.
+      <div style={{
+        borderRadius: 20,
+        padding: '16px 18px',
+        marginBottom: 16,
+        boxShadow: '0 8px 32px rgba(245, 158, 11, 0.15)',
+        position: 'relative',
+        overflow: 'hidden',
+        border: '1px solid rgba(245, 158, 11, 0.25)',
+        background: '#1D0F02'
+      }}>
+        {/* Grayscaled background image overlay */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'url(/banner.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          filter: 'grayscale(100%) brightness(0.22) contrast(1.2)',
+          zIndex: 0,
+          pointerEvents: 'none'
+        }} />
+
+        {/* Orange/Amber gradient overlay */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.22) 0%, rgba(239, 68, 68, 0.18) 100%)',
+          zIndex: 1,
+          pointerEvents: 'none'
+        }} />
+
+        {/* Content Container */}
+        <div style={{ position: 'relative', zIndex: 2 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
+            <div>
+              <div style={{ fontSize: 14.5, fontWeight: 900, color: '#FFFFFF', letterSpacing: '0.2px' }}>Referral Hub</div>
+              <div style={{ fontSize: 10, color: 'rgba(255, 255, 255, 0.7)', marginTop: 2, fontWeight: 600, lineHeight: 1.4 }}>
+                Invite friends and <span style={{ color: '#FBBF24', fontWeight: 800 }}>earn 20% of their HP</span> forever.
+              </div>
             </div>
           </div>
-        </div>
 
-        <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
-          <div style={{ flex: 1.5, background: '#F1F5F9', borderRadius: 12, padding: '10px 12px', border: '1px solid #E2E8F0', overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
-            <span style={{ fontFamily: "'DM Mono',monospace", fontSize: 9, color: '#64748B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{referralLink}</span>
-          </div>
-          <button
-            onClick={() => {
-              navigator.clipboard.writeText(referralLink)
-              setLinkCopied(true)
-              setTimeout(() => setLinkCopied(false), 2000)
-            }}
-            style={{ flex: 1, background: '#0000FF', color: '#fff', border: 'none', borderRadius: 12, fontSize: 10, fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap', boxShadow: '0 2px 8px rgba(0,0,255,0.15)' }}
-          >
-            {linkCopied ? '✓' : 'Copy Link'}
-          </button>
-          <button
-            onClick={() => {
-              navigator.clipboard.writeText(userStats.ref_code || address)
-              setCodeCopied(true)
-              setTimeout(() => setCodeCopied(false), 2000)
-            }}
-            style={{ flex: 1, background: '#10B981', color: '#fff', border: 'none', borderRadius: 12, fontSize: 10, fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap', boxShadow: '0 2px 8px rgba(16,185,129,0.15)' }}
-          >
-            {codeCopied ? '✓' : 'Copy Code'}
-          </button>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 14 }}>
-          <div style={{ background: '#F8FAFC', borderRadius: 12, padding: '10px 8px', border: '1px solid #F1F5F9', textAlign: 'center' }}>
-            <div style={{ fontSize: 15, fontWeight: 900, color: '#0A0B0D', lineHeight: 1 }}>{userStats.referral_count}</div>
-            <div style={{ fontSize: 8, color: '#64748B', marginTop: 4, fontWeight: 800, textTransform: 'uppercase' }}>FRIENDS</div>
-          </div>
-          <div style={{ background: '#F8FAFC', borderRadius: 12, padding: '10px 8px', border: '1px solid #F1F5F9', textAlign: 'center' }}>
-            <div style={{ fontSize: 15, fontWeight: 900, color: '#0000FF', lineHeight: 1 }}>{userStats.referral_points} <span style={{ fontSize: 9 }}>HP</span></div>
-            <div style={{ fontSize: 8, color: '#64748B', marginTop: 4, fontWeight: 800, textTransform: 'uppercase' }}>EARNED</div>
-          </div>
-        </div>
-
-        {/* Manual Referral Entry / Referred By Status */}
-        {userStats.referrer ? (
-          <div style={{ paddingTop: 12, borderTop: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#059669' }} />
-            <div style={{ fontSize: 10, fontWeight: 700, color: '#059669' }}>
-              Successfully referred by <span style={{ fontFamily: "'DM Mono', monospace", fontWeight: 500, opacity: 0.8 }}>{userStats.referrer.slice(0, 6)}...{userStats.referrer.slice(-4)}</span>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.06)',
+              backdropFilter: 'blur(8px)',
+              borderRadius: 10,
+              padding: '0 12px',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              overflow: 'hidden',
+              display: 'flex',
+              alignItems: 'center',
+              height: 30,
+              boxSizing: 'border-box'
+            }}>
+              <span style={{ fontFamily: 'monospace', fontSize: 9, color: 'rgba(255, 255, 255, 0.6)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{referralLink}</span>
+            </div>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <button
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(referralLink)
+                    setLinkCopied(true)
+                    setTimeout(() => setLinkCopied(false), 2000)
+                  } catch {}
+                }}
+                style={{
+                  flex: 1,
+                  background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  borderRadius: 10,
+                  fontSize: 10,
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  boxShadow: '0 2px 8px rgba(245,158,129,0.15)',
+                  transition: 'all 0.2s',
+                  outline: 'none',
+                  height: 30,
+                  boxSizing: 'border-box'
+                }}
+                onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+              >
+                {linkCopied ? '✓ Copied' : 'Copy Link'}
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(userStats.ref_code || address)
+                    setCodeCopied(true)
+                    setTimeout(() => setCodeCopied(false), 2000)
+                  } catch {}
+                }}
+                style={{
+                  flex: 1,
+                  background: 'rgba(255, 255, 255, 0.12)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  color: '#FFFFFF',
+                  borderRadius: 10,
+                  fontSize: 10,
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'all 0.2s',
+                  outline: 'none',
+                  height: 30,
+                  boxSizing: 'border-box'
+                }}
+                onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+              >
+                {codeCopied ? '✓ Copied' : 'Copy Code'}
+              </button>
             </div>
           </div>
-        ) : (
-          <div style={{ display: 'flex', gap: 6, paddingTop: 12, borderTop: '1px solid #F1F5F9' }}>
-            <input
-              type="text"
-              value={refInput}
-              onChange={(e) => setRefInput(e.target.value)}
-              placeholder="Referral Code"
-              style={{ flex: 1, background: '#fff', border: '1px solid #DEE1E7', borderRadius: 10, padding: '10px 12px', fontSize: 11, outline: 'none', fontFamily: "'DM Mono', monospace" }}
-            />
-            <button
-              onClick={handleApplyRef}
-              disabled={refLoading || !refInput.trim()}
-              style={{ background: '#0000FF', color: '#fff', border: 'none', borderRadius: 10, padding: '0 16px', fontSize: 11, fontWeight: 800, cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,255,0.1)' }}
-            >
-              Apply
-            </button>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.06)',
+              backdropFilter: 'blur(12px)',
+              borderRadius: 14,
+              padding: '10px 8px',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              textAlign: 'center',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+            }}>
+              <div style={{ fontSize: 14, fontWeight: 900, color: '#FFFFFF', lineHeight: 1, fontFamily: "'Outfit', 'Inter', sans-serif" }}>{userStats.referral_count}</div>
+              <div style={{ fontSize: 9, color: 'rgba(255, 255, 255, 0.45)', marginTop: 3, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2px' }}>Friends</div>
+            </div>
+            <div style={{
+              background: 'rgba(245, 158, 11, 0.08)',
+              backdropFilter: 'blur(12px)',
+              borderRadius: 14,
+              padding: '10px 8px',
+              border: '1px solid rgba(245, 158, 11, 0.25)',
+              textAlign: 'center',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+            }}>
+              <div style={{ fontSize: 14, fontWeight: 900, color: '#FFFFFF', lineHeight: 1, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                {userStats.referral_points} <span style={{ fontSize: 10, color: '#FFFFFF' }}>HP</span>
+              </div>
+              <div style={{ fontSize: 9, color: 'rgba(255, 255, 255, 0.45)', marginTop: 3, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2px' }}>Earned</div>
+            </div>
           </div>
-        )}
+
+          {userStats.referrer ? (
+            <div style={{ paddingTop: 12, borderTop: '1px solid rgba(255, 255, 255, 0.1)', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#F59E0B' }} />
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#FBBF24' }}>
+                Referred by: <span style={{ fontFamily: 'monospace', fontWeight: 500, color: '#FFFFFF' }}>{userStats.referrer.slice(0, 6)}...{userStats.referrer.slice(-4)}</span>
+              </div>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', gap: 6, paddingTop: 12, borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+              <input
+                type="text"
+                value={refInput}
+                onChange={(e) => setRefInput(e.target.value)}
+                placeholder="Enter referral code"
+                style={{
+                  flex: 1.5,
+                  background: 'rgba(255, 255, 255, 0.06)',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  borderRadius: 10,
+                  padding: '0 12px',
+                  fontSize: 11,
+                  outline: 'none',
+                  fontFamily: 'monospace',
+                  color: '#FFFFFF',
+                  height: 30,
+                  boxSizing: 'border-box'
+                }}
+              />
+              <button
+                onClick={handleApplyRef}
+                disabled={refLoading || !refInput.trim()}
+                style={{
+                  flex: 1,
+                  background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  borderRadius: 10,
+                  padding: '0 16px',
+                  fontSize: 11,
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(245,158,11,0.15)',
+                  transition: 'all 0.2s',
+                  outline: 'none',
+                  height: 30,
+                  boxSizing: 'border-box'
+                }}
+                onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+              >
+                Apply
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <HistorySection address={address} />
 
-      {/* Spacer to push Admin Refund lower */}
-      <div style={{ height: 120 }} />
+      {/* Spacer to push Admin Panel lower */}
+      <div style={{ height: 60 }} />
 
-      {address && address.toLowerCase() === '0x4c91D3BEd372C11795b9Ce9a9017dFE447Bf050a'.toLowerCase() && (
+      {isAdmin && (
         <div style={{
           marginTop: 16,
           background: '#FEF2F2',
@@ -1302,7 +1268,7 @@ export function ProfileSection({ address, basename, totalUsers }) {
             </div>
           </div>
 
-          {/* Raffle Vault Block */}
+          {/* Raffle Vault Balance */}
           <div style={{ marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid rgba(252, 165, 165, 0.4)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
               <div style={{ fontSize: 10, fontWeight: 800, color: '#B91C1C', letterSpacing: '0.5px' }}>Raffle Vault Balance</div>
@@ -1613,75 +1579,159 @@ export function ProfileSection({ address, basename, totalUsers }) {
         </div>
       )}
 
+      {/* Selector Modal for selecting token */}
+      {isSelectorOpen && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(10,11,13,0.6)', backdropFilter: 'blur(10px)',
+          zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: 16
+        }}>
+          <div style={{
+            background: '#FFFFFF', borderRadius: 24, padding: 20, maxWidth: 360, width: '100%',
+            boxShadow: '0 12px 48px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column',
+            maxHeight: '80vh'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+              <h3 style={{ fontSize: 15, fontWeight: 900, color: '#0A0B0D', margin: 0 }}>Select a token</h3>
+              <button 
+                onClick={() => { setIsSelectorOpen(false); setSearchQuery(''); }}
+                style={{ background: 'none', border: 'none', fontSize: 18, color: '#717886', cursor: 'pointer' }}
+              >
+                ✕
+              </button>
+            </div>
 
-      {txModal === 'checkin' && (
-        <TxModal
-          title="Daily Check-In"
-          subtitle="Keep your streak daily · Earn streak bonus"
-          amount={CHECKIN_AMOUNT}
-          isPending={isPending}
-          isConfirming={isConfirming}
-          isSuccess={isSuccess}
-          error={writeError}
-          onConfirm={sendCheckin}
-          onCancel={() => {
-            setTxModal(false)
-            reset()
-          }}
-        />
+            <input
+              type="text"
+              placeholder="Search by name or address"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '10px 14px',
+                borderRadius: 14,
+                border: '1px solid #DEE1E7',
+                fontSize: 12,
+                fontWeight: 750,
+                outline: 'none',
+                marginBottom: 16,
+                background: '#F8F9FC'
+              }}
+            />
+
+            <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {filteredTokens.map(token => (
+                <div
+                  key={token.symbol}
+                  onClick={() => {
+                    setSelectedSymbol(token.symbol);
+                    setIsSelectorOpen(false);
+                    setSearchQuery('');
+                    setPayAmount('');
+                    setReceiveAmount('');
+                  }}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '10px 12px',
+                    borderRadius: 14,
+                    cursor: 'pointer',
+                    background: selectedSymbol === token.symbol ? '#F0F5FF' : 'transparent',
+                    transition: 'background 0.15s'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = selectedSymbol === token.symbol ? '#F0F5FF' : '#F8F9FC'}
+                  onMouseLeave={e => e.currentTarget.style.background = selectedSymbol === token.symbol ? '#F0F5FF' : 'transparent'}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    {token.logo.startsWith('/') ? (
+                      <img src={token.logo} alt="" style={{ width: 26, height: 26, borderRadius: '50%' }} />
+                    ) : (
+                      <span style={{
+                        width: 26, height: 26, borderRadius: '50%',
+                        background: token.logoBg || '#8C8C8C',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 12, color: '#fff'
+                      }}>
+                        {token.logo}
+                      </span>
+                    )}
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 900, color: '#0A0B0D' }}>{token.symbol}</div>
+                      <div style={{ fontSize: 9.5, color: '#717886', marginTop: 1 }}>{token.name}</div>
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontSize: 12.5, fontWeight: 900, color: '#0A0B0D' }}>
+                      {formatConcise(token.balance)}
+                    </div>
+                    <div style={{ fontSize: 9.5, color: '#717886', marginTop: 1, fontFamily: 'monospace' }}>
+                      ${formatNumber(token.usdValue, 2)}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {filteredTokens.length === 0 && (
+                <div style={{ textAlign: 'center', fontSize: 11, color: '#717886', padding: 20 }}>No tokens found</div>
+              )}
+            </div>
+          </div>
+        </div>
       )}
 
-      {txModal === 'boost' && (
-        <TxModal
-          title="Daily HP Boost"
-          subtitle="Get +2 HP instantly"
-          amount={BOOST_AMOUNT}
-          isPending={isPendingBoost}
-          isConfirming={isConfirmingBoost}
-          isSuccess={isSuccessBoost}
-          error={boostWriteError}
-          onConfirm={sendBoost}
-          onCancel={() => {
-            setTxModal(false)
-            resetBoost()
-          }}
-        />
+      {/* Transaction simulation overlay modal */}
+      {txStep && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(10,11,13,0.85)', backdropFilter: 'blur(8px)',
+          zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: 16
+        }}>
+          <div style={{
+            background: '#FFFFFF', borderRadius: 24, padding: 28, maxWidth: 360, width: '100%',
+            boxShadow: '0 12px 48px rgba(0,0,0,0.15)', textAlign: 'center',
+          }}>
+            <div style={{ marginBottom: 20 }}>
+              {txStep === 'success' ? (
+                <span style={{ fontSize: 54 }}>🎉</span>
+              ) : (
+                <div style={{
+                  width: 50, height: 50, border: '4px solid #F0F5FF', borderTopColor: '#0052FF',
+                  borderRadius: '50%', margin: '0 auto', animation: 'spin 1s linear infinite'
+                }} />
+              )}
+            </div>
+
+            <h3 style={{ fontSize: 18, fontWeight: 900, color: '#0A0B0D', marginBottom: 8 }}>
+              {txStep === 'action_signing' && 'Confirming Swap'}
+              {txStep === 'action_pending' && 'Executing Swap Transaction'}
+              {txStep === 'success' && 'Swap Confirmed!'}
+            </h3>
+
+            <p style={{ fontSize: 12.5, color: '#717886', lineHeight: 1.5, marginBottom: 20 }}>
+              {txStep === 'action_signing' && 'Please confirm the swap transaction in your wallet.'}
+              {txStep === 'action_pending' && 'Updating simulated balances on Base Network...'}
+              {txStep === 'success' && 'Your swap was executed successfully! Your wallet balances have updated.'}
+            </p>
+
+            {txStep === 'success' && (
+              <button
+                onClick={() => setTxStep(null)}
+                style={{
+                  background: 'linear-gradient(135deg, #0052FF 0%, #0043D0 100%)',
+                  color: '#FFFFFF', border: 'none', borderRadius: 12, padding: '10px 24px',
+                  fontSize: 13, fontWeight: 800, cursor: 'pointer',
+                  width: '100%'
+                }}
+              >
+                Close
+              </button>
+            )}
+          </div>
+        </div>
       )}
 
-      {txModal === 'upgrade_ap' && selectedApLevel && (
-        <TxModal
-          title={`Upgrade to AP ${selectedApLevel.name}`}
-          subtitle={`Permanent ${selectedApLevel.mult}x boost for all Activity Points you earn.`}
-          amount={selectedApLevel.price}
-          isPending={isPendingApUpgrade}
-          isConfirming={isConfirmingApUpgrade}
-          isSuccess={isSuccessApUpgrade}
-          error={apUpgradeError || apUpgradeWriteError}
-          onConfirm={confirmApUpgrade}
-          onCancel={() => {
-            setTxModal(false)
-            setSelectedApLevel(null)
-          }}
-        />
-      )}
-
-      {txModal === 'upgrade' && selectedLevel && (
-        <TxModal
-          title={`Upgrade to ${selectedLevel.name}`}
-          subtitle={`Permanent ${selectedLevel.mult}x boost for all HP you earn.`}
-          amount={selectedLevel.price}
-          isPending={isPendingUpgrade}
-          isConfirming={isConfirmingUpgrade}
-          isSuccess={isSuccessUpgrade}
-          error={upgradeWriteError}
-          onConfirm={sendUpgrade}
-          onCancel={() => {
-            setTxModal(false)
-            setSelectedLevel(null)
-            resetUpgrade()
-          }}
-        />
-      )}
     </div>
   )
 }

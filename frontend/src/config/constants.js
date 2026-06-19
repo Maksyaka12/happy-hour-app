@@ -17,7 +17,7 @@ export const HAS_SUPABASE_CONFIG = Boolean(SUPABASE_URL && SUPABASE_ANON)
 export const WINNER_SHARE = 0.85
 export const TICKET_UNIT = 0.1
 export const CHECKIN_AMOUNT = 0.0001
-export const BOOST_AMOUNT = 0.1
+export const BOOST_AMOUNT = 0.2
 export const BOOST_HP = 2
 export const CLOSE_BEFORE_MS = 3 * 60 * 1000
 
@@ -49,3 +49,88 @@ export const USDC_ABI = [
     stateMutability: 'view',
   },
 ]
+
+export const HH_ADDRESS =
+  env.VITE_HH_ADDRESS || '0x8235EdF32a1e10Bd1867ad622915AB613664cbA3'
+
+export const HH_RAFFLE_VAULT_ADDRESS =
+  env.VITE_HH_RAFFLE_VAULT_ADDRESS || '0x3bdF461984142C473F2185B4F0F64a918B8ce49b'
+
+export const HH_MANAGER_ADDRESS =
+  env.VITE_HH_MANAGER_ADDRESS || '0x13802fDe66BCf54BcebE2242aF0836A5Dfb45Fc8'
+
+export const STAKING_ADDRESS =
+  env.VITE_STAKING_ADDRESS || '0xF27167EaA5B580e6cCAD090136c5d3a69464b713'
+
+
+export const HH_ABI = [
+  ...USDC_ABI,
+  {
+    name: 'approve',
+    type: 'function',
+    inputs: [
+      { name: 'spender', type: 'address' },
+      { name: 'value', type: 'uint256' },
+    ],
+    outputs: [{ type: 'bool' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    name: 'allowance',
+    type: 'function',
+    inputs: [
+      { name: 'owner', type: 'address' },
+      { name: 'spender', type: 'address' },
+    ],
+    outputs: [{ type: 'uint256' }],
+    stateMutability: 'view',
+  },
+]
+
+export const STAKING_ABI = [
+  {
+    name: 'stake',
+    type: 'function',
+    inputs: [
+      { name: '_amount', type: 'uint256' },
+      { name: '_durationDays', type: 'uint256' }
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    name: 'unstake',
+    type: 'function',
+    inputs: [{ name: '_positionIndex', type: 'uint256' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    name: 'getUserPositions',
+    type: 'function',
+    inputs: [{ name: '_user', type: 'address' }],
+    outputs: [
+      {
+        components: [
+          { name: 'amount', type: 'uint256' },
+          { name: 'startTime', type: 'uint256' },
+          { name: 'endTime', type: 'uint256' },
+          { name: 'apr', type: 'uint256' },
+          { name: 'durationDays', type: 'uint256' },
+          { name: 'active', type: 'bool' }
+        ],
+        type: 'tuple[]'
+      }
+    ],
+    stateMutability: 'view',
+  },
+  {
+    name: 'totalActiveStaked',
+    type: 'function',
+    inputs: [{ name: '_user', type: 'address' }],
+    outputs: [{ type: 'uint256' }],
+    stateMutability: 'view',
+  },
+]
+
+

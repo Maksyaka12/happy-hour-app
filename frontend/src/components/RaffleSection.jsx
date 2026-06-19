@@ -10,10 +10,10 @@
 // ─────────────────────────────────────────────────────────
 
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
-import { useWaitForTransactionReceipt, useChainId, useSwitchChain } from 'wagmi'
-import { parseUnits } from 'viem'
+import { useWaitForTransactionReceipt, useChainId, useSwitchChain, useReadContract } from 'wagmi'
+import { parseUnits, formatUnits } from 'viem'
 import { base } from 'wagmi/chains'
-import { FOUNDATION, USDC_ADDRESS, USDC_ABI, BET_OPTS, TICKET_UNIT, CLOSE_BEFORE_MS, WINNER_SHARE } from '../config/constants'
+import { FOUNDATION, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI, BET_OPTS, TICKET_UNIT, CLOSE_BEFORE_MS, WINNER_SHARE, HH_RAFFLE_VAULT_ADDRESS } from '../config/constants'
 import { db } from '../config/supabase'
 import { useRoundState } from '../hooks/useRoundState'
 import { useBuilderWrite } from '../hooks/useBuilderWrite'
@@ -35,11 +35,103 @@ const fmt = (ms) => {
   return `${String(m).padStart(2, '0')}:${String(ss).padStart(2, '0')}`
 }
 
-export function RaffleSection({ address }) {
+const formatConcise = (num) => {
+  const n = parseFloat(num || 0)
+  if (n >= 1e9) {
+    const val = (n / 1e9).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'b' : val.endsWith('0') ? val.slice(0, -1) + 'b' : val + 'b'
+  }
+  if (n >= 1e6) {
+    const val = (n / 1e6).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'm' : val.endsWith('0') ? val.slice(0, -1) + 'm' : val + 'm'
+  }
+  if (n >= 1e3) {
+    const val = (n / 1e3).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'k' : val.endsWith('0') ? val.slice(0, -1) + 'k' : val + 'k'
+  }
+  return n.toFixed(2).replace(/\.00$/, '')
+}
+
+export function RaffleSection({ address, basename }) {
   const { round, participants, lastWinner, myTickets, myAmount, refetch } = useRoundState(address)
   const [msLeft,       setMsLeft]       = useState(0)
   const [txModal,      setTxModal]      = useState(null) // { amount }
   const [spinData, setSpinData] = useState(null)
+
+  const [raffleType, setRaffleType] = useState('usdc') // 'usdc' | 'hh'
+  const [hhPrice, setHhPrice] = useState(0.00025)
+
+  // Fetch HH price from DexScreener
+  useEffect(() => {
+    const getPrice = async () => {
+      try {
+        const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${HH_ADDRESS}`)
+        const data = await res.json()
+        const pair = data.pairs?.[0]
+        if (pair) {
+          setHhPrice(parseFloat(pair.priceUsd) || 0.00025)
+        }
+      } catch (err) {
+        console.error('DexScreener API error in Raffle:', err)
+      }
+    }
+    getPrice()
+    const interval = setInterval(getPrice, 30000)
+    return () => clearInterval(interval)
+  }, [])
+
+  // Read HH allowance
+  const { data: hhAllowanceRaw } = useReadContract({
+    address: HH_ADDRESS,
+    abi: HH_ABI,
+    functionName: 'allowance',
+    args: address && HH_RAFFLE_VAULT_ADDRESS ? [address, HH_RAFFLE_VAULT_ADDRESS] : undefined,
+    query: { enabled: !!address && raffleType === 'hh', refetchInterval: 10000 }
+  })
+  const hhAllowance = hhAllowanceRaw !== undefined ? parseFloat(formatUnits(hhAllowanceRaw, 18)) : 0
+
+  // Simulated HH Raffle states
+  const [myHhTickets, setMyHhTickets] = useState(() => {
+    try {
+      const saved = localStorage.getItem(`hh_raffle_my_tickets_${round?.id || 'default'}`)
+      return saved ? parseInt(saved) : 0
+    } catch {
+      return 0
+    }
+  })
+  const [hhParticipants, setHhParticipants] = useState(() => {
+    try {
+      const saved = localStorage.getItem(`hh_raffle_participants_${round?.id || 'default'}`)
+      if (saved) return JSON.parse(saved)
+    } catch {}
+    return [
+      { address: '0x32b2745cf82a174c3d8e9a9017dfe447bf050a41', name: 'BaseChad', amount: 8000, tickets: 20 },
+      { address: '0x12a84920b3c8174c3d8e9a9017dfe447bf050a42', name: 'HH_Enjoyer', amount: 4000, tickets: 10 },
+      { address: '0x98f9a0d7120c174c3d8e9a9017dfe447bf050a43', name: 'BasedAnon', amount: 12000, tickets: 30 },
+    ]
+  })
+
+  // Sync simulated HH raffle state on round changes
+  useEffect(() => {
+    if (!round?.id) return
+    try {
+      const savedTickets = localStorage.getItem(`hh_raffle_my_tickets_${round.id}`)
+      setMyHhTickets(savedTickets ? parseInt(savedTickets) : 0)
+      
+      const savedParts = localStorage.getItem(`hh_raffle_participants_${round.id}`)
+      if (savedParts) {
+        setHhParticipants(JSON.parse(savedParts))
+      } else {
+        const mockParts = [
+          { address: '0x32b274' + Math.random().toString(16).slice(2, 6) + '8e9a9017dfe447bf050a41', name: 'BaseChad', amount: 8000, tickets: 20 },
+          { address: '0x12a849' + Math.random().toString(16).slice(2, 6) + 'd8e9a9017dfe447bf050a42', name: 'HH_Enjoyer', amount: 4000, tickets: 10 },
+          { address: '0x98f9a0' + Math.random().toString(16).slice(2, 6) + '3d8e9a9017dfe447bf050a43', name: 'BasedAnon', amount: 12000, tickets: 30 },
+        ]
+        setHhParticipants(mockParts)
+        localStorage.setItem(`hh_raffle_participants_${round.id}`, JSON.stringify(mockParts))
+      }
+    } catch {}
+  }, [round?.id])
 
   // ── Chain check ──────────────────────────────────────────
   const chainId = useChainId()
@@ -48,6 +140,8 @@ export function RaffleSection({ address }) {
 
   // ── Builder write contract ───────────────────────────────
   const { data: txHash, writeContract, isPending, isConfirming, isSuccess, error: writeError, reset } = useBuilderWrite()
+
+  const [lastProcessedTx, setLastProcessedTx] = useState(null)
 
   const fallbackRef = useRef(false)
   useEffect(() => {
@@ -64,14 +158,14 @@ export function RaffleSection({ address }) {
         setMsLeft(left)
 
         const overdueMs = -( new Date(round.ends_at).getTime() - Date.now() )
-        const FALLBACK_THRESHOLD_MS = 5 * 60 * 1000 // 5 хвилин
+        const FALLBACK_THRESHOLD_MS = 5 * 60 * 1000 // 5 minutes
 
         if (
           overdueMs > FALLBACK_THRESHOLD_MS &&
           round.status === 'open' &&
           !fallbackRef.current
         ) {
-          // pg_cron не спрацював — браузер підстрахує
+          // pg_cron missed - browser fallback
           console.warn('[raffle] pg_cron missed the round, browser fallback triggered')
           fallbackRef.current = true
           db.functions.invoke('draw-round').catch(console.error)
@@ -97,36 +191,138 @@ export function RaffleSection({ address }) {
 
   // After tx confirmed — close modal, refetch
   useEffect(() => {
-    if (isSuccess) {
-      setTxModal(null)
-      reset()
-      setTimeout(() => refetch(), 3000) // Alchemy webhook ~2-3s
+    if (isSuccess && txHash && lastProcessedTx !== txHash) {
+      setLastProcessedTx(txHash)
+      if (raffleType === 'hh' && txModal) {
+        const amountUsdc = txModal.amount
+        const hhCost = amountUsdc / hhPrice
+        
+        if (hhAllowance < hhCost) {
+          // This was approval tx. Just close modal and reset.
+          setTxModal(null)
+          reset()
+          return
+        }
+        
+        // This was transfer tx!
+        const ticketsBought = Math.round(amountUsdc / TICKET_UNIT)
+        const newTickets = myHhTickets + ticketsBought
+        setMyHhTickets(newTickets)
+        localStorage.setItem(`hh_raffle_my_tickets_${round?.id}`, newTickets.toString())
+        
+        const userAddr = address?.toLowerCase() || '0xuser'
+        const userShort = address ? `${address.slice(0, 6)}…${address.slice(-4)}` : 'You'
+        
+        let exists = false
+        const nextParts = hhParticipants.map(p => {
+          if (p.address?.toLowerCase() === userAddr) {
+            exists = true
+            return { ...p, amount: p.amount + hhCost, tickets: p.tickets + ticketsBought }
+          }
+          return p
+        })
+        
+        if (!exists) {
+          nextParts.push({
+            address: address || '0xuser',
+            name: basename || userShort,
+            amount: hhCost,
+            tickets: ticketsBought
+          })
+        }
+        
+        setHhParticipants(nextParts)
+        localStorage.setItem(`hh_raffle_participants_${round?.id}`, JSON.stringify(nextParts))
+        setTxModal(null)
+        reset()
+      } else {
+        // USDC raffle
+        setTxModal(null)
+        reset()
+        setTimeout(() => refetch(), 3000) // Alchemy webhook ~2-3s
+      }
     }
-  }, [isSuccess])
+  }, [isSuccess, txHash, raffleType, txModal, hhPrice, hhAllowance, myHhTickets, hhParticipants, address, basename, round?.id])
 
-  const totalPot = useMemo(() => participants.reduce((s, p) => s + p.amount, 0), [participants])
+  const displayTotalPot = useMemo(() => {
+    return raffleType === 'hh'
+      ? hhParticipants.reduce((s, p) => s + p.amount, 0)
+      : participants.reduce((s, p) => s + p.amount, 0)
+  }, [raffleType, hhParticipants, participants])
+
   const isClosed = msLeft <= CLOSE_BEFORE_MS || round?.status === 'closed' || round?.status === 'spinning'
-  const myEntry  = participants.find(p => p.address?.toLowerCase() === address?.toLowerCase())
-  const myChance = totalPot > 0 ? (((myEntry?.amount || 0) / totalPot) * 100).toFixed(1) : '0.0'
+  
+  const displayMyEntry = useMemo(() => {
+    const list = raffleType === 'hh' ? hhParticipants : participants
+    return list.find(p => p.address?.toLowerCase() === address?.toLowerCase())
+  }, [raffleType, hhParticipants, participants, address])
+
+  const displayMyChance = useMemo(() => {
+    if (displayTotalPot <= 0 || !displayMyEntry) return '0.0'
+    return (((displayMyEntry.amount || 0) / displayTotalPot) * 100).toFixed(1)
+  }, [displayTotalPot, displayMyEntry])
+
+  const displayParticipants = useMemo(() => {
+    return raffleType === 'hh' ? hhParticipants : participants
+  }, [raffleType, hhParticipants, participants])
+
+  const displayMyTickets = useMemo(() => {
+    return raffleType === 'hh' ? myHhTickets : (myTickets || 0)
+  }, [raffleType, myHhTickets, myTickets])
+
+  const displayMyAmount = useMemo(() => {
+    return raffleType === 'hh' ? (displayMyEntry ? displayMyEntry.amount : 0) : (myAmount || 0)
+  }, [raffleType, displayMyEntry, myAmount])
+
   const timerColor = isClosed ? '#FC401F' : '#0A0B0D'
 
-  // ── Send USDC ────────────────────────────────────────────
+  // ── Send USDC or HH ────────────────────────────────────────
   const sendBet = useCallback((amount) => {
     if (isClosed || !address) return
 
     // Switch chain if needed
     if (wrongChain) { switchChain({ chainId: base.id }); return }
 
-    // useWriteContract sends the tx
-    // dataSuffix (Builder Code) is added automatically by wagmi config
-    writeContract({
-      address:      USDC_ADDRESS,
-      abi:          USDC_ABI,
-      functionName: 'transfer',
-      args:         [FOUNDATION, parseUnits(amount.toFixed(6), 6)],
-      chainId:      base.id,
-    })
-  }, [isClosed, address, wrongChain, writeContract, switchChain])
+    if (raffleType === 'hh') {
+      const hhCost = amount / hhPrice
+      if (hhAllowance < hhCost) {
+        // Trigger infinite approve
+        writeContract({
+          address: HH_ADDRESS,
+          abi: HH_ABI,
+          functionName: 'approve',
+          args: [HH_RAFFLE_VAULT_ADDRESS, parseUnits('115792089237316195423570985008687907853269984665640564039457584007913129639935', 18)], // max uint256
+          chainId: base.id,
+        })
+      } else {
+        // Trigger deposit contract transaction
+        writeContract({
+          address: HH_RAFFLE_VAULT_ADDRESS,
+          abi: [
+            {
+              name: 'depositHH',
+              type: 'function',
+              inputs: [{ name: '_amount', type: 'uint256' }],
+              outputs: [],
+              stateMutability: 'nonpayable',
+            }
+          ],
+          functionName: 'depositHH',
+          args: [parseUnits(hhCost.toFixed(18), 18)],
+          chainId: base.id,
+        })
+      }
+    } else {
+      // useWriteContract sends the USDC tx
+      writeContract({
+        address:      USDC_ADDRESS,
+        abi:          USDC_ABI,
+        functionName: 'transfer',
+        args:         [FOUNDATION, parseUnits(amount.toFixed(6), 6)],
+        chainId:      base.id,
+      })
+    }
+  }, [isClosed, address, wrongChain, writeContract, switchChain, raffleType, hhPrice, hhAllowance])
 
   const onBetClick = (amount) => {
     setTxModal({ amount })
@@ -135,11 +331,73 @@ export function RaffleSection({ address }) {
   return (
     <div style={{ paddingBottom: 120, padding: '0 12px 120px' }}>
 
+      {/* USDC / HH Raffle Switcher */}
+      <div style={{ padding: '0 4px' }}>
+        <div style={{
+          display: 'flex',
+          background: '#EEF0F3',
+          border: '1px solid #DEE1E7',
+          borderRadius: 16,
+          padding: 4,
+          marginBottom: 16,
+          maxWidth: 380,
+          margin: '0 auto 16px',
+          boxShadow: 'inset 0 2px 4px rgba(10,11,13,0.05)',
+          gap: 6
+        }}>
+          <button
+            onClick={() => setRaffleType('usdc')}
+            style={{
+              flex: 1,
+              padding: '8px 10px',
+              borderRadius: 12,
+              border: raffleType === 'usdc' ? 'none' : '1px solid rgba(255,255,255,0.8)',
+              background: raffleType === 'usdc' 
+                ? 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)' 
+                : 'rgba(255, 255, 255, 0.6)',
+              color: raffleType === 'usdc' ? '#fff' : '#717886',
+              fontWeight: 850,
+              fontSize: 11.5,
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              boxShadow: raffleType === 'usdc' 
+                ? '0 2px 8px rgba(0,82,255,0.15)' 
+                : 'none'
+            }}
+          >
+            🎰 USDC Raffle
+          </button>
+          <button
+            onClick={() => setRaffleType('hh')}
+            style={{
+              flex: 1,
+              padding: '8px 10px',
+              borderRadius: 12,
+              border: raffleType === 'hh' ? 'none' : '1px solid rgba(255,255,255,0.8)',
+              background: raffleType === 'hh' 
+                ? 'linear-gradient(135deg, #8B5CF6 0%, #D946EF 100%)' 
+                : 'rgba(255, 255, 255, 0.6)',
+              color: raffleType === 'hh' ? '#fff' : '#717886',
+              fontWeight: 850,
+              fontSize: 11.5,
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              boxShadow: raffleType === 'hh' 
+                ? '0 2px 8px rgba(139,92,246,0.15)' 
+                : 'none'
+            }}
+          >
+            💎 $HH Raffle
+          </button>
+        </div>
+      </div>
+
       {/* Hero card */}
       <div style={{
-        background: '#0000FF', borderRadius: 20, padding: '22px 20px 18px',
+        background: raffleType === 'hh' ? 'linear-gradient(135deg, #6D28D9 0%, #4F46E5 100%)' : '#0000FF',
+        borderRadius: 20, padding: '22px 20px 18px',
         marginBottom: 12, position: 'relative', overflow: 'hidden',
-        boxShadow: '0 8px 32px rgba(0,0,255,0.3)',
+        boxShadow: raffleType === 'hh' ? '0 8px 32px rgba(109,92,246,0.3)' : '0 8px 32px rgba(0,0,255,0.3)',
       }}>
         <div style={{
           position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.1,
@@ -153,7 +411,8 @@ export function RaffleSection({ address }) {
                 ROUND #{round?.id ?? '—'} · PRIZE POOL
               </div>
               <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 44, fontWeight: 900, lineHeight: 0.95, color: '#fff' }}>
-                {totalPot.toFixed(2)}<span style={{ fontSize: 18, marginLeft: 6, opacity: 0.75 }}>USDC</span>
+                {raffleType === 'hh' ? `${formatConcise(displayTotalPot)} ` : `${displayTotalPot.toFixed(2)} `}
+                <span style={{ fontSize: 18, marginLeft: 2, opacity: 0.75 }}>{raffleType === 'hh' ? '$HH' : 'USDC'}</span>
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
@@ -169,12 +428,12 @@ export function RaffleSection({ address }) {
               </div>
             </div>
           </div>
-          <PBar participants={participants} totalPot={totalPot} />
+          <PBar participants={displayParticipants} totalPot={displayTotalPot} />
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, flexWrap: 'wrap', gap: 4 }}>
             <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>
-              👥 {participants.length} players · {participants.reduce((s, p) => s + (p.tickets || 0), 0)} tickets
+              👥 {displayParticipants.length} players · {displayParticipants.reduce((s, p) => s + (p.tickets || 0), 0)} tickets
             </span>
-            {myEntry && <span style={{ fontSize: 11, color: '#fff', fontWeight: 800 }}>Your chance: {myChance}%</span>}
+            {displayMyEntry && <span style={{ fontSize: 11, color: '#fff', fontWeight: 800 }}>Your chance: {displayMyChance}%</span>}
           </div>
         </div>
       </div>
@@ -211,17 +470,20 @@ export function RaffleSection({ address }) {
       )}
 
       {/* My position */}
-      {myEntry && (
+      {displayMyEntry && (
         <div style={{
-          background: '#EEF0F3', border: '1px solid #DEE1E7', borderLeft: '4px solid #0000FF',
+          background: '#EEF0F3', border: '1px solid #DEE1E7', 
+          borderLeft: `4px solid ${raffleType === 'hh' ? '#8B5CF6' : '#0000FF'}`,
           borderRadius: 12, padding: '12px 16px', marginBottom: 12,
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
           <div>
             <div style={{ fontSize: 9, color: '#717886', fontWeight: 800, marginBottom: 2, letterSpacing: '0.3px' }}>YOUR POSITION</div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#0A0B0D' }}>{myTickets} tickets · {myAmount.toFixed(2)} USDC</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#0A0B0D' }}>
+              {displayMyTickets} tickets · {raffleType === 'hh' ? `${formatConcise(displayMyAmount)} $HH` : `${displayMyAmount.toFixed(2)} USDC`}
+            </div>
           </div>
-          <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 26, fontWeight: 900, color: '#0000FF' }}>{myChance}%</div>
+          <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 26, fontWeight: 900, color: raffleType === 'hh' ? '#8B5CF6' : '#0000FF' }}>{displayMyChance}%</div>
         </div>
       )}
 
@@ -237,16 +499,18 @@ export function RaffleSection({ address }) {
               onClick={() => onBetClick(a)}
               disabled={isClosed || isPending || isConfirming}
               style={{
-                background: '#0000FF', border: 'none', borderRadius: 10, padding: '10px 6px',
+                background: raffleType === 'hh' ? 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)' : '#0000FF', 
+                border: 'none', borderRadius: 10, padding: '10px 6px',
                 display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1,
-                boxShadow: '0 2px 8px rgba(0,0,255,0.25)', cursor: 'pointer',
+                boxShadow: raffleType === 'hh' ? '0 2px 8px rgba(139,92,246,0.25)' : '0 2px 8px rgba(0,0,255,0.25)', 
+                cursor: 'pointer',
                 opacity: isClosed ? 0.4 : 1, transition: 'all 0.15s',
               }}
             >
-              <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 16, fontWeight: 900, color: '#fff' }}>
-                {a} USDC
+              <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 14, fontWeight: 900, color: '#fff', whiteSpace: 'nowrap' }}>
+                {raffleType === 'hh' ? `${formatConcise(a / hhPrice)} $HH` : `${a} USDC`}
               </div>
-              <div style={{ fontSize: 8, color: '#3C8AFF', fontWeight: 700 }}>
+              <div style={{ fontSize: 8, color: raffleType === 'hh' ? '#D8B4FE' : '#3C8AFF', fontWeight: 700 }}>
                 {Math.round(a / TICKET_UNIT)} TICKET{Math.round(a / TICKET_UNIT) > 1 ? 'S' : ''}
               </div>
             </button>
@@ -255,16 +519,16 @@ export function RaffleSection({ address }) {
       </div>
 
       {/* Participants */}
-      {participants.length > 0 && (
+      {displayParticipants.length > 0 && (
         <div style={{ marginBottom: 12 }}>
           <div style={{ fontSize: 9, color: '#717886', fontWeight: 800, letterSpacing: 0.5, marginBottom: 8, textTransform: 'uppercase' }}>
             Participants
           </div>
-          <div style={{ background: '#EEF0F3', border: '1px solid #DEE1E7', borderTop: '3px solid #0000FF', borderRadius: 12, overflow: 'hidden' }}>
-            {participants.map((p, i) => (
+          <div style={{ background: '#EEF0F3', border: '1px solid #DEE1E7', borderTop: `3px solid ${raffleType === 'hh' ? '#8B5CF6' : '#0000FF'}`, borderRadius: 12, overflow: 'hidden' }}>
+            {displayParticipants.map((p, i) => (
               <div key={i} style={{
                 display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
-                background: '#fff', borderBottom: i < participants.length - 1 ? '1px solid #DEE1E7' : 'none',
+                background: '#fff', borderBottom: i < displayParticipants.length - 1 ? '1px solid #DEE1E7' : 'none',
                 borderLeft: `3px solid ${pColor(p.address)}`,
               }}>
                 <UserAvatar address={p.address} size={28} />
@@ -273,11 +537,11 @@ export function RaffleSection({ address }) {
                   <div style={{ fontSize: 9, color: '#717886', fontWeight: 600 }}>{p.tickets || Math.round(p.amount / TICKET_UNIT)} tickets</div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 14, fontWeight: 900, color: '#0000FF' }}>
-                    {p.amount.toFixed(2)} USDC
+                  <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 14, fontWeight: 900, color: raffleType === 'hh' ? '#8B5CF6' : '#0000FF' }}>
+                    {raffleType === 'hh' ? `${formatConcise(p.amount)} $HH` : `${p.amount.toFixed(2)} USDC`}
                   </div>
-                  <div style={{ fontSize: 9, color: '#3C8AFF', fontWeight: 700 }}>
-                    {totalPot > 0 ? (p.amount / totalPot * 100).toFixed(1) : 0}%
+                  <div style={{ fontSize: 9, color: raffleType === 'hh' ? '#8B5CF6' : '#3C8AFF', fontWeight: 700 }}>
+                    {displayTotalPot > 0 ? (p.amount / displayTotalPot * 100).toFixed(1) : 0}%
                   </div>
                 </div>
               </div>
@@ -289,24 +553,26 @@ export function RaffleSection({ address }) {
       {/* Last winner */}
       {lastWinner && (
         <div style={{
-          background: '#EEF0F3', border: '1px solid #DEE1E7', borderTop: '3px solid #3C8AFF',
+          background: '#EEF0F3', border: '1px solid #DEE1E7', borderTop: `3px solid ${raffleType === 'hh' ? '#8B5CF6' : '#3C8AFF'}`,
           borderRadius: 12, padding: '14px 16px', marginBottom: 12,
           display: 'flex', alignItems: 'center', gap: 12,
         }}>
           <div style={{
-            width: 40, height: 40, borderRadius: '50%', background: '#0000FF',
+            width: 40, height: 40, borderRadius: '50%', background: raffleType === 'hh' ? '#8B5CF6' : '#0000FF',
             display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0,
           }}>🏆</div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 9, color: '#3C8AFF', fontWeight: 800, marginBottom: 2, letterSpacing: '0.3px' }}>LAST WINNER</div>
+            <div style={{ fontSize: 9, color: raffleType === 'hh' ? '#8B5CF6' : '#3C8AFF', fontWeight: 800, marginBottom: 2, letterSpacing: '0.3px' }}>LAST WINNER</div>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#0A0B0D' }}>{lastWinner.name}</div>
-            <div style={{ fontSize: 9, color: '#3C8AFF', fontWeight: 700 }}>Win chance: {lastWinner.chance}%</div>
+            <div style={{ fontSize: 9, color: raffleType === 'hh' ? '#8B5CF6' : '#3C8AFF', fontWeight: 700 }}>Win chance: {lastWinner.chance}%</div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 18, fontWeight: 900, color: '#0000FF' }}>
-              +{lastWinner.amount}
+            <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 18, fontWeight: 900, color: raffleType === 'hh' ? '#8B5CF6' : '#0000FF' }}>
+              +{raffleType === 'hh' ? `${formatConcise(parseFloat(lastWinner.amount) / hhPrice)} $HH` : `${lastWinner.amount} USDC`}
             </div>
-            <div style={{ fontSize: 9, color: '#717886', fontWeight: 600 }}>of {lastWinner.pot} USDC</div>
+            <div style={{ fontSize: 9, color: '#717886', fontWeight: 600 }}>
+              of {raffleType === 'hh' ? `${formatConcise(parseFloat(lastWinner.pot) / hhPrice)} $HH` : `${lastWinner.pot} USDC`}
+            </div>
           </div>
         </div>
       )}
@@ -322,7 +588,7 @@ export function RaffleSection({ address }) {
           ['How is the winner selected?',       'Secure random selection, lucky-based. Anyone with 1+ ticket can win. More tickets = more chances.'],
           ['How many points do I get for playing?', (
             <>
-              You get <strong style={{ color: '#10B981' }}>Activity Points</strong> for every bet. Winner receives <strong style={{ color: '#0000FF' }}>1 HP</strong>.
+              You earn <strong style={{ color: '#10B981' }}>HP</strong> for participating in the raffle. The winner of the round receives the main prize pool.
             </>
           )],
           ['What happens if I’m the only player in a round?', (
@@ -330,7 +596,7 @@ export function RaffleSection({ address }) {
               You will receive a 100% refund and <strong style={{ color: '#0000FF' }}>1 HP</strong> as the winner.
             </>
           )],
-          ['How much does the winner receive?', 'Winner takes 85% of the total pot. The remaining 15% goes to the foundation for future rewards.'],
+          ['How much does the winner receive?', `Winner takes 85% of the total pot. The remaining 15% goes to the foundation for future rewards.`],
           ['When are winnings paid?',           'Automatically after the draw, directly to the winner\'s wallet.'],
           ['Can I deposit multiple times?',     'Yes! Multiple deposits per round are allowed and all contribute to your ticket count.'],
         ].map(([q, a], i, arr) => (
@@ -344,9 +610,17 @@ export function RaffleSection({ address }) {
       {/* TxModal */}
       {txModal && (
         <TxModal
-          title="Place Raffle Bet"
-          subtitle={`+${Math.round(txModal.amount / TICKET_UNIT)} ${Math.round(txModal.amount / TICKET_UNIT) === 1 ? 'ticket' : 'tickets'} · + Activity Points`}
-          amount={txModal.amount}
+          title={raffleType === 'hh' ? (hhAllowance < txModal.amount / hhPrice ? "Approve $HH" : "Place Raffle Bet") : "Place Raffle Bet"}
+          subtitle={
+            raffleType === 'hh'
+              ? (hhAllowance < txModal.amount / hhPrice 
+                  ? "Approve unlimited $HH spending to buy tickets" 
+                  : `+${Math.round(txModal.amount / TICKET_UNIT)} ${Math.round(txModal.amount / TICKET_UNIT) === 1 ? 'ticket' : 'tickets'} · Simulated Entry`
+                )
+              : `+${Math.round(txModal.amount / TICKET_UNIT)} ${Math.round(txModal.amount / TICKET_UNIT) === 1 ? 'ticket' : 'tickets'} · + HP Points`
+          }
+          amount={raffleType === 'hh' ? (hhAllowance < txModal.amount / hhPrice ? "0.00" : Math.round(txModal.amount / hhPrice).toString()) : txModal.amount.toString()}
+          currency={raffleType === 'hh' ? (hhAllowance < txModal.amount / hhPrice ? "Approve" : "$HH") : "USDC"}
           isPending={isPending}
           isConfirming={isConfirming}
           isSuccess={isSuccess}
