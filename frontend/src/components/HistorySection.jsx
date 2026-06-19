@@ -33,6 +33,24 @@ const TYPE_CONFIG = {
     badgeText: '#9747FF',
     value: '#0A0B0D'
   },
+  hold: {
+    title: '#0A0B0D',
+    badgeBg: 'rgba(217, 119, 6, 0.1)',
+    badgeText: '#D97706',
+    value: '#0A0B0D'
+  },
+  stake: {
+    title: '#0A0B0D',
+    badgeBg: '#F5ECFF',
+    badgeText: '#9747FF',
+    value: '#0A0B0D'
+  },
+  raid: {
+    title: '#0A0B0D',
+    badgeBg: '#FEE2E2',
+    badgeText: '#DC2626',
+    value: '#0A0B0D'
+  },
   default: {
     title: '#0A0B0D',
     badgeBg: '#F1F3F7',
@@ -119,6 +137,10 @@ export function HistorySection({ address }) {
           let displayAction = record.action
           if (displayAction === 'Daily Claim') {
             displayAction = 'Daily'
+          } else if (displayAction === 'Hold Reward') {
+            displayAction = 'Holding'
+          } else if (displayAction === 'Stake Reward') {
+            displayAction = 'Staking'
           }
           
           return (

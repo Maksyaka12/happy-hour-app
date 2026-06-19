@@ -287,10 +287,26 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
         }
       }
 
-      if (txModal === 'bundle') {
-        handleOpenAllChests(boxWrite.data)
-      } else if (txModal === 'single' && clickedBoxIndex !== null) {
-        handleSelectChest(clickedBoxIndex, boxWrite.data)
+      const txHash = boxWrite.data
+      const currentTxModal = txModal
+      const currentClickedBoxIndex = clickedBoxIndex
+
+      // Close the modal immediately so it doesn't get stuck or revert to confirm state
+      setTxModal(false)
+
+      if (currentTxModal === 'bundle') {
+        handleOpenAllChests(txHash)
+      } else if (currentTxModal === 'single') {
+        if (currentClickedBoxIndex !== null) {
+          handleSelectChest(currentClickedBoxIndex, txHash)
+        } else {
+          // Clicked bottom button: activate board so they can pick any chest
+          setActiveTxHash(txHash)
+          setHasActiveChoice(true)
+          setChests(prev => prev.map(c => c.status === 'locked' ? { ...c, status: 'active' } : c))
+          localStorage.setItem('happy_boxes_pending', txHash)
+          boxWrite.reset()
+        }
       }
     }
   }, [boxWrite.isSuccess, boxWrite.data, txModal, clickedBoxIndex, paymentCurrency, currentAllowance, hhPrice])
@@ -1045,7 +1061,7 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
                         }} />
 
                         {/* Multiplier Badge */}
-                        {chest.mult && parseFloat(chest.mult) > 0 && (
+                        {chest.mult && parseFloat(chest.mult) > 1.0 && (
                           <div style={{
                             position: 'absolute',
                             top: 6,
