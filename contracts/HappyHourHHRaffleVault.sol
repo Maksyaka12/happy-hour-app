@@ -38,16 +38,10 @@ contract HappyHourHHRaffleVault {
         _;
     }
 
-    /**
-     * @param _hhToken Address of the $HH token (ERC20)
-     * @param _backendOperator Address of the backend bot operator
-     */
-    constructor(address _hhToken, address _backendOperator) {
-        require(_hhToken != address(0), "Invalid token address");
-        require(_backendOperator != address(0), "Invalid operator address");
+    constructor() {
         owner = msg.sender;
-        operator = _backendOperator;
-        hhToken = IERC20(_hhToken);
+        operator = 0x1aA4aD048ADe8DC9e6b0eaA5F148f308dAB2E56f;
+        hhToken = IERC20(0x8235EdF32a1e10Bd1867ad622915AB613664cbA3);
     }
 
     /**

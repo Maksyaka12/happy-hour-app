@@ -42,19 +42,11 @@ contract HappyHourHHManager {
         _;
     }
 
-    /**
-     * @param _hhToken Address of the $HH token (ERC20)
-     * @param _backendOperator Address of the backend bot operator
-     * @param _coldWallet Address of the cold wallet to sweep funds to
-     */
-    constructor(address _hhToken, address _backendOperator, address _coldWallet) {
-        require(_hhToken != address(0), "Invalid token address");
-        require(_backendOperator != address(0), "Invalid operator address");
-        require(_coldWallet != address(0), "Invalid cold wallet address");
+    constructor() {
         owner = msg.sender;
-        operator = _backendOperator;
-        coldWallet = _coldWallet;
-        hhToken = IERC20(_hhToken);
+        operator = 0x1aA4aD048ADe8DC9e6b0eaA5F148f308dAB2E56f;
+        coldWallet = 0xf76365c4157eE3f08fBAb77E9d57B965892D137d;
+        hhToken = IERC20(0x8235EdF32a1e10Bd1867ad622915AB613664cbA3);
     }
 
     /**
