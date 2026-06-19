@@ -387,7 +387,7 @@ export function EarnSection({ setTab, address: propAddress }) {
             onMouseEnter={e => { if (!checkedToday) e.currentTarget.style.background = 'rgba(255,255,255,0.2)' }}
             onMouseLeave={e => { if (!checkedToday) e.currentTarget.style.background = 'rgba(255,255,255,0.12)' }}
           >
-            {checkedToday ? 'Checked' : 'Claim'}
+            {checkedToday ? 'Resets at 00:00 UTC' : 'Claim'}
           </button>
         </div>
 
@@ -428,67 +428,87 @@ export function EarnSection({ setTab, address: propAddress }) {
             </span>
           </div>
 
-          <div style={{ position: 'relative', zIndex: 1, display: 'flex', gap: 6 }}>
-            {/* Boost USDC Button */}
+          {boostedToday ? (
             <button
-              onClick={() => {
-                setPayWithHh(false)
-                setTxModal('boost')
-              }}
-              disabled={boostedToday}
-              style={{
-                flex: 1,
-                height: 30,
-                borderRadius: 10,
-                border: boostedToday ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.25)',
-                background: boostedToday ? 'rgba(255,255,255,0.05)' : 'rgba(255, 255, 255, 0.12)',
-                color: boostedToday ? '#94A3B8' : '#FFFFFF',
-                fontSize: 10.5,
-                fontWeight: 800,
-                cursor: boostedToday ? 'not-allowed' : 'pointer',
-                outline: 'none',
-                transition: 'background 0.2s',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 3
-              }}
-              onMouseEnter={e => { if (!boostedToday) e.currentTarget.style.background = 'rgba(255,255,255,0.2)' }}
-              onMouseLeave={e => { if (!boostedToday) e.currentTarget.style.background = 'rgba(255,255,255,0.12)' }}
-            >
-              <span>{BOOST_AMOUNT.toFixed(2)}</span>
-              <img src="/usdc-logo.png" alt="USDC" style={{ width: 11, height: 11, borderRadius: '50%' }} />
-            </button>
-
-            {/* Boost $HH Button */}
-            <button
-              onClick={() => {
-                setPayWithHh(true)
-                setTxModal('boost')
-              }}
-              disabled={boostedToday}
+              disabled
               style={{
                 position: 'relative',
-                flex: 1,
-                height: 30,
+                zIndex: 1,
+                width: '100%',
+                padding: '6px 12px',
                 borderRadius: 10,
-                border: boostedToday ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.25)',
-                background: boostedToday ? 'rgba(255,255,255,0.05)' : 'rgba(255, 255, 255, 0.12)',
-                color: boostedToday ? '#94A3B8' : '#FFFFFF',
-                fontSize: 10.5,
+                border: '1px solid rgba(255,255,255,0.1)',
+                background: 'rgba(255,255,255,0.05)',
+                color: '#94A3B8',
+                fontSize: 11.5,
                 fontWeight: 800,
-                cursor: boostedToday ? 'not-allowed' : 'pointer',
+                cursor: 'not-allowed',
                 outline: 'none',
-                transition: 'background 0.2s',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 3
+                textAlign: 'center',
+                height: 30
               }}
-              onMouseEnter={e => { if (!boostedToday) e.currentTarget.style.background = 'rgba(255,255,255,0.2)' }}
-              onMouseLeave={e => { if (!boostedToday) e.currentTarget.style.background = 'rgba(255,255,255,0.12)' }}
             >
-              {!boostedToday && (
+              Resets at 00:00 UTC
+            </button>
+          ) : (
+            <div style={{ position: 'relative', zIndex: 1, display: 'flex', gap: 6, width: '100%' }}>
+              {/* Boost USDC Button */}
+              <button
+                onClick={() => {
+                  setPayWithHh(false)
+                  setTxModal('boost')
+                }}
+                style={{
+                  flex: 1,
+                  height: 30,
+                  borderRadius: 10,
+                  border: '1px solid rgba(255,255,255,0.25)',
+                  background: 'rgba(255, 255, 255, 0.12)',
+                  color: '#FFFFFF',
+                  fontSize: 10.5,
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  outline: 'none',
+                  transition: 'background 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 3
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
+              >
+                <span>{BOOST_AMOUNT.toFixed(2)}</span>
+                <img src="/usdc-logo.png" alt="USDC" style={{ width: 11, height: 11, borderRadius: '50%' }} />
+              </button>
+
+              {/* Boost $HH Button */}
+              <button
+                onClick={() => {
+                  setPayWithHh(true)
+                  setTxModal('boost')
+                }}
+                style={{
+                  position: 'relative',
+                  flex: 1,
+                  height: 30,
+                  borderRadius: 10,
+                  border: '1px solid rgba(255,255,255,0.25)',
+                  background: 'rgba(255, 255, 255, 0.12)',
+                  color: '#FFFFFF',
+                  fontSize: 10.5,
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  outline: 'none',
+                  transition: 'background 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 3
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
+              >
                 <div style={{
                   position: 'absolute',
                   top: -8,
@@ -507,11 +527,11 @@ export function EarnSection({ setTab, address: propAddress }) {
                 }}>
                   -50%
                 </div>
-              )}
-              <span>{formatConcise(0.10 / hhPrice)}</span>
-              <img src="/logo.jfif" alt="$HH" style={{ width: 11, height: 11, borderRadius: '50%', objectFit: 'cover' }} />
-            </button>
-          </div>
+                <span>{formatConcise(0.10 / hhPrice)}</span>
+                <img src="/logo.jfif" alt="$HH" style={{ width: 11, height: 11, borderRadius: '50%', objectFit: 'cover' }} />
+              </button>
+            </div>
+          )}
         </div>
       </div>
       
@@ -553,12 +573,12 @@ export function EarnSection({ setTab, address: propAddress }) {
             backgroundImage: 'url(/banner.jpg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            filter: 'hue-rotate(330deg) brightness(0.2) contrast(1.2) grayscale(0.5)',
+            filter: 'hue-rotate(330deg) brightness(0.4) contrast(1.15)',
             zIndex: 0,
             pointerEvents: 'none'
           }} />
           
-          <div style={{ position: 'relative', zIndex: 1, opacity: 0.4 }}>
+          <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{ fontSize: 14.5, fontWeight: 800, color: '#FFFFFF' }}>Happy Raids</div>
             <div style={{ fontSize: 10, color: 'rgba(255, 255, 255, 0.7)', marginTop: 2, fontWeight: 600 }}>steal HP</div>
           </div>
@@ -569,13 +589,13 @@ export function EarnSection({ setTab, address: propAddress }) {
             zIndex: 1,
             width: '100%',
             height: 30,
-            background: 'rgba(255, 255, 255, 0.05)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            background: 'rgba(255, 255, 255, 0.12)',
+            border: '1px solid rgba(255, 255, 255, 0.25)',
             borderRadius: 10,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: 'rgba(255, 255, 255, 0.3)',
+            color: '#FFFFFF',
             fontSize: 12.5,
             fontWeight: 800
           }}
@@ -587,21 +607,18 @@ export function EarnSection({ setTab, address: propAddress }) {
           <div style={{
             position: 'absolute',
             inset: 0,
-            background: 'rgba(20, 20, 20, 0.65)',
-            backdropFilter: 'blur(3px)',
+            background: 'rgba(20, 20, 20, 0.35)',
+            backdropFilter: 'blur(1px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             color: '#FFFFFF',
             fontSize: 13,
-            fontWeight: 900,
-            letterSpacing: '1px',
+            fontWeight: 800,
             zIndex: 2,
-            textTransform: 'uppercase',
-            border: '1px solid rgba(255,255,255,0.05)',
             borderRadius: 20
           }}>
-            🔒 Coming Soon
+            Coming Soon
           </div>
         </div>
 
