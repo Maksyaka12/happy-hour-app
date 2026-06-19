@@ -575,141 +575,25 @@ export default function App() {
             */
           )}
         </div>
-
-        {/* Footer Section */}
         <footer style={{
-          background: 'linear-gradient(135deg, rgba(241, 243, 245, 0.85) 0%, rgba(230, 233, 237, 0.65) 100%)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(0, 82, 255, 0.15)',
-          borderRadius: 24,
-          margin: '40px 12px 140px',
-          padding: '28px 24px',
+          width: '100%',
+          background: '#1D1F23', // Moderately dark grey tone
+          borderTop: '1px solid rgba(255, 255, 255, 0.12)',
           textAlign: 'center',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 20,
-          boxShadow: '0 12px 32px rgba(0, 82, 255, 0.06)'
+          gap: 16,
+          padding: '32px 16px 140px', // Bottom padding to clear BottomNav
+          boxSizing: 'border-box',
+          color: '#FFFFFF'
         }}>
           {/* Logo / Branding Row */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
             <img src="/logo.jfif" alt="$HH Logo" style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover' }} />
-            <span style={{ fontSize: 12, fontWeight: 800, color: '#0A0B0D' }}>
-              $HH <span style={{ color: '#717886', fontWeight: 650 }}>powered by</span> Bankr Community
+            <span style={{ fontSize: 12, fontWeight: 800, color: '#FFFFFF' }}>
+              $HH <span style={{ color: 'rgba(255, 255, 255, 0.6)', fontWeight: 650 }}>powered by</span> Bankr Community
             </span>
-          </div>
-
-          {/* Links Grid */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '16px 20px', width: '100%', margin: '4px 0' }}>
-            {/* Official TG */}
-            <a 
-              href="https://t.me/happyhourapp" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 850, color: '#717886', textDecoration: 'none', transition: 'all 0.2s' }}
-              onMouseEnter={e => { e.currentTarget.style.color = '#0088cc'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
-              onMouseLeave={e => { e.currentTarget.style.color = '#717886'; e.currentTarget.style.transform = 'none'; }}
-            >
-              <div style={{
-                width: 20, height: 20, borderRadius: '50%', background: 'rgba(0, 136, 204, 0.08)',
-                border: '1px solid rgba(0, 136, 204, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center'
-              }}>
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#0088cc' }}>
-                  <path d="M21.9 2.19a1 1 0 0 0-.99-.08l-19 8a1 1 0 0 0-.1 1.82l4.9 2.2 3.1 7.1a1 1 0 0 0 1.77.16l2.9-3.8 4.7 3.3a1 1 0 0 0 1.51-.55l4-17a1 1 0 0 0-.39-.85zM8.62 13.12l8.28-5.28-6.4 6.72-.4 2.88z"/>
-                </svg>
-              </div>
-              <span>Official TG</span>
-            </a>
-
-            {/* Official X */}
-            <a 
-              href="https://x.com/happyhour_base" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 850, color: '#717886', textDecoration: 'none', transition: 'all 0.2s' }}
-              onMouseEnter={e => { e.currentTarget.style.color = '#0A0B0D'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
-              onMouseLeave={e => { e.currentTarget.style.color = '#717886'; e.currentTarget.style.transform = 'none'; }}
-            >
-              <div style={{
-                width: 20, height: 20, borderRadius: '50%', background: 'rgba(0, 0, 0, 0.05)',
-                border: '1px solid var(--border2)', display: 'flex', alignItems: 'center', justifyContent: 'center'
-              }}>
-                <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#0A0B0D' }}>
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                </svg>
-              </div>
-              <span>Official X</span>
-            </a>
-
-            {/* Devs X */}
-            <a 
-              href="https://x.com/mksvibe" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 850, color: '#717886', textDecoration: 'none', transition: 'all 0.2s' }}
-              onMouseEnter={e => { e.currentTarget.style.color = '#0A0B0D'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
-              onMouseLeave={e => { e.currentTarget.style.color = '#717886'; e.currentTarget.style.transform = 'none'; }}
-            >
-              <div style={{
-                width: 20, height: 20, borderRadius: '50%', background: 'rgba(0, 0, 0, 0.05)',
-                border: '1px solid var(--border2)', display: 'flex', alignItems: 'center', justifyContent: 'center'
-              }}>
-                <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#0A0B0D' }}>
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                </svg>
-              </div>
-              <span>Devs X</span>
-            </a>
-
-            {/* Dexscreener */}
-            <a 
-              href="https://dexscreener.com/base/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 850, color: '#717886', textDecoration: 'none', transition: 'all 0.2s' }}
-              onMouseEnter={e => { e.currentTarget.style.opacity = '0.8'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
-              onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'none'; }}
-            >
-              <div style={{
-                width: 20, height: 20, borderRadius: '50%', overflow: 'hidden', border: '1px solid var(--border2)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center'
-              }}>
-                <img src="/dexscreener.jpg" alt="DexScreener" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </div>
-              <span>Dexscreener</span>
-            </a>
-
-            {/* Coingecko */}
-            <a 
-              href="https://www.geckoterminal.com/uk/base/pools/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 850, color: '#717886', textDecoration: 'none', transition: 'all 0.2s' }}
-              onMouseEnter={e => { e.currentTarget.style.opacity = '0.8'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
-              onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'none'; }}
-            >
-              <div style={{
-                width: 20, height: 20, borderRadius: '50%', overflow: 'hidden', border: '1px solid var(--border2)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center'
-              }}>
-                <img src="/geckoterminal.jpg" alt="GeckoTerminal" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </div>
-              <span>Coingecko</span>
-            </a>
-
-            {/* Docs (Soon) */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 850, color: '#717886' }}>
-              <div style={{
-                width: 20, height: 20, borderRadius: '50%', background: '#EEF0F3', border: '1px solid #DEE1E7',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10
-              }}>
-                📖
-              </div>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, cursor: 'not-allowed' }}>
-                Docs <span style={{ fontSize: 7.5, background: '#EEF0F3', border: '1px solid #DEE1E7', borderRadius: 4, padding: '1px 3.5px', fontWeight: 900, textTransform: 'uppercase' }}>Soon</span>
-              </span>
-            </div>
           </div>
 
           {/* CA / Token Contract block */}
@@ -717,18 +601,17 @@ export default function App() {
             display: 'flex',
             alignItems: 'center',
             gap: 8,
-            background: 'rgba(0, 82, 255, 0.05)',
-            border: '1px solid rgba(0, 82, 255, 0.15)',
-            borderRadius: 14,
+            background: 'rgba(255, 255, 255, 0.05)',
+            border: '1px solid rgba(255, 255, 255, 0.12)',
+            borderRadius: 12,
             padding: '8px 16px',
             width: '100%',
-            maxWidth: 320,
+            maxWidth: 300,
             justifyContent: 'space-between',
-            boxSizing: 'border-box',
-            boxShadow: '0 2px 8px rgba(0, 82, 255, 0.02)'
+            boxSizing: 'border-box'
           }}>
-            <span style={{ fontSize: 10, fontWeight: 900, color: '#0052FF', letterSpacing: '0.5px' }}>$HH CA:</span>
-            <span style={{ fontSize: 11.5, fontWeight: 800, fontFamily: 'monospace', color: '#0A0B0D' }}>
+            <span style={{ fontSize: 10, fontWeight: 900, color: '#3B82F6', letterSpacing: '0.5px' }}>$HH CA:</span>
+            <span style={{ fontSize: 11.5, fontWeight: 800, fontFamily: 'monospace', color: '#FFFFFF' }}>
               {caCopied ? 'Copied! ✅' : '0x8235...cBA3'}
             </span>
             <button 
@@ -746,7 +629,7 @@ export default function App() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#0052FF',
+                color: '#3B82F6',
                 transition: 'all 0.2s'
               }}
               onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.15)'}
@@ -759,8 +642,120 @@ export default function App() {
             </button>
           </div>
 
+          {/* Links Grid */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '16px 20px', width: '100%', maxWidth: 500, margin: '8px 0' }}>
+            {/* Official TG */}
+            <a 
+              href="https://t.me/happyhourapp" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
+              onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
+              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
+            >
+              <div style={{
+                width: 20, height: 20, borderRadius: '50%', background: 'rgba(0, 136, 204, 0.15)',
+                border: '1px solid rgba(0, 136, 204, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#3B82F6' }}>
+                  <path d="M21.9 2.19a1 1 0 0 0-.99-.08l-19 8a1 1 0 0 0-.1 1.82l4.9 2.2 3.1 7.1a1 1 0 0 0 1.77.16l2.9-3.8 4.7 3.3a1 1 0 0 0 1.51-.55l4-17a1 1 0 0 0-.39-.85zM8.62 13.12l8.28-5.28-6.4 6.72-.4 2.88z"/>
+                </svg>
+              </div>
+              <span>Official TG</span>
+            </a>
+
+            {/* Official X */}
+            <a 
+              href="https://x.com/happyhour_base" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
+              onMouseEnter={e => { e.currentTarget.style.color = '#FFFFFF'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
+              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
+            >
+              <div style={{
+                width: 20, height: 20, borderRadius: '50%', background: 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(255, 255, 255, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}>
+                <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#FFFFFF' }}>
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+              </div>
+              <span>Official X</span>
+            </a>
+
+            {/* Devs X */}
+            <a 
+              href="https://x.com/mksvibe" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
+              onMouseEnter={e => { e.currentTarget.style.color = '#FFFFFF'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
+              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
+            >
+              <div style={{
+                width: 20, height: 20, borderRadius: '50%', background: 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(255, 255, 255, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}>
+                <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#FFFFFF' }}>
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+              </div>
+              <span>Devs X</span>
+            </a>
+
+            {/* Dexscreener */}
+            <a 
+              href="https://dexscreener.com/base/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
+              onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
+              onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'none'; }}
+            >
+              <div style={{
+                width: 20, height: 20, borderRadius: '50%', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.15)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}>
+                <img src="/dexscreener.jpg" alt="DexScreener" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+              <span>Dexscreener</span>
+            </a>
+
+            {/* Coingecko */}
+            <a 
+              href="https://www.geckoterminal.com/uk/base/pools/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
+              onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
+              onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'none'; }}
+            >
+              <div style={{
+                width: 20, height: 20, borderRadius: '50%', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.15)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}>
+                <img src="/geckoterminal.jpg" alt="GeckoTerminal" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+              <span>Coingecko</span>
+            </a>
+
+            {/* Docs (Soon) */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.5)' }}>
+              <div style={{
+                width: 20, height: 20, borderRadius: '50%', background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.15)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10
+              }}>
+                📖
+              </div>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, cursor: 'not-allowed' }}>
+                Docs <span style={{ fontSize: 7.5, background: 'rgba(255, 255, 255, 0.12)', border: '1px solid rgba(255, 255, 255, 0.2)', borderRadius: 4, padding: '1px 3.5px', fontWeight: 900, textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.6)' }}>Soon</span>
+              </span>
+            </div>
+          </div>
+
           {/* Copyright */}
-          <div style={{ fontSize: 9.5, color: '#717886', fontWeight: 650 }}>
+          <div style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.5)', fontWeight: 650 }}>
             &copy; {new Date().getFullYear()} Happy Hour. All rights reserved.
           </div>
         </footer>
