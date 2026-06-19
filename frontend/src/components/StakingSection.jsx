@@ -945,8 +945,6 @@ export function StakingSection({ setTab }) {
                   })}
                 </div>
               </div>
-                </div>
-              </div>
             )}
           </div>
         )}
