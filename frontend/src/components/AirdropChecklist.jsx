@@ -143,90 +143,172 @@ export function AirdropChecklist() {
 
   return (
     <div style={{ padding: '0 16px 120px' }}>
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes floatingLogo {
+          0% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-8px) rotate(3deg); }
+          100% { transform: translateY(0px) rotate(0deg); }
+        }
+      ` }} />
+
       <div style={{
-        background: '#FFFFFF',
-        border: '1px solid #DEE1E7',
-        borderRadius: 24,
-        padding: 24,
-        boxShadow: '0 4px 16px rgba(10,11,13,0.04)',
+        borderRadius: 20,
+        padding: '20px 18px',
+        marginBottom: 16,
+        boxShadow: '0 8px 32px rgba(59, 130, 246, 0.15)',
+        position: 'relative',
+        overflow: 'hidden',
+        border: '1px solid rgba(59, 130, 246, 0.25)',
+        background: '#020B24',
         animation: 'fadeIn 0.3s ease-out'
       }}>
-        <div style={{ textAlign: 'center', marginBottom: 24 }}>
-          <h3 style={{ fontSize: 18, fontWeight: 900, color: '#0A0B0D' }}>🪂 Season 2 Airdrop Eligibility</h3>
-          <p style={{ fontSize: 12, color: '#717886', marginTop: 4 }}>Complete all tasks below to guarantee your token allocation</p>
-          
-          {/* Eligibility progress bar */}
-          <div style={{ marginTop: 20 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, fontWeight: 850, color: '#32353D', marginBottom: 6 }}>
-              <span>Overall Progress</span>
-              <span>{checklistPercentage}% Completed</span>
-            </div>
-            <div style={{ height: 10, background: '#EEF0F3', borderRadius: 6, overflow: 'hidden' }}>
-              <div style={{
-                height: '100%', width: `${checklistPercentage}%`,
-                background: 'linear-gradient(90deg, #3B82F6 0%, #10B981 100%)',
-                borderRadius: 6
-              }} />
+        {/* Grayscaled background image overlay */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'url(/banner.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          filter: 'grayscale(100%) brightness(0.22) contrast(1.2)',
+          zIndex: 0,
+          pointerEvents: 'none'
+        }} />
+
+        {/* Blue/Aqua gradient overlay */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(135deg, rgba(0, 82, 255, 0.25) 0%, rgba(59, 130, 246, 0.15) 100%)',
+          zIndex: 1,
+          pointerEvents: 'none'
+        }} />
+
+        {/* Floating $HH Logos (Tokens) & Parachutes on Background */}
+        {[
+          { type: 'logo', top: '5%', left: '8%', size: 36, opacity: 0.35, r: '-12deg', dur: 4.2 },
+          { type: 'logo', bottom: '12%', right: '8%', size: 42, opacity: 0.4, r: '15deg', dur: 4.8 },
+          { type: 'logo', top: '40%', right: '15%', size: 28, opacity: 0.3, r: '-8deg', dur: 5.5 },
+          { type: 'parachute', top: '15%', right: '6%', size: 32, opacity: 0.3, r: '8deg', dur: 4.6 },
+          { type: 'parachute', bottom: '18%', left: '10%', size: 26, opacity: 0.35, r: '-15deg', dur: 5.0 },
+          { type: 'parachute', top: '50%', left: '20%', size: 22, opacity: 0.25, r: '10deg', dur: 6.2 }
+        ].map((s, i) => (
+          <div key={i} style={{
+            position: 'absolute',
+            top: s.top,
+            right: s.right,
+            left: s.left,
+            bottom: s.bottom,
+            zIndex: 1,
+            pointerEvents: 'none',
+            userSelect: 'none',
+            animation: `floatingLogo ${s.dur}s ease-in-out infinite`,
+          }}>
+            {s.type === 'logo' ? (
+              <img
+                src="/logo.jfif"
+                alt=""
+                style={{
+                  width: s.size,
+                  height: s.size,
+                  borderRadius: '50%',
+                  opacity: s.opacity,
+                  transform: `rotate(${s.r})`,
+                  objectFit: 'cover'
+                }}
+              />
+            ) : (
+              <span style={{
+                fontSize: s.size,
+                opacity: s.opacity,
+                display: 'inline-block',
+                transform: `rotate(${s.r})`
+              }}>
+                🪂
+              </span>
+            )}
+          </div>
+        ))}
+
+        {/* Content Container */}
+        <div style={{ position: 'relative', zIndex: 2 }}>
+          <div style={{ textAlign: 'center', marginBottom: 24 }}>
+            <h3 style={{ fontSize: 18, fontWeight: 900, color: '#FFFFFF' }}>🪂 Season 2 Airdrop Eligibility</h3>
+            <p style={{ fontSize: 12, color: 'rgba(255, 255, 255, 0.7)', marginTop: 4 }}>Complete all tasks below to guarantee your token allocation</p>
+            
+            {/* Eligibility progress bar */}
+            <div style={{ marginTop: 20 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, fontWeight: 850, color: '#FFFFFF', marginBottom: 6 }}>
+                <span>Overall Progress</span>
+                <span style={{ color: '#FBBF24' }}>{checklistPercentage}% Completed</span>
+              </div>
+              <div style={{ height: 10, background: 'rgba(255, 255, 255, 0.1)', borderRadius: 6, overflow: 'hidden' }}>
+                <div style={{
+                  height: '100%', width: `${checklistPercentage}%`,
+                  background: 'linear-gradient(90deg, #3B82F6 0%, #10B981 100%)',
+                  borderRadius: 6
+                }} />
+              </div>
             </div>
           </div>
-        </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {checklistItems.map((item) => {
-            const isCompleted = item.progress >= item.target
-            return (
-              <div key={item.id} style={{
-                display: 'flex', gap: 14, padding: 16, borderRadius: 16,
-                border: isCompleted ? '1.5px solid rgba(16, 185, 129, 0.3)' : '1px solid #DEE1E7',
-                background: isCompleted ? '#F0FDF4' : 'transparent',
-                transition: 'all 0.2s'
-              }}>
-                <span style={{ fontSize: 24, alignSelf: 'center' }}>{item.icon}</span>
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h4 style={{ fontSize: 13, fontWeight: 850, color: '#0A0B0D' }}>{item.title}</h4>
-                    <span style={{
-                      fontSize: 10, fontWeight: 900,
-                      color: isCompleted ? '#059669' : '#717886',
-                      background: isCompleted ? '#D1FAE5' : '#EEF0F3',
-                      padding: '2px 8px', borderRadius: 10
-                    }}>
-                      {item.isUsd ? '$' : ''}{formatNumber(item.progress, item.isUsd ? 2 : 0)} / {item.isUsd ? '$' : ''}{item.target}
-                    </span>
-                  </div>
-                  <p style={{ fontSize: 10.5, color: '#717886', marginTop: 2, lineHeight: 1.4 }}>{item.desc}</p>
-                  
-                  {/* Tiny item progress bar */}
-                  <div style={{ height: 4, background: '#EEF0F3', borderRadius: 2, marginTop: 8, overflow: 'hidden' }}>
-                    <div style={{
-                      height: '100%', width: `${Math.min(100, (item.progress / item.target) * 100)}%`,
-                      background: isCompleted ? '#10B981' : '#3B82F6', borderRadius: 2
-                    }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {checklistItems.map((item) => {
+              const isCompleted = item.progress >= item.target
+              return (
+                <div key={item.id} style={{
+                  display: 'flex', gap: 14, padding: 16, borderRadius: 14,
+                  border: isCompleted ? '1px solid rgba(16, 185, 129, 0.25)' : '1px solid rgba(255, 255, 255, 0.12)',
+                  background: isCompleted ? 'rgba(16, 185, 129, 0.08)' : 'rgba(255, 255, 255, 0.06)',
+                  backdropFilter: 'blur(8px)',
+                  transition: 'all 0.2s'
+                }}>
+                  <span style={{ fontSize: 24, alignSelf: 'center' }}>{item.icon}</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <h4 style={{ fontSize: 13, fontWeight: 850, color: '#FFFFFF' }}>{item.title}</h4>
+                      <span style={{
+                        fontSize: 10, fontWeight: 900,
+                        color: isCompleted ? '#10B981' : 'rgba(255, 255, 255, 0.7)',
+                        background: isCompleted ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.1)',
+                        padding: '2px 8px', borderRadius: 10
+                      }}>
+                        {item.isUsd ? '$' : ''}{formatNumber(item.progress, item.isUsd ? 2 : 0)} / {item.isUsd ? '$' : ''}{item.target}
+                      </span>
+                    </div>
+                    <p style={{ fontSize: 10.5, color: 'rgba(255, 255, 255, 0.6)', marginTop: 2, lineHeight: 1.4 }}>{item.desc}</p>
+                    
+                    {/* Tiny item progress bar */}
+                    <div style={{ height: 4, background: 'rgba(255, 255, 255, 0.1)', borderRadius: 2, marginTop: 8, overflow: 'hidden' }}>
+                      <div style={{
+                        height: '100%', width: `${Math.min(100, (item.progress / item.target) * 100)}%`,
+                        background: isCompleted ? '#10B981' : '#3B82F6', borderRadius: 2
+                      }} />
+                    </div>
                   </div>
                 </div>
-              </div>
-            )
-          })}
-        </div>
+              )
+            })}
+          </div>
 
-        {checklistPercentage === 100 ? (
-          <div style={{
-            marginTop: 24, padding: 16, borderRadius: 16,
-            background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-            color: '#FFFFFF', textAlign: 'center', fontWeight: 900, fontSize: 14,
-            boxShadow: '0 4px 14px rgba(16,185,129,0.3)',
-          }}>
-            🎉 Congratulations! You are eligible for the Airdrop!
-          </div>
-        ) : (
-          <div style={{
-            marginTop: 24, padding: 14, borderRadius: 12,
-            background: '#F8F9FC', border: '1px solid #DEE1E7',
-            color: '#717886', textAlign: 'center', fontSize: 11.5, fontWeight: 750
-          }}>
-            🔒 Complete all 4 conditions to unlock your allocation badge
-          </div>
-        )}
+          {checklistPercentage === 100 ? (
+            <div style={{
+              marginTop: 24, padding: 16, borderRadius: 16,
+              background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+              color: '#FFFFFF', textAlign: 'center', fontWeight: 900, fontSize: 14,
+              boxShadow: '0 4px 14px rgba(16,185,129,0.3)',
+            }}>
+              🎉 Congratulations! You are eligible for the Airdrop!
+            </div>
+          ) : (
+            <div style={{
+              marginTop: 24, padding: 14, borderRadius: 12,
+              background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.12)',
+              color: 'rgba(255, 255, 255, 0.6)', textAlign: 'center', fontSize: 11.5, fontWeight: 750
+            }}>
+              🔒 Complete all 4 conditions to unlock your allocation badge
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

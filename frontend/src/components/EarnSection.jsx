@@ -275,7 +275,7 @@ export function EarnSection({ setTab, address: propAddress }) {
             textShadow: '0 2px 10px rgba(0,0,0,0.5)',
             letterSpacing: '-0.5px'
           }}>
-            REWARDS ZONE
+            REWARDS HUB
           </div>
         </div>
       </div>
