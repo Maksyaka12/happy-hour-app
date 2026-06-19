@@ -435,7 +435,7 @@ export default function App() {
                     margin: 0,
                     lineHeight: 1.5
                   }}>
-                    USDC Rewards and the Seasonal Leaderboard are currently being prepared. Stay tuned for the launch of Season 2!
+                    USDC Rewards and $HH Rewards will be here soon. We are cooking them up right now. Stay tuned for the launch!
                   </p>
                 </div>
 
@@ -451,7 +451,7 @@ export default function App() {
                   letterSpacing: '1px',
                   marginTop: 8
                 }}>
-                  ⚡ Coming Soon
+                  👨‍🍳 Cooking Something
                 </div>
               </div>
             </div>
