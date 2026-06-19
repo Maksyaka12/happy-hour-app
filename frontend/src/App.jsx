@@ -317,6 +317,58 @@ export default function App() {
               </svg>
             </a>
 
+            {/* DexScreener Link */}
+            <a 
+              href="https://dexscreener.com/base/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              title="DexScreener Chart"
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: '50%',
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid var(--border2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                textDecoration: 'none',
+                overflow: 'hidden'
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'}
+            >
+              <img src="/dexscreener.jpg" alt="DexScreener" style={{ width: 14, height: 14, borderRadius: '50%', objectFit: 'cover' }} />
+            </a>
+
+            {/* GeckoTerminal Link */}
+            <a 
+              href="https://www.geckoterminal.com/uk/base/pools/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              title="GeckoTerminal Chart"
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: '50%',
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid var(--border2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                textDecoration: 'none',
+                overflow: 'hidden'
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'}
+            >
+              <img src="/geckoterminal.jpg" alt="GeckoTerminal" style={{ width: 14, height: 14, borderRadius: '50%', objectFit: 'cover' }} />
+            </a>
+
             <div style={{
               background: 'var(--blue-bg)',
               border: '1px solid rgba(0,0,255,0.15)',
