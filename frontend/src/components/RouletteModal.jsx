@@ -7,7 +7,7 @@ const COLORS = ["#FF6B6B", "#FFD93D", "#6BCB77", "#4D96FF", "#C77DFF", "#FF9F1C"
 const pColor = (addr) => COLORS[parseInt(addr?.slice(2, 4) || '0', 16) % COLORS.length]
 const short = (a) => a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—'
 
-export function RouletteModal({ participants, totalPot, winner: supabaseWinner, prize, onComplete }) {
+export function RouletteModal({ participants, totalPot, winner: supabaseWinner, prize, currency = 'USDC', onComplete }) {
   const [offset, setOffset] = useState(0)
   const [done, setDone] = useState(false)
   const [showWinner, setShowWinner] = useState(false)
@@ -18,7 +18,8 @@ export function RouletteModal({ participants, totalPot, winner: supabaseWinner, 
   const strip = []
   for (let i = 0; i < 60; i++) {
     participants.forEach(p => {
-      for (let j = 0; j < Math.round(p.amount / 0.1); j++) strip.push(p)
+      const ticketCount = p.tickets || Math.round(p.amount / 0.1)
+      for (let j = 0; j < ticketCount; j++) strip.push(p)
     })
   }
 
@@ -103,7 +104,7 @@ export function RouletteModal({ participants, totalPot, winner: supabaseWinner, 
             {winner.name || short(winner.address)}
           </div>
           <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 48, fontWeight: 900, color: '#FFD700', lineHeight: 1 }}>
-            +{prize ? prize.toFixed(2) : (participants.length === 1 ? totalPot : totalPot * 0.8).toFixed(2)} USDC
+            +{prize ? prize.toFixed(2) : (participants.length === 1 ? totalPot : totalPot * 0.8).toFixed(2)} {currency}
           </div>
           <button onClick={onComplete} style={{
             marginTop: 24, background: '#0000FF', color: '#fff',

@@ -557,6 +557,7 @@ export function RaffleSection({ address, basename }) {
           totalPot={spinData.totalPot}
           winner={spinData.winner}
           prize={spinData.prize}
+          currency={raffleType === 'hh' ? 'HH' : 'USDC'}
           onComplete={() => { setSpinData(null); refetch() }}
         />
       )}
