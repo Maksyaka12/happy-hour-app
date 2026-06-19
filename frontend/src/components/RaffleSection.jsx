@@ -528,7 +528,7 @@ export function RaffleSection({ address, basename }) {
               You will receive a 100% refund and <strong style={{ color: '#0000FF' }}>1 HP</strong> as the winner.
             </>
           )],
-          ['How much does the winner receive?', `Winner takes 85% of the total pot. The remaining 15% goes to the foundation for future rewards.`],
+          ['How much does the winner receive?', raffleType === 'hh' ? `Winner takes 85% of the total pot. The remaining 15% is burned.` : `Winner takes 85% of the total pot. The remaining 15% goes to the foundation for future rewards.`],
           ['When are winnings paid?',           'Automatically after the draw, directly to the winner\'s wallet.'],
           ['Can I deposit multiple times?',     'Yes! Multiple deposits per round are allowed and all contribute to your ticket count.'],
         ].map(([q, a], i, arr) => (
