@@ -327,8 +327,6 @@ export default function App() {
                 width: 24,
                 height: 24,
                 borderRadius: '50%',
-                background: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid var(--border2)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -337,10 +335,10 @@ export default function App() {
                 textDecoration: 'none',
                 overflow: 'hidden'
               }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'}
+              onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
+              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
             >
-              <img src="/dexscreener.jpg" alt="DexScreener" style={{ width: 14, height: 14, borderRadius: '50%', objectFit: 'cover' }} />
+              <img src="/dexscreener.jpg" alt="DexScreener" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </a>
 
             {/* GeckoTerminal Link */}
@@ -353,8 +351,6 @@ export default function App() {
                 width: 24,
                 height: 24,
                 borderRadius: '50%',
-                background: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid var(--border2)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -363,10 +359,10 @@ export default function App() {
                 textDecoration: 'none',
                 overflow: 'hidden'
               }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'}
+              onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
+              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
             >
-              <img src="/geckoterminal.jpg" alt="GeckoTerminal" style={{ width: 14, height: 14, borderRadius: '50%', objectFit: 'cover' }} />
+              <img src="/geckoterminal.jpg" alt="GeckoTerminal" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </a>
 
             <div style={{
