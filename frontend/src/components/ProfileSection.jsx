@@ -59,9 +59,9 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
 
   // List of swap-eligible tokens in Base Network
   const swapTokens = [
-    { symbol: 'ETH', name: 'Ethereum', logo: '🌐', logoBg: '#627EEA', priceUsd: 3500.00, balanceKey: 'eth_simulated_wallet', defaultBalance: 0.15 },
+    { symbol: 'ETH', name: 'Ethereum', logo: '/eth-logo.png', logoBg: '#627EEA', priceUsd: 3500.00, balanceKey: 'eth_simulated_wallet', defaultBalance: 0.15 },
     { symbol: 'USDC', name: 'USD Coin', logo: '/usdc-logo.png', priceUsd: 1.00, balanceKey: 'usdc_simulated_wallet', defaultBalance: 500.00 },
-    { symbol: 'WETH', name: 'Wrapped Ether', logo: '🌐', logoBg: '#8C8C8C', priceUsd: 3500.00, balanceKey: 'weth_simulated_wallet', defaultBalance: 0.05 },
+    { symbol: 'WETH', name: 'Wrapped Ether', logo: '/weth-logo.png', logoBg: '#8C8C8C', priceUsd: 3500.00, balanceKey: 'weth_simulated_wallet', defaultBalance: 0.05 },
   ]
 
   // Read real native ETH balance
