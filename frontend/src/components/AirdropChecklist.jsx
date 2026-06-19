@@ -176,12 +176,12 @@ export function AirdropChecklist() {
 
         {/* Floating $HH Logos (Tokens) & Parachutes on Banner Background */}
         {[
-          { type: 'logo', top: '5%', left: '8%', size: 36, opacity: 0.35, r: '-12deg', dur: 4.2 },
-          { type: 'logo', bottom: '12%', right: '8%', size: 42, opacity: 0.4, r: '15deg', dur: 4.8 },
-          { type: 'logo', top: '40%', right: '15%', size: 28, opacity: 0.3, r: '-8deg', dur: 5.5 },
-          { type: 'parachute', top: '15%', right: '6%', size: 32, opacity: 0.3, r: '8deg', dur: 4.6 },
-          { type: 'parachute', bottom: '18%', left: '10%', size: 26, opacity: 0.35, r: '-15deg', dur: 5.0 },
-          { type: 'parachute', top: '50%', left: '20%', size: 22, opacity: 0.25, r: '10deg', dur: 6.2 }
+          { type: 'logo', top: '8%', left: '4%', size: 38, opacity: 0.35, r: '-15deg', dur: 4.5 },
+          { type: 'logo', bottom: '8%', right: '4%', size: 44, opacity: 0.38, r: '12deg', dur: 5.2 },
+          { type: 'logo', top: '50%', left: '12%', size: 28, opacity: 0.32, r: '-10deg', dur: 4.0 },
+          { type: 'parachute', top: '45%', right: '12%', size: 30, opacity: 0.35, r: '15deg', dur: 4.8 },
+          { type: 'parachute', top: '10%', right: '8%', size: 34, opacity: 0.3, r: '-8deg', dur: 5.5 },
+          { type: 'parachute', bottom: '12%', left: '6%', size: 24, opacity: 0.28, r: '10deg', dur: 6.0 }
         ].map((s, i) => (
           <div key={i} style={{
             position: 'absolute',
@@ -245,21 +245,21 @@ export function AirdropChecklist() {
             marginTop: 12,
             letterSpacing: '0.5px'
           }}>
-            Complete all criteria to be eligible
+            Complete all criteria below to be eligible
           </div>
         </div>
       </div>
 
-      {/* Criteria Card (Darker Theme than Banner) */}
+      {/* Criteria Card (Lighter Blue Theme) */}
       <div style={{
         borderRadius: 20,
         padding: '20px 18px',
         marginBottom: 16,
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+        boxShadow: '0 8px 32px rgba(59, 130, 246, 0.2)',
         position: 'relative',
         overflow: 'hidden',
-        border: '1px solid rgba(59, 130, 246, 0.15)',
-        background: '#010410',
+        border: '1px solid rgba(59, 130, 246, 0.35)',
+        background: '#041733',
         animation: 'fadeIn 0.3s ease-out'
       }}>
         {/* Grayscaled background image overlay */}
@@ -269,16 +269,16 @@ export function AirdropChecklist() {
           backgroundImage: 'url(/banner.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          filter: 'grayscale(100%) brightness(0.15) contrast(1.2)',
+          filter: 'grayscale(100%) brightness(0.32) contrast(1.15)',
           zIndex: 0,
           pointerEvents: 'none'
         }} />
 
-        {/* Deep blue/dark gradient overlay */}
+        {/* Blue/light gradient overlay */}
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(135deg, rgba(0, 40, 150, 0.15) 0%, rgba(0, 0, 0, 0.4) 100%)',
+          background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.25) 0%, rgba(29, 78, 216, 0.1) 100%)',
           zIndex: 1,
           pointerEvents: 'none'
         }} />
