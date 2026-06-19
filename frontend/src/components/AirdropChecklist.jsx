@@ -105,7 +105,7 @@ export function AirdropChecklist() {
     {
       id: 'checkins',
       title: 'Daily Check-ins',
-      desc: 'Complete 15 daily check-ins to secure airdrop weight',
+      desc: 'Complete 15 daily check-ins to qualify',
       progress: checklistStats.checkins,
       target: 15,
       icon: '📆'
@@ -113,7 +113,7 @@ export function AirdropChecklist() {
     {
       id: 'raids',
       title: 'Happy Raids',
-      desc: 'Participate in 20 raids to show active participation',
+      desc: 'Participate in 20 raids to qualify',
       progress: checklistStats.raids,
       target: 20,
       icon: '⚔️'
@@ -121,7 +121,7 @@ export function AirdropChecklist() {
     {
       id: 'boxes',
       title: 'Happy Box Openings',
-      desc: 'Open 30 premium boxes to burn $HH and trigger game rounds',
+      desc: 'Open 30 premium boxes to qualify',
       progress: checklistStats.boxes,
       target: 30,
       icon: '🎁'
@@ -129,7 +129,7 @@ export function AirdropChecklist() {
     {
       id: 'staking',
       title: 'Active $HH Staking',
-      desc: 'Stake at least $10.00 worth of $HH to qualify as a holder',
+      desc: 'Stake at least $10.00 worth of $HH to qualify',
       progress: stakedUsdValue,
       target: 10,
       isUsd: true,
@@ -139,7 +139,6 @@ export function AirdropChecklist() {
 
   const completedTasks = checklistItems.filter(item => item.progress >= item.target).length
   const totalTasks = checklistItems.length
-  const checklistPercentage = Math.round((completedTasks / totalTasks) * 100)
 
   return (
     <div style={{ padding: '0 16px 120px' }}>
@@ -151,39 +150,31 @@ export function AirdropChecklist() {
         }
       ` }} />
 
+      {/* Season 2 Airdrop Eligibility Banner */}
       <div style={{
-        borderRadius: 20,
-        padding: '20px 18px',
+        backgroundImage: 'url(/banner.jpg)',
+        backgroundColor: '#0052FF', // Fallback
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        borderRadius: 24,
+        padding: '32px 20px',
         marginBottom: 16,
-        boxShadow: '0 8px 32px rgba(59, 130, 246, 0.15)',
         position: 'relative',
+        minHeight: 160,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        boxShadow: '0 12px 40px rgba(0,82,255,0.25)',
         overflow: 'hidden',
-        border: '1px solid rgba(59, 130, 246, 0.25)',
-        background: '#020B24',
-        animation: 'fadeIn 0.3s ease-out'
+        border: '1px solid rgba(255,255,255,0.15)',
+        boxSizing: 'border-box'
       }}>
-        {/* Grayscaled background image overlay */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: 'url(/banner.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          filter: 'grayscale(100%) brightness(0.22) contrast(1.2)',
-          zIndex: 0,
-          pointerEvents: 'none'
-        }} />
+        {/* Background overlays */}
+        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0, 0, 80, 0.35)', zIndex: 0 }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,82,255,0.1) 100%)', zIndex: 0 }} />
 
-        {/* Blue/Aqua gradient overlay */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'linear-gradient(135deg, rgba(0, 82, 255, 0.25) 0%, rgba(59, 130, 246, 0.15) 100%)',
-          zIndex: 1,
-          pointerEvents: 'none'
-        }} />
-
-        {/* Floating $HH Logos (Tokens) & Parachutes on Background */}
+        {/* Floating $HH Logos (Tokens) & Parachutes on Banner Background */}
         {[
           { type: 'logo', top: '5%', left: '8%', size: 36, opacity: 0.35, r: '-12deg', dur: 4.2 },
           { type: 'logo', bottom: '12%', right: '8%', size: 42, opacity: 0.4, r: '15deg', dur: 4.8 },
@@ -229,25 +220,83 @@ export function AirdropChecklist() {
           </div>
         ))}
 
+        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
+          <div style={{
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontSize: 42,
+            fontWeight: 900,
+            color: '#FFFFFF',
+            lineHeight: 1.1,
+            textShadow: '0 4px 15px rgba(0,0,0,0.6)',
+            letterSpacing: '-0.5px'
+          }}>
+            Airdrop Eligibility
+          </div>
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.2)',
+            backdropFilter: 'blur(10px)',
+            borderRadius: 50,
+            padding: '6px 16px',
+            fontSize: 10,
+            fontWeight: 800,
+            color: '#FFFFFF',
+            border: '1px solid rgba(255, 255, 255, 0.3)',
+            display: 'inline-block',
+            marginTop: 12,
+            letterSpacing: '0.5px'
+          }}>
+            Complete all criteria to be eligible
+          </div>
+        </div>
+      </div>
+
+      {/* Criteria Card (Darker Theme than Banner) */}
+      <div style={{
+        borderRadius: 20,
+        padding: '20px 18px',
+        marginBottom: 16,
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+        position: 'relative',
+        overflow: 'hidden',
+        border: '1px solid rgba(59, 130, 246, 0.15)',
+        background: '#010410',
+        animation: 'fadeIn 0.3s ease-out'
+      }}>
+        {/* Grayscaled background image overlay */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'url(/banner.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          filter: 'grayscale(100%) brightness(0.15) contrast(1.2)',
+          zIndex: 0,
+          pointerEvents: 'none'
+        }} />
+
+        {/* Deep blue/dark gradient overlay */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(135deg, rgba(0, 40, 150, 0.15) 0%, rgba(0, 0, 0, 0.4) 100%)',
+          zIndex: 1,
+          pointerEvents: 'none'
+        }} />
+
         {/* Content Container */}
         <div style={{ position: 'relative', zIndex: 2 }}>
-          <div style={{ textAlign: 'center', marginBottom: 24 }}>
-            <h3 style={{ fontSize: 18, fontWeight: 900, color: '#FFFFFF' }}>🪂 Season 2 Airdrop Eligibility</h3>
-            <p style={{ fontSize: 12, color: 'rgba(255, 255, 255, 0.7)', marginTop: 4 }}>Complete all tasks below to guarantee your token allocation</p>
-            
-            {/* Eligibility progress bar */}
-            <div style={{ marginTop: 20 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, fontWeight: 850, color: '#FFFFFF', marginBottom: 6 }}>
-                <span>Overall Progress</span>
-                <span style={{ color: '#FBBF24' }}>{checklistPercentage}% Completed</span>
-              </div>
-              <div style={{ height: 10, background: 'rgba(255, 255, 255, 0.1)', borderRadius: 6, overflow: 'hidden' }}>
-                <div style={{
-                  height: '100%', width: `${checklistPercentage}%`,
-                  background: 'linear-gradient(90deg, #3B82F6 0%, #10B981 100%)',
-                  borderRadius: 6
-                }} />
-              </div>
+          {/* Eligibility progress bar */}
+          <div style={{ marginTop: 4, marginBottom: 20 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, fontWeight: 850, color: '#FFFFFF', marginBottom: 6 }}>
+              <span>Progress</span>
+              <span style={{ color: '#FBBF24' }}>{completedTasks} / {totalTasks} Completed</span>
+            </div>
+            <div style={{ height: 10, background: 'rgba(255, 255, 255, 0.1)', borderRadius: 6, overflow: 'hidden' }}>
+              <div style={{
+                height: '100%', width: `${(completedTasks / totalTasks) * 100}%`,
+                background: 'linear-gradient(90deg, #3B82F6 0%, #10B981 100%)',
+                borderRadius: 6
+              }} />
             </div>
           </div>
 
@@ -263,19 +312,28 @@ export function AirdropChecklist() {
                   transition: 'all 0.2s'
                 }}>
                   <span style={{ fontSize: 24, alignSelf: 'center' }}>{item.icon}</span>
-                  <div style={{ flex: 1 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <h4 style={{ fontSize: 13, fontWeight: 850, color: '#FFFFFF' }}>{item.title}</h4>
+                      <h4 style={{ fontSize: 13, fontWeight: 850, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginRight: 8 }}>{item.title}</h4>
                       <span style={{
                         fontSize: 10, fontWeight: 900,
                         color: isCompleted ? '#10B981' : 'rgba(255, 255, 255, 0.7)',
                         background: isCompleted ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.1)',
-                        padding: '2px 8px', borderRadius: 10
+                        padding: '2px 8px', borderRadius: 10,
+                        flexShrink: 0
                       }}>
                         {item.isUsd ? '$' : ''}{formatNumber(item.progress, item.isUsd ? 2 : 0)} / {item.isUsd ? '$' : ''}{item.target}
                       </span>
                     </div>
-                    <p style={{ fontSize: 10.5, color: 'rgba(255, 255, 255, 0.6)', marginTop: 2, lineHeight: 1.4 }}>{item.desc}</p>
+                    <p style={{
+                      fontSize: 10.5,
+                      color: 'rgba(255, 255, 255, 0.6)',
+                      marginTop: 2,
+                      lineHeight: 1.4,
+                      whiteSpace: 'nowrap',
+                      textOverflow: 'ellipsis',
+                      overflow: 'hidden'
+                    }}>{item.desc}</p>
                     
                     {/* Tiny item progress bar */}
                     <div style={{ height: 4, background: 'rgba(255, 255, 255, 0.1)', borderRadius: 2, marginTop: 8, overflow: 'hidden' }}>
@@ -290,7 +348,7 @@ export function AirdropChecklist() {
             })}
           </div>
 
-          {checklistPercentage === 100 ? (
+          {completedTasks === totalTasks ? (
             <div style={{
               marginTop: 24, padding: 16, borderRadius: 16,
               background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
