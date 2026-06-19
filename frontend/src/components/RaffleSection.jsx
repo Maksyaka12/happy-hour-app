@@ -138,10 +138,13 @@ export function RaffleSection({ address, basename }) {
   useEffect(() => {
     if (round?.status === 'spinning' && !spinData) {
       setSpinData({
+        round: round,
         participants: participants,
         totalPot: participants.reduce((s, p) => s + p.amount, 0),
         winner: round.winner,
-        prize: round.prize
+        prize: round.prize,
+        myTickets: myTickets,
+        myAmount: myAmount
       })
     }
   }, [round?.status])
@@ -168,32 +171,40 @@ export function RaffleSection({ address, basename }) {
     }
   }, [isSuccess, txHash, raffleType, txModal, hhPrice, hhAllowance, address, basename, round?.id])
 
-  const displayTotalPot = useMemo(() => {
-    return participants.reduce((s, p) => s + p.amount, 0)
-  }, [participants])
+  const displayRound = useMemo(() => {
+    if (spinData) return spinData.round
+    return round
+  }, [round, spinData])
 
-  const isClosed = msLeft <= CLOSE_BEFORE_MS || round?.status === 'closed' || round?.status === 'spinning'
+  const displayParticipants = useMemo(() => {
+    if (spinData) return spinData.participants
+    return participants
+  }, [participants, spinData])
+
+  const displayTotalPot = useMemo(() => {
+    return displayParticipants.reduce((s, p) => s + p.amount, 0)
+  }, [displayParticipants])
+
+  const isClosed = msLeft <= CLOSE_BEFORE_MS || displayRound?.status === 'closed' || displayRound?.status === 'spinning'
   
   const displayMyEntry = useMemo(() => {
-    return participants.find(p => p.address?.toLowerCase() === address?.toLowerCase())
-  }, [participants, address])
+    return displayParticipants.find(p => p.address?.toLowerCase() === address?.toLowerCase())
+  }, [displayParticipants, address])
 
   const displayMyChance = useMemo(() => {
     if (displayTotalPot <= 0 || !displayMyEntry) return '0.0'
     return (((displayMyEntry.amount || 0) / displayTotalPot) * 100).toFixed(1)
   }, [displayTotalPot, displayMyEntry])
 
-  const displayParticipants = useMemo(() => {
-    return participants
-  }, [participants])
-
   const displayMyTickets = useMemo(() => {
+    if (spinData) return spinData.myTickets || 0
     return myTickets || 0
-  }, [myTickets])
+  }, [myTickets, spinData])
 
   const displayMyAmount = useMemo(() => {
+    if (spinData) return spinData.myAmount || 0
     return myAmount || 0
-  }, [myAmount])
+  }, [myAmount, spinData])
 
   const timerColor = isClosed ? '#FC401F' : '#0A0B0D'
 
@@ -329,7 +340,7 @@ export function RaffleSection({ address, basename }) {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
             <div>
               <div style={{ fontFamily: "'DM Mono',monospace", fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.65)', letterSpacing: 1.2, marginBottom: 4 }}>
-                ROUND #{round?.id ?? '—'} · PRIZE POOL
+                ROUND #{displayRound?.id ?? '—'} · PRIZE POOL
               </div>
               <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 44, fontWeight: 900, lineHeight: 0.95, color: '#fff' }}>
                 {raffleType === 'hh' ? `${formatConcise(displayTotalPot)} ` : `${displayTotalPot.toFixed(2)} `}
@@ -489,10 +500,10 @@ export function RaffleSection({ address, basename }) {
           </div>
           <div style={{ textAlign: 'right' }}>
             <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 18, fontWeight: 900, color: raffleType === 'hh' ? '#8B5CF6' : '#0000FF' }}>
-              +{raffleType === 'hh' ? `${formatConcise(parseFloat(lastWinner.amount) / hhPrice)} $HH` : `${lastWinner.amount} USDC`}
+              +{raffleType === 'hh' ? `${formatConcise(parseFloat(lastWinner.amount))} $HH` : `${lastWinner.amount} USDC`}
             </div>
             <div style={{ fontSize: 9, color: '#717886', fontWeight: 600 }}>
-              of {raffleType === 'hh' ? `${formatConcise(parseFloat(lastWinner.pot) / hhPrice)} $HH` : `${lastWinner.pot} USDC`}
+              of {raffleType === 'hh' ? `${formatConcise(parseFloat(lastWinner.pot))} $HH` : `${lastWinner.pot} USDC`}
             </div>
           </div>
         </div>
