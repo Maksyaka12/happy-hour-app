@@ -4,9 +4,9 @@ import { useEffect, useRef, useState } from 'react'
 const CONTRACTS = {
   HH_TOKEN:         '0x8235EdF32a1e10Bd1867ad622915AB613664cbA3',
   USDC_PAYMENTS:    '0x7E861466bC2845C9f57051fb9652bC4a56d95542',
-  USDC_RAFFLE:      '0x3bdF461984142C473F2185B4F0F64a918B8ce49b',
+  USDC_RAFFLE:      '0xdE76F43E17B1173947f63b72C85a2f0d9a97702F',
   HH_PAYMENTS:      '0x13802fDe66BCf54BcebE2242aF0836A5Dfb45Fc8',
-  HH_RAFFLE:        '0xdE76F43E17B1173947f63b72C85a2f0d9a97702F',
+  HH_RAFFLE:        '0x3bdF461984142C473F2185B4F0F64a918B8ce49b',
   HH_STAKING:       '0xFd23526111280b78FF4e7F38B1fAF5818B9c5214',
 }
 
@@ -617,11 +617,48 @@ function HHEconomySection() {
   )
 }
 
+const PATH_TO_ID = {
+  'introduction': 'introduction',
+  'intro': 'introduction',
+  'links': 'official-links',
+  'official-links': 'official-links',
+  'contracts': 'contracts',
+  'hh-introduction': 'hh-introduction',
+  'utility': 'hh-utility',
+  'economy': 'hh-economy'
+}
+
+const ID_TO_PATH = {
+  'introduction': 'introduction',
+  'official-links': 'links',
+  'contracts': 'contracts',
+  'hh-introduction': 'hh-introduction',
+  'hh-utility': 'utility',
+  'hh-economy': 'economy'
+}
+
 // ─── ROOT DOCS COMPONENT ──────────────────────────────────────────────────────
 export function DocsPage() {
   const [activeSection, setActiveSection] = useState('introduction')
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const contentRef = useRef(null)
+
+  useEffect(() => {
+    // Scroll to initial section from URL pathname
+    const pathSegment = window.location.pathname.replace(/^\/docs\/?/, '');
+    const cleanSegment = pathSegment.split('/')[0];
+    const initialId = PATH_TO_ID[cleanSegment];
+    if (initialId) {
+      const timer = setTimeout(() => {
+        const el = document.getElementById(initialId);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          setActiveSection(initialId);
+        }
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   useEffect(() => {
     const obs = new IntersectionObserver(
@@ -636,6 +673,16 @@ export function DocsPage() {
     sections.forEach(s => obs.observe(s))
     return () => obs.disconnect()
   }, [])
+
+  useEffect(() => {
+    const segment = ID_TO_PATH[activeSection];
+    if (segment) {
+      const newPath = `/docs/${segment}`;
+      if (window.location.pathname !== newPath) {
+        window.history.replaceState(null, '', newPath);
+      }
+    }
+  }, [activeSection]);
 
   const scrollTo = (id) => {
     const el = document.getElementById(id)
@@ -657,6 +704,7 @@ export function DocsPage() {
         .docs-nav-item:hover { background: #f1f5f9 !important; color: #0f172a !important; }
         .docs-nav-item.active { background: #eff6ff !important; color: #0052ff !important; font-weight: 700 !important; }
         .docs-content-section p + p { margin-top: 0; }
+        section[id] { scroll-margin-top: 80px; }
         @media (max-width: 768px) {
           .docs-sidebar { display: none !important; }
           .docs-sidebar.open { display: flex !important; position: fixed; top: 60px; left: 0; bottom: 0; z-index: 99; box-shadow: 4px 0 20px rgba(0,0,0,0.1); }
