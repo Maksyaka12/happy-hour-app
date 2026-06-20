@@ -1,4 +1,4 @@
-// src/components/ConnectScreen.jsx
+// src/components/ConnectScreen.jsx (updated header/socials design)
 // ─────────────────────────────────────────────────────────
 // Wallet connection per docs.base.org/get-started/build-app (Step 3)
 // Uses useConnect with baseAccount + injected connectors
@@ -144,10 +144,10 @@ export function ConnectScreen() {
           </div>
 
           {/* Headline */}
-          <div style={{ fontSize: 24, fontWeight: 900, lineHeight: 1.3, letterSpacing: -0.8, marginBottom: 16, color: 'var(--text)' }}>
+          <div style={{ fontSize: 26, fontWeight: 900, lineHeight: 1.3, letterSpacing: -0.8, marginBottom: 16, color: 'var(--text)' }}>
             Consumer App on Base<br />
-            <span style={{ fontSize: 14, fontWeight: 650, color: '#717886', display: 'block', marginTop: 8, lineHeight: 1.4, letterSpacing: -0.2 }}>
-              with point system, USDC / $HH Rewards and hourly raffles
+            <span style={{ fontSize: 12.5, fontWeight: 800, color: '#0052FF', display: 'block', marginTop: 8, lineHeight: 1.4, letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+              Point System · Seasonal Rewards · Hourly Raffles
             </span>
           </div>
 
