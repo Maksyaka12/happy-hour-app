@@ -72,7 +72,7 @@ function SectionCallout({ type = 'note', children }) {
   )
 }
 
-function QuickCard({ icon, title, desc, href, sectionId, onNav, isImg }) {
+function QuickCard({ icon, title, desc, href, sectionId, onNav, isImg, isCoin }) {
   const handleClick = (e) => {
     if (sectionId) { e.preventDefault(); onNav(sectionId) }
   }
@@ -102,7 +102,7 @@ function QuickCard({ icon, title, desc, href, sectionId, onNav, isImg }) {
     >
       <div style={{ marginBottom: 10 }}>
         {isImg
-          ? <img src={icon} alt={title} style={{ width: 32, height: 32, borderRadius: 8, objectFit: 'cover' }} />
+          ? <img src={icon} alt={title} style={{ width: 32, height: 32, borderRadius: isCoin ? '50%' : 8, objectFit: 'cover', boxShadow: isCoin ? '0 2px 8px rgba(0,82,255,0.18)' : 'none' }} />
           : <span style={{ fontSize: 26 }}>{icon}</span>
         }
       </div>
@@ -115,14 +115,14 @@ function QuickCard({ icon, title, desc, href, sectionId, onNav, isImg }) {
 // ─── Contract row ─────────────────────────────────────────────────────────────
 function ContractRow({ label, addr, desc }) {
   return (
-    <div style={{ padding: '14px 0', borderBottom: '1px solid #f1f5f9' }}>
-      <div style={{ fontWeight: 700, fontSize: 13.5, color: '#0f172a', marginBottom: desc ? 3 : 8 }}>{label}</div>
-      {desc && <div style={{ fontSize: 12.5, color: '#64748b', marginBottom: 8, lineHeight: 1.5 }}>{desc}</div>}
+    <div style={{ padding: '14px 18px', borderBottom: '1px solid #f1f5f9' }}>
+      <div style={{ fontWeight: 700, fontSize: 13.5, color: '#0f172a', marginBottom: desc ? 4 : 10 }}>{label}</div>
+      {desc && <div style={{ fontSize: 12.5, color: '#64748b', marginBottom: 10, lineHeight: 1.5 }}>{desc}</div>}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
         <code style={{
           fontFamily: "'DM Mono', 'Fira Mono', monospace", fontSize: 11.5, color: '#475569',
           background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 6,
-          padding: '4px 10px', wordBreak: 'break-all',
+          padding: '5px 10px', wordBreak: 'break-all', flex: 1, minWidth: 180,
         }}>
           {addr}
         </code>
@@ -168,7 +168,9 @@ function IntroSection({ onNav }) {
           href="https://happy-hour-based.app"
         />
         <QuickCard
-          icon="💎"
+          icon="/logo.png"
+          isImg
+          isCoin
           title="$HH Utility & Economy"
           desc="Contracts, tokenomics, staking APR, burn mechanics, and the full economic model."
           sectionId="utility-economy"
@@ -202,33 +204,68 @@ function LinksSection() {
 
       {/* Application */}
       <h2 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', margin: '0 0 12px' }}>Application</h2>
-      <LinkTable items={[
-        {
-          label: 'Happy Hour App',
-          url:   'https://happy-hour-based.app',
-          desc:  'Web app — connect your Base wallet and start earning.',
-        },
-        {
-          label: 'Happy Hour on Base',
-          url:   'https://www.base.org/apps',
-          desc:  'Listed on the official Base ecosystem app directory.',
-        },
-      ]} />
+      <div style={{ border: '1px solid #e2e8f0', borderRadius: 12, overflow: 'hidden', marginBottom: 4 }}>
+        {[
+          { label: 'Happy Hour App (Web Version)',      url: 'https://happy-hour-based.app/' },
+          { label: 'Happy Hour App (Base App Version)', url: 'https://happy-hour-based.app/r/' },
+        ].map((item, i, arr) => (
+          <a
+            key={item.label}
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '14px 18px', gap: 16, textDecoration: 'none', background: '#fff',
+              transition: 'background 0.15s',
+              borderBottom: i < arr.length - 1 ? '1px solid #f1f5f9' : 'none',
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
+            onMouseLeave={e => e.currentTarget.style.background = '#fff'}
+          >
+            <div>
+              <div style={{ fontWeight: 700, fontSize: 13.5, color: '#0052ff', marginBottom: 6 }}>{item.label}</div>
+              <code style={{
+                fontFamily: "'DM Mono', monospace", fontSize: 11.5, color: '#475569',
+                background: '#f1f5f9', border: '1px solid #e2e8f0', borderRadius: 5,
+                padding: '3px 8px',
+              }}>{item.url}</code>
+            </div>
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
+              <path d="M2 7h10M7 2l5 5-5 5" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </a>
+        ))}
+      </div>
 
       {/* Community */}
       <h2 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', margin: '28px 0 12px' }}>Community</h2>
-      <LinkTable items={[
-        {
-          label: 'X — @happyhour_base',
-          url:   'https://x.com/happyhour_base',
-          desc:  'Official project account. Announcements, season updates, community.',
-        },
-        {
-          label: 'X — @mksvibe (Dev)',
-          url:   'https://x.com/mksvibe',
-          desc:  'Developer account. Direct updates and community interaction.',
-        },
-      ]} />
+      <div style={{ border: '1px solid #e2e8f0', borderRadius: 12, overflow: 'hidden', marginBottom: 4 }}>
+        {[
+          { label: 'X — @happyhour_base', url: 'https://x.com/happyhour_base' },
+          { label: 'X (Dev) — @mksvibe',  url: 'https://x.com/mksvibe' },
+        ].map((item, i, arr) => (
+          <a
+            key={item.label}
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '13px 18px', gap: 16, textDecoration: 'none', background: '#fff',
+              transition: 'background 0.15s',
+              borderBottom: i < arr.length - 1 ? '1px solid #f1f5f9' : 'none',
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
+            onMouseLeave={e => e.currentTarget.style.background = '#fff'}
+          >
+            <span style={{ fontWeight: 700, fontSize: 13.5, color: '#0052ff' }}>{item.label}</span>
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
+              <path d="M2 7h10M7 2l5 5-5 5" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </a>
+        ))}
+      </div>
 
       {/* Market data */}
       <h2 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', margin: '28px 0 12px' }}>Market Data</h2>
@@ -246,7 +283,7 @@ function LinksSection() {
           },
           {
             label: 'Basescan — $HH Contract',
-            logo:  null,
+            logo:  '/basescan-logo.svg',
             href:  `https://basescan.org/token/${CONTRACTS.HH_TOKEN}`,
           },
         ].map((item, i, arr) => (
@@ -264,14 +301,9 @@ function LinksSection() {
             onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
             onMouseLeave={e => e.currentTarget.style.background = '#fff'}
           >
-            {item.logo
-              ? <img src={item.logo} alt={item.label} style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover', border: '1px solid #e2e8f0', flexShrink: 0 }} />
-              : <div style={{ width: 22, height: 22, background: '#0052ff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1a5 5 0 100 10A5 5 0 006 1z" stroke="#fff" strokeWidth="1.2"/><path d="M4 6h4M6 4v4" stroke="#fff" strokeWidth="1.2" strokeLinecap="round"/></svg>
-                </div>
-            }
+            <img src={item.logo} alt={item.label} style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover', border: '1px solid #e2e8f0', flexShrink: 0 }} />
             <span style={{ flex: 1, fontWeight: 600, fontSize: 13.5, color: '#0f172a' }}>{item.label}</span>
-            <span style={{ fontSize: 11, color: '#94a3b8', fontFamily: "'DM Mono', monospace", wordBreak: 'break-all', maxWidth: 260, textAlign: 'right' }}>
+            <span style={{ fontSize: 11, color: '#94a3b8', fontFamily: "'DM Mono', monospace" }}>
               {item.href.replace('https://', '').split('/')[0]}
             </span>
             <svg width="13" height="13" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
@@ -289,12 +321,12 @@ function LinksSection() {
 
       {/* Official CA */}
       <div style={{ background: 'linear-gradient(135deg, #eff6ff 0%, #fff 100%)', border: '1.5px solid #bfdbfe', borderRadius: 12, padding: '16px 20px', marginBottom: 20 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: '#0052ff', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Official $HH CA</div>
+        <div style={{ fontSize: 11, fontWeight: 700, color: '#0052ff', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 }}>Official $HH CA</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
           <code style={{
             fontFamily: "'DM Mono', 'Fira Mono', monospace", fontSize: 12, color: '#1e3a8a',
             background: 'rgba(255,255,255,0.7)', border: '1px solid #bfdbfe', borderRadius: 6,
-            padding: '5px 10px', wordBreak: 'break-all', flex: 1, minWidth: 0,
+            padding: '5px 10px', wordBreak: 'break-all', flex: 1, minWidth: 180,
           }}>
             {CONTRACTS.HH_TOKEN}
           </code>
@@ -316,7 +348,7 @@ function LinksSection() {
           <ContractRow
             label="HappyHour USDC Raffle Vault"
             addr={CONTRACTS.USDC_RAFFLE}
-            desc="Holds USDC raffle pools and executes payouts: 85% to the winner, 15% is burned"
+            desc="Holds USDC raffle pools and executes payouts: 85% to the winner, 15% goes to the treasury"
           />
         </div>
       </div>
@@ -329,13 +361,14 @@ function LinksSection() {
             <ContractRow
               label="HappyHour $HH Payments Vault"
               addr={CONTRACTS.HH_PAYMENTS}
-              desc="Handles all in-app $HH transactions and burn executions"
+              desc="Receives all in-app $HH payments & burns 30% of every transaction"
             />
           </div>
           <div style={{ borderBottom: '1px solid #f1f5f9' }}>
             <ContractRow
               label="HappyHour $HH Raffle Vault"
               addr={CONTRACTS.HH_RAFFLE}
+              desc="Holds $HH raffle pools and executes payouts: 85% to the winner, 15% is burned"
             />
           </div>
           <ContractRow
@@ -391,11 +424,8 @@ function UtilitySection() {
       <h1 style={{ fontSize: 28, fontWeight: 800, color: '#0f172a', margin: '0 0 10px', letterSpacing: '-0.5px' }}>
         $HH Utility & Economy
       </h1>
-      <p style={{ fontSize: 14.5, color: '#64748b', margin: '0 0 28px', lineHeight: 1.65 }}>
-        $HH was created by the Bankr community — ensuring full transparency, fairness, and zero team speculation. No insider allocations, no dump risk. The coin is purely community-powered.
-      </p>
-      <p style={{ fontSize: 14.5, color: '#64748b', margin: '-12px 0 32px', lineHeight: 1.65 }}>
-        Happy Hour adopted $HH as its native coin, embedding real utility across the entire application — making it a long-term ecosystem coin rather than a speculative asset.
+      <p style={{ fontSize: 14.5, color: '#64748b', margin: '0 0 32px', lineHeight: 1.75 }}>
+        $HH is the native utility coin of Happy Hour App. It was created by the Bankr community — the coin is owned by BANKR, ensuring full transparency, zero team speculation, and no insider allocations. We accepted $HH as the native coin of Happy Hour and embedded real utility into it across the entire application. This makes $HH a long-term ecosystem coin — not just a speculative asset (memecoin).
       </p>
 
       {/* Utility */}
