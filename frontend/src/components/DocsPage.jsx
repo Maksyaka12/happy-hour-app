@@ -16,7 +16,8 @@ const NAV = [
     group: 'Getting Started',
     items: [
       { id: 'introduction',   label: 'Introduction' },
-      { id: 'official-links', label: 'Official Links & Contracts' },
+      { id: 'official-links', label: 'Official Links' },
+      { id: 'contracts',      label: 'Contracts' },
     ]
   },
   {
@@ -190,18 +191,18 @@ function IntroSection({ onNav }) {
   )
 }
 
-// ─── Section: OFFICIAL LINKS & CONTRACTS ─────────────────────────────────────
+// ─── Section: OFFICIAL LINKS ─────────────────────────────────────────────────
 function LinksSection() {
   return (
     <section id="official-links" style={{ marginTop: 60, paddingTop: 40, borderTop: '1px solid #f1f5f9' }}>
       <div style={{ fontSize: 12.5, fontWeight: 600, color: '#0052ff', marginBottom: 10, letterSpacing: 0.2 }}>
-        Official Links & Contracts
+        Getting Started
       </div>
       <h1 style={{ fontSize: 28, fontWeight: 800, color: '#0f172a', margin: '0 0 10px', letterSpacing: '-0.5px' }}>
-        Official Links & Contracts
+        Official Links
       </h1>
       <p style={{ fontSize: 14.5, color: '#64748b', margin: '0 0 32px', lineHeight: 1.65 }}>
-        All official Happy Hour resources and verified on-chain contracts.
+        All official Happy Hour resources and social media platforms.
       </p>
 
       {/* Application */}
@@ -240,8 +241,8 @@ function LinksSection() {
         ))}
       </div>
 
-      {/* Community */}
-      <h2 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', margin: '28px 0 12px' }}>Community</h2>
+      {/* Socials */}
+      <h2 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', margin: '28px 0 12px' }}>Socials</h2>
       <div style={{ border: '1px solid #e2e8f0', borderRadius: 12, overflow: 'hidden', marginBottom: 4 }}>
         {[
           {
@@ -346,11 +347,22 @@ function LinksSection() {
           </a>
         ))}
       </div>
+    </section>
+  )
+}
 
-      {/* Contracts */}
-      <h2 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', margin: '32px 0 6px' }}>Contracts</h2>
-      <p style={{ fontSize: 13, color: '#94a3b8', margin: '0 0 16px', lineHeight: 1.5 }}>
-        All contracts are deployed on Base mainnet and verifiable on Basescan.
+// ─── Section: CONTRACTS ──────────────────────────────────────────────────────
+function ContractsSection() {
+  return (
+    <section id="contracts" style={{ marginTop: 60, paddingTop: 40, borderTop: '1px solid #f1f5f9' }}>
+      <div style={{ fontSize: 12.5, fontWeight: 600, color: '#0052ff', marginBottom: 10, letterSpacing: 0.2 }}>
+        Getting Started
+      </div>
+      <h1 style={{ fontSize: 28, fontWeight: 800, color: '#0f172a', margin: '0 0 10px', letterSpacing: '-0.5px' }}>
+        Contracts
+      </h1>
+      <p style={{ fontSize: 14.5, color: '#64748b', margin: '0 0 32px', lineHeight: 1.65 }}>
+        All verified on-chain smart contracts deployed on Base mainnet.
       </p>
 
       {/* Official CA */}
@@ -470,8 +482,11 @@ function HHIntroSection() {
         alt="Introduction Banner" 
         style={{ width: '100%', borderRadius: 12, display: 'block', marginBottom: 20, border: '1px solid #e2e8f0' }} 
       />
-      <p style={{ fontSize: 14.5, color: '#64748b', margin: '0', lineHeight: 1.75 }}>
+      <p style={{ fontSize: 14.5, color: '#64748b', margin: '0 0 16px', lineHeight: 1.75 }}>
         $HH is the <span style={{ fontWeight: 600, color: '#334155' }}>native utility coin</span> of Happy Hour App. It was created by the Bankr community — the coin is <span style={{ fontWeight: 600, color: '#334155' }}>owned by BANKR</span>, ensuring full transparency, zero team speculation, and no insider allocations. We <span style={{ fontWeight: 600, color: '#334155' }}>accepted $HH</span> as the native coin of Happy Hour and embedded <span style={{ fontWeight: 600, color: '#334155' }}>real utility</span> into it across the entire application. This makes $HH a <span style={{ fontWeight: 600, color: '#334155' }}>long-term ecosystem coin</span> — not just a speculative asset (memecoin).
+      </p>
+      <p style={{ fontSize: 14.5, color: '#64748b', margin: '0', lineHeight: 1.75 }}>
+        The Happy Hour team is fully committed to supporting $HH and reinforcing its role within our ecosystem. We are continuously building, integrating, and expanding utility to ensure its long-term strength, organic demand, and stability.
       </p>
     </section>
   )
@@ -840,6 +855,7 @@ export function DocsPage() {
           >
             <IntroSection onNav={scrollTo} />
             <LinksSection />
+            <ContractsSection />
             <HHIntroSection />
             <HHUtilitySection />
             <HHEconomySection />
