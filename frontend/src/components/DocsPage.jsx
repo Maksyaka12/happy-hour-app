@@ -153,7 +153,7 @@ function IntroSection({ onNav }) {
         Happy Hour is a consumer application built on Base, featuring hourly USDC and $HH raffles with full on-chain randomization — giving every participant an equal chance to win. The platform includes a comprehensive points system that rewards users for in-app activity, with seasonal USDC distributions for the most active community members.
       </p>
       <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.8, margin: '0 0 28px' }}>
-        $HH was created by the Bankr community — we adopted it as the native coin of Happy Hour, embedding real utility into every layer of the app. This approach makes $HH a long-term ecosystem coin rather than a speculative asset: it's used, burned, staked, and earned within a live, active application.
+        $HH is the native utility coin of Happy Hour App. It was created by the Bankr community — the coin is owned by BANKR — and we accepted it as the native coin of Happy Hour, embedding real utility into it. This makes $HH a long-term ecosystem coin, not just a speculative asset (memecoin).
       </p>
 
       <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0f172a', margin: '32px 0 16px', letterSpacing: '-0.3px' }}>
@@ -242,8 +242,27 @@ function LinksSection() {
       <h2 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', margin: '28px 0 12px' }}>Community</h2>
       <div style={{ border: '1px solid #e2e8f0', borderRadius: 12, overflow: 'hidden', marginBottom: 4 }}>
         {[
-          { label: 'X — @happyhour_base', url: 'https://x.com/happyhour_base' },
-          { label: 'X (Dev) — @mksvibe',  url: 'https://x.com/mksvibe' },
+          {
+            label: 'X — @happyhour_base',
+            icon:  <img src="/mksvibe.jpg" alt="X" style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover', border: '1px solid #e2e8f0' }} />,
+            url:   'https://x.com/happyhour_base',
+          },
+          {
+            label: 'X (Dev) — @mksvibe',
+            icon:  <img src="/mksvibe.jpg" alt="X Dev" style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover', border: '1px solid #e2e8f0' }} />,
+            url:   'https://x.com/mksvibe',
+          },
+          {
+            label: 'Telegram — @happyhourapp',
+            icon:  (
+              <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#229ED9', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                  <path d="M21.8 3.1L2.3 10.8c-1.3.5-1.3 1.3-.2 1.6l4.9 1.5 1.9 5.8c.2.7.4.9 1 .9.5 0 .7-.2 1-.5l2.4-2.3 4.9 3.6c.9.5 1.5.2 1.7-.8L22.9 4c.3-1.3-.5-1.9-1.1-.9z" fill="white"/>
+                </svg>
+              </div>
+            ),
+            url:   'https://t.me/happyhourapp',
+          },
         ].map((item, i, arr) => (
           <a
             key={item.label}
@@ -251,15 +270,16 @@ function LinksSection() {
             target="_blank"
             rel="noopener noreferrer"
             style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '13px 18px', gap: 16, textDecoration: 'none', background: '#fff',
+              display: 'flex', alignItems: 'center', gap: 12,
+              padding: '13px 18px', textDecoration: 'none', background: '#fff',
               transition: 'background 0.15s',
               borderBottom: i < arr.length - 1 ? '1px solid #f1f5f9' : 'none',
             }}
             onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
             onMouseLeave={e => e.currentTarget.style.background = '#fff'}
           >
-            <span style={{ fontWeight: 700, fontSize: 13.5, color: '#0052ff' }}>{item.label}</span>
+            <span style={{ flexShrink: 0 }}>{item.icon}</span>
+            <span style={{ flex: 1, fontWeight: 700, fontSize: 13.5, color: '#0052ff' }}>{item.label}</span>
             <svg width="13" height="13" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
               <path d="M2 7h10M7 2l5 5-5 5" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
