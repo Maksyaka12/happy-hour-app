@@ -389,8 +389,11 @@ export default function App() {
               onMouseLeave={e => e.currentTarget.style.background = 'rgba(0, 82, 255, 0.08)'}
             >
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#0052ff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10 9 9 9 8 9"/>
               </svg>
             </a>
 
@@ -628,19 +631,29 @@ export default function App() {
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 8,
+            gap: 6,
             background: 'rgba(255, 255, 255, 0.05)',
             border: '1px solid rgba(255, 255, 255, 0.12)',
-            borderRadius: 12,
-            padding: '8px 16px',
+            borderRadius: 10,
+            padding: '6px 10px',
             width: '100%',
-            maxWidth: 300,
+            maxWidth: 350,
             justifyContent: 'space-between',
             boxSizing: 'border-box'
           }}>
-            <span style={{ fontSize: 10, fontWeight: 900, color: '#3B82F6', letterSpacing: '0.5px' }}>$HH CA:</span>
-            <span style={{ fontSize: 11.5, fontWeight: 800, fontFamily: 'monospace', color: '#FFFFFF' }}>
-              {caCopied ? 'Copied! ✅' : '0x8235...cBA3'}
+            <span style={{ fontSize: 9.5, fontWeight: 900, color: '#3B82F6', letterSpacing: '0.5px', flexShrink: 0 }}>$HH CA:</span>
+            <span style={{ 
+              fontSize: 8.5, 
+              fontWeight: 800, 
+              fontFamily: "sf mono, consolas, 'Fira Code', monospace", 
+              color: '#FFFFFF', 
+              letterSpacing: '-0.1px',
+              wordBreak: 'break-all',
+              textAlign: 'center',
+              flex: 1,
+              padding: '0 4px'
+            }}>
+              {caCopied ? 'Copied! ✅' : '0x8235EdF32a1e10Bd1867ad622915AB613664cbA3'}
             </span>
             <button 
               onClick={() => {
@@ -658,12 +671,13 @@ export default function App() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: '#3B82F6',
-                transition: 'all 0.2s'
+                transition: 'all 0.2s',
+                flexShrink: 0
               }}
               onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.15)'}
               onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
               </svg>
@@ -722,12 +736,10 @@ export default function App() {
               onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
             >
               <div style={{
-                width: 20, height: 20, borderRadius: '50%', background: 'rgba(59, 130, 246, 0.15)',
-                border: '1px solid rgba(59, 130, 246, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                width: 20, height: 20, borderRadius: '50%', overflow: 'hidden',
+                border: '1.5px solid #3B82F6', display: 'flex', alignItems: 'center', justifyContent: 'center'
               }}>
-                <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#3B82F6' }}>
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                </svg>
+                <img src="/mksvibe.jpg" alt="mksvibe" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
               <span>Devs X</span>
             </a>
