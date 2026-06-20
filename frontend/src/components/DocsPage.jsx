@@ -464,7 +464,7 @@ function UtilitySection() {
         $HH Utility & Economy
       </h1>
       <img 
-        src="/banner-intruduction.jfif" 
+        src="/banner-introduction.jfif" 
         alt="Introduction Banner" 
         style={{ width: '100%', borderRadius: 12, display: 'block', marginBottom: 20, border: '1px solid #e2e8f0' }} 
       />
