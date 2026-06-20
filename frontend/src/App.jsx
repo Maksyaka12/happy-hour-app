@@ -740,18 +740,21 @@ export default function App() {
               <span>Coingecko</span>
             </a>
 
-            {/* Docs (Soon) */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.5)' }}>
+            {/* Docs */}
+            <a 
+              href="/docs"
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
+              onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
+              onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'none'; }}
+            >
               <div style={{
                 width: 20, height: 20, borderRadius: '50%', background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.15)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10
               }}>
                 📖
               </div>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, cursor: 'not-allowed' }}>
-                Docs <span style={{ fontSize: 7.5, background: 'rgba(255, 255, 255, 0.12)', border: '1px solid rgba(255, 255, 255, 0.2)', borderRadius: 4, padding: '1px 3.5px', fontWeight: 900, textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.6)' }}>Soon</span>
-              </span>
-            </div>
+              <span>Docs</span>
+            </a>
           </div>
 
           {/* Copyright */}

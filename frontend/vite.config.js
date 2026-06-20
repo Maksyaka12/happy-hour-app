@@ -6,4 +6,8 @@ export default defineConfig({
   define: {
     global: 'globalThis',
   },
+  appType: 'spa',
+  server: {
+    historyApiFallback: true,
+  },
 })
