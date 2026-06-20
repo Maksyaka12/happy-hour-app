@@ -22,7 +22,9 @@ const NAV = [
   {
     group: '$HH Coin',
     items: [
-      { id: 'utility-economy', label: '$HH Utility & Economy' },
+      { id: 'hh-introduction', label: '$HH Introduction' },
+      { id: 'hh-utility',      label: '$HH Utility' },
+      { id: 'hh-economy',      label: '$HH Economy' },
     ]
   },
 ]
@@ -173,7 +175,7 @@ function IntroSection({ onNav }) {
           isCoin
           title="$HH Utility & Economy"
           desc="Contracts, tokenomics, staking APR, burn mechanics, and the full economic model."
-          sectionId="utility-economy"
+          sectionId="hh-introduction"
           onNav={onNav}
         />
       </div>
@@ -453,35 +455,44 @@ function LinkTable({ items }) {
   )
 }
 
-// ─── Section: HH UTILITY & ECONOMY ───────────────────────────────────────────
-function UtilitySection() {
+// ─── Section: HH INTRODUCTION ────────────────────────────────────────────────
+function HHIntroSection() {
   return (
-    <section id="utility-economy" style={{ marginTop: 60, paddingTop: 40, borderTop: '1px solid #f1f5f9' }}>
+    <section id="hh-introduction" style={{ marginTop: 60, paddingTop: 40, borderTop: '1px solid #f1f5f9' }}>
       <div style={{ fontSize: 12.5, fontWeight: 600, color: '#0052ff', marginBottom: 10, letterSpacing: 0.2 }}>
         $HH Coin
       </div>
       <h1 style={{ fontSize: 28, fontWeight: 800, color: '#0f172a', margin: '0 0 10px', letterSpacing: '-0.5px' }}>
-        $HH Utility & Economy
+        $HH Introduction
       </h1>
       <img 
         src="/banner-introduction.jfif" 
         alt="Introduction Banner" 
         style={{ width: '100%', borderRadius: 12, display: 'block', marginBottom: 20, border: '1px solid #e2e8f0' }} 
       />
-      <p style={{ fontSize: 14.5, color: '#64748b', margin: '0 0 32px', lineHeight: 1.75 }}>
+      <p style={{ fontSize: 14.5, color: '#64748b', margin: '0', lineHeight: 1.75 }}>
         $HH is the <span style={{ fontWeight: 600, color: '#334155' }}>native utility coin</span> of Happy Hour App. It was created by the Bankr community — the coin is <span style={{ fontWeight: 600, color: '#334155' }}>owned by BANKR</span>, ensuring full transparency, zero team speculation, and no insider allocations. We <span style={{ fontWeight: 600, color: '#334155' }}>accepted $HH</span> as the native coin of Happy Hour and embedded <span style={{ fontWeight: 600, color: '#334155' }}>real utility</span> into it across the entire application. This makes $HH a <span style={{ fontWeight: 600, color: '#334155' }}>long-term ecosystem coin</span> — not just a speculative asset (memecoin).
       </p>
+    </section>
+  )
+}
 
-      {/* Utility */}
-      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0f172a', margin: '0 0 16px', letterSpacing: '-0.3px' }}>
+// ─── Section: HH UTILITY ─────────────────────────────────────────────────────
+function HHUtilitySection() {
+  return (
+    <section id="hh-utility" style={{ marginTop: 60, paddingTop: 40, borderTop: '1px solid #f1f5f9' }}>
+      <div style={{ fontSize: 12.5, fontWeight: 600, color: '#0052ff', marginBottom: 10, letterSpacing: 0.2 }}>
+        $HH Coin
+      </div>
+      <h1 style={{ fontSize: 28, fontWeight: 800, color: '#0f172a', margin: '0 0 16px', letterSpacing: '-0.5px' }}>
         $HH Utility
-      </h2>
+      </h1>
       <img 
         src="/banner-utility.jfif" 
         alt="Utility Banner" 
         style={{ width: '100%', borderRadius: 12, display: 'block', marginBottom: 24, border: '1px solid #e2e8f0' }} 
       />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginBottom: 32 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         {[
           {
             title: 'Staking',
@@ -515,11 +526,27 @@ function UtilitySection() {
           </div>
         ))}
       </div>
+    </section>
+  )
+}
 
-      {/* Economy */}
-      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0f172a', margin: '0 0 12px', letterSpacing: '-0.3px' }}>
-        Economic Model
-      </h2>
+// ─── Section: HH ECONOMY ─────────────────────────────────────────────────────
+function HHEconomySection() {
+  return (
+    <section id="hh-economy" style={{ marginTop: 60, paddingTop: 40, borderTop: '1px solid #f1f5f9' }}>
+      <div style={{ fontSize: 12.5, fontWeight: 600, color: '#0052ff', marginBottom: 10, letterSpacing: 0.2 }}>
+        $HH Coin
+      </div>
+      <h1 style={{ fontSize: 28, fontWeight: 800, color: '#0f172a', margin: '0 0 16px', letterSpacing: '-0.5px' }}>
+        $HH Economy
+      </h1>
+      
+      <img 
+        src="/banner-economy.jfif" 
+        alt="Economy Banner" 
+        style={{ width: '100%', borderRadius: 12, display: 'block', marginBottom: 24, border: '1px solid #e2e8f0' }} 
+      />
+
       <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.75, margin: '0 0 20px' }}>
         The Happy Hour economy is designed to be deflationary and community-first. Every transaction feeds back into the ecosystem — either reducing supply or funding community rewards.
       </p>
@@ -813,7 +840,9 @@ export function DocsPage() {
           >
             <IntroSection onNav={scrollTo} />
             <LinksSection />
-            <UtilitySection />
+            <HHIntroSection />
+            <HHUtilitySection />
+            <HHEconomySection />
 
             {/* Prev / Next */}
             <div style={{
