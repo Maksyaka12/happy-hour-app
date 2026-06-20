@@ -463,51 +463,55 @@ function UtilitySection() {
       <h1 style={{ fontSize: 28, fontWeight: 800, color: '#0f172a', margin: '0 0 10px', letterSpacing: '-0.5px' }}>
         $HH Utility & Economy
       </h1>
+      <img 
+        src="/banner-intruduction.jfif" 
+        alt="Introduction Banner" 
+        style={{ width: '100%', borderRadius: 12, display: 'block', marginBottom: 20, border: '1px solid #e2e8f0' }} 
+      />
       <p style={{ fontSize: 14.5, color: '#64748b', margin: '0 0 32px', lineHeight: 1.75 }}>
-        $HH is the native utility coin of Happy Hour App. It was created by the Bankr community — the coin is owned by BANKR, ensuring full transparency, zero team speculation, and no insider allocations. We accepted $HH as the native coin of Happy Hour and embedded real utility into it across the entire application. This makes $HH a long-term ecosystem coin — not just a speculative asset (memecoin).
+        $HH is the <span style={{ fontWeight: 600, color: '#334155' }}>native utility coin</span> of Happy Hour App. It was created by the Bankr community — the coin is <span style={{ fontWeight: 600, color: '#334155' }}>owned by BANKR</span>, ensuring full transparency, zero team speculation, and no insider allocations. We <span style={{ fontWeight: 600, color: '#334155' }}>accepted $HH</span> as the native coin of Happy Hour and embedded <span style={{ fontWeight: 600, color: '#334155' }}>real utility</span> into it across the entire application. This makes $HH a <span style={{ fontWeight: 600, color: '#334155' }}>long-term ecosystem coin</span> — not just a speculative asset (memecoin).
       </p>
 
       {/* Utility */}
-      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0f172a', margin: '0 0 12px', letterSpacing: '-0.3px' }}>
-        $HH In-App Utility
+      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0f172a', margin: '0 0 16px', letterSpacing: '-0.3px' }}>
+        $HH Utility
       </h2>
-      <div style={{ display: 'grid', gap: 14, marginBottom: 32 }}>
+      <img 
+        src="/banner-utility.jfif" 
+        alt="Utility Banner" 
+        style={{ width: '100%', borderRadius: 12, display: 'block', marginBottom: 24, border: '1px solid #e2e8f0' }} 
+      />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginBottom: 32 }}>
         {[
           {
-            icon: '🔒',
             title: 'Staking',
             body: 'Lock $HH for 7 days (103% APR) or 10 days (166% APR) to earn APR rewards paid in $HH, plus HP points that contribute to your seasonal USDC reward allocation. Staking directly reduces circulating supply and creates long-term holding incentives.',
           },
           {
-            icon: '💎',
             title: 'Hold-to-Earn',
-            body: 'Holding $HH in your connected wallet earns HP points passively every day. The more $HH you hold, the more points you accumulate — rewarding long-term holders with real seasonal USDC distributions.',
+            body: 'Holding $HH in your registered in app wallet earns HP points passively every day. The more $HH you hold, the more points you accumulate — rewarding long-term holders with seasonal USDC distributions.',
           },
           {
-            icon: '🔥',
+            title: 'Native In-App Currency',
+            body: '$HH is the native currency of the Happy Hour App, powering all in-app transactions and payments.',
+          },
+          {
             title: 'In-App Burn',
-            body: 'The Happy Boxes section lets users burn $HH directly to purchase additional daily opening attempts — permanently removing $HH from supply in exchange for in-app privileges.',
+            body: '30% of every transaction and payment made in $HH within the app is permanently burned, removing $HH from circulation. Certain in-app features also offer direct $HH burning to unlock exclusive privileges and boost points generation for seasonal USDC rewards.',
           },
           {
-            icon: '⚔️',
-            title: 'Raid Payments',
-            body: 'Happy Raids can be paid with $HH as an alternative to USDC, creating additional organic demand for the coin.',
-          },
-          {
-            icon: '🏆',
             title: 'Points & Seasonal Rewards',
             body: 'HP (Happy Points) are earned through all in-app activities. At the end of each season, top HP holders receive USDC distributions from the treasury — directly linking $HH utility to real monetary rewards.',
           },
-        ].map(item => (
-          <div key={item.title} style={{
-            display: 'flex', gap: 16, padding: '16px 18px',
-            border: '1px solid #e2e8f0', borderRadius: 12, background: '#fff',
-          }}>
-            <div style={{ fontSize: 22, flexShrink: 0, marginTop: 1 }}>{item.icon}</div>
-            <div>
-              <div style={{ fontWeight: 700, fontSize: 14, color: '#0f172a', marginBottom: 5 }}>{item.title}</div>
-              <div style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.7 }}>{item.body}</div>
-            </div>
+        ].map((item, index) => (
+          <div key={item.title} style={{ paddingBottom: index < 4 ? 20 : 0, borderBottom: index < 4 ? '1px solid #f1f5f9' : 'none' }}>
+            <h3 style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', margin: '0 0 6px', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#0052ff' }} />
+              {item.title}
+            </h3>
+            <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.7, margin: 0, paddingLeft: 14 }}>
+              {item.body}
+            </p>
           </div>
         ))}
       </div>
