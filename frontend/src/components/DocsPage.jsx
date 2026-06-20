@@ -2,12 +2,12 @@ import { useEffect, useRef, useState } from 'react'
 
 // ─── Contract addresses ───────────────────────────────────────────────────────
 const CONTRACTS = {
-  HH_TOKEN:     '0x8235EdF32a1e10Bd1867ad622915AB613664cbA3',
-  PAYMENTS:     '0x7E861466bC2845C9f57051fb9652bC4a56d95542',
-  STAKING:      '0xFd23526111280b78FF4e7F38B1fAF5818B9c5214',
-  RAFFLE_VAULT: '0x3bdF461984142C473F2185B4F0F64a918B8ce49b',
-  HH_MANAGER:   '0x13802fDe66BCf54BcebE2242aF0836A5Dfb45Fc8',
-  FOUNDATION:   '0xdE76F43E17B1173947f63b72C85a2f0d9a97702F',
+  HH_TOKEN:         '0x8235EdF32a1e10Bd1867ad622915AB613664cbA3',
+  USDC_PAYMENTS:    '0x7E861466bC2845C9f57051fb9652bC4a56d95542',
+  USDC_RAFFLE:      '0x3bdF461984142C473F2185B4F0F64a918B8ce49b',
+  HH_PAYMENTS:      '0x13802fDe66BCf54BcebE2242aF0836A5Dfb45Fc8',
+  HH_RAFFLE:        '0xdE76F43E17B1173947f63b72C85a2f0d9a97702F',
+  HH_STAKING:       '0xFd23526111280b78FF4e7F38B1fAF5818B9c5214',
 }
 
 // ─── Nav sections ─────────────────────────────────────────────────────────────
@@ -15,8 +15,8 @@ const NAV = [
   {
     group: 'Getting Started',
     items: [
-      { id: 'introduction', label: 'Introduction' },
-      { id: 'official-links', label: 'Official Links' },
+      { id: 'introduction',   label: 'Introduction' },
+      { id: 'official-links', label: 'Official Links & Contracts' },
     ]
   },
   {
@@ -28,8 +28,6 @@ const NAV = [
 ]
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-const short = (addr) => `${addr.slice(0, 6)}…${addr.slice(-4)}`
-
 function CopyBtn({ text }) {
   const [copied, setCopied] = useState(false)
   const copy = () => {
@@ -41,10 +39,10 @@ function CopyBtn({ text }) {
     <button onClick={copy} style={{
       background: copied ? '#e8f5e9' : '#f1f5f9',
       border: `1px solid ${copied ? '#a5d6a7' : '#e2e8f0'}`,
-      borderRadius: 6, padding: '3px 9px', fontSize: 11.5, fontWeight: 600,
+      borderRadius: 6, padding: '3px 10px', fontSize: 11.5, fontWeight: 600,
       cursor: 'pointer', color: copied ? '#2e7d32' : '#64748b',
       display: 'inline-flex', alignItems: 'center', gap: 5, transition: 'all 0.2s',
-      fontFamily: 'inherit',
+      fontFamily: 'inherit', flexShrink: 0,
     }}>
       {copied ? (
         <><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#2e7d32" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>Copied</>
@@ -55,36 +53,9 @@ function CopyBtn({ text }) {
   )
 }
 
-function AddressRow({ label, addr, desc }) {
-  return (
-    <div style={{
-      display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
-      padding: '12px 0', borderBottom: '1px solid #f1f5f9', gap: 12,
-      flexWrap: 'wrap',
-    }}>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontWeight: 700, fontSize: 13.5, color: '#0f172a', marginBottom: 3 }}>{label}</div>
-        {desc && <div style={{ fontSize: 12.5, color: '#64748b', lineHeight: 1.5 }}>{desc}</div>}
-        <div style={{
-          fontFamily: "'DM Mono', 'Fira Mono', monospace", fontSize: 12, color: '#475569',
-          marginTop: 5, wordBreak: 'break-all', background: '#f8fafc',
-          border: '1px solid #e2e8f0', borderRadius: 6, padding: '4px 8px',
-          display: 'inline-block',
-        }}>
-          {addr}
-        </div>
-      </div>
-      <div style={{ flexShrink: 0, paddingTop: 2 }}>
-        <CopyBtn text={addr} />
-      </div>
-    </div>
-  )
-}
-
 function SectionCallout({ type = 'note', children }) {
   const styles = {
     note:      { bg: '#eff6ff', border: '#bfdbfe', icon: 'ℹ️', label: 'Note',      labelColor: '#1d4ed8' },
-    tip:       { bg: '#f0fdf4', border: '#bbf7d0', icon: '💡', label: 'Tip',       labelColor: '#15803d' },
     important: { bg: '#fffbeb', border: '#fde68a', icon: '⭐', label: 'Important', labelColor: '#b45309' },
   }
   const s = styles[type]
@@ -101,7 +72,7 @@ function SectionCallout({ type = 'note', children }) {
   )
 }
 
-function QuickCard({ icon, title, desc, href, sectionId, onNav }) {
+function QuickCard({ icon, title, desc, href, sectionId, onNav, isImg }) {
   const handleClick = (e) => {
     if (sectionId) { e.preventDefault(); onNav(sectionId) }
   }
@@ -112,8 +83,8 @@ function QuickCard({ icon, title, desc, href, sectionId, onNav }) {
       target={href && !sectionId ? '_blank' : undefined}
       rel="noopener noreferrer"
       style={{
-        display: 'block', padding: '18px 20px',
-        border: '1.5px solid #e2e8f0', borderRadius: 12,
+        display: 'block', padding: '22px 24px',
+        border: '1.5px solid #e2e8f0', borderRadius: 14,
         textDecoration: 'none', background: '#fff',
         transition: 'all 0.18s', cursor: 'pointer',
         boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
@@ -129,10 +100,35 @@ function QuickCard({ icon, title, desc, href, sectionId, onNav }) {
         e.currentTarget.style.transform = 'none'
       }}
     >
-      <div style={{ fontSize: 22, marginBottom: 8 }}>{icon}</div>
-      <div style={{ fontWeight: 700, fontSize: 14, color: '#0f172a', marginBottom: 5 }}>{title}</div>
-      <div style={{ fontSize: 12.5, color: '#64748b', lineHeight: 1.55 }}>{desc}</div>
+      <div style={{ marginBottom: 10 }}>
+        {isImg
+          ? <img src={icon} alt={title} style={{ width: 32, height: 32, borderRadius: 8, objectFit: 'cover' }} />
+          : <span style={{ fontSize: 26 }}>{icon}</span>
+        }
+      </div>
+      <div style={{ fontWeight: 700, fontSize: 15, color: '#0f172a', marginBottom: 6 }}>{title}</div>
+      <div style={{ fontSize: 13, color: '#64748b', lineHeight: 1.6 }}>{desc}</div>
     </a>
+  )
+}
+
+// ─── Contract row ─────────────────────────────────────────────────────────────
+function ContractRow({ label, addr, desc }) {
+  return (
+    <div style={{ padding: '14px 0', borderBottom: '1px solid #f1f5f9' }}>
+      <div style={{ fontWeight: 700, fontSize: 13.5, color: '#0f172a', marginBottom: desc ? 3 : 8 }}>{label}</div>
+      {desc && <div style={{ fontSize: 12.5, color: '#64748b', marginBottom: 8, lineHeight: 1.5 }}>{desc}</div>}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+        <code style={{
+          fontFamily: "'DM Mono', 'Fira Mono', monospace", fontSize: 11.5, color: '#475569',
+          background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 6,
+          padding: '4px 10px', wordBreak: 'break-all',
+        }}>
+          {addr}
+        </code>
+        <CopyBtn text={addr} />
+      </div>
+    </div>
   )
 }
 
@@ -146,77 +142,35 @@ function IntroSection({ onNav }) {
       <h1 style={{ fontSize: 32, fontWeight: 800, color: '#0f172a', margin: '0 0 10px', letterSpacing: '-0.5px', lineHeight: 1.2 }}>
         Happy Hour
       </h1>
-      <p style={{ fontSize: 15.5, color: '#475569', margin: '0 0 28px', lineHeight: 1.65 }}>
-        A consumer app built on Base — where the community earns real USDC rewards through engagement, powered by a native coin with genuine utility.
+      <p style={{ fontSize: 15.5, color: '#475569', margin: '0 0 32px', lineHeight: 1.65 }}>
+        Happy Hour is a consumer app built on Base.
       </p>
 
-      <SectionCallout type="tip">
-        Happy Hour is live on Base mainnet. No wallet connection is required to read these docs.
-      </SectionCallout>
-
-      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0f172a', margin: '32px 0 12px', letterSpacing: '-0.3px' }}>
+      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0f172a', margin: '0 0 12px', letterSpacing: '-0.3px' }}>
         What is Happy Hour?
       </h2>
-      <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.75, margin: '0 0 16px' }}>
-        Happy Hour is a fully onchain consumer application on Base that rewards active participants with USDC and $HH. The platform was created by and for the Bankr community — transforming a grassroots memecoin into a native utility coin with a robust in-app economy.
+      <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.8, margin: '0 0 16px' }}>
+        Happy Hour is a consumer application built on Base, featuring hourly USDC and $HH raffles with full on-chain randomization — giving every participant an equal chance to win. The platform includes a comprehensive points system that rewards users for in-app activity, with seasonal USDC distributions for the most active community members.
       </p>
-      <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.75, margin: '0 0 16px' }}>
-        Users connect their Base wallet, complete daily activities, participate in raffles, stake $HH, and climb the leaderboard to earn seasonal USDC rewards — all onchain, all transparent.
-      </p>
-
-      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0f172a', margin: '32px 0 12px', letterSpacing: '-0.3px' }}>
-        Why $HH?
-      </h2>
-      <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.75, margin: '0 0 16px' }}>
-        $HH started as a community coin within the Bankr ecosystem. Happy Hour gave it something most coins never achieve — real, sustainable utility embedded directly into an active application. Rather than speculative trading, $HH is now the engine of the entire economy: it's burned, staked, earned, and used as the primary interaction medium within the app.
-      </p>
-      <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.75, margin: '0 0 28px' }}>
-        This transforms $HH from a short-term memecoin into a long-term ecosystem coin — accepted, powered by, and continuously strengthened by its community.
+      <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.8, margin: '0 0 28px' }}>
+        $HH was created by the Bankr community — we adopted it as the native coin of Happy Hour, embedding real utility into every layer of the app. This approach makes $HH a long-term ecosystem coin rather than a speculative asset: it's used, burned, staked, and earned within a live, active application.
       </p>
 
       <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0f172a', margin: '32px 0 16px', letterSpacing: '-0.3px' }}>
-        Explore the App
+        Explore
       </h2>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 14, marginBottom: 32 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 16, marginBottom: 32 }}>
         <QuickCard
-          icon="🎰"
-          title="HH Raffle"
-          desc="Buy tickets with USDC. 85% of the pool goes to the winner every round."
-          sectionId="utility-economy"
-          onNav={onNav}
+          icon="/logo.png"
+          isImg
+          title="Happy Hour App"
+          desc="Connect your Base wallet and start earning USDC and $HH rewards."
+          href="https://happy-hour-based.app"
         />
         <QuickCard
-          icon="✅"
-          title="Daily Check-in & Boost"
-          desc="Earn HP points daily. Pay small USDC fees to boost your streak multiplier."
-          sectionId="utility-economy"
-          onNav={onNav}
-        />
-        <QuickCard
-          icon="🔒"
-          title="$HH Staking"
-          desc="Lock $HH for 7 or 10 days. Earn HP points + APR rewards paid in $HH."
-          sectionId="utility-economy"
-          onNav={onNav}
-        />
-        <QuickCard
-          icon="🏆"
-          title="Points & Leaderboard"
-          desc="Accumulate HP all season. Top holders earn seasonal USDC reward distributions."
-          sectionId="utility-economy"
-          onNav={onNav}
-        />
-        <QuickCard
-          icon="⚔️"
-          title="Happy Raids"
-          desc="PvP on-chain raid battles. Use USDC or $HH to raid other players."
-          sectionId="utility-economy"
-          onNav={onNav}
-        />
-        <QuickCard
-          icon="📦"
-          title="Happy Boxes"
-          desc="Open mystery boxes containing HP rewards. Extra attempts purchasable with $HH."
+          icon="💎"
+          title="$HH Utility & Economy"
+          desc="Contracts, tokenomics, staking APR, burn mechanics, and the full economic model."
           sectionId="utility-economy"
           onNav={onNav}
         />
@@ -225,94 +179,205 @@ function IntroSection({ onNav }) {
       <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0f172a', margin: '32px 0 12px', letterSpacing: '-0.3px' }}>
         Built on Base
       </h2>
-      <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.75, margin: '0 0 16px' }}>
-        All transactions, staking, and contract interactions happen on Base — Ethereum's fastest-growing L2, incubated by Coinbase. Base provides low fees, high throughput, and access to the broader Ethereum ecosystem, making it the ideal home for a consumer app like Happy Hour.
+      <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.8, margin: '0' }}>
+        All transactions, staking, and contract interactions happen on Base — Ethereum's fastest-growing L2, incubated by Coinbase. Base provides low fees, high throughput, and access to the broader Ethereum ecosystem.
       </p>
-
-      <SectionCallout type="note">
-        Happy Hour is a non-custodial app. Your assets remain in your wallet at all times. The app never holds your funds.
-      </SectionCallout>
     </section>
   )
 }
 
-// ─── Section: OFFICIAL LINKS ─────────────────────────────────────────────────
+// ─── Section: OFFICIAL LINKS & CONTRACTS ─────────────────────────────────────
 function LinksSection() {
-  const links = [
-    {
-      category: 'Application',
-      items: [
-        { label: 'Happy Hour Web App', href: 'https://happy-hour-based.app', desc: 'Main application — connect your Base wallet and start earning.' },
-        { label: 'Happy Hour on Base App Store', href: 'https://www.base.org/apps', desc: 'Discover Happy Hour in the official Base ecosystem app directory.' },
-      ]
-    },
-    {
-      category: 'Community & Social',
-      items: [
-        { label: 'Twitter / X — @HappyHourBased', href: 'https://x.com/HappyHourBased', desc: 'Official project Twitter for announcements, season updates, and community.' },
-        { label: 'Twitter / X — Creator', href: 'https://x.com/maksyaka12', desc: 'Founder account for development updates and direct community interaction.' },
-      ]
-    },
-    {
-      category: 'On-Chain & Market Data',
-      items: [
-        { label: 'DexScreener — $HH/USDC', href: 'https://dexscreener.com/base/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9', desc: 'Real-time price chart, liquidity, and trading volume on Base.' },
-        { label: 'GeckoTerminal — $HH Pool', href: 'https://www.geckoterminal.com/uk/base/pools/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9', desc: 'Pool analytics, holder data, and market metrics.' },
-        { label: 'Basescan — $HH Contract', href: `https://basescan.org/token/${CONTRACTS.HH_TOKEN}`, desc: 'Verify the $HH coin smart contract on Basescan.' },
-      ]
-    },
-  ]
-
   return (
     <section id="official-links" style={{ marginTop: 60, paddingTop: 40, borderTop: '1px solid #f1f5f9' }}>
       <div style={{ fontSize: 12.5, fontWeight: 600, color: '#0052ff', marginBottom: 10, letterSpacing: 0.2 }}>
-        Official Links
+        Official Links & Contracts
       </div>
       <h1 style={{ fontSize: 28, fontWeight: 800, color: '#0f172a', margin: '0 0 10px', letterSpacing: '-0.5px' }}>
-        Official Links
+        Official Links & Contracts
       </h1>
-      <p style={{ fontSize: 14.5, color: '#64748b', margin: '0 0 28px', lineHeight: 1.65 }}>
-        All official Happy Hour resources. Only use links from this page — always verify URLs before connecting your wallet.
+      <p style={{ fontSize: 14.5, color: '#64748b', margin: '0 0 32px', lineHeight: 1.65 }}>
+        All official Happy Hour resources and verified on-chain contracts.
       </p>
 
-      <SectionCallout type="important">
-        Always verify you are on <strong>happy-hour-based.app</strong> before connecting your wallet. The team will never ask for your seed phrase or private key.
-      </SectionCallout>
+      {/* Application */}
+      <h2 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', margin: '0 0 12px' }}>Application</h2>
+      <LinkTable items={[
+        {
+          label: 'Happy Hour App',
+          url:   'https://happy-hour-based.app',
+          desc:  'Web app — connect your Base wallet and start earning.',
+        },
+        {
+          label: 'Happy Hour on Base',
+          url:   'https://www.base.org/apps',
+          desc:  'Listed on the official Base ecosystem app directory.',
+        },
+      ]} />
 
-      {links.map(cat => (
-        <div key={cat.category} style={{ marginBottom: 32 }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', margin: '0 0 12px', letterSpacing: '-0.2px' }}>
-            {cat.category}
-          </h2>
-          <div style={{ border: '1px solid #e2e8f0', borderRadius: 12, overflow: 'hidden' }}>
-            {cat.items.map((item, i) => (
-              <a
-                key={item.label}
-                href={item.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '14px 18px', gap: 12, textDecoration: 'none',
-                  background: '#fff', transition: 'background 0.15s',
-                  borderBottom: i < cat.items.length - 1 ? '1px solid #f1f5f9' : 'none',
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
-                onMouseLeave={e => e.currentTarget.style.background = '#fff'}
-              >
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ fontWeight: 700, fontSize: 13.5, color: '#0052ff', marginBottom: 3 }}>{item.label}</div>
-                  <div style={{ fontSize: 12.5, color: '#64748b', lineHeight: 1.4 }}>{item.desc}</div>
+      {/* Community */}
+      <h2 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', margin: '28px 0 12px' }}>Community</h2>
+      <LinkTable items={[
+        {
+          label: 'X — @happyhour_base',
+          url:   'https://x.com/happyhour_base',
+          desc:  'Official project account. Announcements, season updates, community.',
+        },
+        {
+          label: 'X — @mksvibe (Dev)',
+          url:   'https://x.com/mksvibe',
+          desc:  'Developer account. Direct updates and community interaction.',
+        },
+      ]} />
+
+      {/* Market data */}
+      <h2 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', margin: '28px 0 12px' }}>Market Data</h2>
+      <div style={{ border: '1px solid #e2e8f0', borderRadius: 12, overflow: 'hidden' }}>
+        {[
+          {
+            label: 'DexScreener',
+            logo:  '/dexscreener.jpg',
+            href:  'https://dexscreener.com/base/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9',
+          },
+          {
+            label: 'GeckoTerminal',
+            logo:  '/geckoterminal.jpg',
+            href:  'https://www.geckoterminal.com/base/pools/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9',
+          },
+          {
+            label: 'Basescan — $HH Contract',
+            logo:  null,
+            href:  `https://basescan.org/token/${CONTRACTS.HH_TOKEN}`,
+          },
+        ].map((item, i, arr) => (
+          <a
+            key={item.label}
+            href={item.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'flex', alignItems: 'center', gap: 12,
+              padding: '13px 18px', textDecoration: 'none', background: '#fff',
+              transition: 'background 0.15s',
+              borderBottom: i < arr.length - 1 ? '1px solid #f1f5f9' : 'none',
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
+            onMouseLeave={e => e.currentTarget.style.background = '#fff'}
+          >
+            {item.logo
+              ? <img src={item.logo} alt={item.label} style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover', border: '1px solid #e2e8f0', flexShrink: 0 }} />
+              : <div style={{ width: 22, height: 22, background: '#0052ff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1a5 5 0 100 10A5 5 0 006 1z" stroke="#fff" strokeWidth="1.2"/><path d="M4 6h4M6 4v4" stroke="#fff" strokeWidth="1.2" strokeLinecap="round"/></svg>
                 </div>
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
-                  <path d="M2 7h10M7 2l5 5-5 5" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </a>
-            ))}
-          </div>
+            }
+            <span style={{ flex: 1, fontWeight: 600, fontSize: 13.5, color: '#0f172a' }}>{item.label}</span>
+            <span style={{ fontSize: 11, color: '#94a3b8', fontFamily: "'DM Mono', monospace", wordBreak: 'break-all', maxWidth: 260, textAlign: 'right' }}>
+              {item.href.replace('https://', '').split('/')[0]}
+            </span>
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
+              <path d="M2 7h10M7 2l5 5-5 5" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </a>
+        ))}
+      </div>
+
+      {/* Contracts */}
+      <h2 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', margin: '32px 0 6px' }}>Contracts</h2>
+      <p style={{ fontSize: 13, color: '#94a3b8', margin: '0 0 16px', lineHeight: 1.5 }}>
+        All contracts are deployed on Base mainnet and verifiable on Basescan.
+      </p>
+
+      {/* Official CA */}
+      <div style={{ background: 'linear-gradient(135deg, #eff6ff 0%, #fff 100%)', border: '1.5px solid #bfdbfe', borderRadius: 12, padding: '16px 20px', marginBottom: 20 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: '#0052ff', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Official $HH CA</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          <code style={{
+            fontFamily: "'DM Mono', 'Fira Mono', monospace", fontSize: 12, color: '#1e3a8a',
+            background: 'rgba(255,255,255,0.7)', border: '1px solid #bfdbfe', borderRadius: 6,
+            padding: '5px 10px', wordBreak: 'break-all', flex: 1, minWidth: 0,
+          }}>
+            {CONTRACTS.HH_TOKEN}
+          </code>
+          <CopyBtn text={CONTRACTS.HH_TOKEN} />
         </div>
-      ))}
+      </div>
+
+      {/* USDC contracts */}
+      <div style={{ marginBottom: 14 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 }}>USDC Contracts</div>
+        <div style={{ border: '1px solid #e2e8f0', borderRadius: 12, overflow: 'hidden' }}>
+          <div style={{ borderBottom: '1px solid #f1f5f9' }}>
+            <ContractRow
+              label="HappyHour USDC Payments Vault"
+              addr={CONTRACTS.USDC_PAYMENTS}
+              desc="Receives all in-app USDC payments"
+            />
+          </div>
+          <ContractRow
+            label="HappyHour USDC Raffle Vault"
+            addr={CONTRACTS.USDC_RAFFLE}
+            desc="Holds USDC raffle pools and executes payouts: 85% to the winner, 15% is burned"
+          />
+        </div>
+      </div>
+
+      {/* HH contracts */}
+      <div>
+        <div style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 }}>$HH Contracts</div>
+        <div style={{ border: '1px solid #e2e8f0', borderRadius: 12, overflow: 'hidden' }}>
+          <div style={{ borderBottom: '1px solid #f1f5f9' }}>
+            <ContractRow
+              label="HappyHour $HH Payments Vault"
+              addr={CONTRACTS.HH_PAYMENTS}
+              desc="Handles all in-app $HH transactions and burn executions"
+            />
+          </div>
+          <div style={{ borderBottom: '1px solid #f1f5f9' }}>
+            <ContractRow
+              label="HappyHour $HH Raffle Vault"
+              addr={CONTRACTS.HH_RAFFLE}
+            />
+          </div>
+          <ContractRow
+            label="HappyHour $HH Staking Vault"
+            addr={CONTRACTS.HH_STAKING}
+          />
+        </div>
+      </div>
     </section>
+  )
+}
+
+// Reusable link table
+function LinkTable({ items }) {
+  return (
+    <div style={{ border: '1px solid #e2e8f0', borderRadius: 12, overflow: 'hidden', marginBottom: 4 }}>
+      {items.map((item, i) => (
+        <a
+          key={item.label}
+          href={item.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+            padding: '14px 18px', gap: 16, textDecoration: 'none', background: '#fff',
+            transition: 'background 0.15s',
+            borderBottom: i < items.length - 1 ? '1px solid #f1f5f9' : 'none',
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
+          onMouseLeave={e => e.currentTarget.style.background = '#fff'}
+        >
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontWeight: 700, fontSize: 13.5, color: '#0052ff', marginBottom: 3 }}>{item.label}</div>
+            {item.desc && <div style={{ fontSize: 12.5, color: '#64748b', lineHeight: 1.45, marginBottom: 4 }}>{item.desc}</div>}
+            <div style={{ fontSize: 11, fontFamily: "'DM Mono', monospace", color: '#94a3b8', wordBreak: 'break-all' }}>{item.url}</div>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0, marginTop: 2 }}>
+            <path d="M2 7h10M7 2l5 5-5 5" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </a>
+      ))}
+    </div>
   )
 }
 
@@ -327,58 +392,17 @@ function UtilitySection() {
         $HH Utility & Economy
       </h1>
       <p style={{ fontSize: 14.5, color: '#64748b', margin: '0 0 28px', lineHeight: 1.65 }}>
-        $HH is the native coin of the Happy Hour ecosystem — not a speculative token, but a functional coin built to power every interaction in the app.
+        $HH was created by the Bankr community — ensuring full transparency, fairness, and zero team speculation. No insider allocations, no dump risk. The coin is purely community-powered.
       </p>
-
-      {/* Smart Contracts */}
-      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0f172a', margin: '0 0 6px', letterSpacing: '-0.3px' }}>
-        Smart Contracts
-      </h2>
-      <p style={{ fontSize: 13.5, color: '#64748b', margin: '0 0 16px', lineHeight: 1.6 }}>
-        All Happy Hour contracts are deployed on Base mainnet and fully verifiable on Basescan.
+      <p style={{ fontSize: 14.5, color: '#64748b', margin: '-12px 0 32px', lineHeight: 1.65 }}>
+        Happy Hour adopted $HH as its native coin, embedding real utility across the entire application — making it a long-term ecosystem coin rather than a speculative asset.
       </p>
-      <div style={{ border: '1px solid #e2e8f0', borderRadius: 12, padding: '4px 18px 0', background: '#fff', marginBottom: 28 }}>
-        <AddressRow
-          label="$HH Coin"
-          addr={CONTRACTS.HH_TOKEN}
-          desc="The native $HH coin contract. Used for staking, in-app transactions, and burn mechanics."
-        />
-        <AddressRow
-          label="HappyHour Payments Vault"
-          addr={CONTRACTS.PAYMENTS}
-          desc="Receives all USDC payments (check-ins, daily boost, raids, boxes). Funds are distributed to the treasury and burned per the economic model."
-        />
-        <AddressRow
-          label="HappyHour Staking"
-          addr={CONTRACTS.STAKING}
-          desc="Manages $HH staking positions. Users lock $HH for fixed durations and earn HP points + APR rewards."
-        />
-        <AddressRow
-          label="HH Raffle Vault"
-          addr={CONTRACTS.RAFFLE_VAULT}
-          desc="Holds USDC raffle pools and executes winner payouts. 85% goes to the winner, 15% is burned."
-        />
-        <AddressRow
-          label="HH Manager"
-          addr={CONTRACTS.HH_MANAGER}
-          desc="Core app orchestration contract. Manages task completions, box openings, and on-chain verification of user actions."
-        />
-        <AddressRow
-          label="Foundation Treasury"
-          addr={CONTRACTS.FOUNDATION}
-          desc="Treasury vault smart contract. Receives 70% of in-app transaction fees and distributes rewards to the community."
-        />
-      </div>
 
       {/* Utility */}
-      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0f172a', margin: '32px 0 12px', letterSpacing: '-0.3px' }}>
+      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0f172a', margin: '0 0 12px', letterSpacing: '-0.3px' }}>
         $HH In-App Utility
       </h2>
-      <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.75, margin: '0 0 16px' }}>
-        Unlike coins with no functional use, $HH is woven into every layer of the Happy Hour experience:
-      </p>
-
-      <div style={{ display: 'grid', gap: 14, marginBottom: 28 }}>
+      <div style={{ display: 'grid', gap: 14, marginBottom: 32 }}>
         {[
           {
             icon: '🔒',
@@ -388,29 +412,29 @@ function UtilitySection() {
           {
             icon: '💎',
             title: 'Hold-to-Earn',
-            body: 'Simply holding $HH in your connected wallet earns HP points every day. The more $HH you hold, the more points you accumulate — rewarding long-term holders with real seasonal USDC distributions.',
+            body: 'Holding $HH in your connected wallet earns HP points passively every day. The more $HH you hold, the more points you accumulate — rewarding long-term holders with real seasonal USDC distributions.',
           },
           {
             icon: '🔥',
             title: 'In-App Burn',
-            body: 'The Happy Boxes section lets users burn $HH directly to purchase additional daily opening attempts. This is a direct deflationary mechanism — permanently removing $HH from supply in exchange for in-app privileges.',
+            body: 'The Happy Boxes section lets users burn $HH directly to purchase additional daily opening attempts — permanently removing $HH from supply in exchange for in-app privileges.',
           },
           {
             icon: '⚔️',
             title: 'Raid Payments',
-            body: 'Happy Raids can be paid with $HH as an alternative to USDC, creating additional demand for the coin beyond speculation.',
+            body: 'Happy Raids can be paid with $HH as an alternative to USDC, creating additional organic demand for the coin.',
           },
           {
             icon: '🏆',
             title: 'Points & Seasonal Rewards',
-            body: 'HP (Happy Points) are earned through all in-app activities. At the end of each season, the top HP holders receive USDC distributions from the treasury — making $HH utility directly linked to real monetary rewards.',
+            body: 'HP (Happy Points) are earned through all in-app activities. At the end of each season, top HP holders receive USDC distributions from the treasury — directly linking $HH utility to real monetary rewards.',
           },
         ].map(item => (
           <div key={item.title} style={{
             display: 'flex', gap: 16, padding: '16px 18px',
             border: '1px solid #e2e8f0', borderRadius: 12, background: '#fff',
           }}>
-            <div style={{ fontSize: 24, flexShrink: 0, marginTop: 1 }}>{item.icon}</div>
+            <div style={{ fontSize: 22, flexShrink: 0, marginTop: 1 }}>{item.icon}</div>
             <div>
               <div style={{ fontWeight: 700, fontSize: 14, color: '#0f172a', marginBottom: 5 }}>{item.title}</div>
               <div style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.7 }}>{item.body}</div>
@@ -420,21 +444,20 @@ function UtilitySection() {
       </div>
 
       {/* Economy */}
-      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0f172a', margin: '32px 0 12px', letterSpacing: '-0.3px' }}>
-        Tokenomics & Economic Model
+      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0f172a', margin: '0 0 12px', letterSpacing: '-0.3px' }}>
+        Economic Model
       </h2>
       <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.75, margin: '0 0 20px' }}>
-        The Happy Hour economy is designed to be deflationary and community-first. Every transaction in the app feeds back into the ecosystem — either reducing supply or funding community rewards.
+        The Happy Hour economy is designed to be deflationary and community-first. Every transaction feeds back into the ecosystem — either reducing supply or funding community rewards.
       </p>
 
-      {/* In-App Transaction Fee */}
       <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', margin: '0 0 10px' }}>
         In-App Transaction Split
       </h3>
       <p style={{ fontSize: 13.5, color: '#64748b', lineHeight: 1.65, margin: '0 0 14px' }}>
-        Every USDC payment made inside the app (check-ins, daily boosts, raids, boxes) follows this split:
+        Every USDC payment inside the app (check-ins, daily boosts, raids, boxes):
       </p>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 28 }}>
         <div style={{
           background: 'linear-gradient(135deg, #fff7ed 0%, #fff 100%)',
           border: '1.5px solid #fed7aa', borderRadius: 14, padding: '18px 20px', textAlign: 'center',
@@ -453,18 +476,17 @@ function UtilitySection() {
         </div>
       </div>
 
-      {/* Raffle */}
       <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', margin: '24px 0 10px' }}>
-        HH Raffle Distribution
+        HH Raffle Split
       </h3>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 28 }}>
         <div style={{
           background: 'linear-gradient(135deg, #f0fdf4 0%, #fff 100%)',
           border: '1.5px solid #bbf7d0', borderRadius: 14, padding: '18px 20px', textAlign: 'center',
         }}>
           <div style={{ fontSize: 32, fontWeight: 900, color: '#15803d', marginBottom: 4 }}>85%</div>
           <div style={{ fontWeight: 700, fontSize: 13, color: '#14532d', marginBottom: 6 }}>🏆 Winner</div>
-          <div style={{ fontSize: 12, color: '#166534', lineHeight: 1.5 }}>Every raffle round pays 85% of the total pool directly to the winner.</div>
+          <div style={{ fontSize: 12, color: '#166534', lineHeight: 1.5 }}>Paid directly to the winner of each raffle round.</div>
         </div>
         <div style={{
           background: 'linear-gradient(135deg, #fff7ed 0%, #fff 100%)',
@@ -472,21 +494,20 @@ function UtilitySection() {
         }}>
           <div style={{ fontSize: 32, fontWeight: 900, color: '#ea580c', marginBottom: 4 }}>15%</div>
           <div style={{ fontWeight: 700, fontSize: 13, color: '#9a3412', marginBottom: 6 }}>🔥 Burned</div>
-          <div style={{ fontSize: 12, color: '#c2410c', lineHeight: 1.5 }}>15% of every raffle pool is permanently burned — adding continuous deflationary pressure.</div>
+          <div style={{ fontSize: 12, color: '#c2410c', lineHeight: 1.5 }}>15% of every raffle pool is permanently burned — continuous deflationary pressure.</div>
         </div>
       </div>
 
-      {/* Fee Recipient */}
       <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', margin: '24px 0 10px' }}>
-        Fee Recipient & Treasury Operations
+        Fee Recipient & Treasury
       </h3>
       <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.75, margin: '0 0 14px' }}>
-        The Happy Hour app operates a designated fee recipient — the project founder — who receives a portion of onchain transaction fees generated by the ecosystem. These funds are not retained for personal use. They serve two explicit purposes:
+        The project operates a designated fee recipient who receives a portion of on-chain transaction fees generated by the ecosystem. These funds serve two explicit purposes:
       </p>
       <div style={{ display: 'grid', gap: 10, marginBottom: 24 }}>
         {[
           { icon: '💰', title: 'Treasury Funding', body: 'The majority of fee recipient proceeds are directed to the Foundation Treasury to ensure sustainable staking reward payouts and seasonal USDC distributions for the community.' },
-          { icon: '🔥', title: 'Coin Burns', body: 'A portion of fee recipient funds is used for direct $HH coin burns, reinforcing the deflationary model and supporting long-term coin value.' },
+          { icon: '🔥', title: 'Coin Burns', body: 'A portion is used for direct $HH coin burns, reinforcing the deflationary model and supporting long-term coin value.' },
         ].map(item => (
           <div key={item.title} style={{
             display: 'flex', gap: 14, padding: '14px 16px',
@@ -502,7 +523,7 @@ function UtilitySection() {
       </div>
 
       <SectionCallout type="note">
-        All treasury addresses and contract interactions are fully transparent and verifiable on Basescan. The economic model is enforced at the smart contract level — not through trusted third parties.
+        All treasury addresses and contract interactions are fully transparent and verifiable on Basescan. The economic model is enforced at the smart contract level.
       </SectionCallout>
 
       {/* Why not a memecoin */}
@@ -510,16 +531,16 @@ function UtilitySection() {
         $HH: Community Coin, Not a Memecoin
       </h2>
       <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.75, margin: '0 0 16px' }}>
-        $HH was born from the Bankr community — organic, community-driven, and free from VC allocation or team token unlocks. What separates $HH from a typical memecoin is sustained, real utility embedded in a live application:
+        $HH was born from the Bankr community — organic, community-driven, with no VC allocation or team token unlocks. What separates $HH from a typical memecoin is sustained, real utility in a live application:
       </p>
       <div style={{ display: 'grid', gap: 10, marginBottom: 24 }}>
         {[
-          '✅ Accepted as an in-app payment coin on a live consumer application',
-          '✅ Staking with real APR rewards paid in $HH',
-          '✅ Hold-to-earn mechanics — passive HP accumulation for USDC rewards',
-          '✅ Active burn mechanics embedded in every transaction and raffle',
+          '✅ Accepted as the native in-app coin of a live consumer application on Base',
+          '✅ Staking with real APR rewards paid in $HH (103% for 7d, 166% for 10d)',
+          '✅ Hold-to-earn — passive HP accumulation for seasonal USDC rewards',
+          '✅ Active burn mechanics embedded in every in-app transaction and raffle',
           '✅ Deflationary by design — every app interaction reduces supply',
-          '✅ Community-governed, community-powered, community-rewarded',
+          '✅ Community-created, community-powered, community-rewarded',
         ].map(item => (
           <div key={item} style={{
             fontSize: 13.5, color: '#374151', lineHeight: 1.6,
@@ -530,12 +551,13 @@ function UtilitySection() {
           </div>
         ))}
       </div>
-      <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.75, margin: '0 0 12px' }}>
-        The vision is clear: build a coin that the community wants to hold long-term — because holding it, using it, and staking it all generate real economic value in return.
-      </p>
 
-      <SectionCallout type="tip">
-        Want to join the Happy Hour community? Connect your Base wallet at <a href="https://happy-hour-based.app" target="_blank" rel="noopener noreferrer" style={{ color: '#0052ff', fontWeight: 600 }}>happy-hour-based.app</a> and start earning from day one.
+      <SectionCallout type="note">
+        Want to join the Happy Hour community? Connect your Base wallet at{' '}
+        <a href="https://happy-hour-based.app" target="_blank" rel="noopener noreferrer" style={{ color: '#0052ff', fontWeight: 600 }}>
+          happy-hour-based.app
+        </a>{' '}
+        and start earning from day one.
       </SectionCallout>
     </section>
   )
@@ -547,7 +569,6 @@ export function DocsPage() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const contentRef = useRef(null)
 
-  // Scroll-spy
   useEffect(() => {
     const obs = new IntersectionObserver(
       (entries) => {
@@ -578,13 +599,15 @@ export function DocsPage() {
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
         html { scroll-behavior: smooth; }
+        .docs-nav-item { transition: all 0.15s; }
         .docs-nav-item:hover { background: #f1f5f9 !important; color: #0f172a !important; }
         .docs-nav-item.active { background: #eff6ff !important; color: #0052ff !important; font-weight: 700 !important; }
+        .docs-content-section p + p { margin-top: 0; }
         @media (max-width: 768px) {
           .docs-sidebar { display: none !important; }
-          .docs-sidebar.open { display: flex !important; }
+          .docs-sidebar.open { display: flex !important; position: fixed; top: 60px; left: 0; bottom: 0; z-index: 99; box-shadow: 4px 0 20px rgba(0,0,0,0.1); }
           .docs-mobile-menu-btn { display: flex !important; }
-          .docs-content-wrap { margin-left: 0 !important; max-width: 100% !important; }
+          .docs-content-wrap { padding: 32px 20px 100px !important; }
         }
         @media (min-width: 769px) {
           .docs-mobile-menu-btn { display: none !important; }
@@ -593,7 +616,7 @@ export function DocsPage() {
 
       <div style={{ minHeight: '100vh', background: '#fff', fontFamily: "'Inter', sans-serif" }}>
 
-        {/* Top Header */}
+        {/* Header */}
         <header style={{
           position: 'sticky', top: 0, zIndex: 100,
           background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(12px)',
@@ -601,8 +624,7 @@ export function DocsPage() {
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '0 24px', height: 60,
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            {/* Mobile menu button */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <button
               className="docs-mobile-menu-btn"
               onClick={() => setMobileNavOpen(v => !v)}
@@ -647,14 +669,8 @@ export function DocsPage() {
             style={{
               width: 248, flexShrink: 0, position: 'sticky', top: 60,
               height: 'calc(100vh - 60px)', overflowY: 'auto',
-              padding: '24px 0', borderRight: '1px solid #f1f5f9',
-              display: 'flex', flexDirection: 'column',
-              background: '#fff',
-              // Mobile overlay styles applied via class
-              ...(mobileNavOpen ? {
-                position: 'fixed', top: 60, left: 0, bottom: 0, zIndex: 99,
-                boxShadow: '4px 0 20px rgba(0,0,0,0.1)',
-              } : {}),
+              padding: '28px 0', borderRight: '1px solid #f1f5f9',
+              display: 'flex', flexDirection: 'column', background: '#fff',
             }}
           >
             {NAV.map(group => (
@@ -675,7 +691,7 @@ export function DocsPage() {
                       cursor: 'pointer', padding: '7px 20px', fontSize: 13.5,
                       fontWeight: activeSection === item.id ? 700 : 500,
                       color: activeSection === item.id ? '#0052ff' : '#475569',
-                      borderRadius: 0, transition: 'all 0.15s',
+                      borderRadius: 0,
                       fontFamily: 'inherit',
                       borderLeft: activeSection === item.id ? '2px solid #0052ff' : '2px solid transparent',
                     }}
@@ -686,7 +702,6 @@ export function DocsPage() {
               </div>
             ))}
 
-            {/* Back to App */}
             <div style={{ marginTop: 'auto', padding: '20px 20px 0' }}>
               <a
                 href="/"
@@ -706,15 +721,14 @@ export function DocsPage() {
             </div>
           </aside>
 
-          {/* Mobile nav backdrop */}
+          {/* Mobile backdrop */}
           {mobileNavOpen && (
             <div
               onClick={() => setMobileNavOpen(false)}
               style={{
                 position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.25)',
-                zIndex: 98, display: 'none',
+                zIndex: 98,
               }}
-              className="docs-mobile-backdrop"
             />
           )}
 
@@ -722,29 +736,23 @@ export function DocsPage() {
           <main
             ref={contentRef}
             className="docs-content-wrap"
-            style={{
-              flex: 1, minWidth: 0, padding: '48px 56px 120px',
-              maxWidth: 780,
-            }}
+            style={{ flex: 1, minWidth: 0, padding: '48px 60px 120px', maxWidth: 780 }}
           >
-            {/* Prev/Next nav */}
             <IntroSection onNav={scrollTo} />
             <LinksSection />
             <UtilitySection />
 
-            {/* Bottom nav */}
+            {/* Prev / Next */}
             <div style={{
               display: 'flex', justifyContent: 'space-between', marginTop: 60,
               paddingTop: 24, borderTop: '1px solid #f1f5f9', gap: 12, flexWrap: 'wrap',
             }}>
               {allItems.map((item, i) => {
-                const isFirst = i === 0
-                const isLast = i === allItems.length - 1
-                if (isFirst) return null
+                if (i === 0) return null
                 return (
                   <button
-                    key={item.id}
-                    onClick={() => scrollTo(allItems[i - 1]?.id)}
+                    key={item.id + '-prev'}
+                    onClick={() => scrollTo(allItems[i - 1].id)}
                     style={{
                       background: 'none', border: '1px solid #e2e8f0', borderRadius: 10,
                       padding: '10px 18px', cursor: 'pointer', fontSize: 13,
@@ -754,16 +762,16 @@ export function DocsPage() {
                     onMouseEnter={e => { e.currentTarget.style.borderColor = '#0052ff'; e.currentTarget.style.color = '#0052ff' }}
                     onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#475569' }}
                   >
-                    ← {allItems[i - 1]?.label}
+                    ← {allItems[i - 1].label}
                   </button>
                 )
-              }).filter(Boolean)}
+              })}
               {allItems.map((item, i) => {
                 if (i === allItems.length - 1) return null
                 return (
                   <button
                     key={item.id + '-next'}
-                    onClick={() => scrollTo(allItems[i + 1]?.id)}
+                    onClick={() => scrollTo(allItems[i + 1].id)}
                     style={{
                       background: 'none', border: '1px solid #e2e8f0', borderRadius: 10,
                       padding: '10px 18px', cursor: 'pointer', fontSize: 13,
@@ -773,10 +781,10 @@ export function DocsPage() {
                     onMouseEnter={e => { e.currentTarget.style.borderColor = '#0052ff'; e.currentTarget.style.color = '#0052ff' }}
                     onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#475569' }}
                   >
-                    {allItems[i + 1]?.label} →
+                    {allItems[i + 1].label} →
                   </button>
                 )
-              }).filter(Boolean)}
+              })}
             </div>
 
             {/* Footer */}
@@ -789,14 +797,14 @@ export function DocsPage() {
                 © {new Date().getFullYear()} Happy Hour. Built on Base.
               </span>
               <a
-                href="https://x.com/HappyHourBased"
+                href="https://x.com/happyhour_base"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ fontSize: 12, color: '#94a3b8', textDecoration: 'none', fontWeight: 600 }}
                 onMouseEnter={e => e.currentTarget.style.color = '#64748b'}
                 onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
               >
-                @HappyHourBased ↗
+                @happyhour_base ↗
               </a>
             </div>
           </main>
