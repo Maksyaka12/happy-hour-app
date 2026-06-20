@@ -561,10 +561,13 @@ function HHEconomySection() {
         $HH Economy
       </h1>
       <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.75, margin: '0 0 16px' }}>
-        The Happy Hour economy is designed to be deflationary and community-first. Every transaction feeds back into the ecosystem — either reducing supply or funding community rewards.
+        The Happy Hour economy is designed to be deflationary and community-first. Every transaction feeds back into the ecosystem — either <span style={{ fontWeight: 600, color: '#334155' }}>reducing supply</span> or <span style={{ fontWeight: 600, color: '#334155' }}>funding community</span> rewards.
+      </p>
+      <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.75, margin: '0 0 16px' }}>
+        $HH is an organic, community-driven coin with <span style={{ fontWeight: 600, color: '#334155' }}>zero VC allocations</span>, <span style={{ fontWeight: 600, color: '#334155' }}>zero team token unlocks</span>, and <span style={{ fontWeight: 600, color: '#334155' }}>no insider distributions</span>. Created by the Bankr community, with <span style={{ fontWeight: 600, color: '#334155' }}>BANKR</span> as the <span style={{ fontWeight: 600, color: '#334155' }}>official coin owner</span>. It is powered by sustained, real-world utility in a live application through automated burns, staking, hold-to-earn points, and continuous deflationary feedback loops.
       </p>
       <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.75, margin: '0 0 28px' }}>
-        Created by the Bankr community, with BANKR as the official coin owner, $HH is an organic, community-driven coin with zero VC allocations, zero team token unlocks, and no insider distributions. It is powered by sustained, real-world utility in a live application through automated burns, staking, hold-to-earn points, and continuous deflationary feedback loops.
+        The Happy Hour team is fully committed to <span style={{ fontWeight: 600, color: '#334155' }}>supporting $HH</span> and reinforcing its role within our ecosystem. We are continuously building, integrating, and expanding utility to ensure its <span style={{ fontWeight: 600, color: '#334155' }}>long-term strength</span>, <span style={{ fontWeight: 600, color: '#334155' }}>organic demand</span>, and <span style={{ fontWeight: 600, color: '#334155' }}>stability</span>.
       </p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -575,7 +578,7 @@ function HHEconomySection() {
             In-App Burn Mechanics
           </h3>
           <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.7, margin: '0 0 12px', paddingLeft: 14 }}>
-            Every payment inside the application is automatically split at the smart contract level: 30% of every transaction is permanently burned to reduce circulating supply, and 70% goes to the Foundation Treasury to fund staking incentives and seasonal rewards.
+            Every payment inside the application is automatically split at the smart contract level: <span style={{ fontWeight: 600, color: '#334155' }}>30%</span> of every transaction is permanently burned to reduce circulating supply, and <span style={{ fontWeight: 600, color: '#334155' }}>70%</span> goes to the Foundation Treasury to fund staking incentives and seasonal rewards.
           </p>
           <div style={{ paddingLeft: 24, display: 'flex', flexDirection: 'column', gap: 12, marginTop: 8 }}>
             <div>
@@ -584,7 +587,7 @@ function HHEconomySection() {
                 Raffle Burn Mechanics
               </div>
               <div style={{ fontSize: 12.5, color: '#64748b', lineHeight: 1.6, paddingLeft: 10 }}>
-                Every round of the $HH raffle pool has an automated deflationary mechanic: 85% of the total pool is paid directly to the raffle winner, and 15% is permanently burned.
+                Every round of the $HH raffle pool has an automated deflationary mechanic: <span style={{ fontWeight: 600, color: '#334155' }}>85%</span> of the total pool is paid directly to the raffle winner, and <span style={{ fontWeight: 600, color: '#334155' }}>15%</span> is permanently burned.
               </div>
             </div>
             <div>
@@ -593,7 +596,7 @@ function HHEconomySection() {
                 Boxes Burn Mechanics
               </div>
               <div style={{ fontSize: 12.5, color: '#64748b', lineHeight: 1.6, paddingLeft: 10 }}>
-                Users can burn $HH directly to unlock exclusive in-app privileges, such as purchasing additional daily attempts to open Happy Boxes.
+                Users can burn $HH directly to unlock exclusive in-app privileges, such as purchasing additional daily attempts to open Happy Boxes to earn more in-app points.
               </div>
             </div>
           </div>
