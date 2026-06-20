@@ -146,7 +146,15 @@ export function ConnectScreen() {
           {/* Headline */}
           <div style={{ fontSize: 26, fontWeight: 900, lineHeight: 1.3, letterSpacing: -0.8, marginBottom: 16, color: 'var(--text)' }}>
             Consumer App on Base<br />
-            <span style={{ fontSize: 12.5, fontWeight: 800, color: '#0052FF', display: 'block', marginTop: 8, lineHeight: 1.4, letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+            <span style={{
+              fontFamily: "'DM Mono', monospace",
+              fontSize: 10.2,
+              color: '#717886',
+              display: 'block',
+              marginTop: 8,
+              lineHeight: 1.4,
+              letterSpacing: '-0.1px'
+            }}>
               Point System · Seasonal Rewards · Hourly Raffles
             </span>
           </div>
