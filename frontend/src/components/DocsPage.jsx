@@ -153,7 +153,7 @@ function IntroSection({ onNav }) {
         Happy Hour is a consumer application built on Base, featuring hourly USDC and $HH raffles with full on-chain randomization — giving every participant an equal chance to win. The platform includes a comprehensive points system that rewards users for in-app activity, with seasonal USDC distributions for the most active community members.
       </p>
       <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.8, margin: '0 0 28px' }}>
-        $HH is the native utility coin of Happy Hour App. It was created by the Bankr community — the coin is owned by BANKR — and we accepted it as the native coin of Happy Hour, embedding real utility into it. This makes $HH a long-term ecosystem coin, not just a speculative asset (memecoin).
+        $HH is the native utility coin of Happy Hour App. It was created by the Bankr community — the coin is owned by BANKR — and we accepted it as the native coin of Happy Hour, embedding real utility and economy into it. This makes $HH a long-term ecosystem coin, not just a speculative asset (memecoin).
       </p>
 
       <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0f172a', margin: '32px 0 16px', letterSpacing: '-0.3px' }}>
@@ -244,12 +244,24 @@ function LinksSection() {
         {[
           {
             label: 'X — @happyhour_base',
-            icon:  <img src="/mksvibe.jpg" alt="X" style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover', border: '1px solid #e2e8f0' }} />,
+            icon: (
+              <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#000', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <svg width="12" height="12" viewBox="0 0 1200 1227" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.163 519.284ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.828Z" fill="white"/>
+                </svg>
+              </div>
+            ),
             url:   'https://x.com/happyhour_base',
           },
           {
             label: 'X (Dev) — @mksvibe',
-            icon:  <img src="/mksvibe.jpg" alt="X Dev" style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover', border: '1px solid #e2e8f0' }} />,
+            icon: (
+              <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#000', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <svg width="12" height="12" viewBox="0 0 1200 1227" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.163 519.284ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.828Z" fill="white"/>
+                </svg>
+              </div>
+            ),
             url:   'https://x.com/mksvibe',
           },
           {
@@ -302,7 +314,7 @@ function LinksSection() {
             href:  'https://www.geckoterminal.com/base/pools/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9',
           },
           {
-            label: 'Basescan — $HH Contract',
+            label: 'Basescan',
             logo:  '/basescan-logo.svg',
             href:  `https://basescan.org/token/${CONTRACTS.HH_TOKEN}`,
           },
