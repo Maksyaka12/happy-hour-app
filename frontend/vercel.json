@@ -5,6 +5,8 @@
   "rewrites": [
     { "source": "/r", "destination": "/r/index.html" },
     { "source": "/r/", "destination": "/r/index.html" },
+    { "source": "/docs", "destination": "/docs.html" },
+    { "source": "/docs/(.*)", "destination": "/docs.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
