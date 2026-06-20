@@ -318,6 +318,42 @@ export default function App() {
               </svg>
             </a>
 
+            {/* Docs Link */}
+            <a 
+              href="/docs" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              title="Documentation"
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: '50%',
+                background: 'rgba(0, 82, 255, 0.08)',
+                border: '1px solid rgba(0, 82, 255, 0.2)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                textDecoration: 'none',
+                gap: 1
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(0, 82, 255, 0.16)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(0, 82, 255, 0.08)'}
+            >
+              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#0052ff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10 9 9 9 8 9"/>
+              </svg>
+              <span style={{ fontSize: 6, fontWeight: 800, color: '#0052ff', lineHeight: 1, letterSpacing: '-0.1px' }}>
+                docs
+              </span>
+            </a>
+
             {/* DexScreener Link */}
             <a 
               href="https://dexscreener.com/base/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9" 
@@ -364,37 +400,6 @@ export default function App() {
               onMouseLeave={e => e.currentTarget.style.opacity = '1'}
             >
               <img src="/geckoterminal.jpg" alt="GeckoTerminal" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            </a>
-
-            {/* Docs Link */}
-            <a 
-              href="/docs" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              title="Documentation"
-              style={{
-                width: 24,
-                height: 24,
-                borderRadius: '50%',
-                background: 'rgba(0, 82, 255, 0.08)',
-                border: '1px solid rgba(0, 82, 255, 0.2)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                textDecoration: 'none'
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(0, 82, 255, 0.16)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'rgba(0, 82, 255, 0.08)'}
-            >
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#0052ff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-                <line x1="16" y1="13" x2="8" y2="13"/>
-                <line x1="16" y1="17" x2="8" y2="17"/>
-                <polyline points="10 9 9 9 8 9"/>
-              </svg>
             </a>
 
             <div style={{
