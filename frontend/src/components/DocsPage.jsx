@@ -153,7 +153,7 @@ function IntroSection({ onNav }) {
         Happy Hour is a consumer application built on Base, featuring hourly USDC and $HH raffles with full on-chain randomization — giving every participant an equal chance to win. The platform includes a comprehensive points system that rewards users for in-app activity, with seasonal USDC distributions for the most active community members.
       </p>
       <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.8, margin: '0 0 28px' }}>
-        $HH is the native utility coin of Happy Hour App. It was created by the Bankr community — the coin is owned by BANKR — and we accepted it as the native coin of Happy Hour, embedding real utility and economy into it. This makes $HH a long-term ecosystem coin, not just a speculative asset (memecoin).
+        $HH is the <span style={{ fontWeight: 600, color: '#334155' }}>native utility coin</span> of Happy Hour App. It was created by the Bankr community — the coin is <span style={{ fontWeight: 600, color: '#334155' }}>owned by BANKR</span> — and we accepted it as the native coin of Happy Hour, embedding <span style={{ fontWeight: 600, color: '#334155' }}>real utility</span> and <span style={{ fontWeight: 600, color: '#334155' }}>economy </span>into it. This makes <span style={{ fontWeight: 600, color: '#334155' }}>$HH a long-term ecosystem coin</span>, not just a speculative asset (memecoin).
       </p>
 
       <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0f172a', margin: '32px 0 16px', letterSpacing: '-0.3px' }}>
@@ -256,11 +256,11 @@ function LinksSection() {
           {
             label: 'X (Dev) — @mksvibe',
             icon: (
-              <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#000', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <svg width="12" height="12" viewBox="0 0 1200 1227" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.163 519.284ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.828Z" fill="white"/>
-                </svg>
-              </div>
+              <img
+                src="/mksvibe.jpg"
+                alt="Dev"
+                style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover', border: '1px solid #e2e8f0', flexShrink: 0 }}
+              />
             ),
             url:   'https://x.com/mksvibe',
           },
@@ -403,9 +403,16 @@ function LinksSection() {
               desc="Holds $HH raffle pools and executes payouts: 85% to the winner, 15% is burned"
             />
           </div>
+          <div style={{ borderBottom: '1px solid #f1f5f9' }}>
+            <ContractRow
+              label="HappyHour $HH Staking Vault"
+              addr={CONTRACTS.HH_STAKING}
+            />
+          </div>
           <ContractRow
-            label="HappyHour $HH Staking Vault"
-            addr={CONTRACTS.HH_STAKING}
+            label="Burn Address"
+            addr="0x000000000000000000000000000000000000dEaD"
+            desc="The burn address used to permanently remove $HH from circulation from every in-app transaction & fee recipient burns"
           />
         </div>
       </div>
