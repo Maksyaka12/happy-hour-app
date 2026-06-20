@@ -471,14 +471,14 @@ function LinkTable({ items }) {
 function HHIntroSection() {
   return (
     <section id="hh-introduction" style={{ marginTop: 60, paddingTop: 40, borderTop: '1px solid #f1f5f9' }}>
+      <div style={{ fontSize: 12.5, fontWeight: 600, color: '#0052ff', marginBottom: 10, letterSpacing: 0.2 }}>
+        $HH Coin
+      </div>
       <img 
         src="/banner-introduction.jfif" 
         alt="Introduction Banner" 
         style={{ width: '100%', borderRadius: 12, display: 'block', marginBottom: 24, border: '1px solid #e2e8f0' }} 
       />
-      <div style={{ fontSize: 12.5, fontWeight: 600, color: '#0052ff', marginBottom: 10, letterSpacing: 0.2 }}>
-        $HH Coin
-      </div>
       <h1 style={{ fontSize: 28, fontWeight: 800, color: '#0f172a', margin: '0 0 16px', letterSpacing: '-0.5px' }}>
         $HH Introduction
       </h1>
@@ -496,14 +496,14 @@ function HHIntroSection() {
 function HHUtilitySection() {
   return (
     <section id="hh-utility" style={{ marginTop: 60, paddingTop: 40, borderTop: '1px solid #f1f5f9' }}>
+      <div style={{ fontSize: 12.5, fontWeight: 600, color: '#0052ff', marginBottom: 10, letterSpacing: 0.2 }}>
+        $HH Coin
+      </div>
       <img 
         src="/banner-utility.jfif" 
         alt="Utility Banner" 
         style={{ width: '100%', borderRadius: 12, display: 'block', marginBottom: 24, border: '1px solid #e2e8f0' }} 
       />
-      <div style={{ fontSize: 12.5, fontWeight: 600, color: '#0052ff', marginBottom: 10, letterSpacing: 0.2 }}>
-        $HH Coin
-      </div>
       <h1 style={{ fontSize: 28, fontWeight: 800, color: '#0f172a', margin: '0 0 16px', letterSpacing: '-0.5px' }}>
         $HH Utility
       </h1>
@@ -526,15 +526,11 @@ function HHUtilitySection() {
             body: '30% of every transaction and payment made in $HH within the app is permanently burned, removing $HH from circulation. Certain in-app features also offer direct $HH burning to unlock exclusive privileges and boost points generation for seasonal USDC rewards.',
           },
           {
-            title: 'Recipient Fee Burns',
-            body: "All $HH collected through the designated fee recipient address are utilized to strengthen the coin's economy. A significant portion of these fees is permanently burned, while the remainder is redistributed to fund staking incentives and loyalty rewards for active users.",
-          },
-          {
             title: 'Points & Seasonal Rewards',
             body: 'HP (Happy Points) are earned through all in-app activities. At the end of each season, top HP holders receive USDC distributions from the treasury — directly linking $HH utility to real monetary rewards.',
           },
         ].map((item, index) => (
-          <div key={item.title} style={{ paddingBottom: index < 5 ? 20 : 0, borderBottom: index < 5 ? '1px solid #f1f5f9' : 'none' }}>
+          <div key={item.title} style={{ paddingBottom: index < 4 ? 20 : 0, borderBottom: index < 4 ? '1px solid #f1f5f9' : 'none' }}>
             <h3 style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', margin: '0 0 6px', display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#0052ff' }} />
               {item.title}
@@ -553,59 +549,67 @@ function HHUtilitySection() {
 function HHEconomySection() {
   return (
     <section id="hh-economy" style={{ marginTop: 60, paddingTop: 40, borderTop: '1px solid #f1f5f9' }}>
+      <div style={{ fontSize: 12.5, fontWeight: 600, color: '#0052ff', marginBottom: 10, letterSpacing: 0.2 }}>
+        $HH Coin
+      </div>
       <img 
         src="/banner-economy.jfif" 
         alt="Economy Banner" 
         style={{ width: '100%', borderRadius: 12, display: 'block', marginBottom: 24, border: '1px solid #e2e8f0' }} 
       />
-      <div style={{ fontSize: 12.5, fontWeight: 600, color: '#0052ff', marginBottom: 10, letterSpacing: 0.2 }}>
-        $HH Coin
-      </div>
       <h1 style={{ fontSize: 28, fontWeight: 800, color: '#0f172a', margin: '0 0 16px', letterSpacing: '-0.5px' }}>
         $HH Economy
       </h1>
-      <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.75, margin: '0 0 24px' }}>
+      <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.75, margin: '0 0 16px' }}>
         The Happy Hour economy is designed to be deflationary and community-first. Every transaction feeds back into the ecosystem — either reducing supply or funding community rewards.
       </p>
+      <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.75, margin: '0 0 28px' }}>
+        Created by the Bankr community, with BANKR as the official coin owner, $HH is an organic, community-driven coin with zero VC allocations, zero team token unlocks, and no insider distributions. It is powered by sustained, real-world utility in a live application through automated burns, staking, hold-to-earn points, and continuous deflationary feedback loops.
+      </p>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginBottom: 28 }}>
-        {[
-          {
-            title: 'In-App Transaction Split',
-            body: 'Every payment inside the application is automatically split at the smart contract level: 30% of every transaction is permanently burned to reduce circulating supply, and 70% goes to the Foundation Treasury to fund staking incentives and seasonal rewards.',
-          },
-          {
-            title: 'HH Raffle Split',
-            body: 'Every round of the $HH raffle pool has an automated deflationary mechanic: 85% of the total pool is paid directly to the raffle winner, and 15% is permanently burned.',
-          },
-          {
-            title: 'Fee Recipient & Treasury Allocation',
-            body: 'A designated fee recipient collects a portion of on-chain transaction fees generated by the ecosystem. The majority of these proceeds fund the Foundation Treasury to guarantee sustainable staking APR and seasonal USDC distributions, while the remainder is used for direct $HH burns.',
-          },
-          {
-            title: 'Community-Driven & Deflationary Model',
-            body: '$HH is an organic, community-driven coin with zero VC allocations, zero team token unlocks, and no insider distributions. It is powered by sustained, real-world utility in a live application through automated burns, staking, hold-to-earn points, and continuous deflationary feedback loops.',
-          },
-        ].map((item, index) => (
-          <div key={item.title} style={{ paddingBottom: index < 3 ? 20 : 0, borderBottom: index < 3 ? '1px solid #f1f5f9' : 'none' }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', margin: '0 0 6px', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#0052ff' }} />
-              {item.title}
-            </h3>
-            <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.7, margin: 0, paddingLeft: 14 }}>
-              {item.body}
-            </p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        {/* Item 1: In-App Burn Mechanics */}
+        <div style={{ paddingBottom: 20, borderBottom: '1px solid #f1f5f9' }}>
+          <h3 style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', margin: '0 0 6px', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#0052ff' }} />
+            In-App Burn Mechanics
+          </h3>
+          <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.7, margin: '0 0 12px', paddingLeft: 14 }}>
+            Every payment inside the application is automatically split at the smart contract level: 30% of every transaction is permanently burned to reduce circulating supply, and 70% goes to the Foundation Treasury to fund staking incentives and seasonal rewards.
+          </p>
+          <div style={{ paddingLeft: 24, display: 'flex', flexDirection: 'column', gap: 12, marginTop: 8 }}>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: 13, color: '#334155', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ display: 'inline-block', width: 4, height: 4, borderRadius: '50%', background: '#64748b' }} />
+                Raffle Burn Mechanics
+              </div>
+              <div style={{ fontSize: 12.5, color: '#64748b', lineHeight: 1.6, paddingLeft: 10 }}>
+                Every round of the $HH raffle pool has an automated deflationary mechanic: 85% of the total pool is paid directly to the raffle winner, and 15% is permanently burned.
+              </div>
+            </div>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: 13, color: '#334155', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ display: 'inline-block', width: 4, height: 4, borderRadius: '50%', background: '#64748b' }} />
+                Boxes Burn Mechanics
+              </div>
+              <div style={{ fontSize: 12.5, color: '#64748b', lineHeight: 1.6, paddingLeft: 10 }}>
+                Users can burn $HH directly to unlock exclusive in-app privileges, such as purchasing additional daily attempts to open Happy Boxes.
+              </div>
+            </div>
           </div>
-        ))}
-      </div>
+        </div>
 
-      <SectionCallout type="note">
-        All treasury addresses and contract interactions are fully transparent and verifiable on Basescan. The economic model is enforced at the smart contract level. If you want to join the Happy Hour community, connect your Base wallet at{' '}
-        <a href="https://happy-hour-based.app" target="_blank" rel="noopener noreferrer" style={{ color: '#0052ff', fontWeight: 600 }}>
-          happy-hour-based.app
-        </a>{' '}
-        and start earning from day one.
-      </SectionCallout>
+        {/* Item 2: Recipient Fee Utilization */}
+        <div>
+          <h3 style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', margin: '0 0 6px', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#0052ff' }} />
+            Recipient Fee Utilization
+          </h3>
+          <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.7, margin: 0, paddingLeft: 14 }}>
+            All $HH collected through the designated fee recipient address are utilized to strengthen the coin's economy. A significant portion of these fees is permanently burned, while the remainder is redistributed to fund staking incentives and loyalty rewards for active users.
+          </p>
+        </div>
+      </div>
     </section>
   )
 }
