@@ -578,7 +578,7 @@ function HHEconomySection() {
             Recipient Fee Utilization
           </h3>
           <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.7, margin: 0, paddingLeft: 14 }}>
-            Since <span style={{ fontWeight: 600, color: '#334155' }}>@happyhour_base</span> is the official recipient of the <span style={{ fontWeight: 600, color: '#334155' }}>$HH coin fees</span> - all $HH collected through the designated fee recipient address are utilized to strengthen the coin's economy. A significant portion of these fees is permanently burned, while the remainder is redistributed to fund staking incentives and loyalty rewards for active users.
+            Since <span style={{ fontWeight: 600, color: '#334155' }}>@happyhour_base</span> is the official <span style={{ fontWeight: 600, color: '#334155' }}>Fee Recipient</span> of the <span style={{ fontWeight: 600, color: '#334155' }}>$HH coin</span> - all $HH collected through the designated fee recipient address are utilized to strengthen the coin's economy. A significant portion of these fees is permanently burned, while the remainder is redistributed to fund staking incentives and loyalty rewards for active users.
           </p>
         </div>
 
