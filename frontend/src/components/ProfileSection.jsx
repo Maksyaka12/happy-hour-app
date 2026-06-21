@@ -659,14 +659,21 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
             border: '1px solid rgba(255,255,255,0.08)',
             boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
             display: 'flex',
+            flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            gap: 2
           }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
               <span style={{ fontSize: 30, fontWeight: 900, color: '#fff', fontFamily: "'Barlow Condensed',sans-serif" }}>
                 {formatConcise(walletBalance)}
               </span>
               <span style={{ fontSize: 14, fontWeight: 900, color: '#A5B4FC' }}>$HH</span>
+            </div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255, 255, 255, 0.48)' }}>
+              ≈${walletBalance * hhPrice >= 0.01 
+                ? (walletBalance * hhPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                : (walletBalance * hhPrice).toFixed(4)}
             </div>
           </div>
         </div>
