@@ -4,6 +4,7 @@ import { base } from 'wagmi/chains'
 import { parseUnits, formatUnits } from 'viem'
 import { HH_ADDRESS, STAKING_ADDRESS, HH_ABI, STAKING_ABI } from '../config/constants'
 import { useBuilderWrite } from '../hooks/useBuilderWrite'
+import { db } from '../config/supabase'
 
 // Format helper
 const formatNumber = (num, decimals = 2) => {
@@ -104,6 +105,26 @@ export function StakingSection({ setTab }) {
       return 250000
     }
   })
+
+  const [lastStakedAmount, setLastStakedAmount] = useState(0)
+
+  // Sync real-time cumulative staking to Supabase when transaction succeeds
+  useEffect(() => {
+    if (stakeSuccess && lastStakedAmount > 0 && address) {
+      const recordDbStake = async () => {
+        try {
+          await db.rpc('add_staked_cumulative', {
+            p_address: address.toLowerCase(),
+            p_amount: lastStakedAmount
+          })
+          setLastStakedAmount(0) // Reset to prevent duplicate calls
+        } catch (err) {
+          console.error('Error updating staked_cumulative in DB:', err)
+        }
+      }
+      recordDbStake()
+    }
+  }, [stakeSuccess, lastStakedAmount, address])
 
   // Sync simulated states to localStorage
   useEffect(() => {
@@ -270,6 +291,8 @@ export function StakingSection({ setTab }) {
       setStakingAmount('')
       return
     }
+
+    setLastStakedAmount(parseFloat(stakingAmount))
 
     writeStake({
       address: STAKING_ADDRESS,

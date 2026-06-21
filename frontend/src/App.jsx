@@ -459,88 +459,6 @@ export default function App() {
             </div>
           )}
           {tab === 'leaderboard' && (
-            /* Temporary Under Development Placeholder for Season 2 Launch */
-            <div style={{
-              padding: '24px 16px 120px',
-              animation: 'hbFadeIn 0.4s ease',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              minHeight: '65vh'
-            }}>
-              <style dangerouslySetInnerHTML={{ __html: `
-                @keyframes hbFadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
-                @keyframes bounceSlow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-                @keyframes pulseGlow { 0%, 100% { filter: drop-shadow(0 0 15px rgba(0, 82, 255, 0.2)); } 50% { filter: drop-shadow(0 0 30px rgba(0, 82, 255, 0.55)); } }
-              ` }} />
-              
-              <div style={{
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.76) 0%, rgba(255,255,255,0.48) 100%)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                border: '1px solid rgba(0, 82, 255, 0.18)',
-                borderRadius: 28,
-                padding: '40px 24px',
-                textAlign: 'center',
-                boxShadow: '0 12px 32px rgba(0, 82, 255, 0.06)',
-                maxWidth: 420,
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 20
-              }}>
-                <div style={{
-                  fontSize: 64,
-                  lineHeight: 1,
-                  animation: 'bounceSlow 3s ease-in-out infinite, pulseGlow 3s infinite',
-                  userSelect: 'none'
-                }}>
-                  🏆
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <h2 style={{
-                    fontFamily: "'Barlow Condensed', sans-serif",
-                    fontSize: 32,
-                    fontWeight: 900,
-                    color: '#0000FF',
-                    textTransform: 'uppercase',
-                    margin: 0,
-                    letterSpacing: '0.5px',
-                    lineHeight: 1.1
-                  }}>
-                    Under Development
-                  </h2>
-                  <p style={{
-                    fontSize: 13,
-                    color: '#717886',
-                    fontWeight: 650,
-                    margin: 0,
-                    lineHeight: 1.5
-                  }}>
-                    USDC Rewards and $HH Rewards will be here soon. We are cooking them up right now. Stay tuned for the launch!
-                  </p>
-                </div>
-
-                <div style={{
-                  background: 'rgba(0, 82, 255, 0.08)',
-                  border: '1px solid rgba(0, 82, 255, 0.15)',
-                  borderRadius: 50,
-                  padding: '6px 16px',
-                  fontSize: 10,
-                  fontWeight: 800,
-                  color: '#0000FF',
-                  textTransform: 'uppercase',
-                  letterSpacing: '1px',
-                  marginTop: 8
-                }}>
-                  👨‍🍳 Cooking Something
-                </div>
-              </div>
-            </div>
-            /* Original Leaderboard Block (Uncomment to enable)
             <>
               <div style={{ padding: '0 16px' }}>
                 <div style={{
@@ -608,7 +526,6 @@ export default function App() {
                 <AirdropChecklist address={address} />
               )}
             </>
-            */
           )}
         </div>
         <footer style={{
