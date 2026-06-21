@@ -512,7 +512,7 @@ function HHIntroSection() {
           </div>
         </div>
         <p style={{ fontSize: 13, color: '#475569', lineHeight: 1.65, margin: '0 0 20px', borderTop: '1px solid #e2e8f0', paddingTop: 18 }}>
-          All $HH collected by Happy Hour as the Fee Recipient is dedicated to strengthening the coin's economy through <span style={{ fontWeight: 700, color: '#334155' }}>burning</span> (reducing circulating supply) and <span style={{ fontWeight: 700, color: '#334155' }}>funding community rewards</span> (staking incentives and seasonal rewards within the app).
+          All $HH collected by Happy Hour as the Fee Recipient is dedicated to strengthening the coin's economy through <span style={{ fontWeight: 700, color: '#334155' }}>burning</span> (reducing circulating supply) and <span style={{ fontWeight: 700, color: '#334155' }}>funding community rewards</span> (staking incentives and seasonal $HH rewards within the app).
         </p>
         <button 
           onClick={() => {
