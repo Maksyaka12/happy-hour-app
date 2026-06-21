@@ -85,7 +85,7 @@ export function AirdropChecklist() {
           stakedCumulative = parseFloat(data.staked_cumulative || 0)
           referrals = data.referrals || 0
         } else {
-          console.warn('RPC failed or not deployed, running fallback queries:', error)
+          console.warn('RPC failed or not deployed, running optimized fallback queries:', error)
           
           // Fallback 1: Count check-ins
           const { count: checkinsCount } = await db
@@ -119,23 +119,30 @@ export function AirdropChecklist() {
           holdingDays = criteriaData?.holding_days || 0
           stakedCumulative = parseFloat(criteriaData?.staked_cumulative || 0)
 
-          // Fallback 5: Count active referrals
+          // Fallback 5: Count active referrals (Optimized: 2 queries total instead of N loop queries)
           const { data: refUsers } = await db
             .from('users')
             .select('address')
             .eq('referrer', userAddr)
 
-          if (refUsers) {
+          if (refUsers && refUsers.length > 0) {
+            const refAddresses = refUsers.map(r => r.address.toLowerCase())
+            const { data: stats } = await db
+              .from('daily_stats')
+              .select('address, tx_count')
+              .in('address', refAddresses)
+            
+            // Sum tx_count per address
+            const txCounts = {}
+            stats?.forEach(s => {
+              const addr = s.address.toLowerCase()
+              txCounts[addr] = (txCounts[addr] || 0) + (s.tx_count || 0)
+            })
+            
             let activeRefs = 0
-            for (const r of refUsers) {
-              const { data: stats } = await db
-                .from('daily_stats')
-                .select('tx_count')
-                .eq('address', r.address)
-              
-              const txSum = stats?.reduce((acc, curr) => acc + (curr.tx_count || 0), 0) || 0
+            Object.values(txCounts).forEach(txSum => {
               if (txSum >= 5) activeRefs++
-            }
+            })
             referrals = activeRefs
           }
         }
@@ -217,7 +224,7 @@ export function AirdropChecklist() {
     {
       id: 'holding',
       title: 'HH Holding Duration',
-      desc: 'Hold 17M+ $HH for 10+ days (checked at 00:00 UTC)',
+      desc: 'Hold 17M+ $HH for 10+ days (checked daily at 00:00 UTC)',
       progress: checklistStats.holdingDays,
       target: 10,
       icon: '⏳'
@@ -254,8 +261,8 @@ export function AirdropChecklist() {
 
   if (loading) {
     return (
-      <div style={{ textAlign: 'center', padding: '60px 20px', color: 'rgba(255, 255, 255, 0.48)' }}>
-        Loading criteria…
+      <div style={{ textAlign: 'center', padding: '60px 20px', color: '#717886' }}>
+        Loading criteria...
       </div>
     )
   }
@@ -268,20 +275,12 @@ export function AirdropChecklist() {
           50% { transform: translateY(-8px) rotate(3deg); }
           100% { transform: translateY(0px) rotate(0deg); }
         }
-        @keyframes subtlePulseGlow {
-          0%, 100% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.2), inset 0 1px 1px rgba(255,255,255,0.1); }
-          50% { box-shadow: 0 0 30px rgba(56, 189, 248, 0.45), inset 0 1px 1px rgba(255,255,255,0.25); }
-        }
-        @keyframes goldPulseGlow {
-          0%, 100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.25), inset 0 1px 1px rgba(255,255,255,0.15); }
-          50% { box-shadow: 0 0 30px rgba(245, 158, 11, 0.55), inset 0 1px 1px rgba(255,255,255,0.3); }
-        }
       ` }} />
 
       {/* Season 2 Airdrop Eligibility Banner */}
       <div style={{
         backgroundImage: 'url(/banner.jpg)',
-        backgroundColor: '#040d21', // Fallback
+        backgroundColor: '#0052FF', // Fallback
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         borderRadius: 24,
@@ -293,14 +292,14 @@ export function AirdropChecklist() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        boxShadow: '0 12px 40px rgba(0,0,0,0.4)',
+        boxShadow: '0 8px 32px rgba(0,82,255,0.15)',
         overflow: 'hidden',
-        border: '1px solid rgba(56, 189, 248, 0.15)',
+        border: '1px solid rgba(255,255,255,0.1)',
         boxSizing: 'border-box'
       }}>
         {/* Background overlays */}
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(4, 13, 33, 0.45)', zIndex: 0 }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(56, 189, 248, 0.1) 100%)', zIndex: 0 }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0, 0, 80, 0.3)', zIndex: 0 }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,82,255,0.1) 100%)', zIndex: 0 }} />
 
         {/* Floating $HH Logos & Parachutes */}
         {[
@@ -355,21 +354,21 @@ export function AirdropChecklist() {
             fontWeight: 900,
             color: '#FFFFFF',
             lineHeight: 1.1,
-            textShadow: '0 4px 15px rgba(0,0,0,0.8)',
+            textShadow: '0 2px 10px rgba(0,0,0,0.5)',
             letterSpacing: '-0.5px'
           }}>
             $HH Distribution
           </div>
           <div style={{
-            background: 'rgba(255, 255, 255, 0.08)',
+            background: 'rgba(255, 255, 255, 0.18)',
             backdropFilter: 'blur(10px)',
             WebkitBackdropFilter: 'blur(10px)',
             borderRadius: 50,
             padding: '6px 16px',
             fontSize: 10,
             fontWeight: 800,
-            color: 'rgba(255, 255, 255, 0.9)',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
+            color: '#FFFFFF',
+            border: '1px solid rgba(255, 255, 255, 0.25)',
             display: 'inline-block',
             marginTop: 12,
             letterSpacing: '0.5px'
@@ -379,20 +378,19 @@ export function AirdropChecklist() {
         </div>
       </div>
 
-      {/* Info Card (Earn Section Style) */}
+      {/* Info Card (Clean Light Blue Theme) */}
       <div style={{
-        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%)',
-        backdropFilter: 'blur(12px)',
-        border: '1px solid rgba(255,255,255,0.06)',
+        background: '#EFF6FF',
+        border: '1px solid #BFDBFE',
         borderRadius: 20,
         padding: '16px 20px',
         marginBottom: 16,
-        color: 'rgba(255, 255, 255, 0.7)'
+        color: '#1E40AF'
       }}>
         <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
           <span style={{ fontSize: 16 }}>ℹ️</span>
-          <p style={{ margin: 0, fontSize: 12, lineHeight: 1.5, fontWeight: 500 }}>
-            Ці умови є мінімальними критеріями. Чим більше чекінів, бустів, відкритих боксів та рефералів ви зробите, тим більшою буде ваша фінальна аллокація. Обов'язкові умови необхідні для допуску до розподілу, а додаткові — активують мультиплікатор нагороди.
+          <p style={{ margin: 0, fontSize: 12, lineHeight: 1.5, fontWeight: 600 }}>
+            These are the minimum criteria. The more check-ins, boosts, box openings, and referrals you complete, the larger your final allocation. Required criteria are necessary for eligibility, while optional ones activate the allocation multiplier.
           </p>
         </div>
       </div>
@@ -404,26 +402,26 @@ export function AirdropChecklist() {
           padding: '18px 24px',
           borderRadius: 20,
           background: hasMultiplier 
-            ? 'linear-gradient(135deg, #78350F 0%, #451A03 100%)' 
-            : 'linear-gradient(135deg, #064E3B 0%, #022C22 100%)',
+            ? 'linear-gradient(135deg, #FEF3C7 0%, #FFFBEB 100%)' 
+            : 'linear-gradient(135deg, #D1FAE5 0%, #F0FDF4 100%)',
           border: hasMultiplier
-            ? '1px solid rgba(245, 158, 11, 0.35)'
-            : '1px solid rgba(16, 185, 129, 0.35)',
+            ? '1px solid #FDE68A'
+            : '1px solid #A7F3D0',
           display: 'flex',
           alignItems: 'center',
           gap: 16,
-          animation: hasMultiplier ? 'goldPulseGlow 3s infinite' : 'subtlePulseGlow 3s infinite',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
         }}>
           <div style={{
             fontSize: 32,
-            background: hasMultiplier ? 'rgba(245, 158, 11, 0.15)' : 'rgba(16, 185, 129, 0.15)',
+            background: hasMultiplier ? '#FEF3C7' : '#D1FAE5',
             width: 52,
             height: 52,
             borderRadius: 14,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            border: hasMultiplier ? '1px solid rgba(245, 158, 11, 0.3)' : '1px solid rgba(16, 185, 129, 0.3)',
+            border: hasMultiplier ? '1px solid #FCD34D' : '1px solid #6EE7B7',
           }}>
             {hasMultiplier ? '🏆' : '✅'}
           </div>
@@ -431,16 +429,16 @@ export function AirdropChecklist() {
             <div style={{
               fontSize: 10,
               fontWeight: 800,
-              color: hasMultiplier ? '#FBBF24' : '#34D399',
+              color: hasMultiplier ? '#B45309' : '#047857',
               textTransform: 'uppercase',
               letterSpacing: '1px'
             }}>
-              Ваш статус
+              Your Status
             </div>
             <h3 style={{
               fontSize: 18,
               fontWeight: 900,
-              color: '#FFFFFF',
+              color: hasMultiplier ? '#92400E' : '#065F46',
               margin: '2px 0 0',
               fontFamily: "'Montserrat', sans-serif"
             }}>
@@ -450,28 +448,28 @@ export function AirdropChecklist() {
         </div>
       )}
 
-      {/* Required Criteria Section */}
+      {/* Required Criteria Section (Premium Solid White Card) */}
       <div style={{
-        background: 'linear-gradient(135deg, rgba(4, 23, 51, 0.45) 0%, rgba(4, 23, 51, 0.2) 100%)',
-        backdropFilter: 'blur(20px)',
-        border: '1px solid rgba(56, 189, 248, 0.15)',
+        background: '#FFFFFF',
+        border: '1px solid #E2E8F0',
         borderRadius: 24,
         padding: 20,
-        marginBottom: 20
+        marginBottom: 20,
+        boxShadow: '0 4px 20px rgba(0,0,0,0.02)'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <h3 style={{
-            fontSize: 11,
+            fontSize: 11.5,
             fontWeight: 900,
-            color: '#38BDF8',
+            color: '#0052FF',
             letterSpacing: '1.2px',
             textTransform: 'uppercase',
             margin: 0
           }}>
-            Обов'язкові критерії (Required)
+            Required Criteria
           </h3>
-          <span style={{ fontSize: 11.5, fontWeight: 800, color: '#FFFFFF' }}>
-            {completedRequired} / {totalRequired} Виконано
+          <span style={{ fontSize: 11.5, fontWeight: 800, color: '#475569' }}>
+            {completedRequired} / {totalRequired} Completed
           </span>
         </div>
 
@@ -482,29 +480,29 @@ export function AirdropChecklist() {
             return (
               <div key={item.id} style={{
                 display: 'flex', gap: 12, padding: 14, borderRadius: 16,
-                background: 'rgba(255, 255, 255, 0.02)',
-                border: isCompleted ? '1px solid rgba(16, 185, 129, 0.18)' : '1px solid rgba(255, 255, 255, 0.05)',
+                background: isCompleted ? '#F0FDF4' : '#F8FAFC',
+                border: isCompleted ? '1px solid #A7F3D0' : '1px solid #E2E8F0',
                 transition: 'all 0.2s'
               }}>
                 <span style={{ fontSize: 22, alignSelf: 'center' }}>{item.icon}</span>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h4 style={{ fontSize: 13, fontWeight: 800, color: '#FFFFFF', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</h4>
+                    <h4 style={{ fontSize: 13, fontWeight: 800, color: '#0F172A', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</h4>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
                       <span style={{
                         fontSize: 11, fontWeight: 900,
-                        color: isCompleted ? '#10B981' : 'rgba(255, 255, 255, 0.5)',
-                        background: isCompleted ? 'rgba(16, 185, 129, 0.12)' : 'rgba(255, 255, 255, 0.06)',
+                        color: isCompleted ? '#059669' : '#475569',
+                        background: isCompleted ? '#D1FAE5' : '#E2E8F0',
                         padding: '1.5px 7px', borderRadius: 8
                       }}>
                         {formatNumber(item.progress)} / {item.target}
                       </span>
-                      {isCompleted && <span style={{ color: '#10B981', fontSize: 12, fontWeight: 900 }}>Done</span>}
+                      {isCompleted && <span style={{ color: '#059669', fontSize: 12, fontWeight: 900 }}>Done</span>}
                     </div>
                   </div>
                   <p style={{
                     fontSize: 10.5,
-                    color: 'rgba(255, 255, 255, 0.48)',
+                    color: '#64748B',
                     margin: '3px 0 0',
                     lineHeight: 1.3,
                     whiteSpace: 'nowrap',
@@ -513,10 +511,10 @@ export function AirdropChecklist() {
                   }}>{item.desc}</p>
                   
                   {/* Progress bar */}
-                  <div style={{ height: 4, background: 'rgba(255, 255, 255, 0.06)', borderRadius: 2, marginTop: 8, overflow: 'hidden' }}>
+                  <div style={{ height: 4, background: '#E2E8F0', borderRadius: 2, marginTop: 8, overflow: 'hidden' }}>
                     <div style={{
                       height: '100%', width: `${Math.min(100, (item.progress / item.target) * 100)}%`,
-                      background: isCompleted ? '#10B981' : '#38BDF8', borderRadius: 2
+                      background: isCompleted ? '#10B981' : '#0052FF', borderRadius: 2
                     }} />
                   </div>
                 </div>
@@ -526,27 +524,27 @@ export function AirdropChecklist() {
         </div>
       </div>
 
-      {/* Additional Criteria Section */}
+      {/* Additional Criteria Section (Premium Solid White Card) */}
       <div style={{
-        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.00) 100%)',
-        backdropFilter: 'blur(20px)',
-        border: '1px solid rgba(255, 255, 255, 0.08)',
+        background: '#FFFFFF',
+        border: '1px solid #E2E8F0',
         borderRadius: 24,
-        padding: 20
+        padding: 20,
+        boxShadow: '0 4px 20px rgba(0,0,0,0.02)'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <h3 style={{
-            fontSize: 11,
+            fontSize: 11.5,
             fontWeight: 900,
-            color: '#FBBF24',
+            color: '#D97706',
             letterSpacing: '1.2px',
             textTransform: 'uppercase',
             margin: 0
           }}>
-            Додаткові критерії (Optional - Multipliers)
+            Optional Criteria (Multipliers)
           </h3>
-          <span style={{ fontSize: 11.5, fontWeight: 800, color: 'rgba(255,255,255,0.7)' }}>
-            {completedOptional} / {optionalItems.length} Виконано
+          <span style={{ fontSize: 11.5, fontWeight: 800, color: '#475569' }}>
+            {completedOptional} / {optionalItems.length} Completed
           </span>
         </div>
 
@@ -557,29 +555,29 @@ export function AirdropChecklist() {
             return (
               <div key={item.id} style={{
                 display: 'flex', gap: 12, padding: 14, borderRadius: 16,
-                background: 'rgba(255, 255, 255, 0.01)',
-                border: isCompleted ? '1px solid rgba(245, 158, 11, 0.22)' : '1px solid rgba(255, 255, 255, 0.04)',
+                background: isCompleted ? '#FFFBEB' : '#F8FAFC',
+                border: isCompleted ? '1px solid #FCD34D' : '1px solid #E2E8F0',
                 transition: 'all 0.2s'
               }}>
                 <span style={{ fontSize: 22, alignSelf: 'center' }}>{item.icon}</span>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h4 style={{ fontSize: 13, fontWeight: 800, color: '#FFFFFF', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</h4>
+                    <h4 style={{ fontSize: 13, fontWeight: 800, color: '#0F172A', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</h4>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
                       <span style={{
                         fontSize: 11, fontWeight: 900,
-                        color: isCompleted ? '#FBBF24' : 'rgba(255, 255, 255, 0.5)',
-                        background: isCompleted ? 'rgba(245, 158, 11, 0.12)' : 'rgba(255, 255, 255, 0.05)',
+                        color: isCompleted ? '#B45309' : '#475569',
+                        background: isCompleted ? '#FEF3C7' : '#E2E8F0',
                         padding: '1.5px 7px', borderRadius: 8
                       }}>
                         {item.isToken ? `${formatTokenAmount(item.progress)} / ${formatTokenAmount(item.target)} HH` : `${formatNumber(item.progress)} / ${item.target}`}
                       </span>
-                      {isCompleted && <span style={{ color: '#FBBF24', fontSize: 12, fontWeight: 900 }}>Done</span>}
+                      {isCompleted && <span style={{ color: '#D97706', fontSize: 12, fontWeight: 900 }}>Done</span>}
                     </div>
                   </div>
                   <p style={{
                     fontSize: 10.5,
-                    color: 'rgba(255, 255, 255, 0.48)',
+                    color: '#64748B',
                     margin: '3px 0 0',
                     lineHeight: 1.3,
                     whiteSpace: 'nowrap',
@@ -588,10 +586,10 @@ export function AirdropChecklist() {
                   }}>{item.desc}</p>
                   
                   {/* Progress bar */}
-                  <div style={{ height: 4, background: 'rgba(255, 255, 255, 0.06)', borderRadius: 2, marginTop: 8, overflow: 'hidden' }}>
+                  <div style={{ height: 4, background: '#E2E8F0', borderRadius: 2, marginTop: 8, overflow: 'hidden' }}>
                     <div style={{
                       height: '100%', width: `${Math.min(100, (item.progress / item.target) * 100)}%`,
-                      background: isCompleted ? '#FBBF24' : '#94A3B8', borderRadius: 2
+                      background: isCompleted ? '#F59E0B' : '#94A3B8', borderRadius: 2
                     }} />
                   </div>
                 </div>
