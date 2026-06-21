@@ -24,6 +24,20 @@ const formatConcise = (num) => {
   return n.toFixed(2).replace(/\.00$/, '')
 }
 
+const formatConciseNoDecimals = (num) => {
+  const n = parseFloat(num || 0)
+  if (n >= 1e9) {
+    return Math.round(n / 1e9) + 'b'
+  }
+  if (n >= 1e6) {
+    return Math.round(n / 1e6) + 'm'
+  }
+  if (n >= 1e3) {
+    return Math.round(n / 1e3) + 'k'
+  }
+  return Math.round(n).toString()
+}
+
 export function HappyBoxesSection({ address, onUpdate, setTab }) {
   // State for the 6 chest cells
   const [chests, setChests] = useState([
@@ -900,21 +914,23 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
             <button
               onClick={handleResetBoard}
               style={{
-                background: 'transparent',
+                background: '#FFFFFF',
+                color: '#0A0B0D',
                 border: 'none',
-                color: 'rgba(255, 255, 255, 0.5)',
-                fontSize: 11,
-                fontWeight: 700,
+                borderRadius: 100,
+                padding: '4px 10px',
+                fontSize: 10,
+                fontWeight: 800,
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 4,
-                padding: '4px 0',
                 outline: 'none',
-                transition: 'color 0.2s'
+                boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
+                transition: 'transform 0.2s'
               }}
-              onMouseEnter={e => e.currentTarget.style.color = '#A78BFA'}
-              onMouseLeave={e => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)'}
+              onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
+              onMouseLeave={e => e.currentTarget.style.transform = 'none'}
             >
               ← Back
             </button>
@@ -1127,7 +1143,7 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
                                 }}
                               >
                                 <span style={{ fontSize: 8, fontWeight: 900, color: '#A78BFA', letterSpacing: '-0.2px' }}>
-                                  {formatConcise(0.20 / hhPrice)}
+                                  {formatConciseNoDecimals(0.20 / hhPrice)}
                                 </span>
                                 <img 
                                   src="/logo.jfif" 
