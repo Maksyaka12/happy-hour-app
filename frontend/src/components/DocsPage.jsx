@@ -499,20 +499,20 @@ function HHIntroSection() {
       }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 20, marginBottom: 18 }}>
           <div>
-            <div style={{ fontSize: 10.5, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 }}>Launcher</div>
+            <div style={{ fontSize: 11.5, fontWeight: 700, color: '#64748b', letterSpacing: 0.2, marginBottom: 4 }}>Launcher</div>
             <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a' }}>Bankr Community</div>
           </div>
           <div>
-            <div style={{ fontSize: 10.5, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 }}>$HH CA Owner</div>
+            <div style={{ fontSize: 11.5, fontWeight: 700, color: '#64748b', letterSpacing: 0.2, marginBottom: 4 }}>$HH CA Owner</div>
             <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a' }}>Bankr</div>
           </div>
           <div>
-            <div style={{ fontSize: 10.5, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 }}>Fee Recipient</div>
+            <div style={{ fontSize: 11.5, fontWeight: 700, color: '#64748b', letterSpacing: 0.2, marginBottom: 4 }}>Fee Recipient</div>
             <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a' }}>Happy Hour</div>
           </div>
         </div>
         <p style={{ fontSize: 13, color: '#475569', lineHeight: 1.65, margin: '0 0 20px', borderTop: '1px solid #e2e8f0', paddingTop: 18 }}>
-          All $HH collected by Happy Hour as the Fee Recipient is dedicated to strengthening the coin's economy through burning (reducing circulating supply) and funding community rewards (staking incentives and seasonal rewards within the app).
+          All $HH collected by Happy Hour as the Fee Recipient is dedicated to strengthening the coin's economy through <span style={{ fontWeight: 700, color: '#334155' }}>burning</span> (reducing circulating supply) and <span style={{ fontWeight: 700, color: '#334155' }}>funding community rewards</span> (staking incentives and seasonal rewards within the app).
         </p>
         <button 
           onClick={() => {
