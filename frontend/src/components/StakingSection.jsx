@@ -796,8 +796,11 @@ export function StakingSection({ setTab }) {
                 >
                   50%
                 </button>
-                <button
-                  onClick={() => setStakingAmount(walletBalance.toString())}
+                 <button
+                  onClick={() => {
+                    const rounded = Math.floor(walletBalance * 100) / 100
+                    setStakingAmount(rounded > 0 ? rounded.toString() : walletBalance.toString())
+                  }}
                   style={{
                     background: 'rgba(255,255,255,0.15)', border: 'none', color: '#A78BFA', fontSize: 9, fontWeight: 900,
                     padding: '3px 6px', borderRadius: 5, cursor: 'pointer', outline: 'none'
