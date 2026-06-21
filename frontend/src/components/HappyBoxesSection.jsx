@@ -894,6 +894,33 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
           </div>
         )}
 
+        {/* Back button (only shown when any box is opened and not all) */}
+        {anyOpened && !allOpened && (
+          <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: -4, marginBottom: -8, position: 'relative', zIndex: 3 }}>
+            <button
+              onClick={handleResetBoard}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'rgba(255, 255, 255, 0.5)',
+                fontSize: 11,
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4,
+                padding: '4px 0',
+                outline: 'none',
+                transition: 'color 0.2s'
+              }}
+              onMouseEnter={e => e.currentTarget.style.color = '#A78BFA'}
+              onMouseLeave={e => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)'}
+            >
+              ← Back
+            </button>
+          </div>
+        )}
+
         {/* 3x2 Grid (Compact Boxes) */}
         <div style={{
           display: 'grid',
@@ -1005,98 +1032,110 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
                             style={{
                               position: 'absolute',
                               inset: 0,
-                              background: 'rgba(9, 5, 20, 0.85)',
-                              backdropFilter: 'blur(3px)',
+                              background: 'rgba(9, 5, 20, 0.65)',
+                              backdropFilter: 'blur(1px)',
                               display: 'flex',
                               flexDirection: 'column',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              gap: 6,
+                              gap: 4,
                               borderRadius: 14,
                               zIndex: 10,
-                              padding: '4px'
+                              padding: '2px'
                             }}
                             onClick={(e) => {
                               e.stopPropagation();
                             }}
                           >
-                            <span style={{ fontSize: 9.5, fontWeight: 700, color: 'rgba(255, 255, 255, 0.8)' }}>Open</span>
+                            <span style={{ fontSize: 9, fontWeight: 600, color: 'rgba(255, 255, 255, 0.6)' }}>Open</span>
                             
-                            {/* USDC Button */}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setClickedBoxIndex(index);
-                                setPaymentCurrency('USDC');
-                                setTxModal('single');
-                              }}
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: 3.5,
-                                background: 'rgba(255, 255, 255, 0.08)',
-                                border: '1px solid rgba(255, 255, 255, 0.25)',
-                                padding: '3px 8px',
-                                borderRadius: 8,
-                                cursor: 'pointer',
-                                width: '85%',
-                                transition: 'all 0.2s',
-                                outline: 'none'
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
-                                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.4)';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
-                                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.25)';
-                              }}
-                            >
-                              <span style={{ fontSize: 9, fontWeight: 900, color: '#A78BFA' }}>0.30</span>
-                              <img src="/usdc-logo.png" alt="USDC" style={{ width: 8, height: 8 }} />
-                            </button>
+                            <div style={{
+                              display: 'flex',
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: 4,
+                              width: '92%',
+                              padding: '0 2px'
+                            }}>
+                              {/* USDC Button */}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setClickedBoxIndex(index);
+                                  setPaymentCurrency('USDC');
+                                  setTxModal('single');
+                                }}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  gap: 2,
+                                  background: 'rgba(255, 255, 255, 0.08)',
+                                  border: '1px solid rgba(255, 255, 255, 0.25)',
+                                  padding: '3px 4px',
+                                  borderRadius: 6,
+                                  cursor: 'pointer',
+                                  flex: 1,
+                                  transition: 'all 0.2s',
+                                  outline: 'none',
+                                  minWidth: 0
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
+                                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.25)';
+                                }}
+                              >
+                                <span style={{ fontSize: 8, fontWeight: 900, color: '#A78BFA', letterSpacing: '-0.2px' }}>0.30</span>
+                                <img src="/usdc-logo.png" alt="USDC" style={{ width: 7, height: 7 }} />
+                              </button>
 
-                            {/* HH Button */}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setClickedBoxIndex(index);
-                                setPaymentCurrency('HH');
-                                setTxModal('single');
-                              }}
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: 3.5,
-                                background: 'rgba(255, 255, 255, 0.08)',
-                                border: '1px solid rgba(255, 255, 255, 0.25)',
-                                padding: '3px 8px',
-                                borderRadius: 8,
-                                cursor: 'pointer',
-                                width: '85%',
-                                transition: 'all 0.2s',
-                                outline: 'none'
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
-                                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.4)';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
-                                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.25)';
-                              }}
-                            >
-                              <span style={{ fontSize: 9, fontWeight: 900, color: '#A78BFA' }}>
-                                {formatConcise(0.20 / hhPrice)}
-                              </span>
-                              <img 
-                                src="/logo.jfif" 
-                                alt="HH" 
-                                style={{ width: 8, height: 8, borderRadius: '50%', objectFit: 'cover' }} 
-                              />
-                            </button>
+                              {/* HH Button */}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setClickedBoxIndex(index);
+                                  setPaymentCurrency('HH');
+                                  setTxModal('single');
+                                }}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  gap: 2,
+                                  background: 'rgba(255, 255, 255, 0.08)',
+                                  border: '1px solid rgba(255, 255, 255, 0.25)',
+                                  padding: '3px 4px',
+                                  borderRadius: 6,
+                                  cursor: 'pointer',
+                                  flex: 1,
+                                  transition: 'all 0.2s',
+                                  outline: 'none',
+                                  minWidth: 0
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
+                                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.25)';
+                                }}
+                              >
+                                <span style={{ fontSize: 8, fontWeight: 900, color: '#A78BFA', letterSpacing: '-0.2px' }}>
+                                  {formatConcise(0.20 / hhPrice)}
+                                </span>
+                                <img 
+                                  src="/logo.jfif" 
+                                  alt="HH" 
+                                  style={{ width: 7, height: 7, borderRadius: '50%', objectFit: 'cover' }} 
+                                />
+                              </button>
+                            </div>
                           </div>
                         )}
                       </>
