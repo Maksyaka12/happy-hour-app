@@ -485,9 +485,60 @@ function HHIntroSection() {
       <p style={{ fontSize: 14.5, color: '#64748b', margin: '0 0 16px', lineHeight: 1.75 }}>
         $HH is the <span style={{ fontWeight: 600, color: '#334155' }}>native utility coin</span> of Happy Hour App. It was created by the Bankr community — the coin is <span style={{ fontWeight: 600, color: '#334155' }}>owned by BANKR</span>, ensuring full transparency, zero team speculation, and no insider allocations. We <span style={{ fontWeight: 600, color: '#334155' }}>accepted $HH</span> as the native coin of Happy Hour and embedded <span style={{ fontWeight: 600, color: '#334155' }}>real utility</span> into it across the entire application. This makes $HH a <span style={{ fontWeight: 600, color: '#334155' }}>long-term ecosystem coin</span> — not just a speculative asset (memecoin).
       </p>
-      <p style={{ fontSize: 14.5, color: '#64748b', margin: '0', lineHeight: 1.75 }}>
+      <p style={{ fontSize: 14.5, color: '#64748b', margin: '0 0 24px', lineHeight: 1.75 }}>
         The Happy Hour team is fully committed to supporting $HH and reinforcing its role within our ecosystem. We are continuously building, integrating, and expanding utility to ensure its long-term strength, organic demand, and stability.
       </p>
+
+      {/* Ecosystem Roles Card */}
+      <div style={{ 
+        background: '#f8fafc', 
+        border: '1px solid #e2e8f0', 
+        borderRadius: 12, 
+        padding: '24px', 
+        boxSizing: 'border-box'
+      }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 20, marginBottom: 18 }}>
+          <div>
+            <div style={{ fontSize: 10.5, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 }}>Launcher</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a' }}>Bankr Community</div>
+          </div>
+          <div>
+            <div style={{ fontSize: 10.5, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 }}>$HH CA Owner</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a' }}>Bankr</div>
+          </div>
+          <div>
+            <div style={{ fontSize: 10.5, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 }}>Fee Recipient</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a' }}>Happy Hour</div>
+          </div>
+        </div>
+        <p style={{ fontSize: 13, color: '#475569', lineHeight: 1.65, margin: '0 0 20px', borderTop: '1px solid #e2e8f0', paddingTop: 18 }}>
+          All $HH collected by Happy Hour as the Fee Recipient is dedicated to strengthening the coin's economy through burning (reducing circulating supply) and funding community rewards (staking incentives and seasonal rewards within the app).
+        </p>
+        <button 
+          onClick={() => {
+            const el = document.getElementById('hh-economy');
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }}
+          style={{
+            background: '#0052ff',
+            color: '#fff',
+            border: 'none',
+            borderRadius: 8,
+            padding: '8px 16px',
+            fontSize: 12.5,
+            fontWeight: 600,
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            transition: 'background 0.2s',
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = '#0043d0'}
+          onMouseLeave={e => e.currentTarget.style.background = '#0052ff'}
+        >
+          Check $HH Economy →
+        </button>
+      </div>
     </section>
   )
 }
