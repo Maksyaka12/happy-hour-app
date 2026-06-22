@@ -312,6 +312,11 @@ function LinksSection() {
             href:  'https://dexscreener.com/base/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9',
           },
           {
+            label: 'CoinGecko',
+            logo:  '/CoinGecko-logo.png',
+            href:  'https://www.coingecko.com/en/coins/happy-hour',
+          },
+          {
             label: 'GeckoTerminal',
             logo:  '/geckoterminal.jpg',
             href:  'https://www.geckoterminal.com/base/pools/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9',

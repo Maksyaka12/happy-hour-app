@@ -402,6 +402,30 @@ export default function App() {
               <img src="/geckoterminal.jpg" alt="GeckoTerminal" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </a>
 
+            {/* CoinGecko Link */}
+            <a 
+              href="https://www.coingecko.com/en/coins/happy-hour" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              title="CoinGecko"
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                textDecoration: 'none',
+                overflow: 'hidden'
+              }}
+              onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
+              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+            >
+              <img src="/CoinGecko-logo.png" alt="CoinGecko" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </a>
+
             <div style={{
               background: 'var(--blue-bg)',
               border: '1px solid rgba(0,0,255,0.15)',
@@ -607,163 +631,190 @@ export default function App() {
           </div>
 
           {/* Links Grid */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '16px 20px', width: '100%', maxWidth: 500, margin: '8px 0' }}>
-            {/* Official TG */}
-            <a 
-              href="https://t.me/happyhourapp" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
-              onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
-              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
-            >
-              <div style={{
-                width: 20, height: 20, borderRadius: '50%', background: 'rgba(0, 136, 204, 0.15)',
-                border: '1px solid rgba(0, 136, 204, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center'
-              }}>
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#3B82F6' }}>
-                  <path d="M21.9 2.19a1 1 0 0 0-.99-.08l-19 8a1 1 0 0 0-.1 1.82l4.9 2.2 3.1 7.1a1 1 0 0 0 1.77.16l2.9-3.8 4.7 3.3a1 1 0 0 0 1.51-.55l4-17a1 1 0 0 0-.39-.85zM8.62 13.12l8.28-5.28-6.4 6.72-.4 2.88z"/>
-                </svg>
-              </div>
-              <span>Official TG</span>
-            </a>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, width: '100%', margin: '8px 0' }}>
+            {/* Row 1: TG & X */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px 20px' }}>
+              {/* Official TG */}
+              <a 
+                href="https://t.me/happyhourapp" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
+              >
+                <div style={{
+                  width: 20, height: 20, borderRadius: '50%', background: 'rgba(0, 136, 204, 0.15)',
+                  border: '1px solid rgba(0, 136, 204, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#3B82F6' }}>
+                    <path d="M21.9 2.19a1 1 0 0 0-.99-.08l-19 8a1 1 0 0 0-.1 1.82l4.9 2.2 3.1 7.1a1 1 0 0 0 1.77.16l2.9-3.8 4.7 3.3a1 1 0 0 0 1.51-.55l4-17a1 1 0 0 0-.39-.85zM8.62 13.12l8.28-5.28-6.4 6.72-.4 2.88z"/>
+                  </svg>
+                </div>
+                <span>Official TG</span>
+              </a>
 
-            {/* Official X */}
-            <a 
-              href="https://x.com/happyhour_base" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
-              onMouseEnter={e => { e.currentTarget.style.color = '#FFFFFF'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
-              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
-            >
-              <div style={{
-                width: 20, height: 20, borderRadius: '50%', background: 'rgba(255, 255, 255, 0.08)',
-                border: '1px solid rgba(255, 255, 255, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center'
-              }}>
-                <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#FFFFFF' }}>
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                </svg>
-              </div>
-              <span>Official X</span>
-            </a>
+              {/* Official X */}
+              <a 
+                href="https://x.com/happyhour_base" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.color = '#FFFFFF'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
+              >
+                <div style={{
+                  width: 20, height: 20, borderRadius: '50%', background: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}>
+                  <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#FFFFFF' }}>
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  </svg>
+                </div>
+                <span>Official X</span>
+              </a>
 
-            {/* Devs X */}
-            <a 
-              href="https://x.com/mksvibe" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
-              onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
-              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
-            >
-              <div style={{
-                width: 20, height: 20, borderRadius: '50%', overflow: 'hidden',
-                border: '1.5px solid #3B82F6', display: 'flex', alignItems: 'center', justifyContent: 'center'
-              }}>
-                <img src="/mksvibe.jpg" alt="mksvibe" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </div>
-              <span>Devs X</span>
-            </a>
+              {/* Devs X */}
+              <a 
+                href="https://x.com/mksvibe" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
+              >
+                <div style={{
+                  width: 20, height: 20, borderRadius: '50%', overflow: 'hidden',
+                  border: '1.5px solid #3B82F6', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}>
+                  <img src="/mksvibe.jpg" alt="mksvibe" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+                <span>Devs X</span>
+              </a>
+            </div>
 
-            {/* Dexscreener */}
-            <a 
-              href="https://dexscreener.com/base/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
-              onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
-              onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'none'; }}
-            >
-              <div style={{
-                width: 20, height: 20, borderRadius: '50%', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.15)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center'
-              }}>
-                <img src="/dexscreener.jpg" alt="DexScreener" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </div>
-              <span>Dexscreener</span>
-            </a>
+            {/* Row 2: Charts */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px 20px' }}>
+              {/* Dexscreener */}
+              <a 
+                href="https://dexscreener.com/base/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'none'; }}
+              >
+                <div style={{
+                  width: 20, height: 20, borderRadius: '50%', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.15)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}>
+                  <img src="/dexscreener.jpg" alt="DexScreener" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+                <span>Dexscreener</span>
+              </a>
 
-            {/* Coingecko */}
-            <a 
-              href="https://www.geckoterminal.com/uk/base/pools/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
-              onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
-              onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'none'; }}
-            >
-              <div style={{
-                width: 20, height: 20, borderRadius: '50%', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.15)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center'
-              }}>
-                <img src="/geckoterminal.jpg" alt="GeckoTerminal" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </div>
-              <span>Coingecko</span>
-            </a>
+              {/* GeckoTerminal */}
+              <a 
+                href="https://www.geckoterminal.com/uk/base/pools/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'none'; }}
+              >
+                <div style={{
+                  width: 20, height: 20, borderRadius: '50%', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.15)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}>
+                  <img src="/geckoterminal.jpg" alt="GeckoTerminal" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+                <span>GeckoTerminal</span>
+              </a>
 
-            {/* Docs */}
-            <a 
-              href="/docs"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
-              onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
-              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
-            >
-              <div style={{
-                width: 20, height: 20, borderRadius: '50%', background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.15)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center'
-              }}>
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-                </svg>
-              </div>
-              <span>Docs</span>
-            </a>
+              {/* CoinGecko */}
+              <a 
+                href="https://www.coingecko.com/en/coins/happy-hour" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'none'; }}
+              >
+                <div style={{
+                  width: 20, height: 20, borderRadius: '50%', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.15)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}>
+                  <img src="/CoinGecko-logo.png" alt="CoinGecko" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+                <span>CoinGecko</span>
+              </a>
+            </div>
 
-            {/* $HH Utility */}
-            <a 
-              href="/docs/utility"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
-              onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
-              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
-            >
-              <div style={{
-                width: 20, height: 20, borderRadius: '50%', background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.15)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center'
-              }}>
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-                </svg>
-              </div>
-              <span>$HH Utility</span>
-            </a>
+            {/* Row 3: Docs & Utility */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px 20px' }}>
+              {/* Docs */}
+              <a 
+                href="/docs"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
+              >
+                <div style={{
+                  width: 20, height: 20, borderRadius: '50%', background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.15)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                  </svg>
+                </div>
+                <span>Docs</span>
+              </a>
 
-            {/* $HH Economy */}
-            <a 
-              href="/docs/economy"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
-              onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
-              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
-            >
-              <div style={{
-                width: 20, height: 20, borderRadius: '50%', background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.15)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center'
-              }}>
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="18" y1="20" x2="18" y2="10"/>
-                  <line x1="12" y1="20" x2="12" y2="4"/>
-                  <line x1="6" y1="20" x2="6" y2="14"/>
-                </svg>
-              </div>
-              <span>$HH Economy</span>
-            </a>
+              {/* $HH Utility */}
+              <a 
+                href="/docs/utility"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
+              >
+                <div style={{
+                  width: 20, height: 20, borderRadius: '50%', background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.15)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                  </svg>
+                </div>
+                <span>$HH Utility</span>
+              </a>
+
+              {/* $HH Economy */}
+              <a 
+                href="/docs/economy"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
+              >
+                <div style={{
+                  width: 20, height: 20, borderRadius: '50%', background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.15)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10"/>
+                    <line x1="12" y1="20" x2="12" y2="4"/>
+                    <line x1="6" y1="20" x2="6" y2="14"/>
+                  </svg>
+                </div>
+                <span>$HH Economy</span>
+              </a>
+            </div>
           </div>
 
           {/* Copyright */}

@@ -93,19 +93,26 @@ export function AirdropChecklist({ setTab }) {
         } else {
           console.warn('RPC failed or not deployed, running optimized fallback queries:', error)
           
+          // First, fetch holding days, cumulative staking & admin adjustments to use in all fallbacks
+          const { data: criteriaData } = await db
+            .from('hh_distribution_criteria')
+            .select('*')
+            .eq('address', userAddr)
+            .maybeSingle()
+
           // Fallback 1: Count check-ins
           const { count: checkinsCount } = await db
             .from('checkins')
             .select('*', { count: 'exact', head: true })
             .eq('address', userAddr)
-          checkins = checkinsCount || 0
+          checkins = (checkinsCount || 0) + (criteriaData?.adjust_checkins || 0)
 
           // Fallback 2: Count daily boosts
           const { count: boostsCount } = await db
             .from('hp_boosts')
             .select('*', { count: 'exact', head: true })
             .eq('address', userAddr)
-          boosts = boostsCount || 0
+          boosts = (boostsCount || 0) + (criteriaData?.adjust_boosts || 0)
 
           // Fallback 3: Count box openings
           const { count: boxesCount } = await db
@@ -113,17 +120,11 @@ export function AirdropChecklist({ setTab }) {
             .select('*', { count: 'exact', head: true })
             .eq('address', userAddr)
             .not('box_type', 'in', '("standard_bundle","happy_bundle","shield","extra_attempt")')
-          boxes = boxesCount || 0
+          boxes = (boxesCount || 0) + (criteriaData?.adjust_boxes || 0)
 
-          // Fallback 4: Fetch holding days & cumulative staking
-          const { data: criteriaData } = await db
-            .from('hh_distribution_criteria')
-            .select('holding_days, staked_cumulative')
-            .eq('address', userAddr)
-            .maybeSingle()
-          
-          holdingDays = criteriaData?.holding_days || 0
-          stakedCumulative = parseFloat(criteriaData?.staked_cumulative || 0)
+          // Fallback 4: Compute holding days & cumulative staking
+          holdingDays = (criteriaData?.holding_days || 0) + (criteriaData?.adjust_holding_days || 0)
+          stakedCumulative = parseFloat(criteriaData?.staked_cumulative || 0) + parseFloat(criteriaData?.adjust_staked_cumulative || 0)
 
           // Fallback 5: Count active referrals (Optimized: 2 queries total instead of N loop queries)
           const { data: refUsers } = await db
@@ -151,13 +152,14 @@ export function AirdropChecklist({ setTab }) {
             })
             referrals = activeRefs
           }
+          referrals = referrals + (criteriaData?.adjust_referrals || 0)
 
           // Fallback 6: Count social tasks
           const { count: socialCount } = await db
             .from('task_completions')
             .select('*', { count: 'exact', head: true })
             .eq('address', userAddr)
-          socialTasks = socialCount || 0
+          socialTasks = (socialCount || 0) + (criteriaData?.adjust_social_tasks || 0)
 
           // Fallback 7: Count $HH box openings (burns)
           const { count: hhBoxesCount } = await db
@@ -166,7 +168,7 @@ export function AirdropChecklist({ setTab }) {
             .eq('address', userAddr)
             .eq('is_hh', true)
             .not('box_type', 'in', '("standard_bundle","happy_bundle","shield","extra_attempt")')
-          hhBurnBoxes = hhBoxesCount || 0
+          hhBurnBoxes = (hhBoxesCount || 0) + (criteriaData?.adjust_hh_burn_boxes || 0)
         }
 
         setChecklistStats({
