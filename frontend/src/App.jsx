@@ -501,7 +501,7 @@ export default function App() {
                   <button
                     onClick={() => setLeaderboardSubTab('usdc')}
                     style={{
-                      flex: 1,
+                      flex: 1.2,
                       padding: '8px 10px',
                       borderRadius: 12,
                       border: leaderboardSubTab === 'usdc' ? 'none' : '1px solid rgba(255,255,255,0.8)',
@@ -528,7 +528,7 @@ export default function App() {
                   <button
                     onClick={() => setLeaderboardSubTab('hh')}
                     style={{
-                      flex: 1,
+                      flex: 1.2,
                       padding: '8px 10px',
                       borderRadius: 12,
                       border: leaderboardSubTab === 'hh' ? 'none' : '1px solid rgba(255,255,255,0.8)',
@@ -555,7 +555,7 @@ export default function App() {
                   <button
                     onClick={() => setLeaderboardSubTab('contests')}
                     style={{
-                      flex: 1,
+                      flex: 0.8,
                       padding: '8px 10px',
                       borderRadius: 12,
                       border: leaderboardSubTab === 'contests' ? 'none' : '1px solid rgba(255,255,255,0.8)',
