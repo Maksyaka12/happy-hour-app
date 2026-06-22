@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { db } from '../config/supabase'
 
 const calculateContestTimeLeft = () => {
   // Target date: July 10, 2026 at 13:30:00 UTC
@@ -16,9 +17,75 @@ const calculateContestTimeLeft = () => {
   return `${d}d ${h.toString().padStart(2, '0')}h ${m.toString().padStart(2, '0')}s`
 }
 
-export function ContestsSection({ setTab }) {
+export function ContestsSection({ setTab, address }) {
   const [activeContest, setActiveContest] = useState(null)
   const [contestTimeLeft, setContestTimeLeft] = useState(calculateContestTimeLeft())
+
+  // Submit Form States
+  const [postUrl, setPostUrl] = useState('')
+  const [postStatus, setPostStatus] = useState('') // '', 'submitting', 'success', 'error'
+  const [postMsg, setPostMsg] = useState('')
+
+  // Admin Review States
+  const [submissions, setSubmissions] = useState([])
+  const [showAdminSubmissions, setShowAdminSubmissions] = useState(false)
+  const [loadingSubmissions, setLoadingSubmissions] = useState(false)
+
+  const handleSubmitPost = async () => {
+    if (!address) return
+    if (!postUrl.startsWith('http://') && !postUrl.startsWith('https://')) {
+      setPostMsg('Link must start with http:// or https://')
+      setPostStatus('error')
+      return
+    }
+    setPostStatus('submitting')
+    setPostMsg('')
+    try {
+      const { data, error } = await db.rpc('submit_contest_post', {
+        p_address: address.toLowerCase(),
+        p_url: postUrl.trim()
+      })
+      if (error || !data?.ok) {
+        setPostMsg(data?.error || 'Failed to submit. Try again.')
+        setPostStatus('error')
+      } else {
+        setPostMsg('Submitted successfully!')
+        setPostStatus('success')
+        setPostUrl('')
+        if (showAdminSubmissions) {
+          loadAdminSubmissions()
+        }
+      }
+    } catch (err) {
+      console.error(err)
+      setPostMsg('An unexpected error occurred.')
+      setPostStatus('error')
+    }
+  }
+
+  const loadAdminSubmissions = async () => {
+    if (!address) return
+    setLoadingSubmissions(true)
+    try {
+      const { data, error } = await db.rpc('get_contest_submissions', {
+        p_admin_address: address.toLowerCase()
+      })
+      if (!error && data) {
+        setSubmissions(data)
+      } else {
+        console.error('loadAdminSubmissions error:', error)
+      }
+    } catch (err) {
+      console.error(err)
+    }
+    setLoadingSubmissions(false)
+  }
+
+  useEffect(() => {
+    if (showAdminSubmissions && address?.toLowerCase() === '0x4c91d3bed372c11795b9ce9a9017dfe447bf050a') {
+      loadAdminSubmissions()
+    }
+  }, [address, showAdminSubmissions])
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -70,6 +137,15 @@ export function ContestsSection({ setTab }) {
           border: '1px solid rgba(245, 158, 11, 0.3)',
           boxSizing: 'border-box'
         }}>
+          {/* Style block for keyframes in case we are in detail view */}
+          <style dangerouslySetInnerHTML={{ __html: `
+            @keyframes floatingLogo {
+              0% { transform: translateY(0px); }
+              50% { transform: translateY(-6px); }
+              100% { transform: translateY(0px); }
+            }
+          ` }} />
+
           {/* Graded background image with amber/warm gold hue filter */}
           <div style={{
             position: 'absolute',
@@ -82,6 +158,32 @@ export function ContestsSection({ setTab }) {
             pointerEvents: 'none'
           }} />
           <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.15)', zIndex: 0 }} />
+          
+          {/* Floating creative emojis */}
+          {[
+            { char: '🎨', top: '10%', right: '15%', size: 28, opacity: 0.35, r: '15deg', dur: 4.2 },
+            { char: '🖌️', bottom: '15%', left: '20%', size: 24, opacity: 0.3, r: '-20deg', dur: 4.8 },
+            { char: '✏️', top: '45%', left: '8%', size: 22, opacity: 0.25, r: '10deg', dur: 5.5 },
+            { char: '📝', bottom: '10%', right: '25%', size: 20, opacity: 0.3, r: '-15deg', dur: 3.9 }
+          ].map((s, i) => (
+            <div key={i} style={{
+              position: 'absolute',
+              top: s.top,
+              right: s.right,
+              left: s.left,
+              bottom: s.bottom,
+              zIndex: 1,
+              pointerEvents: 'none',
+              userSelect: 'none',
+              animation: `floatingLogo ${s.dur}s ease-in-out infinite`,
+              fontSize: s.size,
+              opacity: s.opacity,
+              transform: `rotate(${s.r})`,
+              filter: 'blur(0.3px)'
+            }}>
+              {s.char}
+            </div>
+          ))}
           
           <div style={{ position: 'relative', zIndex: 2, textAlign: 'center' }}>
             <div style={{
@@ -160,7 +262,7 @@ export function ContestsSection({ setTab }) {
           background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(245, 158, 11, 0.03) 100%)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(245, 158, 11, 0.22)',
+          border: '1px solid #2A1A06',
           borderRadius: 20,
           padding: '20px',
           boxShadow: '0 8px 32px rgba(245, 158, 11, 0.06)',
@@ -169,9 +271,18 @@ export function ContestsSection({ setTab }) {
           fontFamily: "'Outfit', 'Inter', sans-serif"
         }}>
           <h3 style={{ margin: '0 0 12px', fontSize: 18, fontWeight: 800, color: '#D97706' }}>About the Contest</h3>
-          <p style={{ margin: '0 0 16px', fontSize: 13, lineHeight: 1.5, color: '#475569', fontWeight: 500 }}>
-            Showcase your creativity! Create content about Happy Hour (videos, threads, art, or memes) and share it with the community to win a share of the prize pool.
+          <p style={{ margin: '0 0 16px', fontSize: 13, lineHeight: 1.5, color: '#475569', fontWeight: 600 }}>
+            In honor of the Season 2 launch - we are kicking off our Launch Contest dedicated to creators! Showcase your creativity to win a share of the prize pool.
           </p>
+
+          <div style={{ margin: '0 0 20px', fontSize: 13, color: '#475569', fontWeight: 500 }}>
+            <ul style={{ margin: 0, paddingLeft: 20, lineHeight: 1.7 }}>
+              <li>Explore our updated app</li>
+              <li>Create content about Happy Hour: guides, tutorials, videos, threads, art, or memes.</li>
+              <li>Publish it on X and submit the link below.</li>
+              <li>You can submit multiple links.</li>
+            </ul>
+          </div>
 
           <div style={{ borderTop: '1px solid rgba(245, 158, 11, 0.15)', paddingTop: 16 }}>
             <h4 style={{ margin: '0 0 8px', fontSize: 14, fontWeight: 700, color: '#1E293B' }}>Rewards breakdown:</h4>
@@ -182,6 +293,170 @@ export function ContestsSection({ setTab }) {
             </ul>
           </div>
         </div>
+
+        {/* Post Submission Form */}
+        <div style={{
+          background: 'linear-gradient(135deg, #2A1A06 0%, #4F330D 100%)',
+          borderRadius: 24,
+          padding: '22px 20px',
+          marginTop: 16,
+          position: 'relative',
+          overflow: 'hidden',
+          boxShadow: '0 8px 32px rgba(42,26,6,0.2)',
+          border: '1px solid rgba(245,158,11,0.3)',
+          boxSizing: 'border-box'
+        }}>
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <div style={{ fontSize: 16, fontWeight: 800, color: '#fff', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span>✍️ Submit your Contest post</span>
+            </div>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', marginBottom: 14, lineHeight: 1.5, fontWeight: 500 }}>
+              Submit your X thread, video, art, or meme link below. You can submit as many high-quality links as you want.
+            </div>
+            
+            {postStatus === 'success' ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div style={{ background: 'rgba(5,150,105,0.25)', borderRadius: 14, padding: '10px 14px', fontSize: 12, color: '#6EE7B7', fontWeight: 800 }}>
+                  ✓ {postMsg}
+                </div>
+                <button
+                  onClick={() => { setPostStatus(''); setPostMsg(''); }}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.15)',
+                    color: '#fff',
+                    borderRadius: 50,
+                    padding: '8px 16px',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    border: 'none',
+                    cursor: 'pointer',
+                    alignSelf: 'flex-start'
+                  }}
+                >
+                  Submit another link
+                </button>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', gap: 8 }}>
+                <input
+                  value={postUrl}
+                  onChange={e => { setPostUrl(e.target.value); setPostStatus(''); setPostMsg('') }}
+                  placeholder="Paste your link here…"
+                  style={{
+                    flex: 1, padding: '10px 16px', borderRadius: 50,
+                    border: postStatus === 'error' ? '1.5px solid #FCA5A5' : '1.5px solid rgba(255,255,255,0.2)',
+                    background: 'rgba(255,255,255,0.1)', color: '#fff',
+                    fontSize: 12, outline: 'none', fontFamily: 'inherit',
+                    fontWeight: 600
+                  }}
+                />
+                <button
+                  onClick={handleSubmitPost}
+                  disabled={postStatus === 'submitting' || !postUrl || !address}
+                  style={{
+                    background: '#fff', color: '#2A1A06', borderRadius: 50,
+                    padding: '10px 20px', fontSize: 12, fontWeight: 800,
+                    border: 'none', cursor: postStatus === 'submitting' || !postUrl || !address ? 'not-allowed' : 'pointer',
+                    opacity: postStatus === 'submitting' || !postUrl || !address ? 0.6 : 1,
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {postStatus === 'submitting' ? '…' : 'Submit'}
+                </button>
+              </div>
+            )}
+            {postStatus === 'error' && (
+              <div style={{ fontSize: 10, color: '#FCA5A5', marginTop: 6, fontWeight: 600 }}>{postMsg}</div>
+            )}
+            {!address && (
+              <div style={{ fontSize: 10, color: '#FCA5A5', marginTop: 6, fontWeight: 600 }}>Please connect your wallet to submit a post.</div>
+            )}
+          </div>
+        </div>
+
+        {/* Admin panel */}
+        {address?.toLowerCase() === '0x4c91d3bed372c11795b9ce9a9017dfe447bf050a' && (
+          <div style={{ marginTop: 16 }}>
+            <button
+              onClick={() => {
+                const next = !showAdminSubmissions
+                setShowAdminSubmissions(next)
+                if (next) loadAdminSubmissions()
+              }}
+              style={{
+                fontSize: 12,
+                padding: '8px 16px',
+                borderRadius: 50,
+                background: '#F59E0B',
+                color: '#fff',
+                border: 'none',
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6
+              }}
+            >
+              📬 View Submitted Posts {submissions.length > 0 ? `(${submissions.length})` : ''}
+            </button>
+
+            {showAdminSubmissions && (
+              <div style={{
+                background: '#FFF7ED',
+                border: '1px solid #FED7AA',
+                borderRadius: 16,
+                padding: 16,
+                marginTop: 12,
+                boxSizing: 'border-box'
+              }}>
+                <div style={{ fontSize: 14, fontWeight: 800, color: '#9A3412', marginBottom: 12 }}>
+                  Contest Submissions ({submissions.length})
+                </div>
+
+                {loadingSubmissions ? (
+                  <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0' }}>
+                    <div style={{ width: 16, height: 16, border: '2px solid rgba(154,52,18,0.3)', borderTopColor: '#9A3412', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                  </div>
+                ) : submissions.length === 0 ? (
+                  <div style={{ fontSize: 12, color: '#B45309', textAlign: 'center', padding: '12px 0' }}>
+                    No submissions found
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 300, overflowY: 'auto' }}>
+                    {submissions.map(s => (
+                      <div key={s.id} style={{ background: '#fff', borderRadius: 12, padding: '10px 12px', border: '1px solid #FED7AA', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: 10.5, fontWeight: 700, color: '#717886', fontFamily: "'DM Mono', monospace" }}>
+                            {s.address}
+                          </span>
+                          <span style={{ fontSize: 9, color: '#A0AEC0' }}>
+                            {new Date(s.submitted_at).toLocaleString()}
+                          </span>
+                        </div>
+                        <a
+                          href={s.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            fontSize: 11.5,
+                            color: '#0052FF',
+                            fontWeight: 600,
+                            wordBreak: 'break-all',
+                            textDecoration: 'none'
+                          }}
+                          onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
+                          onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
+                        >
+                          {s.url}
+                        </a>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     )
   }
@@ -338,6 +613,31 @@ export function ContestsSection({ setTab }) {
             zIndex: 0,
             pointerEvents: 'none'
           }} />
+
+          {/* Floating creative emojis */}
+          {[
+            { char: '🎨', top: '8%', right: '12%', size: 20, opacity: 0.35, r: '12deg', dur: 4.0 },
+            { char: '🖌️', bottom: '25%', left: '15%', size: 18, opacity: 0.3, r: '-15deg', dur: 4.5 },
+            { char: '✏️', top: '40%', right: '35%', size: 16, opacity: 0.25, r: '8deg', dur: 5.0 }
+          ].map((s, i) => (
+            <div key={i} style={{
+              position: 'absolute',
+              top: s.top,
+              right: s.right,
+              left: s.left,
+              bottom: s.bottom,
+              zIndex: 1,
+              pointerEvents: 'none',
+              userSelect: 'none',
+              animation: `floatingLogo ${s.dur}s ease-in-out infinite`,
+              fontSize: s.size,
+              opacity: s.opacity,
+              transform: `rotate(${s.r})`,
+              filter: 'blur(0.3px)'
+            }}>
+              {s.char}
+            </div>
+          ))}
 
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{ fontSize: 13.5, fontWeight: 850, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Launch Contest</div>

@@ -586,7 +586,7 @@ export default function App() {
               ) : leaderboardSubTab === 'hh' ? (
                 <AirdropChecklist address={address} setTab={setTab} />
               ) : (
-                <ContestsSection setTab={setTab} />
+                <ContestsSection setTab={setTab} address={address} />
               )}
             </>
           )}
