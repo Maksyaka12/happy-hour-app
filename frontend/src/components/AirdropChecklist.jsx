@@ -36,7 +36,9 @@ export function AirdropChecklist({ setTab }) {
     boxes: 0,
     holdingDays: 0,
     stakedCumulative: 0,
-    referrals: 0
+    referrals: 0,
+    socialTasks: 0,
+    hhBurnBoxes: 0
   })
 
   // Fetch HH price from DexScreener
@@ -74,6 +76,8 @@ export function AirdropChecklist({ setTab }) {
         let holdingDays = 0
         let stakedCumulative = 0
         let referrals = 0
+        let socialTasks = 0
+        let hhBurnBoxes = 0
 
         // Attempt RPC call first for performance
         const { data, error } = await db.rpc('get_user_distribution_criteria', { p_address: userAddr })
@@ -84,6 +88,8 @@ export function AirdropChecklist({ setTab }) {
           holdingDays = data.holding_days || 0
           stakedCumulative = parseFloat(data.staked_cumulative || 0)
           referrals = data.referrals || 0
+          socialTasks = data.social_tasks || 0
+          hhBurnBoxes = data.hh_burn_boxes || 0
         } else {
           console.warn('RPC failed or not deployed, running optimized fallback queries:', error)
           
@@ -145,6 +151,22 @@ export function AirdropChecklist({ setTab }) {
             })
             referrals = activeRefs
           }
+
+          // Fallback 6: Count social tasks
+          const { count: socialCount } = await db
+            .from('task_completions')
+            .select('*', { count: 'exact', head: true })
+            .eq('address', userAddr)
+          socialTasks = socialCount || 0
+
+          // Fallback 7: Count $HH box openings (burns)
+          const { count: hhBoxesCount } = await db
+            .from('opened_boxes')
+            .select('*', { count: 'exact', head: true })
+            .eq('address', userAddr)
+            .eq('is_hh', true)
+            .not('box_type', 'in', '("standard_bundle","happy_bundle","shield","extra_attempt")')
+          hhBurnBoxes = hhBoxesCount || 0
         }
 
         setChecklistStats({
@@ -153,7 +175,9 @@ export function AirdropChecklist({ setTab }) {
           boxes,
           holdingDays,
           stakedCumulative,
-          referrals
+          referrals,
+          socialTasks,
+          hhBurnBoxes
         })
       } catch (err) {
         console.warn('Error loading user stats from db:', err)
@@ -252,6 +276,37 @@ export function AirdropChecklist({ setTab }) {
         border: '1px solid rgba(255, 255, 255, 0.15)',
         imageFilter: 'grayscale(100%) brightness(0.40) contrast(1.1)',
         barColor: '#38BDF8'
+      }
+    },
+    {
+      id: 'social_tasks',
+      title: 'Social Tasks',
+      desc: 'Complete 20+ social tasks',
+      progress: checklistStats.socialTasks,
+      target: 20,
+      style: {
+        background: '#1F0B15',
+        border: '1px solid rgba(236,72,153,0.25)',
+        imageFilter: 'hue-rotate(320deg) brightness(0.40) contrast(1.15)',
+        barColor: '#EC4899'
+      }
+    },
+    {
+      id: 'hh_burn_boxes',
+      title: (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <img src="/logo.jfif" alt="$HH" style={{ width: 18, height: 18, borderRadius: '50%', objectFit: 'cover' }} />
+          <span>$HH Burn in Boxes</span>
+        </div>
+      ),
+      desc: 'Burn $HH 10+ times in boxes',
+      progress: checklistStats.hhBurnBoxes,
+      target: 10,
+      style: {
+        background: '#1C0808',
+        border: '1px solid rgba(239,68,68,0.25)',
+        imageFilter: 'hue-rotate(0deg) brightness(0.35) contrast(1.2)',
+        barColor: '#EF4444'
       }
     }
   ]
@@ -545,11 +600,13 @@ export function AirdropChecklist({ setTab }) {
                 } else if (item.id === 'staking') {
                   sessionStorage.setItem('scroll_to_element', 'staking-card')
                   setTab('earn')
-                } else if (item.id === 'boxes') {
+                } else if (item.id === 'boxes' || item.id === 'hh_burn_boxes') {
                   setTab('boxes')
                 } else if (item.id === 'referrals') {
                   sessionStorage.setItem('scroll_to_element', 'referrals-card')
                   setTab('home')
+                } else if (item.id === 'social_tasks') {
+                  setTab('tasks')
                 }
               }}
               style={{
@@ -721,11 +778,13 @@ export function AirdropChecklist({ setTab }) {
                 } else if (item.id === 'staking') {
                   sessionStorage.setItem('scroll_to_element', 'staking-card')
                   setTab('earn')
-                } else if (item.id === 'boxes') {
+                } else if (item.id === 'boxes' || item.id === 'hh_burn_boxes') {
                   setTab('boxes')
                 } else if (item.id === 'referrals') {
                   sessionStorage.setItem('scroll_to_element', 'referrals-card')
                   setTab('home')
+                } else if (item.id === 'social_tasks') {
+                  setTab('tasks')
                 }
               }}
               style={{
