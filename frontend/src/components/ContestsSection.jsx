@@ -47,18 +47,15 @@ export function ContestsSection({ setTab }) {
             padding: 0,
             transition: 'color 0.2s'
           }}
-          onMouseEnter={e => e.currentTarget.style.color = '#8B5CF6'}
+          onMouseEnter={e => e.currentTarget.style.color = '#F59E0B'}
           onMouseLeave={e => e.currentTarget.style.color = '#717886'}
         >
           ← Back to Contests
         </button>
 
-        {/* Contest Banner */}
+        {/* Contest Banner - Themed to match the Contest Card */}
         <div style={{
-          backgroundImage: 'url(/banner.jpg)',
-          backgroundColor: '#8B5CF6',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundColor: '#1D1204',
           borderRadius: 24,
           padding: '36px 20px',
           marginBottom: 20,
@@ -68,12 +65,24 @@ export function ContestsSection({ setTab }) {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 8px 32px rgba(139,92,246,0.15)',
+          boxShadow: '0 8px 32px rgba(245, 158, 11, 0.15)',
           overflow: 'hidden',
-          border: '1px solid rgba(255,255,255,0.1)',
+          border: '1px solid rgba(245, 158, 11, 0.3)',
           boxSizing: 'border-box'
         }}>
-          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 0 }} />
+          {/* Graded background image with amber/warm gold hue filter */}
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundImage: 'url(/banner.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            filter: 'hue-rotate(25deg) brightness(0.4) contrast(1.15)',
+            zIndex: 0,
+            pointerEvents: 'none'
+          }} />
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.15)', zIndex: 0 }} />
+          
           <div style={{ position: 'relative', zIndex: 2, textAlign: 'center' }}>
             <div style={{
               fontFamily: "'Barlow Condensed', sans-serif",
@@ -128,7 +137,7 @@ export function ContestsSection({ setTab }) {
                 alignItems: 'center',
                 gap: 4
               }}>
-                <span>⏳</span>
+                <span>left:</span>
                 <span style={{ fontFamily: "'DM Mono', monospace" }}>{contestTimeLeft}</span>
               </div>
             </div>
@@ -137,23 +146,23 @@ export function ContestsSection({ setTab }) {
 
         {/* Content Details (Glassmorphic Card) */}
         <div style={{
-          background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(139, 92, 246, 0.03) 100%)',
+          background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(245, 158, 11, 0.03) 100%)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(139, 92, 246, 0.22)',
+          border: '1px solid rgba(245, 158, 11, 0.22)',
           borderRadius: 20,
           padding: '20px',
-          boxShadow: '0 8px 32px rgba(139,92,246,0.06)',
+          boxShadow: '0 8px 32px rgba(245, 158, 11, 0.06)',
           boxSizing: 'border-box',
           color: '#1E293B',
           fontFamily: "'Outfit', 'Inter', sans-serif"
         }}>
-          <h3 style={{ margin: '0 0 12px', fontSize: 18, fontWeight: 800, color: '#7C3AED' }}>About the Contest</h3>
+          <h3 style={{ margin: '0 0 12px', fontSize: 18, fontWeight: 800, color: '#D97706' }}>About the Contest</h3>
           <p style={{ margin: '0 0 16px', fontSize: 13, lineHeight: 1.5, color: '#475569', fontWeight: 500 }}>
             Showcase your creativity! Create content about Happy Hour (videos, threads, art, or memes) and share it with the community to win a share of the prize pool.
           </p>
 
-          <div style={{ borderTop: '1px solid rgba(139, 92, 246, 0.15)', paddingTop: 16 }}>
+          <div style={{ borderTop: '1px solid rgba(245, 158, 11, 0.15)', paddingTop: 16 }}>
             <h4 style={{ margin: '0 0 8px', fontSize: 14, fontWeight: 700, color: '#1E293B' }}>Rewards breakdown:</h4>
             <ul style={{ margin: 0, paddingLeft: 20, fontSize: 13, color: '#475569', lineHeight: 1.6, fontWeight: 500 }}>
               <li>1st Place: $50 in $HH tokens</li>
@@ -404,7 +413,9 @@ export function ContestsSection({ setTab }) {
                   background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
                   border: '1px solid rgba(245, 158, 11, 0.35)',
                   borderRadius: 6,
-                  padding: '1.5px 4px',
+                  height: 17,
+                  boxSizing: 'border-box',
+                  padding: '0 4px',
                   fontSize: 8,
                   fontWeight: 850,
                   color: '#FFFFFF',
@@ -420,10 +431,15 @@ export function ContestsSection({ setTab }) {
                   background: 'rgba(0, 0, 0, 0.65)',
                   border: '1px solid rgba(255, 255, 255, 0.15)',
                   borderRadius: 6,
-                  padding: '1.5px 4px',
+                  height: 17,
+                  boxSizing: 'border-box',
+                  padding: '0 4px',
                   fontSize: 8,
                   fontWeight: 850,
-                  color: '#FFFFFF'
+                  color: '#FFFFFF',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 }}>
                   3 winners
                 </div>
@@ -435,7 +451,9 @@ export function ContestsSection({ setTab }) {
                   background: 'rgba(252, 64, 31, 0.15)',
                   border: '1px solid rgba(252, 64, 31, 0.3)',
                   borderRadius: 6,
-                  padding: '1.5px 4px',
+                  height: 17,
+                  boxSizing: 'border-box',
+                  padding: '0 4px',
                   fontSize: 8,
                   fontWeight: 850,
                   color: '#FC401F',
@@ -443,7 +461,7 @@ export function ContestsSection({ setTab }) {
                   alignItems: 'center',
                   gap: 2
                 }}>
-                  <span>⏳</span>
+                  <span>left:</span>
                   <span style={{ fontFamily: "'DM Mono', monospace" }}>{contestTimeLeft}</span>
                 </div>
               </div>
