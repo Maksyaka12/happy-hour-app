@@ -474,14 +474,16 @@ export function AirdropChecklist({ setTab }) {
         </div>
       </div>
 
-      {/* Info Card (Premium Dark/Indigo Accent Theme) */}
+      {/* Info Card (Premium Glassmorphism Theme) */}
       <div style={{
-        background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.4) 0%, rgba(15, 23, 42, 0.5) 100%)',
-        border: '1px solid rgba(59, 130, 246, 0.15)',
+        background: 'rgba(235, 242, 255, 0.65)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(0, 82, 255, 0.14)',
         borderRadius: 20,
         padding: '16px 20px',
         marginBottom: 20,
-        boxShadow: '0 8px 32px rgba(10, 10, 15, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+        boxShadow: '0 8px 32px rgba(0, 82, 255, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.6)',
         boxSizing: 'border-box'
       }}>
         <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
@@ -492,10 +494,10 @@ export function AirdropChecklist({ setTab }) {
             width: 22,
             height: 22,
             borderRadius: '50%',
-            background: 'rgba(59, 130, 246, 0.15)',
-            border: '1px solid rgba(59, 130, 246, 0.25)',
-            color: '#3B82F6',
-            fontSize: 11,
+            background: 'rgba(0, 82, 255, 0.08)',
+            border: '1px solid rgba(0, 82, 255, 0.25)',
+            color: '#0052FF',
+            fontSize: 11.5,
             fontWeight: 800,
             fontFamily: "'Outfit', 'Inter', sans-serif"
           }}>
@@ -506,10 +508,10 @@ export function AirdropChecklist({ setTab }) {
             fontSize: 12,
             lineHeight: 1.5,
             fontWeight: 600,
-            color: '#94A3B8',
+            color: '#1E293B',
             fontFamily: "'Outfit', 'Inter', sans-serif"
           }}>
-            These are the minimum criteria. The more check-ins, boosts, box openings, and referrals you complete, the larger your final allocation. Required criteria are necessary for eligibility, while optional ones activate the allocation multiplier.
+            These are the <strong style={{ color: '#0052FF', fontWeight: 800 }}>minimum criteria</strong>. The more check-ins, boosts, box openings, and referrals you complete, the <strong style={{ color: '#0052FF', fontWeight: 800 }}>larger</strong> your final allocation. <strong style={{ color: '#0A0B0D', fontWeight: 800 }}>Required</strong> criteria are necessary for eligibility, while <strong style={{ color: '#D97706', fontWeight: 800 }}>optional</strong> ones activate the allocation multiplier.
           </p>
         </div>
       </div>
