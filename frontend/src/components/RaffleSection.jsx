@@ -292,7 +292,7 @@ export function RaffleSection({ address, basename }) {
   return (
     <div style={{ maxWidth: 640, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 12, padding: '12px 12px 120px', animation: 'fadeIn 0.3s ease-out' }}>
 
-      {/* USDC / HH / Big Raffle Switcher */}
+      {/* USDC / HH / Daily Raffle Switcher */}
       <div style={{ padding: '0 4px' }}>
         <div style={{
           display: 'flex',
@@ -301,7 +301,7 @@ export function RaffleSection({ address, basename }) {
           padding: 4,
           borderRadius: 16,
           marginBottom: 16,
-          maxWidth: 500,
+          maxWidth: 440,
           margin: '0 auto 16px',
           boxShadow: 'inset 0 2px 4px rgba(10,11,13,0.05)',
           gap: 6
@@ -362,32 +362,40 @@ export function RaffleSection({ address, basename }) {
               flex: 1,
               padding: '8px 10px',
               borderRadius: 12,
-              border: '1px solid rgba(255, 255, 255, 0.4)',
-              background: 'rgba(255, 255, 255, 0.35)',
+              border: '1px solid rgba(255, 255, 255, 0.8)',
+              background: 'rgba(255, 255, 255, 0.45)',
               color: '#9CA3AF',
-              fontWeight: 800,
-              fontSize: 11,
+              fontWeight: 850,
+              fontSize: 11.5,
               cursor: 'not-allowed',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: 4,
               outline: 'none',
-              fontFamily: "'Outfit', 'Inter', sans-serif"
+              fontFamily: "'Outfit', 'Inter', sans-serif",
+              position: 'relative'
             }}
           >
-            <span>🎟️ Big Raffle</span>
-            <span style={{
-              fontSize: 7,
+            <span>Daily Raffle</span>
+            <div style={{
+              position: 'absolute',
+              top: -8,
+              right: -4,
+              background: 'linear-gradient(135deg, #9CA3AF 0%, #6B7280 100%)',
+              color: '#FFFFFF',
+              fontSize: 7.5,
               fontWeight: 900,
-              background: 'rgba(107, 114, 128, 0.12)',
-              color: '#6B7280',
-              padding: '1px 4px',
-              borderRadius: 4,
-              whiteSpace: 'nowrap'
+              padding: '2px 5px',
+              borderRadius: 5,
+              boxShadow: '0 2px 4px rgba(10,11,13,0.08)',
+              border: '1px solid rgba(255,255,255,0.3)',
+              lineHeight: 1,
+              letterSpacing: '0.2px',
+              whiteSpace: 'nowrap',
+              textTransform: 'none'
             }}>
               Coming soon
-            </span>
+            </div>
           </button>
         </div>
       </div>
