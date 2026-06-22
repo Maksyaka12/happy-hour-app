@@ -98,7 +98,7 @@ export default function App() {
     earn: 'Earn',
     boxes: 'Happy Boxes',
     tasks: 'Tasks',
-    leaderboard: 'Leaderboard',
+    leaderboard: 'Rewards',
   }
 
   useEffect(() => {
@@ -533,7 +533,7 @@ export default function App() {
                       borderRadius: 12,
                       border: leaderboardSubTab === 'hh' ? 'none' : '1px solid rgba(255,255,255,0.8)',
                       background: leaderboardSubTab === 'hh' 
-                        ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' 
+                        ? 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)' 
                         : 'rgba(255, 255, 255, 0.6)',
                       color: leaderboardSubTab === 'hh' ? '#fff' : '#717886',
                       fontWeight: 850,
@@ -541,7 +541,7 @@ export default function App() {
                       cursor: 'pointer',
                       transition: 'all 0.2s',
                       boxShadow: leaderboardSubTab === 'hh' 
-                        ? '0 4px 12px rgba(16,185,129,0.2)' 
+                        ? '0 4px 12px rgba(0,82,255,0.2)' 
                         : '0 2px 4px rgba(10,11,13,0.02)',
                       display: 'flex',
                       alignItems: 'center',
@@ -560,7 +560,7 @@ export default function App() {
                       borderRadius: 12,
                       border: leaderboardSubTab === 'contests' ? 'none' : '1px solid rgba(255,255,255,0.8)',
                       background: leaderboardSubTab === 'contests' 
-                        ? 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)' 
+                        ? 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)' 
                         : 'rgba(255, 255, 255, 0.6)',
                       color: leaderboardSubTab === 'contests' ? '#fff' : '#717886',
                       fontWeight: 850,
@@ -568,7 +568,7 @@ export default function App() {
                       cursor: 'pointer',
                       transition: 'all 0.2s',
                       boxShadow: leaderboardSubTab === 'contests' 
-                        ? '0 4px 12px rgba(139,92,246,0.2)' 
+                        ? '0 4px 12px rgba(0,82,255,0.2)' 
                         : '0 2px 4px rgba(10,11,13,0.02)',
                       display: 'flex',
                       alignItems: 'center',

@@ -5,9 +5,9 @@ import { UserAvatar } from './UserAvatar'
 const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
 
 const calculateSeasonTimeLeft = () => {
-  // Target date: June 19, 2026 at 13:30:00 UTC (exactly 21 days from May 29, 2026 16:30:00 local time)
-  // Month index 5 is June
-  const target = new Date(Date.UTC(2026, 5, 19, 13, 30, 0))
+  // Target date: July 22, 2026 at 19:52:00 UTC (exactly 30 days from June 22, 2026)
+  // Month index 6 is July
+  const target = new Date(Date.UTC(2026, 6, 22, 19, 52, 0))
   const now = new Date()
   const diff = target.getTime() - now.getTime()
   

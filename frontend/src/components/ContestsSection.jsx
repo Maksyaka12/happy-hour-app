@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react'
 import { db } from '../config/supabase'
 
 const calculateContestTimeLeft = () => {
-  // Target date: July 10, 2026 at 13:30:00 UTC
-  const target = new Date(Date.UTC(2026, 6, 10, 13, 30, 0)) // Month index 6 is July
+  // Target date: June 27, 2026 at 19:52:00 UTC (exactly 5 days from June 22, 2026)
+  // Month index 5 is June
+  const target = new Date(Date.UTC(2026, 5, 27, 19, 52, 0))
   const now = new Date()
   const diff = target.getTime() - now.getTime()
   
@@ -14,7 +15,7 @@ const calculateContestTimeLeft = () => {
   const m = Math.floor((diff % 3600000) / 60000)
   const s = Math.floor((diff % 60000) / 1000)
   
-  return `${d}d ${h.toString().padStart(2, '0')}h ${m.toString().padStart(2, '0')}s`
+  return `${d}d ${h.toString().padStart(2, '0')}h ${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`
 }
 
 export function ContestsSection({ setTab, address }) {

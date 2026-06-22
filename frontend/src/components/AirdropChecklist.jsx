@@ -27,9 +27,9 @@ const formatTokenAmount = (num) => {
 }
 
 const calculateSeasonTimeLeft = () => {
-  // Target date: June 19, 2026 at 13:30:00 UTC (exactly 21 days from May 29, 2026 16:30:00 local time)
-  // Month index 5 is June
-  const target = new Date(Date.UTC(2026, 5, 19, 13, 30, 0))
+  // Target date: July 22, 2026 at 19:52:00 UTC (exactly 30 days from June 22, 2026)
+  // Month index 6 is July
+  const target = new Date(Date.UTC(2026, 6, 22, 19, 52, 0))
   const now = new Date()
   const diff = target.getTime() - now.getTime()
   
@@ -264,9 +264,9 @@ export function AirdropChecklist({ setTab }) {
     {
       id: 'boosts',
       title: 'Daily HP Boosts',
-      desc: 'Activate daily HP boost 5+ times',
+      desc: 'Activate daily HP boost 10+ times',
       progress: checklistStats.boosts,
-      target: 5,
+      target: 10,
       style: {
         background: '#081E15',
         border: '1px solid rgba(16,185,129,0.25)',
@@ -290,9 +290,9 @@ export function AirdropChecklist({ setTab }) {
     {
       id: 'boxes',
       title: 'Happy Box Openings',
-      desc: 'Open 12+ boxes',
+      desc: 'Open 20+ boxes',
       progress: checklistStats.boxes,
-      target: 12,
+      target: 20,
       style: {
         background: '#090514',
         border: '1px solid rgba(139,92,246,0.25)',

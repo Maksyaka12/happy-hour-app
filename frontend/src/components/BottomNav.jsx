@@ -18,7 +18,7 @@ export function BottomNav({ tab, setTab }) {
   const tabs = [
     { id: 'raffle',      label: 'Raffle',  icon: '🎰' },
     { id: 'tasks',       label: 'Tasks',   icon: '📋' },
-    { id: 'leaderboard', label: 'Leaders', icon: '🏆' },
+    { id: 'leaderboard', label: 'Rewards', icon: '🏆' },
     { id: 'earn',        label: 'Earn',    icon: '💎' },
     { id: 'home',        label: 'Home',    icon: '🏠' },
   ]
