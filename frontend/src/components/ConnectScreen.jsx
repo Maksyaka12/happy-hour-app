@@ -129,6 +129,21 @@ export function ConnectScreen() {
           </div>
           <span style={{ fontSize: 11.5, fontWeight: 750, color: '#0A0B0D', fontFamily: "'Inter', sans-serif" }}>GeckoTerminal</span>
         </a>
+
+        {/* CoinGecko */}
+        <a 
+          href="https://www.coingecko.com/en/coins/happy-hour" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          style={{ display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none', transition: 'opacity 0.2s' }}
+          onMouseEnter={e => e.currentTarget.style.opacity = '0.7'}
+          onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+        >
+          <div style={{ width: 18, height: 18, borderRadius: '50%', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <img src="/CoinGecko-logo.png" alt="CoinGecko" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </div>
+          <span style={{ fontSize: 11.5, fontWeight: 750, color: '#0A0B0D', fontFamily: "'Inter', sans-serif" }}>CoinGecko</span>
+        </a>
       </div>
 
       {/* Centered Content Wrapper */}
