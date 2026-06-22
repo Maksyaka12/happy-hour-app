@@ -1,6 +1,136 @@
-import React from 'react'
+import { useState } from 'react'
 
 export function ContestsSection({ setTab }) {
+  const [activeContest, setActiveContest] = useState(null)
+
+  if (activeContest === 'creator') {
+    return (
+      <div style={{ padding: '0 16px 120px' }}>
+        {/* Back Button */}
+        <button
+          onClick={() => setActiveContest(null)}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: '#717886',
+            fontSize: 13,
+            fontWeight: 700,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            marginBottom: 16,
+            padding: 0,
+            transition: 'color 0.2s'
+          }}
+          onMouseEnter={e => e.currentTarget.style.color = '#8B5CF6'}
+          onMouseLeave={e => e.currentTarget.style.color = '#717886'}
+        >
+          ← Back to Contests
+        </button>
+
+        {/* Contest Banner */}
+        <div style={{
+          backgroundImage: 'url(/banner.jpg)',
+          backgroundColor: '#8B5CF6',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          borderRadius: 24,
+          padding: '36px 20px',
+          marginBottom: 20,
+          position: 'relative',
+          minHeight: 120,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0 8px 32px rgba(139,92,246,0.15)',
+          overflow: 'hidden',
+          border: '1px solid rgba(255,255,255,0.1)',
+          boxSizing: 'border-box'
+        }}>
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 0 }} />
+          <div style={{ position: 'relative', zIndex: 2, textAlign: 'center' }}>
+            <div style={{
+              fontFamily: "'Barlow Condensed', sans-serif",
+              fontSize: 38,
+              fontWeight: 900,
+              color: '#FFFFFF',
+              lineHeight: 1.1,
+              textShadow: '0 2px 10px rgba(0,0,0,0.5)',
+              letterSpacing: '-0.5px'
+            }}>
+              Creator Contest
+            </div>
+            
+            {/* Badges in Banner */}
+            <div style={{ display: 'flex', gap: 6, marginTop: 8, justifyContent: 'center' }}>
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.18)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                borderRadius: 50,
+                padding: '4px 12px',
+                fontSize: 10,
+                fontWeight: 800,
+                color: '#FFFFFF',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4
+              }}>
+                <span>$100 in</span>
+                <img src="/logo.jfif" alt="$HH" style={{ width: 12, height: 12, borderRadius: '50%', objectFit: 'cover' }} />
+                <span>$HH</span>
+              </div>
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.18)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                borderRadius: 50,
+                padding: '4px 12px',
+                fontSize: 10,
+                fontWeight: 800,
+                color: '#FFFFFF'
+              }}>
+                3 winners
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Content Details (Glassmorphic Card) */}
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(139, 92, 246, 0.03) 100%)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(139, 92, 246, 0.22)',
+          borderRadius: 20,
+          padding: '20px',
+          boxShadow: '0 8px 32px rgba(139,92,246,0.06)',
+          boxSizing: 'border-box',
+          color: '#1E293B',
+          fontFamily: "'Outfit', 'Inter', sans-serif"
+        }}>
+          <h3 style={{ margin: '0 0 12px', fontSize: 18, fontWeight: 800, color: '#7C3AED' }}>About the Contest</h3>
+          <p style={{ margin: '0 0 16px', fontSize: 13, lineHeight: 1.5, color: '#475569', fontWeight: 500 }}>
+            Showcase your creativity! Create content about Happy Hour (videos, threads, art, or memes) and share it with the community to win a share of the prize pool.
+          </p>
+
+          <div style={{ borderTop: '1px solid rgba(139, 92, 246, 0.15)', paddingTop: 16 }}>
+            <h4 style={{ margin: '0 0 8px', fontSize: 14, fontWeight: 700, color: '#1E293B' }}>Rewards breakdown:</h4>
+            <ul style={{ margin: 0, paddingLeft: 20, fontSize: 13, color: '#475569', lineHeight: 1.6, fontWeight: 500 }}>
+              <li>1st Place: $50 in $HH tokens</li>
+              <li>2nd Place: $30 in $HH tokens</li>
+              <li>3rd Place: $20 in $HH tokens</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div style={{ padding: '0 16px 120px' }}>
       <style dangerouslySetInnerHTML={{ __html: `
@@ -112,7 +242,7 @@ export function ContestsSection({ setTab }) {
         </div>
       </div>
 
-      {/* Feature Blocks Grid — Identical to Earn Section */}
+      {/* Feature Blocks Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 4 }}>
         {/* Block 1: Happy Raids (Coming Soon overlay) */}
         <div
@@ -122,7 +252,7 @@ export function ContestsSection({ setTab }) {
             padding: '14px 14px 12px',
             cursor: 'default',
             boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
-            height: 126,
+            height: 134,
             boxSizing: 'border-box',
             display: 'flex',
             flexDirection: 'column',
@@ -188,9 +318,9 @@ export function ContestsSection({ setTab }) {
           </div>
         </div>
 
-        {/* Block 2: Happy Boxes (Dark Purple theme) */}
+        {/* Block 2: Creator Contest (Formerly Happy Boxes) */}
         <div
-          onClick={() => setTab('boxes')}
+          onClick={() => setActiveContest('creator')}
           style={{
             background: '#090514',
             borderRadius: 20,
@@ -198,7 +328,7 @@ export function ContestsSection({ setTab }) {
             cursor: 'pointer',
             transition: 'all 0.2s',
             boxShadow: '0 8px 32px rgba(46,16,101,0.2)',
-            height: 126,
+            height: 134,
             boxSizing: 'border-box',
             display: 'flex',
             flexDirection: 'column',
@@ -229,11 +359,41 @@ export function ContestsSection({ setTab }) {
           }} />
 
           <div style={{ position: 'relative', zIndex: 1 }}>
-            <div style={{ fontSize: 14.5, fontWeight: 800, color: '#FFFFFF' }}>Happy Boxes</div>
-            <div style={{ fontSize: 10, color: 'rgba(255, 255, 255, 0.7)', marginTop: 2, fontWeight: 600 }}>earn more HP</div>
+            <div style={{ fontSize: 14.5, fontWeight: 800, color: '#FFFFFF' }}>Creator Contest</div>
+            
+            {/* Semi-transparent badges */}
+            <div style={{ display: 'flex', gap: 4, marginTop: 4, flexWrap: 'wrap' }}>
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.12)',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                borderRadius: 8,
+                padding: '2px 5px',
+                fontSize: 8.5,
+                fontWeight: 800,
+                color: '#FFFFFF',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 3
+              }}>
+                <span>$100 in</span>
+                <img src="/logo.jfif" alt="$HH" style={{ width: 10, height: 10, borderRadius: '50%', objectFit: 'cover' }} />
+                <span>$HH</span>
+              </div>
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.12)',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                borderRadius: 8,
+                padding: '2px 5px',
+                fontSize: 8.5,
+                fontWeight: 800,
+                color: '#FFFFFF'
+              }}>
+                3 winners
+              </div>
+            </div>
           </div>
 
-          {/* Centered semi-transparent Open Badge */}
+          {/* Centered semi-transparent Participate Badge */}
           <div style={{
             position: 'relative',
             zIndex: 1,
@@ -253,7 +413,7 @@ export function ContestsSection({ setTab }) {
           onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
           onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
           >
-            Open →
+            Participate
           </div>
         </div>
       </div>
