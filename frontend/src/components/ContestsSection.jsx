@@ -55,7 +55,7 @@ export function ContestsSection({ setTab }) {
 
         {/* Contest Banner - Themed to match the Contest Card */}
         <div style={{
-          backgroundColor: '#1D1204',
+          backgroundColor: '#2A1A06',
           borderRadius: 24,
           padding: '36px 20px',
           marginBottom: 20,
@@ -77,7 +77,7 @@ export function ContestsSection({ setTab }) {
             backgroundImage: 'url(/banner.jpg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            filter: 'hue-rotate(25deg) brightness(0.4) contrast(1.15)',
+            filter: 'hue-rotate(25deg) brightness(0.5) contrast(1.15)',
             zIndex: 0,
             pointerEvents: 'none'
           }} />
@@ -93,7 +93,7 @@ export function ContestsSection({ setTab }) {
               textShadow: '0 2px 10px rgba(0,0,0,0.5)',
               letterSpacing: '-0.5px'
             }}>
-              Creator Contest
+              Launch Contest
             </div>
             
             {/* Badges in Banner */}
@@ -264,7 +264,7 @@ export function ContestsSection({ setTab }) {
             textShadow: '0 2px 10px rgba(0,0,0,0.5)',
             letterSpacing: '-0.5px'
           }}>
-            Contests
+            Contest Hub
           </div>
         </div>
       </div>
@@ -303,7 +303,7 @@ export function ContestsSection({ setTab }) {
         <div
           onClick={() => setActiveContest('creator')}
           style={{
-            background: '#1D1204',
+            background: '#2A1A06',
             borderRadius: 20,
             padding: '12px 12px 10px',
             cursor: 'pointer',
@@ -334,13 +334,13 @@ export function ContestsSection({ setTab }) {
             backgroundImage: 'url(/banner.jpg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            filter: 'hue-rotate(25deg) brightness(0.4) contrast(1.15)',
+            filter: 'hue-rotate(25deg) brightness(0.5) contrast(1.15)',
             zIndex: 0,
             pointerEvents: 'none'
           }} />
 
           <div style={{ position: 'relative', zIndex: 1 }}>
-            <div style={{ fontSize: 13.5, fontWeight: 850, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Creator Contest</div>
+            <div style={{ fontSize: 13.5, fontWeight: 850, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Launch Contest</div>
             
             {/* Badges container */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 4 }}>
@@ -465,8 +465,7 @@ export function ContestsSection({ setTab }) {
           }} />
           
           <div style={{ position: 'relative', zIndex: 1 }}>
-            <div style={{ fontSize: 14.5, fontWeight: 800, color: '#FFFFFF' }}>Happy Raids</div>
-            <div style={{ fontSize: 10, color: 'rgba(255, 255, 255, 0.7)', marginTop: 2, fontWeight: 600 }}>steal HP</div>
+            <div style={{ fontSize: 14.5, fontWeight: 800, color: '#FFFFFF' }}>Trader Contest</div>
           </div>
           
           {/* Centered semi-transparent Play Badge */}
@@ -486,7 +485,7 @@ export function ContestsSection({ setTab }) {
             fontWeight: 800
           }}
           >
-            Play →
+            Participate →
           </div>
 
           {/* Coming Soon Overlay */}
