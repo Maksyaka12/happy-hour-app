@@ -207,35 +207,35 @@ export function RaffleSection({ address, basename }) {
   }, [myAmount, spinData])
 
   const isHH = raffleType === 'hh'
-  const accentColor = isHH ? '#3B82F6' : '#14B8A6'
-  const lightAccentColor = isHH ? '#60A5FA' : '#2DD4BF'
+  const accentColor = isHH ? '#3B82F6' : '#10B981'
+  const lightAccentColor = isHH ? '#60A5FA' : '#34D399'
   const timerColor = isClosed ? '#FC401F' : '#FFFFFF'
   const gradientColor = isHH 
     ? 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)' 
-    : 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)'
-  const glowColor = isHH ? 'rgba(59, 130, 246, 0.25)' : 'rgba(20, 184, 166, 0.25)'
+    : 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
+  const glowColor = isHH ? 'rgba(59, 130, 246, 0.25)' : 'rgba(16, 185, 129, 0.25)'
   const hueFilter = isHH
     ? 'hue-rotate(0deg) brightness(0.4) contrast(1.15)' 
-    : 'hue-rotate(160deg) brightness(0.4) contrast(1.15)'
+    : 'hue-rotate(120deg) brightness(0.4) contrast(1.15)'
 
   const heroHueFilter = isHH
     ? 'hue-rotate(0deg) brightness(0.68) contrast(1.1)' 
-    : 'hue-rotate(160deg) brightness(0.68) contrast(1.1)'
+    : 'hue-rotate(120deg) brightness(0.68) contrast(1.1)'
 
   const cardBg = isHH
     ? 'linear-gradient(145deg, #051329 0%, #0A224A 100%)'
-    : 'linear-gradient(145deg, #031414 0%, #062828 100%)'
+    : 'linear-gradient(145deg, #041B13 0%, #083827 100%)'
 
   const heroCardBg = isHH
     ? 'linear-gradient(145deg, #0A2C5C 0%, #164E9C 100%)'
-    : 'linear-gradient(145deg, #083D3D 0%, #116E6E 100%)'
+    : 'linear-gradient(145deg, #083B28 0%, #106648 100%)'
 
   const cardBorder = isHH
     ? '1px solid rgba(59, 130, 246, 0.25)'
-    : '1px solid rgba(20, 184, 166, 0.25)'
+    : '1px solid rgba(16, 185, 129, 0.25)'
   const cardShadow = isHH
     ? '0 8px 32px rgba(30, 58, 138, 0.3)'
-    : '0 8px 32px rgba(13, 148, 136, 0.3)'
+    : '0 8px 32px rgba(16, 185, 129, 0.3)'
 
   // ── Send USDC or HH ────────────────────────────────────────
   const sendBet = useCallback((amount) => {
