@@ -215,7 +215,7 @@ export function ContestsSection({ setTab, address }) {
                 justifyContent: 'center',
                 gap: 4
               }}>
-                <span style={{ lineHeight: 1 }}>$100 in</span>
+                <span style={{ lineHeight: 1 }}>$120 in</span>
                 <img src="/logo.jfif" alt="$HH" style={{ width: 12, height: 12, borderRadius: '50%', objectFit: 'cover' }} />
                 <span style={{ lineHeight: 1 }}>$HH</span>
               </div>
@@ -272,7 +272,7 @@ export function ContestsSection({ setTab, address }) {
         }}>
           <h3 style={{ margin: '0 0 12px', fontSize: 18, fontWeight: 800, color: '#D97706' }}>About the Contest</h3>
           <p style={{ margin: '0 0 16px', fontSize: 13, lineHeight: 1.5, color: '#475569', fontWeight: 600 }}>
-            In honor of the Season 2 launch - we are kicking off our Launch Contest dedicated to creators! Showcase your creativity to win a share of the prize pool.
+            In honor of the Season 2 launch - we are kicking off our Launch Contest dedicated to creators! Showcase your creativity to share a prize pool.
           </p>
 
           <div style={{ margin: '0 0 20px', fontSize: 13, color: '#475569', fontWeight: 500 }}>
@@ -287,9 +287,9 @@ export function ContestsSection({ setTab, address }) {
           <div style={{ borderTop: '1px solid rgba(245, 158, 11, 0.15)', paddingTop: 16 }}>
             <h4 style={{ margin: '0 0 8px', fontSize: 14, fontWeight: 700, color: '#1E293B' }}>Rewards breakdown:</h4>
             <ul style={{ margin: 0, paddingLeft: 20, fontSize: 13, color: '#475569', lineHeight: 1.6, fontWeight: 500 }}>
-              <li>1st Place: $50 in $HH tokens</li>
+              <li>1st Place: $60 in $HH tokens</li>
               <li>2nd Place: $30 in $HH tokens</li>
-              <li>3rd Place: $20 in $HH tokens</li>
+              <li>3rd Place: $30 in $HH tokens</li>
             </ul>
           </div>
         </div>
@@ -311,7 +311,7 @@ export function ContestsSection({ setTab, address }) {
               <span>✍️ Submit your Contest post</span>
             </div>
             <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', marginBottom: 14, lineHeight: 1.5, fontWeight: 500 }}>
-              Submit your X thread, video, art, or meme link below. You can submit as many high-quality links as you want.
+              Submit your X posts link below. You can submit as many posts as you want.
             </div>
             
             {postStatus === 'success' ? (
@@ -662,7 +662,7 @@ export function ContestsSection({ setTab, address }) {
                   gap: 2,
                   lineHeight: 1
                 }}>
-                  <span style={{ lineHeight: 1 }}>$100 in</span>
+                  <span style={{ lineHeight: 1 }}>$120 in</span>
                   <img src="/logo.jfif" alt="$HH" style={{ width: 9, height: 9, borderRadius: '50%', objectFit: 'cover' }} />
                   <span style={{ lineHeight: 1 }}>$HH</span>
                 </div>
