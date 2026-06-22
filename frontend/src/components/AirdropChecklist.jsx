@@ -26,10 +26,28 @@ const formatTokenAmount = (num) => {
   return n.toFixed(0)
 }
 
+const calculateSeasonTimeLeft = () => {
+  // Target date: June 19, 2026 at 13:30:00 UTC (exactly 21 days from May 29, 2026 16:30:00 local time)
+  // Month index 5 is June
+  const target = new Date(Date.UTC(2026, 5, 19, 13, 30, 0))
+  const now = new Date()
+  const diff = target.getTime() - now.getTime()
+  
+  if (isNaN(diff) || diff <= 0) return '00d 00h 00m 00s'
+  
+  const d = Math.floor(diff / 86400000)
+  const h = Math.floor((diff % 86400000) / 3600000)
+  const m = Math.floor((diff % 3600000) / 60000)
+  const s = Math.floor((diff % 60000) / 1000)
+  
+  return `${d}d ${h.toString().padStart(2, '0')}h ${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`
+}
+
 export function AirdropChecklist({ setTab }) {
   const { address, isConnected } = useAccount()
   const [hhPrice, setHhPrice] = useState(0.00025)
   const [loading, setLoading] = useState(true)
+  const [seasonTimeLeft, setSeasonTimeLeft] = useState(calculateSeasonTimeLeft())
   const [checklistStats, setChecklistStats] = useState({
     checkins: 0,
     boosts: 0,
@@ -40,6 +58,13 @@ export function AirdropChecklist({ setTab }) {
     socialTasks: 0,
     hhBurnBoxes: 0
   })
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSeasonTimeLeft(calculateSeasonTimeLeft())
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [])
 
   // Fetch HH price from DexScreener
   useEffect(() => {
@@ -445,7 +470,7 @@ export function AirdropChecklist({ setTab }) {
           </div>
         ))}
 
-        <div style={{ position: 'relative', zIndex: 2, textAlign: 'center' }}>
+        <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', paddingTop: 0, paddingBottom: 32 }}>
           <div style={{
             fontFamily: "'Barlow Condensed', sans-serif",
             fontSize: 42,
@@ -453,7 +478,8 @@ export function AirdropChecklist({ setTab }) {
             color: '#FFFFFF',
             lineHeight: 1.1,
             textShadow: '0 2px 10px rgba(0,0,0,0.5)',
-            letterSpacing: '-0.5px'
+            letterSpacing: '-0.5px',
+            marginBottom: 0
           }}>
             $HH Distribution
           </div>
@@ -468,10 +494,50 @@ export function AirdropChecklist({ setTab }) {
             color: '#FFFFFF',
             border: '1px solid rgba(255, 255, 255, 0.25)',
             display: 'inline-block',
-            marginTop: 12,
+            marginTop: 6,
             letterSpacing: '0.5px'
           }}>
             Season 2 Airdrop Eligibility Checklist
+          </div>
+        </div>
+
+        {/* Distinct Footer for Season End Info - Identical to USDC banner */}
+        <div style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          background: 'rgba(0,0,0,0.5)',
+          backdropFilter: 'blur(12px)',
+          padding: '8px 0',
+          textAlign: 'center',
+          borderTop: '1px solid rgba(255,255,255,0.1)',
+          zIndex: 2
+        }}>
+          <div style={{
+            fontSize: 12,
+            fontWeight: 800,
+            color: 'rgba(255,255,255,0.75)',
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8
+          }}>
+            <span>DISTRIBUTE IN:</span>
+            <span style={{ 
+              color: '#3C8AFF', 
+              textShadow: '0 0 10px rgba(60,138,255,0.4)',
+              background: 'rgba(60,138,255,0.1)',
+              padding: '1px 6px',
+              borderRadius: 6,
+              border: '1px solid rgba(60,138,255,0.2)',
+              fontWeight: 900, 
+              fontFamily: "'DM Mono', monospace",
+              fontSize: 13,
+              letterSpacing: '0.5px'
+            }}>{seasonTimeLeft}</span>
           </div>
         </div>
       </div>

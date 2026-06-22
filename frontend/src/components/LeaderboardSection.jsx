@@ -176,7 +176,7 @@ export function LeaderboardSection({ address }) {
             color: '#fff',
             lineHeight: 1.1,
             textShadow: '0 4px 15px rgba(0,0,0,0.6)',
-            marginBottom: 12,
+            marginBottom: 0,
             letterSpacing: '-1.0px'
           }}>
             USDC Distribution
@@ -192,7 +192,7 @@ export function LeaderboardSection({ address }) {
             color: '#fff',
             border: '1px solid rgba(255,255,255,0.25)',
             display: 'inline-block',
-            marginTop: 12,
+            marginTop: 6,
             letterSpacing: '0.5px'
           }}>
             TOP-50 Users will Get Rewards
