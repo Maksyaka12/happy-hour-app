@@ -568,8 +568,26 @@ export default function App() {
           {/* Logo / Branding Row */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
             <img src="/logo.jfif" alt="$HH Logo" style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover' }} />
-            <span style={{ fontSize: 12, fontWeight: 800, color: '#FFFFFF' }}>
-              $HH <span style={{ color: 'rgba(255, 255, 255, 0.6)', fontWeight: 650 }}>powered by</span> Bankr Community
+            <span style={{ fontSize: 12, fontWeight: 800, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: 6 }}>
+              $HH <span style={{ color: 'rgba(255, 255, 255, 0.6)', fontWeight: 650 }}>powered by</span>
+              <a 
+                href="https://x.com/bankrbot" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: 6, 
+                  textDecoration: 'none', 
+                  color: '#FFFFFF',
+                  transition: 'opacity 0.2s'
+                }}
+                onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
+                onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+              >
+                <img src="/bankr-logo.jpg" alt="Bankr Logo" style={{ width: 22, height: 22, borderRadius: 6, objectFit: 'cover' }} />
+                <span>Bankr Community</span>
+              </a>
             </span>
           </div>
 
