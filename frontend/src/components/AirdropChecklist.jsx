@@ -203,7 +203,13 @@ export function AirdropChecklist() {
       desc: 'Check in 10+ times in total',
       progress: checklistStats.checkins,
       target: 10,
-      icon: '📆'
+      fontWeight: 800,
+      style: {
+        background: '#0B1E3F',
+        border: '1px solid rgba(59,130,246,0.25)',
+        imageFilter: 'hue-rotate(200deg) brightness(0.40) contrast(1.15)',
+        barColor: '#0052FF'
+      }
     },
     {
       id: 'boosts',
@@ -211,23 +217,47 @@ export function AirdropChecklist() {
       desc: 'Activate daily HP boost 5+ times',
       progress: checklistStats.boosts,
       target: 5,
-      icon: '⚡'
+      fontWeight: 800,
+      style: {
+        background: '#081E15',
+        border: '1px solid rgba(16,185,129,0.25)',
+        imageFilter: 'hue-rotate(110deg) brightness(0.40) contrast(1.15)',
+        barColor: '#FC401F'
+      }
     },
     {
       id: 'boxes',
       title: 'Happy Box Openings',
-      desc: 'Open 12+ boxes (USDC or $HH)',
+      desc: 'Open 12+ boxes',
       progress: checklistStats.boxes,
       target: 12,
-      icon: '🎁'
+      fontWeight: 800,
+      style: {
+        background: '#090514',
+        border: '1px solid rgba(139,92,246,0.25)',
+        imageFilter: 'hue-rotate(50deg) brightness(0.60) contrast(1.15)',
+        barColor: '#A78BFA'
+      }
     },
     {
       id: 'holding',
-      title: 'HH Holding Duration',
-      desc: 'Hold 17M+ $HH for 10+ days (checked daily at 00:00 UTC)',
+      title: (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <img src="/logo.jfif" alt="$HH" style={{ width: 18, height: 18, borderRadius: '50%', objectFit: 'cover' }} />
+          <span>$HH Holding Duration</span>
+        </div>
+      ),
+      desc: 'Hold 17M+ $HH for 10+ days',
       progress: checklistStats.holdingDays,
       target: 10,
-      icon: '⏳'
+      fontWeight: 900,
+      letterSpacing: '0.2px',
+      style: {
+        background: 'linear-gradient(145deg, rgba(36, 36, 44, 0.95) 0%, rgba(56, 58, 68, 0.90) 50%, rgba(24, 24, 30, 0.98) 100%)',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
+        imageFilter: 'grayscale(100%) brightness(0.40) contrast(1.1)',
+        barColor: '#38BDF8'
+      }
     }
   ]
 
@@ -235,20 +265,39 @@ export function AirdropChecklist() {
   const optionalItems = [
     {
       id: 'staking',
-      title: 'Cumulative $HH Staking',
-      desc: 'Stake 40M+ $HH in total (sum of all positions)',
+      title: (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <img src="/logo.jfif" alt="$HH" style={{ width: 18, height: 18, borderRadius: '50%', objectFit: 'cover' }} />
+          <span>Staking (Cumulative)</span>
+        </div>
+      ),
+      desc: 'Stake 40M+ $HH (sum of all positions)',
       progress: totalStakedCumulative,
       target: 40000000,
       isToken: true,
-      icon: '💎'
+      fontWeight: 900,
+      letterSpacing: '0.2px',
+      style: {
+        background: 'linear-gradient(145deg, rgba(20, 20, 25, 0.95) 0%, rgba(38, 39, 48, 0.90) 50%, rgba(12, 12, 16, 0.98) 100%)',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
+        imageFilter: 'grayscale(100%) brightness(0.28) contrast(1.1)',
+        barColor: '#F59E0B'
+      }
     },
     {
       id: 'referrals',
       title: 'Active Referrals',
-      desc: 'Invite 3+ active referrals (users with 5+ transactions)',
+      desc: 'Invite 3+ referrals (5+ transaction)',
       progress: checklistStats.referrals,
       target: 3,
-      icon: '👥'
+      fontWeight: 800,
+      style: {
+        background: '#1D0F02',
+        border: '1px solid rgba(245, 158, 11, 0.25)',
+        imageFilter: 'grayscale(100%) brightness(0.22) contrast(1.2)',
+        gradientOverlay: 'linear-gradient(135deg, rgba(245, 158, 11, 0.22) 0%, rgba(239, 68, 68, 0.18) 100%)',
+        barColor: '#D97706'
+      }
     }
   ]
 
@@ -440,7 +489,7 @@ export function AirdropChecklist() {
               fontWeight: 900,
               color: hasMultiplier ? '#92400E' : '#065F46',
               margin: '2px 0 0',
-              fontFamily: "'Montserrat', sans-serif"
+              fontFamily: "'Outfit', 'Inter', sans-serif"
             }}>
               {hasMultiplier ? 'Eligible with Multiplier' : 'Eligible'}
             </h3>
@@ -448,155 +497,282 @@ export function AirdropChecklist() {
         </div>
       )}
 
-      {/* Required Criteria Section (Premium Solid White Card) */}
-      <div style={{
-        background: '#FFFFFF',
-        border: '1px solid #E2E8F0',
-        borderRadius: 24,
-        padding: 20,
-        marginBottom: 20,
-        boxShadow: '0 4px 20px rgba(0,0,0,0.02)'
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+      {/* ═══ Required Section Header (Outside the card) ═══ */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, padding: '0 4px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <h3 style={{
-            fontSize: 11.5,
-            fontWeight: 900,
-            color: '#0052FF',
-            letterSpacing: '1.2px',
-            textTransform: 'uppercase',
-            margin: 0
+            fontFamily: "'Outfit', 'Inter', sans-serif",
+            fontSize: 16,
+            fontWeight: 800,
+            color: '#0A0B0D',
+            margin: 0,
           }}>
-            Required Criteria
+            Eligibility Criteria
           </h3>
-          <span style={{ fontSize: 11.5, fontWeight: 800, color: '#475569' }}>
-            {completedRequired} / {totalRequired} Completed
+          <span style={{
+            background: '#0052FF',
+            color: '#FFFFFF',
+            fontSize: 9,
+            fontWeight: 900,
+            padding: '2.5px 6px',
+            borderRadius: 6,
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+            fontFamily: "'Outfit', 'Inter', sans-serif"
+          }}>
+            Required
           </span>
         </div>
-
-        {/* Required items list */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {requiredItems.map((item) => {
-            const isCompleted = item.progress >= item.target
-            return (
-              <div key={item.id} style={{
-                display: 'flex', gap: 12, padding: 14, borderRadius: 16,
-                background: isCompleted ? '#F0FDF4' : '#F8FAFC',
-                border: isCompleted ? '1px solid #A7F3D0' : '1px solid #E2E8F0',
-                transition: 'all 0.2s'
-              }}>
-                <span style={{ fontSize: 22, alignSelf: 'center' }}>{item.icon}</span>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h4 style={{ fontSize: 13, fontWeight: 800, color: '#0F172A', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</h4>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-                      <span style={{
-                        fontSize: 11, fontWeight: 900,
-                        color: isCompleted ? '#059669' : '#475569',
-                        background: isCompleted ? '#D1FAE5' : '#E2E8F0',
-                        padding: '1.5px 7px', borderRadius: 8
-                      }}>
-                        {formatNumber(item.progress)} / {item.target}
-                      </span>
-                      {isCompleted && <span style={{ color: '#059669', fontSize: 12, fontWeight: 900 }}>Done</span>}
-                    </div>
-                  </div>
-                  <p style={{
-                    fontSize: 10.5,
-                    color: '#64748B',
-                    margin: '3px 0 0',
-                    lineHeight: 1.3,
-                    whiteSpace: 'nowrap',
-                    textOverflow: 'ellipsis',
-                    overflow: 'hidden'
-                  }}>{item.desc}</p>
-                  
-                  {/* Progress bar */}
-                  <div style={{ height: 4, background: '#E2E8F0', borderRadius: 2, marginTop: 8, overflow: 'hidden' }}>
-                    <div style={{
-                      height: '100%', width: `${Math.min(100, (item.progress / item.target) * 100)}%`,
-                      background: isCompleted ? '#10B981' : '#0052FF', borderRadius: 2
-                    }} />
-                  </div>
-                </div>
-              </div>
-            )
-          })}
-        </div>
+        <span style={{
+          fontFamily: "'Outfit', 'Inter', sans-serif",
+          fontSize: 12,
+          fontWeight: 800,
+          color: '#717886'
+        }}>
+          {completedRequired} / {totalRequired} Completed
+        </span>
       </div>
 
-      {/* Additional Criteria Section (Premium Solid White Card) */}
-      <div style={{
-        background: '#FFFFFF',
-        border: '1px solid #E2E8F0',
-        borderRadius: 24,
-        padding: 20,
-        boxShadow: '0 4px 20px rgba(0,0,0,0.02)'
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <h3 style={{
-            fontSize: 11.5,
-            fontWeight: 900,
-            color: '#D97706',
-            letterSpacing: '1.2px',
-            textTransform: 'uppercase',
-            margin: 0
-          }}>
-            Optional Criteria (Multipliers)
-          </h3>
-          <span style={{ fontSize: 11.5, fontWeight: 800, color: '#475569' }}>
-            {completedOptional} / {optionalItems.length} Completed
-          </span>
-        </div>
+      {/* Required items list */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
+        {requiredItems.map((item) => {
+          const isCompleted = item.progress >= item.target
+          return (
+            <div key={item.id} style={{
+              background: item.style.background,
+              border: item.style.border,
+              borderRadius: 20,
+              padding: '16px 18px',
+              boxShadow: '0 8px 32px rgba(10, 10, 15, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+              position: 'relative',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 8,
+              boxSizing: 'border-box'
+            }}>
+              {/* Background image overlay */}
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                backgroundImage: 'url(/banner.jpg)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                filter: item.style.imageFilter,
+                zIndex: 0,
+                pointerEvents: 'none'
+              }} />
 
-        {/* Optional items list */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {optionalItems.map((item) => {
-            const isCompleted = item.progress >= item.target
-            return (
-              <div key={item.id} style={{
-                display: 'flex', gap: 12, padding: 14, borderRadius: 16,
-                background: isCompleted ? '#FFFBEB' : '#F8FAFC',
-                border: isCompleted ? '1px solid #FCD34D' : '1px solid #E2E8F0',
-                transition: 'all 0.2s'
-              }}>
-                <span style={{ fontSize: 22, alignSelf: 'center' }}>{item.icon}</span>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h4 style={{ fontSize: 13, fontWeight: 800, color: '#0F172A', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</h4>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-                      <span style={{
-                        fontSize: 11, fontWeight: 900,
-                        color: isCompleted ? '#B45309' : '#475569',
-                        background: isCompleted ? '#FEF3C7' : '#E2E8F0',
-                        padding: '1.5px 7px', borderRadius: 8
-                      }}>
-                        {item.isToken ? `${formatTokenAmount(item.progress)} / ${formatTokenAmount(item.target)} HH` : `${formatNumber(item.progress)} / ${item.target}`}
-                      </span>
-                      {isCompleted && <span style={{ color: '#D97706', fontSize: 12, fontWeight: 900 }}>Done</span>}
-                    </div>
+              {/* Optional gradient overlay */}
+              {item.style.gradientOverlay && (
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background: item.style.gradientOverlay,
+                  zIndex: 1,
+                  pointerEvents: 'none'
+                }} />
+              )}
+
+              {/* Foreground content wrapper */}
+              <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div style={{
+                    fontSize: 14.5,
+                    fontWeight: item.fontWeight || 800,
+                    color: '#FFFFFF',
+                    fontFamily: "'Outfit', 'Inter', sans-serif",
+                    letterSpacing: item.letterSpacing || 'normal'
+                  }}>
+                    {item.title}
                   </div>
-                  <p style={{
-                    fontSize: 10.5,
-                    color: '#64748B',
-                    margin: '3px 0 0',
-                    lineHeight: 1.3,
-                    whiteSpace: 'nowrap',
-                    textOverflow: 'ellipsis',
-                    overflow: 'hidden'
-                  }}>{item.desc}</p>
-                  
-                  {/* Progress bar */}
-                  <div style={{ height: 4, background: '#E2E8F0', borderRadius: 2, marginTop: 8, overflow: 'hidden' }}>
-                    <div style={{
-                      height: '100%', width: `${Math.min(100, (item.progress / item.target) * 100)}%`,
-                      background: isCompleted ? '#F59E0B' : '#94A3B8', borderRadius: 2
-                    }} />
+                  <div style={{
+                    fontSize: 10,
+                    color: 'rgba(255, 255, 255, 0.7)',
+                    marginTop: 2,
+                    fontWeight: 600,
+                    fontFamily: "'Outfit', 'Inter', sans-serif"
+                  }}>
+                    {item.desc}
                   </div>
                 </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{
+                    fontSize: 9,
+                    fontWeight: 900,
+                    background: isCompleted ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.15)',
+                    color: isCompleted ? '#10B981' : '#FFFFFF',
+                    border: isCompleted ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(255, 255, 255, 0.1)',
+                    padding: '2.5px 6px',
+                    borderRadius: 6,
+                    fontFamily: "'Outfit', 'Inter', sans-serif"
+                  }}>
+                    {formatNumber(item.progress)} / {item.target}
+                  </span>
+                  {isCompleted && <span style={{ color: '#10B981', fontSize: 11, fontWeight: 900, fontFamily: "'Outfit', 'Inter', sans-serif" }}>Done</span>}
+                </div>
               </div>
-            )
-          })}
+
+              {/* Progress bar */}
+              <div style={{
+                position: 'relative',
+                zIndex: 2,
+                height: 4,
+                background: 'rgba(255, 255, 255, 0.08)',
+                borderRadius: 2,
+                marginTop: 2,
+                overflow: 'hidden'
+              }}>
+                <div style={{
+                  height: '100%',
+                  width: `${Math.min(100, (item.progress / item.target) * 100)}%`,
+                  background: isCompleted ? '#10B981' : item.style.barColor,
+                  borderRadius: 2
+                }} />
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* ═══ Optional Section Header (Outside the card) ═══ */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, marginTop: 24, padding: '0 4px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <h3 style={{
+            fontFamily: "'Outfit', 'Inter', sans-serif",
+            fontSize: 16,
+            fontWeight: 800,
+            color: '#0A0B0D',
+            margin: 0,
+          }}>
+            Allocation Multiplier
+          </h3>
+          <span style={{
+            background: '#D97706',
+            color: '#FFFFFF',
+            fontSize: 9,
+            fontWeight: 900,
+            padding: '2.5px 6px',
+            borderRadius: 6,
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+            fontFamily: "'Outfit', 'Inter', sans-serif"
+          }}>
+            Optional
+          </span>
         </div>
+        <span style={{
+          fontFamily: "'Outfit', 'Inter', sans-serif",
+          fontSize: 12,
+          fontWeight: 800,
+          color: '#717886'
+        }}>
+          {completedOptional} / {optionalItems.length} Completed
+        </span>
+      </div>
+
+      {/* Optional items list */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {optionalItems.map((item) => {
+          const isCompleted = item.progress >= item.target
+          return (
+            <div key={item.id} style={{
+              background: item.style.background,
+              border: item.style.border,
+              borderRadius: 20,
+              padding: '16px 18px',
+              boxShadow: '0 8px 32px rgba(10, 10, 15, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+              position: 'relative',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 8,
+              boxSizing: 'border-box'
+            }}>
+              {/* Background image overlay */}
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                backgroundImage: 'url(/banner.jpg)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                filter: item.style.imageFilter,
+                zIndex: 0,
+                pointerEvents: 'none'
+              }} />
+
+              {/* Optional gradient overlay */}
+              {item.style.gradientOverlay && (
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background: item.style.gradientOverlay,
+                  zIndex: 1,
+                  pointerEvents: 'none'
+                }} />
+              )}
+
+              {/* Foreground content wrapper */}
+              <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div style={{
+                    fontSize: 14.5,
+                    fontWeight: item.fontWeight || 800,
+                    color: '#FFFFFF',
+                    fontFamily: "'Outfit', 'Inter', sans-serif",
+                    letterSpacing: item.letterSpacing || 'normal'
+                  }}>
+                    {item.title}
+                  </div>
+                  <div style={{
+                    fontSize: 10,
+                    color: 'rgba(255, 255, 255, 0.7)',
+                    marginTop: 2,
+                    fontWeight: 600,
+                    fontFamily: "'Outfit', 'Inter', sans-serif"
+                  }}>
+                    {item.desc}
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{
+                    fontSize: 9,
+                    fontWeight: 900,
+                    background: isCompleted ? 'rgba(245, 158, 11, 0.2)' : 'rgba(255, 255, 255, 0.15)',
+                    color: isCompleted ? '#FBBF24' : '#FFFFFF',
+                    border: isCompleted ? '1px solid rgba(245, 158, 11, 0.3)' : '1px solid rgba(255, 255, 255, 0.15)',
+                    padding: '2.5px 6px',
+                    borderRadius: 6,
+                    fontFamily: "'Outfit', 'Inter', sans-serif"
+                  }}>
+                    {item.isToken ? `${formatTokenAmount(item.progress)} / ${formatTokenAmount(item.target)}` : `${formatNumber(item.progress)} / ${item.target}`}
+                  </span>
+                  {isCompleted && <span style={{ color: '#FBBF24', fontSize: 11, fontWeight: 900, fontFamily: "'Outfit', 'Inter', sans-serif" }}>Done</span>}
+                </div>
+              </div>
+
+              {/* Progress bar */}
+              <div style={{
+                position: 'relative',
+                zIndex: 2,
+                height: 4,
+                background: 'rgba(255, 255, 255, 0.08)',
+                borderRadius: 2,
+                marginTop: 2,
+                overflow: 'hidden'
+              }}>
+                <div style={{
+                  height: '100%',
+                  width: `${Math.min(100, (item.progress / item.target) * 100)}%`,
+                  background: isCompleted ? '#FBBF24' : item.style.barColor,
+                  borderRadius: 2
+                }} />
+              </div>
+            </div>
+          )
+        })}
       </div>
     </div>
   )
