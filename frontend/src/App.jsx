@@ -12,6 +12,7 @@ import { LeaderboardSection } from './components/LeaderboardSection'
 import { EarnSection } from './components/EarnSection'
 import { RaidMode } from './components/RaidMode'
 import { AirdropChecklist } from './components/AirdropChecklist'
+import { ContestsSection } from './components/ContestsSection'
 import { ProfileSection } from './components/ProfileSection'
 import { BottomNav } from './components/BottomNav'
 import { HappyHourLogo } from './components/HappyHourLogo'
@@ -551,13 +552,41 @@ export default function App() {
                     <img src="/logo.jfif" alt="$HH" style={{ width: 14, height: 14, borderRadius: '50%', objectFit: 'cover' }} />
                     $HH Rewards
                   </button>
+                  <button
+                    onClick={() => setLeaderboardSubTab('contests')}
+                    style={{
+                      flex: 1,
+                      padding: '8px 10px',
+                      borderRadius: 12,
+                      border: leaderboardSubTab === 'contests' ? 'none' : '1px solid rgba(255,255,255,0.8)',
+                      background: leaderboardSubTab === 'contests' 
+                        ? 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)' 
+                        : 'rgba(255, 255, 255, 0.6)',
+                      color: leaderboardSubTab === 'contests' ? '#fff' : '#717886',
+                      fontWeight: 850,
+                      fontSize: 11.5,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      boxShadow: leaderboardSubTab === 'contests' 
+                        ? '0 4px 12px rgba(139,92,246,0.2)' 
+                        : '0 2px 4px rgba(10,11,13,0.02)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 6
+                    }}
+                  >
+                    Contests
+                  </button>
                 </div>
               </div>
 
               {leaderboardSubTab === 'usdc' ? (
                 <LeaderboardSection address={address} />
-              ) : (
+              ) : leaderboardSubTab === 'hh' ? (
                 <AirdropChecklist address={address} setTab={setTab} />
+              ) : (
+                <ContestsSection setTab={setTab} />
               )}
             </>
           )}
