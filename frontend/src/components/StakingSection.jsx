@@ -891,6 +891,26 @@ export function StakingSection({ setTab }) {
                   {activeStakes.filter(s => s.active).map((s) => {
                     const isLocked = Date.now() < s.unlockTime
                     
+                    const getAprText = (pos) => {
+                      const days = pos.lockPeriod || pos.durationDays
+                      if (days === '7' || days === 7 || pos.apr === 103) {
+                        return '103% APR'
+                      }
+                      if (days === '10' || days === 10 || pos.apr === 166) {
+                        return '166% APR'
+                      }
+                      if (pos.apr) {
+                        const rawApr = pos.apr > 1000 ? Math.round(pos.apr / 100) : pos.apr
+                        return `${rawApr}% APR`
+                      }
+                      const durationMs = (pos.unlockTime || 0) - (pos.startTime || 0)
+                      const durationDaysEstimate = Math.round(durationMs / (24 * 3600 * 1000))
+                      if (durationDaysEstimate >= 9) {
+                        return '166% APR'
+                      }
+                      return '103% APR'
+                    }
+
                     return (
                       <div key={s.id} style={{
                         display: 'flex',
@@ -901,8 +921,9 @@ export function StakingSection({ setTab }) {
                         borderRadius: 12,
                         border: '1px solid rgba(255,255,255,0.06)'
                       }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                          <span style={{ fontSize: 12.5, fontWeight: 900, color: '#FFFFFF' }}>
+                        {/* Column 1: Amount */}
+                        <div style={{ flex: '1 1 33%', display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
+                          <span style={{ fontSize: 12.5, fontWeight: 900, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                             {formatNumber(s.amount, 0)} $HH
                           </span>
                           <span style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.45)', fontWeight: 600 }}>
@@ -910,24 +931,27 @@ export function StakingSection({ setTab }) {
                           </span>
                         </div>
 
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                        {/* Column 2: APR Badge (centered & fixed) */}
+                        <div style={{ flex: '1 1 33%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                           <span style={{
-                            background: 'rgba(255,255,255,0.06)',
-                            color: '#A0AEC0',
-                            padding: '2px 6px',
+                            background: 'rgba(16, 185, 129, 0.1)',
+                            color: '#10B981',
+                            padding: '3px 8px',
                             borderRadius: 6,
-                            fontSize: 9,
-                            fontWeight: 800,
-                            border: '1px solid rgba(255,255,255,0.08)'
+                            fontSize: 9.5,
+                            fontWeight: 900,
+                            border: '1px solid rgba(16, 185, 129, 0.22)',
+                            whiteSpace: 'nowrap'
                           }}>
-                            {s.lockPeriod}d Lock
+                            {getAprText(s)}
                           </span>
                         </div>
 
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        {/* Column 3: Action / Time Left */}
+                        <div style={{ flex: '1 1 33%', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', minWidth: 0 }}>
                           {isLocked ? (
                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
-                              <span style={{ fontSize: 10.5, color: '#A0AEC0', fontWeight: 800 }}>
+                              <span style={{ fontSize: 10.5, color: '#A0AEC0', fontWeight: 800, whiteSpace: 'nowrap' }}>
                                 {getRemainingTimeText(s.unlockTime)}
                               </span>
                               {contractPositionsRaw === undefined && (
