@@ -102,43 +102,54 @@ export function ContestsSection({ setTab }) {
                 background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
                 border: '1px solid rgba(245, 158, 11, 0.35)',
                 borderRadius: 50,
-                padding: '4px 12px',
+                height: 22,
+                boxSizing: 'border-box',
+                padding: '0 12px',
                 fontSize: 10,
                 fontWeight: 800,
                 color: '#FFFFFF',
                 display: 'inline-flex',
                 alignItems: 'center',
+                justifyContent: 'center',
                 gap: 4
               }}>
-                <span>$100 in</span>
+                <span style={{ lineHeight: 1 }}>$100 in</span>
                 <img src="/logo.jfif" alt="$HH" style={{ width: 12, height: 12, borderRadius: '50%', objectFit: 'cover' }} />
-                <span>$HH</span>
+                <span style={{ lineHeight: 1 }}>$HH</span>
               </div>
               <div style={{
                 background: 'rgba(0, 0, 0, 0.65)',
                 border: '1px solid rgba(255, 255, 255, 0.15)',
                 borderRadius: 50,
-                padding: '4px 12px',
+                height: 22,
+                boxSizing: 'border-box',
+                padding: '0 12px',
                 fontSize: 10,
                 fontWeight: 800,
-                color: '#FFFFFF'
+                color: '#FFFFFF',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center'
               }}>
-                3 winners
+                <span style={{ lineHeight: 1 }}>3 winners</span>
               </div>
               <div style={{
                 background: 'rgba(252, 64, 31, 0.15)',
                 border: '1px solid rgba(252, 64, 31, 0.3)',
                 borderRadius: 50,
-                padding: '4px 12px',
+                height: 22,
+                boxSizing: 'border-box',
+                padding: '0 12px',
                 fontSize: 10,
                 fontWeight: 800,
                 color: '#FC401F',
                 display: 'inline-flex',
                 alignItems: 'center',
+                justifyContent: 'center',
                 gap: 4
               }}>
-                <span>left:</span>
-                <span style={{ fontFamily: "'DM Mono', monospace" }}>{contestTimeLeft}</span>
+                <span style={{ display: 'inline-block', lineHeight: 1 }}>left:</span>
+                <span style={{ fontFamily: "'DM Mono', monospace", display: 'inline-block', lineHeight: 1 }}>{contestTimeLeft}</span>
               </div>
             </div>
           </div>
@@ -288,7 +299,142 @@ export function ContestsSection({ setTab }) {
 
       {/* Feature Blocks Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 4 }}>
-        {/* Block 1: Happy Raids (Coming Soon overlay) */}
+        {/* Block 1: Creator Contest (Now on the Left) */}
+        <div
+          onClick={() => setActiveContest('creator')}
+          style={{
+            background: '#1D1204',
+            borderRadius: 20,
+            padding: '12px 12px 10px',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            boxShadow: '0 8px 32px rgba(245, 158, 11, 0.15)',
+            height: 140,
+            boxSizing: 'border-box',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            position: 'relative',
+            overflow: 'hidden',
+            border: '1px solid rgba(245, 158, 11, 0.3)'
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.transform = 'translateY(-1.5px)'
+            e.currentTarget.style.boxShadow = '0 12px 36px rgba(245, 158, 11, 0.25)'
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.transform = 'none'
+            e.currentTarget.style.boxShadow = '0 8px 32px rgba(245, 158, 11, 0.15)'
+          }}
+        >
+          {/* Graded background image */}
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundImage: 'url(/banner.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            filter: 'hue-rotate(25deg) brightness(0.4) contrast(1.15)',
+            zIndex: 0,
+            pointerEvents: 'none'
+          }} />
+
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <div style={{ fontSize: 13.5, fontWeight: 850, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Creator Contest</div>
+            
+            {/* Badges container */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 4 }}>
+              {/* Row 1: Orange & Black Badges */}
+              <div style={{ display: 'flex', gap: 4 }}>
+                <div style={{
+                  background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+                  border: '1px solid rgba(245, 158, 11, 0.35)',
+                  borderRadius: 6,
+                  height: 18,
+                  boxSizing: 'border-box',
+                  padding: '0 5px',
+                  fontSize: 8,
+                  fontWeight: 850,
+                  color: '#FFFFFF',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 2,
+                  lineHeight: 1
+                }}>
+                  <span style={{ lineHeight: 1 }}>$100 in</span>
+                  <img src="/logo.jfif" alt="$HH" style={{ width: 9, height: 9, borderRadius: '50%', objectFit: 'cover' }} />
+                  <span style={{ lineHeight: 1 }}>$HH</span>
+                </div>
+                <div style={{
+                  background: 'rgba(0, 0, 0, 0.65)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  borderRadius: 6,
+                  height: 18,
+                  boxSizing: 'border-box',
+                  padding: '0 5px',
+                  fontSize: 8,
+                  fontWeight: 850,
+                  color: '#FFFFFF',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  lineHeight: 1
+                }}>
+                  <span style={{ lineHeight: 1 }}>3 winners</span>
+                </div>
+              </div>
+              
+              {/* Row 2: Red Timer Badge */}
+              <div>
+                <div style={{
+                  background: 'rgba(252, 64, 31, 0.15)',
+                  border: '1px solid rgba(252, 64, 31, 0.3)',
+                  borderRadius: 6,
+                  height: 18,
+                  boxSizing: 'border-box',
+                  padding: '0 5px',
+                  fontSize: 8,
+                  fontWeight: 850,
+                  color: '#FC401F',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 2,
+                  lineHeight: 1
+                }}>
+                  <span style={{ lineHeight: 1 }}>left:</span>
+                  <span style={{ fontFamily: "'DM Mono', monospace", lineHeight: 1 }}>{contestTimeLeft}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Centered semi-transparent Participate Badge */}
+          <div style={{
+            position: 'relative',
+            zIndex: 1,
+            width: '100%',
+            height: 28,
+            background: 'rgba(255, 255, 255, 0.12)',
+            border: '1px solid rgba(255, 255, 255, 0.25)',
+            borderRadius: 8,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#FFFFFF',
+            fontSize: 12,
+            fontWeight: 800,
+            transition: 'background 0.2s'
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
+          >
+            Participate →
+          </div>
+        </div>
+
+        {/* Block 2: Happy Raids (Now on the Right) */}
         <div
           style={{
             background: '#140505',
@@ -359,136 +505,6 @@ export function ContestsSection({ setTab }) {
             borderRadius: 20
           }}>
             Coming Soon
-          </div>
-        </div>
-
-        {/* Block 2: Creator Contest (Formerly Happy Boxes) */}
-        <div
-          onClick={() => setActiveContest('creator')}
-          style={{
-            background: '#1D1204',
-            borderRadius: 20,
-            padding: '12px 12px 10px',
-            cursor: 'pointer',
-            transition: 'all 0.2s',
-            boxShadow: '0 8px 32px rgba(245, 158, 11, 0.15)',
-            height: 140,
-            boxSizing: 'border-box',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            position: 'relative',
-            overflow: 'hidden',
-            border: '1px solid rgba(245, 158, 11, 0.3)'
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.transform = 'translateY(-1.5px)'
-            e.currentTarget.style.boxShadow = '0 12px 36px rgba(245, 158, 11, 0.25)'
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.transform = 'none'
-            e.currentTarget.style.boxShadow = '0 8px 32px rgba(245, 158, 11, 0.15)'
-          }}
-        >
-          {/* Graded background image */}
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundImage: 'url(/banner.jpg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            filter: 'hue-rotate(25deg) brightness(0.4) contrast(1.15)',
-            zIndex: 0,
-            pointerEvents: 'none'
-          }} />
-
-          <div style={{ position: 'relative', zIndex: 1 }}>
-            <div style={{ fontSize: 13.5, fontWeight: 850, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Creator Contest</div>
-            
-            {/* Badges container */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 4 }}>
-              {/* Row 1: Orange & Black Badges */}
-              <div style={{ display: 'flex', gap: 4 }}>
-                <div style={{
-                  background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
-                  border: '1px solid rgba(245, 158, 11, 0.35)',
-                  borderRadius: 6,
-                  height: 17,
-                  boxSizing: 'border-box',
-                  padding: '0 4px',
-                  fontSize: 8,
-                  fontWeight: 850,
-                  color: '#FFFFFF',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 2
-                }}>
-                  <span>$100 in</span>
-                  <img src="/logo.jfif" alt="$HH" style={{ width: 9, height: 9, borderRadius: '50%', objectFit: 'cover' }} />
-                  <span>$HH</span>
-                </div>
-                <div style={{
-                  background: 'rgba(0, 0, 0, 0.65)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
-                  borderRadius: 6,
-                  height: 17,
-                  boxSizing: 'border-box',
-                  padding: '0 4px',
-                  fontSize: 8,
-                  fontWeight: 850,
-                  color: '#FFFFFF',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  3 winners
-                </div>
-              </div>
-              
-              {/* Row 2: Red Timer Badge */}
-              <div>
-                <div style={{
-                  background: 'rgba(252, 64, 31, 0.15)',
-                  border: '1px solid rgba(252, 64, 31, 0.3)',
-                  borderRadius: 6,
-                  height: 17,
-                  boxSizing: 'border-box',
-                  padding: '0 4px',
-                  fontSize: 8,
-                  fontWeight: 850,
-                  color: '#FC401F',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 2
-                }}>
-                  <span>left:</span>
-                  <span style={{ fontFamily: "'DM Mono', monospace" }}>{contestTimeLeft}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Centered semi-transparent Participate Badge */}
-          <div style={{
-            position: 'relative',
-            zIndex: 1,
-            width: '100%',
-            height: 28,
-            background: 'rgba(255, 255, 255, 0.12)',
-            border: '1px solid rgba(255, 255, 255, 0.25)',
-            borderRadius: 8,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#FFFFFF',
-            fontSize: 12,
-            fontWeight: 800,
-            transition: 'background 0.2s'
-          }}
-          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
-          onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
-          >
-            Participate →
           </div>
         </div>
       </div>
