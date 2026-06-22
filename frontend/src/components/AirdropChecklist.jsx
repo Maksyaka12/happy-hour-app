@@ -26,7 +26,7 @@ const formatTokenAmount = (num) => {
   return n.toFixed(0)
 }
 
-export function AirdropChecklist() {
+export function AirdropChecklist({ setTab }) {
   const { address, isConnected } = useAccount()
   const [hhPrice, setHhPrice] = useState(0.00025)
   const [loading, setLoading] = useState(true)
@@ -203,7 +203,6 @@ export function AirdropChecklist() {
       desc: 'Check in 10+ times in total',
       progress: checklistStats.checkins,
       target: 10,
-      fontWeight: 800,
       style: {
         background: '#0B1E3F',
         border: '1px solid rgba(59,130,246,0.25)',
@@ -217,7 +216,6 @@ export function AirdropChecklist() {
       desc: 'Activate daily HP boost 5+ times',
       progress: checklistStats.boosts,
       target: 5,
-      fontWeight: 800,
       style: {
         background: '#081E15',
         border: '1px solid rgba(16,185,129,0.25)',
@@ -231,7 +229,6 @@ export function AirdropChecklist() {
       desc: 'Open 12+ boxes',
       progress: checklistStats.boxes,
       target: 12,
-      fontWeight: 800,
       style: {
         background: '#090514',
         border: '1px solid rgba(139,92,246,0.25)',
@@ -250,8 +247,6 @@ export function AirdropChecklist() {
       desc: 'Hold 17M+ $HH for 10+ days',
       progress: checklistStats.holdingDays,
       target: 10,
-      fontWeight: 900,
-      letterSpacing: '0.2px',
       style: {
         background: 'linear-gradient(145deg, rgba(36, 36, 44, 0.95) 0%, rgba(56, 58, 68, 0.90) 50%, rgba(24, 24, 30, 0.98) 100%)',
         border: '1px solid rgba(255, 255, 255, 0.15)',
@@ -268,15 +263,13 @@ export function AirdropChecklist() {
       title: (
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <img src="/logo.jfif" alt="$HH" style={{ width: 18, height: 18, borderRadius: '50%', objectFit: 'cover' }} />
-          <span>Staking (Cumulative)</span>
+          <span>$HH Staking (Cumulative)</span>
         </div>
       ),
       desc: 'Stake 40M+ $HH (sum of all positions)',
       progress: totalStakedCumulative,
       target: 40000000,
       isToken: true,
-      fontWeight: 900,
-      letterSpacing: '0.2px',
       style: {
         background: 'linear-gradient(145deg, rgba(20, 20, 25, 0.95) 0%, rgba(38, 39, 48, 0.90) 50%, rgba(12, 12, 16, 0.98) 100%)',
         border: '1px solid rgba(255, 255, 255, 0.15)',
@@ -290,7 +283,6 @@ export function AirdropChecklist() {
       desc: 'Invite 3+ referrals (5+ transaction)',
       progress: checklistStats.referrals,
       target: 3,
-      fontWeight: 800,
       style: {
         background: '#1D0F02',
         border: '1px solid rgba(245, 158, 11, 0.25)',
@@ -538,19 +530,41 @@ export function AirdropChecklist() {
         {requiredItems.map((item) => {
           const isCompleted = item.progress >= item.target
           return (
-            <div key={item.id} style={{
-              background: item.style.background,
-              border: item.style.border,
-              borderRadius: 20,
-              padding: '16px 18px',
-              boxShadow: '0 8px 32px rgba(10, 10, 15, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
-              position: 'relative',
-              overflow: 'hidden',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 8,
-              boxSizing: 'border-box'
-            }}>
+            <div 
+              key={item.id} 
+              onClick={() => {
+                if (item.id === 'checkins' || item.id === 'boosts' || item.id === 'holding' || item.id === 'staking') {
+                  setTab('earn')
+                } else if (item.id === 'boxes') {
+                  setTab('boxes')
+                } else if (item.id === 'referrals') {
+                  setTab('home')
+                }
+              }}
+              style={{
+                background: item.style.background,
+                border: item.style.border,
+                borderRadius: 20,
+                padding: '16px 18px',
+                boxShadow: '0 8px 32px rgba(10, 10, 15, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+                position: 'relative',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8,
+                boxSizing: 'border-box',
+                cursor: 'pointer',
+                transition: 'transform 0.2s, box-shadow 0.2s'
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.transform = 'translateY(-2px)'
+                e.currentTarget.style.boxShadow = '0 12px 36px rgba(10, 10, 15, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12)'
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.transform = 'none'
+                e.currentTarget.style.boxShadow = '0 8px 32px rgba(10, 10, 15, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08)'
+              }}
+            >
               {/* Background image overlay */}
               <div style={{
                 position: 'absolute',
@@ -575,14 +589,13 @@ export function AirdropChecklist() {
               )}
 
               {/* Foreground content wrapper */}
-              <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   <div style={{
                     fontSize: 14.5,
-                    fontWeight: item.fontWeight || 800,
+                    fontWeight: 800,
                     color: '#FFFFFF',
-                    fontFamily: "'Outfit', 'Inter', sans-serif",
-                    letterSpacing: item.letterSpacing || 'normal'
+                    fontFamily: "'Outfit', 'Inter', sans-serif"
                   }}>
                     {item.title}
                   </div>
@@ -599,16 +612,21 @@ export function AirdropChecklist() {
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 52,
+                    height: 18,
                     fontSize: 9,
                     fontWeight: 900,
                     background: isCompleted ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.15)',
                     color: isCompleted ? '#10B981' : '#FFFFFF',
-                    border: isCompleted ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(255, 255, 255, 0.1)',
-                    padding: '2.5px 6px',
+                    border: isCompleted ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(255, 255, 255, 0.15)',
                     borderRadius: 6,
-                    fontFamily: "'Outfit', 'Inter', sans-serif"
+                    fontFamily: "'Outfit', 'Inter', sans-serif",
+                    boxSizing: 'border-box'
                   }}>
-                    {formatNumber(item.progress)} / {item.target}
+                    {formatNumber(item.progress)}/{item.target}
                   </span>
                   {isCompleted && <span style={{ color: '#10B981', fontSize: 11, fontWeight: 900, fontFamily: "'Outfit', 'Inter', sans-serif" }}>Done</span>}
                 </div>
@@ -677,19 +695,41 @@ export function AirdropChecklist() {
         {optionalItems.map((item) => {
           const isCompleted = item.progress >= item.target
           return (
-            <div key={item.id} style={{
-              background: item.style.background,
-              border: item.style.border,
-              borderRadius: 20,
-              padding: '16px 18px',
-              boxShadow: '0 8px 32px rgba(10, 10, 15, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
-              position: 'relative',
-              overflow: 'hidden',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 8,
-              boxSizing: 'border-box'
-            }}>
+            <div 
+              key={item.id} 
+              onClick={() => {
+                if (item.id === 'checkins' || item.id === 'boosts' || item.id === 'holding' || item.id === 'staking') {
+                  setTab('earn')
+                } else if (item.id === 'boxes') {
+                  setTab('boxes')
+                } else if (item.id === 'referrals') {
+                  setTab('home')
+                }
+              }}
+              style={{
+                background: item.style.background,
+                border: item.style.border,
+                borderRadius: 20,
+                padding: '16px 18px',
+                boxShadow: '0 8px 32px rgba(10, 10, 15, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+                position: 'relative',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8,
+                boxSizing: 'border-box',
+                cursor: 'pointer',
+                transition: 'transform 0.2s, box-shadow 0.2s'
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.transform = 'translateY(-2px)'
+                e.currentTarget.style.boxShadow = '0 12px 36px rgba(10, 10, 15, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12)'
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.transform = 'none'
+                e.currentTarget.style.boxShadow = '0 8px 32px rgba(10, 10, 15, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08)'
+              }}
+            >
               {/* Background image overlay */}
               <div style={{
                 position: 'absolute',
@@ -714,14 +754,13 @@ export function AirdropChecklist() {
               )}
 
               {/* Foreground content wrapper */}
-              <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   <div style={{
                     fontSize: 14.5,
-                    fontWeight: item.fontWeight || 800,
+                    fontWeight: 800,
                     color: '#FFFFFF',
-                    fontFamily: "'Outfit', 'Inter', sans-serif",
-                    letterSpacing: item.letterSpacing || 'normal'
+                    fontFamily: "'Outfit', 'Inter', sans-serif"
                   }}>
                     {item.title}
                   </div>
@@ -738,16 +777,27 @@ export function AirdropChecklist() {
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: item.id === 'staking' ? 82 : 52,
+                    height: 18,
                     fontSize: 9,
                     fontWeight: 900,
-                    background: isCompleted ? 'rgba(245, 158, 11, 0.2)' : 'rgba(255, 255, 255, 0.15)',
-                    color: isCompleted ? '#FBBF24' : '#FFFFFF',
-                    border: isCompleted ? '1px solid rgba(245, 158, 11, 0.3)' : '1px solid rgba(255, 255, 255, 0.15)',
-                    padding: '2.5px 6px',
+                    background: isCompleted 
+                      ? (item.id === 'staking' || item.id === 'referrals' ? 'rgba(245, 158, 11, 0.2)' : 'rgba(16, 185, 129, 0.2)') 
+                      : 'rgba(255, 255, 255, 0.15)',
+                    color: isCompleted 
+                      ? (item.id === 'staking' || item.id === 'referrals' ? '#FBBF24' : '#10B981') 
+                      : '#FFFFFF',
+                    border: isCompleted 
+                      ? (item.id === 'staking' || item.id === 'referrals' ? '1px solid rgba(245, 158, 11, 0.3)' : '1px solid rgba(255, 255, 255, 0.15)') 
+                      : '1px solid rgba(255, 255, 255, 0.15)',
                     borderRadius: 6,
-                    fontFamily: "'Outfit', 'Inter', sans-serif"
+                    fontFamily: "'Outfit', 'Inter', sans-serif",
+                    boxSizing: 'border-box'
                   }}>
-                    {item.isToken ? `${formatTokenAmount(item.progress)} / ${formatTokenAmount(item.target)}` : `${formatNumber(item.progress)} / ${item.target}`}
+                    {item.isToken ? `${formatTokenAmount(item.progress)}/${formatTokenAmount(item.target)}` : `${formatNumber(item.progress)}/${item.target}`}
                   </span>
                   {isCompleted && <span style={{ color: '#FBBF24', fontSize: 11, fontWeight: 900, fontFamily: "'Outfit', 'Inter', sans-serif" }}>Done</span>}
                 </div>

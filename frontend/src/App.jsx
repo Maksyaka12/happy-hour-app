@@ -523,7 +523,7 @@ export default function App() {
               {leaderboardSubTab === 'usdc' ? (
                 <LeaderboardSection address={address} />
               ) : (
-                <AirdropChecklist address={address} />
+                <AirdropChecklist address={address} setTab={setTab} />
               )}
             </>
           )}
