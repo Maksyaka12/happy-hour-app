@@ -292,7 +292,7 @@ export function RaffleSection({ address, basename }) {
   return (
     <div style={{ maxWidth: 640, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 12, padding: '12px 12px 120px', animation: 'fadeIn 0.3s ease-out' }}>
 
-      {/* USDC / HH Raffle Switcher */}
+      {/* USDC / HH / Big Raffle Switcher */}
       <div style={{ padding: '0 4px' }}>
         <div style={{
           display: 'flex',
@@ -301,7 +301,7 @@ export function RaffleSection({ address, basename }) {
           padding: 4,
           borderRadius: 16,
           marginBottom: 16,
-          maxWidth: 380,
+          maxWidth: 500,
           margin: '0 auto 16px',
           boxShadow: 'inset 0 2px 4px rgba(10,11,13,0.05)',
           gap: 6
@@ -355,6 +355,39 @@ export function RaffleSection({ address, basename }) {
           >
             <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14 }} />
             USDC Raffle
+          </button>
+          <button
+            disabled
+            style={{
+              flex: 1,
+              padding: '8px 10px',
+              borderRadius: 12,
+              border: '1px solid rgba(255, 255, 255, 0.4)',
+              background: 'rgba(255, 255, 255, 0.35)',
+              color: '#9CA3AF',
+              fontWeight: 800,
+              fontSize: 11,
+              cursor: 'not-allowed',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 4,
+              outline: 'none',
+              fontFamily: "'Outfit', 'Inter', sans-serif"
+            }}
+          >
+            <span>🎟️ Big Raffle</span>
+            <span style={{
+              fontSize: 7,
+              fontWeight: 900,
+              background: 'rgba(107, 114, 128, 0.12)',
+              color: '#6B7280',
+              padding: '1px 4px',
+              borderRadius: 4,
+              whiteSpace: 'nowrap'
+            }}>
+              Coming soon
+            </span>
           </button>
         </div>
       </div>
@@ -444,8 +477,10 @@ export function RaffleSection({ address, basename }) {
               PRIZE POOL
             </span>
             <div style={{
-              background: 'rgba(255, 255, 255, 0.06)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
+              background: 'rgba(255, 255, 255, 0.1)',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
               borderRadius: 14,
               height: 52,
               padding: '0 12px',
@@ -472,8 +507,10 @@ export function RaffleSection({ address, basename }) {
               {isClosed ? 'DRAWS IN' : 'TIME LEFT'}
             </span>
             <div style={{
-              background: 'rgba(255, 255, 255, 0.06)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
+              background: 'rgba(255, 255, 255, 0.1)',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
               borderRadius: 14,
               height: 52,
               padding: '0 12px',
