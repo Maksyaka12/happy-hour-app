@@ -510,7 +510,7 @@ export default function App() {
                         : 'rgba(255, 255, 255, 0.6)',
                       color: leaderboardSubTab === 'usdc' ? '#fff' : '#717886',
                       fontWeight: 850,
-                      fontSize: 11.5,
+                      fontSize: 10,
                       cursor: 'pointer',
                       transition: 'all 0.2s',
                       boxShadow: leaderboardSubTab === 'usdc' 
@@ -519,10 +519,10 @@ export default function App() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      gap: 6
+                      gap: 4
                     }}
                   >
-                    <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14 }} />
+                    <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12 }} />
                     USDC Rewards
                   </button>
                   <button
@@ -537,7 +537,7 @@ export default function App() {
                         : 'rgba(255, 255, 255, 0.6)',
                       color: leaderboardSubTab === 'hh' ? '#fff' : '#717886',
                       fontWeight: 850,
-                      fontSize: 11.5,
+                      fontSize: 10,
                       cursor: 'pointer',
                       transition: 'all 0.2s',
                       boxShadow: leaderboardSubTab === 'hh' 
@@ -546,10 +546,10 @@ export default function App() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      gap: 6
+                      gap: 4
                     }}
                   >
-                    <img src="/logo.jfif" alt="$HH" style={{ width: 14, height: 14, borderRadius: '50%', objectFit: 'cover' }} />
+                    <img src="/logo.jfif" alt="$HH" style={{ width: 12, height: 12, borderRadius: '50%', objectFit: 'cover' }} />
                     $HH Rewards
                   </button>
                   <button
@@ -564,7 +564,7 @@ export default function App() {
                         : 'rgba(255, 255, 255, 0.6)',
                       color: leaderboardSubTab === 'contests' ? '#fff' : '#717886',
                       fontWeight: 850,
-                      fontSize: 11.5,
+                      fontSize: 10,
                       cursor: 'pointer',
                       transition: 'all 0.2s',
                       boxShadow: leaderboardSubTab === 'contests' 
@@ -573,7 +573,7 @@ export default function App() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      gap: 6
+                      gap: 4
                     }}
                   >
                     Contests

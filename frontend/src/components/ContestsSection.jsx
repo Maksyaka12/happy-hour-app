@@ -97,29 +97,18 @@ export function ContestsSection({ setTab }) {
         boxSizing: 'border-box'
       }}>
         <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 6,
           color: '#1E293B',
           fontFamily: "'Outfit', 'Inter', sans-serif",
-          fontSize: 12,
+          fontSize: 12.5,
           fontWeight: 600,
-          lineHeight: 1.5,
-          flexWrap: 'wrap',
+          lineHeight: 1.6,
           textAlign: 'center'
         }}>
-          <span>Follow contests to participate and earn</span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'rgba(16,185,129,0.1)', padding: '2px 6px', borderRadius: 6, border: '1px solid rgba(16,185,129,0.2)', fontWeight: 800, color: '#059669', fontSize: 11.5 }}>
-            <img src="/logo.jfif" alt="$HH" style={{ width: 13, height: 13, borderRadius: '50%', objectFit: 'cover' }} />
-            $HH
-          </span>
-          <span>and</span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'rgba(0,82,255,0.1)', padding: '2px 6px', borderRadius: 6, border: '1px solid rgba(0,82,255,0.2)', fontWeight: 800, color: '#0052FF', fontSize: 11.5 }}>
-            <img src="/usdc-logo.png" alt="USDC" style={{ width: 13, height: 13 }} />
-            USDC
-          </span>
-          <span>rewards. Contests are added periodically.</span>
+          Follow contests to participate and earn{" "}
+          <img src="/logo.jfif" alt="$HH" style={{ width: 13, height: 13, borderRadius: '50%', objectFit: 'cover', display: 'inline-block', verticalAlign: 'middle', margin: '0 2px 2px' }} />
+          {" "}$HH and{" "}
+          <img src="/usdc-logo.png" alt="USDC" style={{ width: 13, height: 13, display: 'inline-block', verticalAlign: 'middle', margin: '0 2px 2px' }} />
+          {" "}USDC rewards. Contests are added periodically.
         </div>
       </div>
 
