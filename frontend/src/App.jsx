@@ -514,10 +514,15 @@ export default function App() {
                       transition: 'all 0.2s',
                       boxShadow: leaderboardSubTab === 'usdc' 
                         ? '0 4px 12px rgba(0,82,255,0.2)' 
-                        : '0 2px 4px rgba(10,11,13,0.02)'
+                        : '0 2px 4px rgba(10,11,13,0.02)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 6
                     }}
                   >
-                    🏆 USDC Rewards
+                    <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14 }} />
+                    USDC Rewards
                   </button>
                   <button
                     onClick={() => setLeaderboardSubTab('hh')}
@@ -536,10 +541,15 @@ export default function App() {
                       transition: 'all 0.2s',
                       boxShadow: leaderboardSubTab === 'hh' 
                         ? '0 4px 12px rgba(16,185,129,0.2)' 
-                        : '0 2px 4px rgba(10,11,13,0.02)'
+                        : '0 2px 4px rgba(10,11,13,0.02)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 6
                     }}
                   >
-                    🪂 $HH Rewards
+                    <img src="/logo.jfif" alt="$HH" style={{ width: 14, height: 14, borderRadius: '50%', objectFit: 'cover' }} />
+                    $HH Rewards
                   </button>
                 </div>
               </div>

@@ -23,12 +23,7 @@ const calculateSeasonTimeLeft = () => {
 
 
 const getUsdcReward = (rank) => {
-  if (rank === 1) return { value: '200', type: 'usdc' }
-  if (rank === 2) return { value: '150', type: 'usdc' }
-  if (rank === 3) return { value: '100', type: 'usdc' }
-  if (rank >= 4 && rank <= 10) return { value: '50', type: 'usdc' }
-  if (rank >= 11 && rank <= 20) return { value: '30', type: 'usdc' }
-  if (rank >= 21 && rank <= 30) return { value: '🎁', type: 'usdc' }
+  if (rank >= 1 && rank <= 50) return { value: '🎁', type: 'usdc' }
   return null
 }
 
@@ -184,7 +179,7 @@ export function LeaderboardSection({ address }) {
             marginBottom: 12,
             letterSpacing: '-1px'
           }}>
-            SEASON 1
+            USDC Distribution
           </div>
           <div style={{
             background: 'rgba(255,255,255,0.2)',
@@ -199,7 +194,7 @@ export function LeaderboardSection({ address }) {
             textTransform: 'uppercase',
             letterSpacing: '0.8px',
           }}>
-            🏆 TOP-30 USERS WILL GET USDC REWARDS
+            🏆 TOP-50 USERS WILL GET USDC REWARDS
           </div>
         </div>
 
@@ -305,7 +300,7 @@ export function LeaderboardSection({ address }) {
               </div>
             </div>
 
-            {/* Right: Est. Reward or Reach Top 30 Badge */}
+            {/* Right: Est. Reward or Reach Top 50 Badge */}
             {myReward ? (
               <div style={{
                 background: 'rgba(255, 255, 255, 0.15)',
@@ -334,30 +329,15 @@ export function LeaderboardSection({ address }) {
                   Est. Reward
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
-                  {myReward.type === 'usdc' ? (
-                    <>
-                      <span style={{ 
-                        fontFamily: "'Montserrat', sans-serif", 
-                        fontSize: 14, 
-                        fontWeight: 700, 
-                        color: '#fff', 
-                        lineHeight: 1 
-                      }}>
-                        {myReward.value}
-                      </span>
-                      <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14, borderRadius: '50%' }} />
-                    </>
-                  ) : (
-                    <span style={{ 
-                      fontFamily: "'Montserrat', sans-serif", 
-                      fontSize: 13, 
-                      fontWeight: 700, 
-                      color: '#FFF', 
-                      lineHeight: 1 
-                    }}>
-                      {myReward.value}
-                    </span>
-                  )}
+                  <span style={{ 
+                    fontFamily: "'Montserrat', sans-serif", 
+                    fontSize: 13, 
+                    fontWeight: 700, 
+                    color: '#fff', 
+                    lineHeight: 1 
+                  }}>
+                    Eligible
+                  </span>
                 </div>
               </div>
             ) : (
@@ -388,7 +368,7 @@ export function LeaderboardSection({ address }) {
                   letterSpacing: '0.5px',
                   lineHeight: 1.2
                 }}>
-                  REACH TOP 30
+                  REACH TOP 50
                 </span>
                 <span style={{ 
                   fontFamily: "'Montserrat', sans-serif",
@@ -436,7 +416,7 @@ export function LeaderboardSection({ address }) {
                 {(() => {
                   const capsuleStyle = (() => {
                     const rank = idx + 1;
-                    if (rank >= 1 && rank <= 30) {
+                    if (rank >= 1 && rank <= 50) {
                       return { bg: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', color: '#fff', border: 'none', shadow: 'none', div: 'rgba(255,255,255,0.25)' }
                     }
                     return { bg: '#F1F5F9', color: '#64748B', border: 'none', shadow: 'none', div: 'transparent' }
