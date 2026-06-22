@@ -486,61 +486,42 @@ export function AirdropChecklist({ setTab }) {
         boxShadow: '0 8px 32px rgba(0, 82, 255, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
         boxSizing: 'border-box'
       }}>
-        <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-          <span style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 22,
-            height: 22,
-            borderRadius: '50%',
-            background: 'rgba(0, 82, 255, 0.12)',
-            border: '1px solid rgba(0, 82, 255, 0.3)',
-            color: '#0052FF',
-            fontSize: 12,
-            fontWeight: 800,
-            fontFamily: "'Outfit', 'Inter', sans-serif"
-          }}>
-            i
-          </span>
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 10,
-            flex: 1,
-            color: '#1E293B',
-            fontFamily: "'Outfit', 'Inter', sans-serif",
-            fontSize: 12.5,
-            lineHeight: 1.6
-          }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ color: '#0052FF', fontSize: 14 }}>•</span>
-                <span>
-                  <strong style={{ color: '#0052FF', fontWeight: 800 }}>Required Criteria</strong>: Necessary for airdrop eligibility.
-                </span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ color: '#0052FF', fontSize: 14 }}>•</span>
-                <span>
-                  <strong style={{ color: '#D97706', fontWeight: 800 }}>Allocation Multiplier</strong>: Grants bonuses to boost your final rewards.
-                </span>
-              </div>
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 10,
+          color: '#1E293B',
+          fontFamily: "'Outfit', 'Inter', sans-serif",
+          fontSize: 12.5,
+          lineHeight: 1.6
+        }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ color: '#0052FF', fontSize: 14 }}>•</span>
+              <span>
+                <strong style={{ color: '#0052FF', fontWeight: 800 }}>Required Criteria</strong>: Necessary for airdrop eligibility.
+              </span>
             </div>
-            
-            <p style={{
-              margin: 0,
-              fontSize: 11.5,
-              color: '#475569',
-              lineHeight: 1.5,
-              fontWeight: 500,
-              borderTop: '1px solid rgba(0, 82, 255, 0.1)',
-              paddingTop: 8,
-              marginTop: 2
-            }}>
-              These represent the minimum eligibility thresholds, but all progress is cumulative. Exceeding these targets will dynamically increase your final allocation.
-            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ color: '#0052FF', fontSize: 14 }}>•</span>
+              <span>
+                <strong style={{ color: '#D97706', fontWeight: 800 }}>Optional Criteria</strong>: Provides allocation multiplier.
+              </span>
+            </div>
           </div>
+          
+          <p style={{
+            margin: 0,
+            fontSize: 11.5,
+            color: '#475569',
+            lineHeight: 1.5,
+            fontWeight: 500,
+            borderTop: '1px solid rgba(0, 82, 255, 0.1)',
+            paddingTop: 8,
+            marginTop: 2
+          }}>
+            These represent the minimum eligibility thresholds, but all progress is cumulative. Exceeding these targets will dynamically increase your final allocation.
+          </p>
         </div>
       </div>
 
