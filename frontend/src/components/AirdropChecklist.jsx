@@ -480,30 +480,30 @@ export function AirdropChecklist({ setTab }) {
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         border: '1px solid rgba(0, 82, 255, 0.22)',
-        borderRadius: 20,
-        padding: '18px 22px',
-        marginBottom: 24,
+        borderRadius: 16,
+        padding: '12px 16px',
+        marginBottom: 16,
         boxShadow: '0 8px 32px rgba(0, 82, 255, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
         boxSizing: 'border-box'
       }}>
         <div style={{
           display: 'flex',
           flexDirection: 'column',
-          gap: 10,
+          gap: 6,
           color: '#1E293B',
           fontFamily: "'Outfit', 'Inter', sans-serif",
-          fontSize: 12.5,
-          lineHeight: 1.6
+          fontSize: 11.5,
+          lineHeight: 1.4
         }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ color: '#0052FF', fontSize: 14 }}>•</span>
+              <span style={{ color: '#0052FF', fontSize: 12 }}>•</span>
               <span>
                 <strong style={{ color: '#0052FF', fontWeight: 800 }}>Required Criteria</strong>: Necessary for airdrop eligibility.
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ color: '#0052FF', fontSize: 14 }}>•</span>
+              <span style={{ color: '#0052FF', fontSize: 12 }}>•</span>
               <span>
                 <strong style={{ color: '#D97706', fontWeight: 800 }}>Optional Criteria</strong>: Provides allocation multiplier.
               </span>
@@ -512,13 +512,13 @@ export function AirdropChecklist({ setTab }) {
           
           <p style={{
             margin: 0,
-            fontSize: 11.5,
+            fontSize: 10.5,
             color: '#475569',
-            lineHeight: 1.5,
+            lineHeight: 1.4,
             fontWeight: 500,
             borderTop: '1px solid rgba(0, 82, 255, 0.1)',
-            paddingTop: 8,
-            marginTop: 2
+            paddingTop: 6,
+            marginTop: 0
           }}>
             These represent the minimum eligibility thresholds, but all progress is cumulative. Exceeding these targets will dynamically increase your final allocation.
           </p>
