@@ -206,7 +206,17 @@ export function RaffleSection({ address, basename }) {
     return myAmount || 0
   }, [myAmount, spinData])
 
-  const timerColor = isClosed ? '#FC401F' : '#FFFFFF'
+  const isHH = raffleType === 'hh'
+  const accentColor = isHH ? '#3B82F6' : '#14B8A6'
+  const lightAccentColor = isHH ? '#60A5FA' : '#2DD4BF'
+  const timerColor = isClosed ? '#FC401F' : lightAccentColor
+  const gradientColor = isHH 
+    ? 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)' 
+    : 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)'
+  const glowColor = isHH ? 'rgba(59, 130, 246, 0.25)' : 'rgba(20, 184, 166, 0.25)'
+  const hueFilter = isHH
+    ? 'hue-rotate(200deg) brightness(0.45) contrast(1.1)' 
+    : 'hue-rotate(150deg) brightness(0.48) contrast(1.1)'
 
   // ── Send USDC or HH ────────────────────────────────────────
   const sendBet = useCallback((amount) => {
@@ -283,22 +293,19 @@ export function RaffleSection({ address, basename }) {
               padding: '8px 10px',
               borderRadius: 10,
               border: 'none',
-              background: raffleType === 'hh' 
-                ? 'linear-gradient(135deg, #8B5CF6 0%, #D946EF 100%)' 
-                : 'transparent',
-              color: raffleType === 'hh' ? '#fff' : 'rgba(255, 255, 255, 0.55)',
+              background: isHH ? gradientColor : 'transparent',
+              color: isHH ? '#fff' : 'rgba(255, 255, 255, 0.55)',
               fontWeight: 800,
               fontSize: 11.5,
               cursor: 'pointer',
               transition: 'all 0.2s',
-              boxShadow: raffleType === 'hh' 
-                ? '0 2px 8px rgba(139,92,246,0.15)' 
-                : 'none',
+              boxShadow: isHH ? `0 2px 8px ${glowColor}` : 'none',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: 6,
-              outline: 'none'
+              outline: 'none',
+              fontFamily: "'Outfit', 'Inter', sans-serif"
             }}
           >
             <img src="/logo.jfif" alt="$HH" style={{ width: 14, height: 14, borderRadius: '50%', objectFit: 'cover' }} />
@@ -311,22 +318,19 @@ export function RaffleSection({ address, basename }) {
               padding: '8px 10px',
               borderRadius: 10,
               border: 'none',
-              background: raffleType === 'usdc' 
-                ? 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)' 
-                : 'transparent',
-              color: raffleType === 'usdc' ? '#fff' : 'rgba(255, 255, 255, 0.55)',
+              background: !isHH ? gradientColor : 'transparent',
+              color: !isHH ? '#fff' : 'rgba(255, 255, 255, 0.55)',
               fontWeight: 800,
               fontSize: 11.5,
               cursor: 'pointer',
               transition: 'all 0.2s',
-              boxShadow: raffleType === 'usdc' 
-                ? '0 2px 8px rgba(0,82,255,0.15)' 
-                : 'none',
+              boxShadow: !isHH ? `0 2px 8px ${glowColor}` : 'none',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: 6,
-              outline: 'none'
+              outline: 'none',
+              fontFamily: "'Outfit', 'Inter', sans-serif"
             }}
           >
             <img src="/usdc-logo.png" alt="USDC" style={{ width: 14, height: 14 }} />
@@ -355,9 +359,7 @@ export function RaffleSection({ address, basename }) {
           backgroundImage: 'url(/banner.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          filter: raffleType === 'hh'
-            ? 'hue-rotate(275deg) brightness(0.35) contrast(1.15)'
-            : 'hue-rotate(200deg) brightness(0.28) contrast(1.15)',
+          filter: hueFilter,
           zIndex: 0,
           pointerEvents: 'none'
         }} />
@@ -374,18 +376,34 @@ export function RaffleSection({ address, basename }) {
           pointerEvents: 'none'
         }} />
 
+        {/* Colored radial gradient glow */}
+        <div style={{
+          position: 'absolute',
+          top: -40,
+          right: -40,
+          width: 180,
+          height: 180,
+          borderRadius: '50%',
+          background: isHH
+            ? 'radial-gradient(circle, rgba(59, 130, 246, 0.22) 0%, transparent 70%)'
+            : 'radial-gradient(circle, rgba(20, 184, 166, 0.22) 0%, transparent 70%)',
+          pointerEvents: 'none',
+          zIndex: 1
+        }} />
+
         <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
           <div style={{ fontSize: 14.5, fontWeight: 900, color: '#FFFFFF', letterSpacing: '0.2px', textTransform: 'uppercase', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-            Round #{displayRound?.id ?? '—'} Raffle
+            Round #${displayRound?.id ?? '—'} Raffle
           </div>
           <span style={{
-            background: isClosed ? 'rgba(252, 64, 31, 0.1)' : 'rgba(16, 185, 129, 0.08)',
-            color: isClosed ? '#FC401F' : '#10B981',
+            background: isClosed ? 'rgba(252, 64, 31, 0.1)' : `${glowColor.replace('0.25', '0.08')}`,
+            color: isClosed ? '#FC401F' : accentColor,
             padding: '3px 8px',
             borderRadius: 8,
             fontSize: 10,
             fontWeight: 800,
-            border: isClosed ? '1px solid rgba(252, 64, 31, 0.25)' : '1px solid rgba(16, 185, 129, 0.25)'
+            border: isClosed ? '1px solid rgba(252, 64, 31, 0.25)' : `1px solid ${accentColor.replace(')', ', 0.25)')}`,
+            fontFamily: "'Outfit', 'Inter', sans-serif"
           }}>
             {isClosed ? 'DEPOSITS CLOSED' : 'ACTIVE'}
           </span>
@@ -402,7 +420,7 @@ export function RaffleSection({ address, basename }) {
         }}>
           {/* Left Plate: Prize Pool */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-            <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.5px' }}>
+            <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.5px', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
               PRIZE POOL
             </span>
             <div style={{
@@ -416,13 +434,13 @@ export function RaffleSection({ address, basename }) {
               gap: 8,
               boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
             }}>
-              <img src={raffleType === 'hh' ? "/logo.jfif" : "/usdc-logo.png"} alt="" style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover' }} />
+              <img src={isHH ? "/logo.jfif" : "/usdc-logo.png"} alt="" style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover' }} />
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <span style={{ fontSize: 15, fontWeight: 900, color: '#FFFFFF', fontFamily: "'Outfit', 'Inter', sans-serif", lineHeight: 1.1 }}>
-                  {raffleType === 'hh' ? `${formatConcise(displayTotalPot)} $HH` : `${displayTotalPot.toFixed(2)} USDC`}
+                  {isHH ? `${formatConcise(displayTotalPot)} $HH` : `${displayTotalPot.toFixed(2)} USDC`}
                 </span>
-                <span style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.45)', fontWeight: 700 }}>
-                  {raffleType === 'hh' ? `≈$${(displayTotalPot * hhPrice).toFixed(2)}` : `≈$${displayTotalPot.toFixed(2)}`}
+                <span style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.45)', fontWeight: 700, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                  {isHH ? `≈$${(displayTotalPot * hhPrice).toFixed(2)}` : `≈$${displayTotalPot.toFixed(2)}`}
                 </span>
               </div>
             </div>
@@ -430,7 +448,7 @@ export function RaffleSection({ address, basename }) {
 
           {/* Right Plate: Timer */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-            <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.5px' }}>
+            <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.5px', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
               {isClosed ? 'DRAWS IN' : 'TIME LEFT'}
             </span>
             <div style={{
@@ -460,12 +478,12 @@ export function RaffleSection({ address, basename }) {
         <div style={{ position: 'relative', zIndex: 2 }}>
           <PBar participants={displayParticipants} totalPot={displayTotalPot} />
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10, flexWrap: 'wrap', gap: 4 }}>
-            <span style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.6)', fontWeight: 600 }}>
+            <span style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.6)', fontWeight: 600, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
               👥 {displayParticipants.length} players · {displayParticipants.reduce((s, p) => s + (p.tickets || 0), 0)} tickets
             </span>
             {displayMyEntry && (
-              <span style={{ fontSize: 11, color: '#FFFFFF', fontWeight: 800 }}>
-                Your chance: <span style={{ color: raffleType === 'hh' ? '#D946EF' : '#3B82F6' }}>{displayMyChance}%</span>
+              <span style={{ fontSize: 11, color: '#FFFFFF', fontWeight: 800, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                Your chance: <span style={{ color: lightAccentColor }}>{displayMyChance}%</span>
               </span>
             )}
           </div>
@@ -485,7 +503,7 @@ export function RaffleSection({ address, basename }) {
           gap: 8,
         }}>
           <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#FC401F', animation: 'blinkDot 1s infinite' }} />
-          <span style={{ fontSize: 12, color: '#FC401F', fontWeight: 700 }}>
+          <span style={{ fontSize: 12, color: '#FC401F', fontWeight: 700, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
             Deposits closed · Draw in {fmt(msLeft)}
           </span>
         </div>
@@ -504,7 +522,7 @@ export function RaffleSection({ address, basename }) {
           justifyContent: 'space-between',
           gap: 8,
         }}>
-          <span style={{ fontSize: 12, color: '#FBBF24', fontWeight: 700 }}>Switch to Base Mainnet</span>
+          <span style={{ fontSize: 12, color: '#FBBF24', fontWeight: 700, fontFamily: "'Outfit', 'Inter', sans-serif" }}>Switch to Base Mainnet</span>
           <button
             onClick={() => switchChain({ chainId: base.id })}
             style={{
@@ -517,7 +535,8 @@ export function RaffleSection({ address, basename }) {
               border: 'none',
               cursor: 'pointer',
               outline: 'none',
-              transition: 'background 0.2s'
+              transition: 'background 0.2s',
+              fontFamily: "'Outfit', 'Inter', sans-serif"
             }}
           >
             {isSwitching ? 'Switching…' : 'Switch'}
@@ -528,25 +547,25 @@ export function RaffleSection({ address, basename }) {
       {/* My position */}
       {displayMyEntry && (
         <div style={{
-          background: 'rgba(255, 255, 255, 0.04)',
-          backdropFilter: 'blur(8px)',
-          border: '1px solid rgba(255, 255, 255, 0.1)', 
-          borderLeft: `4px solid ${raffleType === 'hh' ? '#D946EF' : '#3B82F6'}`,
+          background: 'linear-gradient(145deg, rgba(20, 20, 25, 0.95) 0%, rgba(38, 39, 48, 0.90) 50%, rgba(12, 12, 16, 0.98) 100%)',
+          border: '1px solid rgba(255, 255, 255, 0.15)', 
+          borderLeft: `4px solid ${accentColor}`,
           borderRadius: 14,
           padding: '12px 16px',
           marginBottom: 16,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
         }}>
           <div>
-            <div style={{ fontSize: 9, color: '#A0AEC0', fontWeight: 800, marginBottom: 4, letterSpacing: '0.5px', textTransform: 'uppercase' }}>YOUR POSITION</div>
+            <div style={{ fontSize: 9, color: '#A0AEC0', fontWeight: 800, marginBottom: 4, letterSpacing: '0.5px', textTransform: 'uppercase', fontFamily: "'Outfit', 'Inter', sans-serif" }}>YOUR POSITION</div>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-              {displayMyTickets} tickets · <span style={{ color: raffleType === 'hh' ? '#D946EF' : '#3B82F6' }}>
-                {raffleType === 'hh' ? `${formatConcise(displayMyAmount)} $HH` : `${displayMyAmount.toFixed(2)} USDC`}
+              {displayMyTickets} tickets · <span style={{ color: lightAccentColor }}>
+                {isHH ? `${formatConcise(displayMyAmount)} $HH` : `${displayMyAmount.toFixed(2)} USDC`}
               </span>
               <span style={{ fontSize: 10.5, color: '#A0AEC0', marginLeft: 6, fontWeight: 500 }}>
-                {raffleType === 'hh' ? `≈$${(displayMyAmount * hhPrice).toFixed(2)}` : `≈$${displayMyAmount.toFixed(2)}`}
+                {isHH ? `≈$${(displayMyAmount * hhPrice).toFixed(2)}` : `≈$${displayMyAmount.toFixed(2)}`}
               </span>
             </div>
           </div>
@@ -554,7 +573,7 @@ export function RaffleSection({ address, basename }) {
             fontFamily: "'Barlow Condensed', sans-serif",
             fontSize: 26,
             fontWeight: 900,
-            color: raffleType === 'hh' ? '#D946EF' : '#3B82F6'
+            color: lightAccentColor
           }}>
             {displayMyChance}%
           </div>
@@ -563,7 +582,15 @@ export function RaffleSection({ address, basename }) {
 
       {/* Bet buttons */}
       <div style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: 9.5, color: '#A0AEC0', fontWeight: 800, letterSpacing: '0.5px', marginBottom: 10, textTransform: 'uppercase' }}>
+        <div style={{
+          fontFamily: "'Outfit', 'Inter', sans-serif",
+          fontSize: 11.5,
+          color: '#4A5568',
+          fontWeight: 800,
+          letterSpacing: '0.6px',
+          marginBottom: 8,
+          textTransform: 'uppercase'
+        }}>
           Place Your Bet
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
@@ -573,9 +600,7 @@ export function RaffleSection({ address, basename }) {
               onClick={() => onBetClick(a)}
               disabled={isClosed || isPending || isConfirming}
               style={{
-                background: raffleType === 'hh'
-                  ? 'linear-gradient(135deg, #8B5CF6 0%, #D946EF 100%)'
-                  : 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)', 
+                background: gradientColor, 
                 border: 'none',
                 borderRadius: 12,
                 padding: '12px 6px',
@@ -584,9 +609,7 @@ export function RaffleSection({ address, basename }) {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: 3,
-                boxShadow: raffleType === 'hh' 
-                  ? '0 4px 14px rgba(139, 92, 246, 0.25)' 
-                  : '0 4px 14px rgba(0, 82, 255, 0.25)', 
+                boxShadow: `0 4px 14px ${glowColor.replace('0.25', '0.2')}`, 
                 cursor: 'pointer',
                 opacity: isClosed ? 0.45 : 1,
                 transition: 'all 0.2s',
@@ -594,10 +617,10 @@ export function RaffleSection({ address, basename }) {
               }}
             >
               <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 14.5, fontWeight: 900, color: '#FFFFFF', whiteSpace: 'nowrap', letterSpacing: '0.2px' }}>
-                {raffleType === 'hh' ? `${formatConcise(a / hhPrice)} $HH` : `${a} USDC`}
+                {isHH ? `${formatConcise(a / hhPrice)} $HH` : `${a} USDC`}
               </div>
-              <div style={{ fontSize: 8.5, color: raffleType === 'hh' ? '#F5D0FE' : '#BFDBFE', fontWeight: 800 }}>
-                {raffleType === 'hh' ? `≈$${a} · ` : ''}{Math.round(a / TICKET_UNIT)} TICKET{Math.round(a / TICKET_UNIT) > 1 ? 'S' : ''}
+              <div style={{ fontSize: 8.5, color: isHH ? '#BFDBFE' : '#CCFBF1', fontWeight: 800, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                {isHH ? `≈$${a} · ` : ''}{Math.round(a / TICKET_UNIT)} TICKET{Math.round(a / TICKET_UNIT) > 1 ? 'S' : ''}
               </div>
             </button>
           ))}
@@ -607,15 +630,24 @@ export function RaffleSection({ address, basename }) {
       {/* Participants */}
       {displayParticipants.length > 0 && (
         <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 9.5, color: '#A0AEC0', fontWeight: 800, letterSpacing: '0.5px', marginBottom: 8, textTransform: 'uppercase' }}>
+          <div style={{
+            fontFamily: "'Outfit', 'Inter', sans-serif",
+            fontSize: 11.5,
+            color: '#4A5568',
+            fontWeight: 800,
+            letterSpacing: '0.6px',
+            marginBottom: 8,
+            textTransform: 'uppercase'
+          }}>
             Participants
           </div>
           <div style={{
-            background: 'rgba(255, 255, 255, 0.03)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            borderTop: `3px solid ${raffleType === 'hh' ? '#D946EF' : '#3B82F6'}`,
+            background: 'linear-gradient(145deg, rgba(20, 20, 25, 0.95) 0%, rgba(38, 39, 48, 0.90) 50%, rgba(12, 12, 16, 0.98) 100%)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            borderTop: `3px solid ${accentColor}`,
             borderRadius: 14,
-            overflow: 'hidden'
+            overflow: 'hidden',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
           }}>
             {displayParticipants.map((p, i) => (
               <div key={i} style={{
@@ -629,18 +661,18 @@ export function RaffleSection({ address, basename }) {
               }}>
                 <UserAvatar address={p.address} size={28} />
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 12.5, fontWeight: 800, color: '#FFFFFF' }}>{p.name || short(p.address)}</div>
-                  <div style={{ fontSize: 9.5, color: '#A0AEC0', fontWeight: 600, marginTop: 1 }}>
+                  <div style={{ fontSize: 12.5, fontWeight: 800, color: '#FFFFFF', fontFamily: "'Outfit', 'Inter', sans-serif" }}>{p.name || short(p.address)}</div>
+                  <div style={{ fontSize: 9.5, color: '#A0AEC0', fontWeight: 600, marginTop: 1, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
                     {p.tickets || Math.round(p.amount / TICKET_UNIT)} tickets
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 14.5, fontWeight: 900, color: raffleType === 'hh' ? '#D946EF' : '#3B82F6' }}>
-                    {raffleType === 'hh' ? `${formatConcise(p.amount)} $HH` : `${p.amount.toFixed(2)} USDC`}
+                  <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 14.5, fontWeight: 900, color: lightAccentColor }}>
+                    {isHH ? `${formatConcise(p.amount)} $HH` : `${p.amount.toFixed(2)} USDC`}
                   </div>
-                  <div style={{ fontSize: 9.5, color: '#A0AEC0', fontWeight: 650, marginTop: 1 }}>
-                    {raffleType === 'hh' && `≈$${(p.amount * hhPrice).toFixed(2)} · `}
-                    <span style={{ color: raffleType === 'hh' ? '#D946EF' : '#3B82F6', fontWeight: 800 }}>
+                  <div style={{ fontSize: 9.5, color: '#A0AEC0', fontWeight: 650, marginTop: 1, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                    {isHH && `≈$${(p.amount * hhPrice).toFixed(2)} · `}
+                    <span style={{ color: lightAccentColor, fontWeight: 800 }}>
                       {displayTotalPot > 0 ? (p.amount / displayTotalPot * 100).toFixed(1) : 0}%
                     </span>
                   </div>
@@ -653,104 +685,125 @@ export function RaffleSection({ address, basename }) {
 
       {/* Last winner */}
       {lastWinner && (
-        <div style={{
-          background: 'rgba(255, 255, 255, 0.04)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          borderTop: `3px solid ${raffleType === 'hh' ? '#D946EF' : '#3B82F6'}`,
-          borderRadius: 14,
-          padding: '14px 16px',
-          marginBottom: 16,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
-        }}>
+        <div style={{ marginBottom: 16 }}>
           <div style={{
-            width: 38,
-            height: 38,
-            borderRadius: '50%',
-            background: raffleType === 'hh' 
-              ? 'rgba(217, 70, 239, 0.15)' 
-              : 'rgba(59, 130, 246, 0.15)',
-            border: `1.5px solid ${raffleType === 'hh' ? '#D946EF' : '#3B82F6'}`,
+            fontFamily: "'Outfit', 'Inter', sans-serif",
+            fontSize: 11.5,
+            color: '#4A5568',
+            fontWeight: 800,
+            letterSpacing: '0.6px',
+            marginBottom: 8,
+            textTransform: 'uppercase'
+          }}>
+            Last Winner
+          </div>
+          <div style={{
+            background: 'linear-gradient(145deg, rgba(20, 20, 25, 0.95) 0%, rgba(38, 39, 48, 0.90) 50%, rgba(12, 12, 16, 0.98) 100%)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            borderTop: `3px solid ${accentColor}`,
+            borderRadius: 14,
+            padding: '14px 16px',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 18,
-            flexShrink: 0,
-          }}>🏆</div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 9, color: raffleType === 'hh' ? '#D946EF' : '#3B82F6', fontWeight: 800, marginBottom: 3, letterSpacing: '0.5px' }}>LAST WINNER</div>
-            <div style={{ fontSize: 13, fontWeight: 800, color: '#FFFFFF' }}>{lastWinner.name}</div>
-            <div style={{ fontSize: 9.5, color: '#A0AEC0', fontWeight: 700, marginTop: 1 }}>
-              Win chance: <span style={{ color: raffleType === 'hh' ? '#D946EF' : '#3B82F6', fontWeight: 800 }}>{lastWinner.chance}%</span>
-            </div>
-          </div>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 18, fontWeight: 900, color: '#FFFFFF' }}>
-              +{raffleType === 'hh' ? `${formatConcise(parseFloat(lastWinner.amount))} $HH` : `${lastWinner.amount} USDC`}
-            </div>
-            {raffleType === 'hh' && (
-              <div style={{ fontSize: 10, color: '#10B981', fontWeight: 800, marginTop: 1 }}>
-                ≈${(parseFloat(lastWinner.amount) * hhPrice).toFixed(2)}
+            gap: 12,
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+          }}>
+            <div style={{
+              width: 38,
+              height: 38,
+              borderRadius: '50%',
+              background: glowColor.replace('0.25', '0.15'),
+              border: `1.5px solid ${accentColor}`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 18,
+              flexShrink: 0,
+            }}>🏆</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 9, color: lightAccentColor, fontWeight: 800, marginBottom: 3, letterSpacing: '0.5px', fontFamily: "'Outfit', 'Inter', sans-serif" }}>LAST WINNER</div>
+              <div style={{ fontSize: 13, fontWeight: 800, color: '#FFFFFF', fontFamily: "'Outfit', 'Inter', sans-serif" }}>{lastWinner.name}</div>
+              <div style={{ fontSize: 9.5, color: '#A0AEC0', fontWeight: 700, marginTop: 1, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                Win chance: <span style={{ color: lightAccentColor, fontWeight: 800 }}>{lastWinner.chance}%</span>
               </div>
-            )}
-            <div style={{ fontSize: 9, color: '#A0AEC0', fontWeight: 600, marginTop: 2 }}>
-              of {raffleType === 'hh' ? `${formatConcise(parseFloat(lastWinner.pot))} $HH` : `${lastWinner.pot} USDC`}
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 18, fontWeight: 900, color: '#FFFFFF' }}>
+                +{isHH ? `${formatConcise(parseFloat(lastWinner.amount))} $HH` : `${lastWinner.amount} USDC`}
+              </div>
+              {isHH && (
+                <div style={{ fontSize: 10, color: '#10B981', fontWeight: 800, marginTop: 1, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                  ≈$${(parseFloat(lastWinner.amount) * hhPrice).toFixed(2)}
+                </div>
+              )}
+              <div style={{ fontSize: 9, color: '#A0AEC0', fontWeight: 600, marginTop: 2, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                of {isHH ? `${formatConcise(parseFloat(lastWinner.pot))} $HH` : `${lastWinner.pot} USDC`}
+              </div>
             </div>
           </div>
         </div>
       )}
 
       {/* How it works */}
-      <div style={{
-        background: 'rgba(255, 255, 255, 0.03)',
-        border: '1px solid rgba(255, 255, 255, 0.08)',
-        borderRadius: 16,
-        padding: '16px 18px'
-      }}>
-        <div style={{ fontSize: 9.5, fontWeight: 900, color: '#A0AEC0', letterSpacing: '0.5px', marginBottom: 14, textTransform: 'uppercase' }}>
+      <div style={{ marginBottom: 16 }}>
+        <div style={{
+          fontFamily: "'Outfit', 'Inter', sans-serif",
+          fontSize: 11.5,
+          color: '#4A5568',
+          fontWeight: 800,
+          letterSpacing: '0.6px',
+          marginBottom: 8,
+          textTransform: 'uppercase'
+        }}>
           How it works
         </div>
-        {[
-          ['How long does each round last?',   'Each round runs exactly 60 minutes.'],
-          ['When do deposits close?',           'Deposits close 3 minutes before the draw.'],
-          ['How is the winner selected?',       'Secure random selection, lucky-based. Anyone with 1+ ticket can win. More tickets = more chances.'],
-          ['How many points do I get for playing?', (
-            <>
-              You earn <strong style={{ color: '#10B981' }}>HP</strong> for participating in the raffle. The winner of the round receives the main prize pool.
-            </>
-          )],
-          ['What happens if I’m the only player in a round?', (
-            <>
-              You will receive a 100% refund and <strong style={{ color: '#10B981' }}>1 HP</strong> as the winner.
-            </>
-          )],
-          ['How much does the winner receive?', raffleType === 'hh' ? `Winner takes 85% of the total pot. The remaining 15% is burned.` : `Winner takes 85% of the total pot. The remaining 15% goes to the foundation for future rewards.`],
-          ['When are winnings paid?',           'Automatically after the draw, directly to the winner\'s wallet.'],
-          ['Can I deposit multiple times?',     'Yes! Multiple deposits per round are allowed and all contribute to your ticket count.'],
-        ].map(([q, a], i, arr) => (
-          <div key={i} style={{ marginBottom: i < arr.length - 1 ? 14 : 0 }}>
-            <div style={{ fontSize: 11.5, fontWeight: 800, color: '#FFFFFF', marginBottom: 4 }}>{q}</div>
-            <div style={{ fontSize: 10, color: '#A0AEC0', lineHeight: 1.6, fontWeight: 500 }}>{a}</div>
-          </div>
-        ))}
+        <div style={{
+          background: 'linear-gradient(145deg, rgba(20, 20, 25, 0.95) 0%, rgba(38, 39, 48, 0.90) 50%, rgba(12, 12, 16, 0.98) 100%)',
+          border: '1px solid rgba(255, 255, 255, 0.15)',
+          borderRadius: 16,
+          padding: '16px 18px',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+        }}>
+          {[
+            ['How long does each round last?',   'Each round runs exactly 60 minutes.'],
+            ['When do deposits close?',           'Deposits close 3 minutes before the draw.'],
+            ['How is the winner selected?',       'Secure random selection, lucky-based. Anyone with 1+ ticket can win. More tickets = more chances.'],
+            ['How many points do I get for playing?', (
+              <>
+                You earn <strong style={{ color: '#10B981' }}>HP</strong> for participating in the raffle. The winner of the round receives the main prize pool.
+              </>
+            )],
+            ['What happens if I’m the only player in a round?', (
+              <>
+                You will receive a 100% refund and <strong style={{ color: '#10B981' }}>1 HP</strong> as the winner.
+              </>
+            )],
+            ['How much does the winner receive?', isHH ? `Winner takes 85% of the total pot. The remaining 15% is burned.` : `Winner takes 85% of the total pot. The remaining 15% goes to the foundation for future rewards.`],
+            ['When are winnings paid?',           'Automatically after the draw, directly to the winner\'s wallet.'],
+            ['Can I deposit multiple times?',     'Yes! Multiple deposits per round are allowed and all contribute to your ticket count.'],
+          ].map(([q, a], i, arr) => (
+            <div key={i} style={{ marginBottom: i < arr.length - 1 ? 14 : 0 }}>
+              <div style={{ fontSize: 11.5, fontWeight: 800, color: '#FFFFFF', marginBottom: 4, fontFamily: "'Outfit', 'Inter', sans-serif" }}>{q}</div>
+              <div style={{ fontSize: 10, color: '#A0AEC0', lineHeight: 1.6, fontWeight: 500, fontFamily: "'Outfit', 'Inter', sans-serif" }}>{a}</div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* TxModal */}
       {txModal && (
         <TxModal
-          title={raffleType === 'hh' ? (hhAllowance < txModal.amount / hhPrice ? "Approve $HH" : "Place Raffle Bet") : "Place Raffle Bet"}
+          title={isHH ? (hhAllowance < txModal.amount / hhPrice ? "Approve $HH" : "Place Raffle Bet") : "Place Raffle Bet"}
           subtitle={
-            raffleType === 'hh'
+            isHH
               ? (hhAllowance < txModal.amount / hhPrice 
                   ? "Approve unlimited $HH spending to buy tickets" 
                   : `+${Math.round(txModal.amount / TICKET_UNIT)} ${Math.round(txModal.amount / TICKET_UNIT) === 1 ? 'ticket' : 'tickets'} · Simulated Entry`
                 )
               : `+${Math.round(txModal.amount / TICKET_UNIT)} ${Math.round(txModal.amount / TICKET_UNIT) === 1 ? 'ticket' : 'tickets'} · + HP Points`
           }
-          amount={raffleType === 'hh' ? (hhAllowance < txModal.amount / hhPrice ? "0.00" : Math.round(txModal.amount / hhPrice).toString()) : txModal.amount.toString()}
-          currency={raffleType === 'hh' ? (hhAllowance < txModal.amount / hhPrice ? "Approve" : "$HH") : "USDC"}
+          amount={isHH ? (hhAllowance < txModal.amount / hhPrice ? "0.00" : Math.round(txModal.amount / hhPrice).toString()) : txModal.amount.toString()}
+          currency={isHH ? (hhAllowance < txModal.amount / hhPrice ? "Approve" : "$HH") : "USDC"}
           isPending={isPending}
           isConfirming={isConfirming}
           isSuccess={isSuccess}
@@ -766,7 +819,7 @@ export function RaffleSection({ address, basename }) {
           totalPot={spinData.totalPot}
           winner={spinData.winner}
           prize={spinData.prize}
-          currency={raffleType === 'hh' ? 'HH' : 'USDC'}
+          currency={isHH ? 'HH' : 'USDC'}
           onComplete={() => { setSpinData(null); refetch() }}
         />
       )}
