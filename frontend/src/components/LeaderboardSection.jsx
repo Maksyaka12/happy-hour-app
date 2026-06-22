@@ -171,30 +171,31 @@ export function LeaderboardSection({ address }) {
         <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', paddingTop: 0, paddingBottom: 32 }}>
           <div style={{
             fontFamily: "'Barlow Condensed', sans-serif",
-            fontSize: 52,
+            fontSize: 42,
             fontWeight: 900,
             color: '#fff',
-            lineHeight: 1,
+            lineHeight: 1.1,
             textShadow: '0 4px 15px rgba(0,0,0,0.6)',
             marginBottom: 12,
-            letterSpacing: '-1px'
+            letterSpacing: '-1.0px'
           }}>
             USDC Distribution
           </div>
           <div style={{
-            background: 'rgba(255,255,255,0.2)',
+            background: 'rgba(255,255,255,0.18)',
             backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
             borderRadius: 50,
-            padding: '4px 12px',
-            fontSize: 9,
+            padding: '6px 16px',
+            fontSize: 10,
             fontWeight: 800,
             color: '#fff',
-            border: '1px solid rgba(255,255,255,0.3)',
+            border: '1px solid rgba(255,255,255,0.25)',
             display: 'inline-block',
-            textTransform: 'uppercase',
-            letterSpacing: '0.8px',
+            marginTop: 12,
+            letterSpacing: '0.5px'
           }}>
-            🏆 TOP-50 USERS WILL GET USDC REWARDS
+            TOP-50 Users will Get Rewards
           </div>
         </div>
 
@@ -308,9 +309,8 @@ export function LeaderboardSection({ address }) {
                 WebkitBackdropFilter: 'blur(10px)',
                 color: '#fff',
                 borderRadius: 14,
-                padding: '6px 12px',
+                padding: '8px 14px',
                 display: 'flex',
-                flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
                 border: '1px solid rgba(255, 255, 255, 0.25)',
@@ -319,26 +319,14 @@ export function LeaderboardSection({ address }) {
                 boxShadow: '0 4px 15px rgba(0,0,0,0.05)'
               }}>
                 <span style={{ 
-                  fontFamily: "'Montserrat', sans-serif",
-                  fontSize: 8, 
-                  fontWeight: 700, 
-                  color: 'rgba(255, 255, 255, 0.75)', 
-                  textTransform: 'uppercase', 
-                  letterSpacing: '0.6px' 
+                  fontFamily: "'Montserrat', sans-serif", 
+                  fontSize: 13, 
+                  fontWeight: 800, 
+                  color: '#fff', 
+                  lineHeight: 1 
                 }}>
-                  Est. Reward
+                  Eligible
                 </span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
-                  <span style={{ 
-                    fontFamily: "'Montserrat', sans-serif", 
-                    fontSize: 13, 
-                    fontWeight: 700, 
-                    color: '#fff', 
-                    lineHeight: 1 
-                  }}>
-                    Eligible
-                  </span>
-                </div>
               </div>
             ) : (
               <div style={{
