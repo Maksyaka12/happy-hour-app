@@ -218,9 +218,18 @@ export function RaffleSection({ address, basename }) {
     ? 'hue-rotate(0deg) brightness(0.4) contrast(1.15)' 
     : 'hue-rotate(160deg) brightness(0.4) contrast(1.15)'
 
+  const heroHueFilter = isHH
+    ? 'hue-rotate(0deg) brightness(0.68) contrast(1.1)' 
+    : 'hue-rotate(160deg) brightness(0.68) contrast(1.1)'
+
   const cardBg = isHH
     ? 'linear-gradient(145deg, #051329 0%, #0A224A 100%)'
     : 'linear-gradient(145deg, #031414 0%, #062828 100%)'
+
+  const heroCardBg = isHH
+    ? 'linear-gradient(145deg, #0A2C5C 0%, #164E9C 100%)'
+    : 'linear-gradient(145deg, #083D3D 0%, #116E6E 100%)'
+
   const cardBorder = isHH
     ? '1px solid rgba(59, 130, 246, 0.25)'
     : '1px solid rgba(20, 184, 166, 0.25)'
@@ -287,13 +296,14 @@ export function RaffleSection({ address, basename }) {
       <div style={{ padding: '0 4px' }}>
         <div style={{
           display: 'flex',
-          background: 'rgba(255, 255, 255, 0.06)',
-          padding: 3,
-          borderRadius: 12,
+          background: '#EEF0F3',
+          border: '1px solid #DEE1E7',
+          padding: 4,
+          borderRadius: 16,
           marginBottom: 16,
           maxWidth: 380,
           margin: '0 auto 16px',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
+          boxShadow: 'inset 0 2px 4px rgba(10,11,13,0.05)',
           gap: 6
         }}>
           <button
@@ -301,15 +311,15 @@ export function RaffleSection({ address, basename }) {
             style={{
               flex: 1,
               padding: '8px 10px',
-              borderRadius: 10,
-              border: 'none',
-              background: isHH ? gradientColor : 'transparent',
-              color: isHH ? '#fff' : 'rgba(255, 255, 255, 0.55)',
-              fontWeight: 800,
+              borderRadius: 12,
+              border: isHH ? 'none' : '1px solid rgba(255, 255, 255, 0.8)',
+              background: isHH ? gradientColor : 'rgba(255, 255, 255, 0.6)',
+              color: isHH ? '#fff' : '#717886',
+              fontWeight: 850,
               fontSize: 11.5,
               cursor: 'pointer',
               transition: 'all 0.2s',
-              boxShadow: isHH ? `0 2px 8px ${glowColor}` : 'none',
+              boxShadow: isHH ? `0 4px 12px ${glowColor}` : '0 2px 4px rgba(10,11,13,0.02)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -326,15 +336,15 @@ export function RaffleSection({ address, basename }) {
             style={{
               flex: 1,
               padding: '8px 10px',
-              borderRadius: 10,
-              border: 'none',
-              background: !isHH ? gradientColor : 'transparent',
-              color: !isHH ? '#fff' : 'rgba(255, 255, 255, 0.55)',
-              fontWeight: 800,
+              borderRadius: 12,
+              border: !isHH ? 'none' : '1px solid rgba(255, 255, 255, 0.8)',
+              background: !isHH ? gradientColor : 'rgba(255, 255, 255, 0.6)',
+              color: !isHH ? '#fff' : '#717886',
+              fontWeight: 850,
               fontSize: 11.5,
               cursor: 'pointer',
               transition: 'all 0.2s',
-              boxShadow: !isHH ? `0 2px 8px ${glowColor}` : 'none',
+              boxShadow: !isHH ? `0 4px 12px ${glowColor}` : '0 2px 4px rgba(10,11,13,0.02)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -351,7 +361,7 @@ export function RaffleSection({ address, basename }) {
 
       {/* Hero card */}
       <div style={{
-        background: cardBg,
+        background: heroCardBg,
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
         border: cardBorder,
@@ -369,7 +379,7 @@ export function RaffleSection({ address, basename }) {
           backgroundImage: 'url(/banner.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          filter: hueFilter,
+          filter: heroHueFilter,
           zIndex: 0,
           pointerEvents: 'none'
         }} />
