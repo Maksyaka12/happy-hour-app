@@ -1,7 +1,31 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+
+const calculateContestTimeLeft = () => {
+  // Target date: July 10, 2026 at 13:30:00 UTC
+  const target = new Date(Date.UTC(2026, 6, 10, 13, 30, 0)) // Month index 6 is July
+  const now = new Date()
+  const diff = target.getTime() - now.getTime()
+  
+  if (isNaN(diff) || diff <= 0) return '00d 00h 00m 00s'
+  
+  const d = Math.floor(diff / 86400000)
+  const h = Math.floor((diff % 86400000) / 3600000)
+  const m = Math.floor((diff % 3600000) / 60000)
+  const s = Math.floor((diff % 60000) / 1000)
+  
+  return `${d}d ${h.toString().padStart(2, '0')}h ${m.toString().padStart(2, '0')}s`
+}
 
 export function ContestsSection({ setTab }) {
   const [activeContest, setActiveContest] = useState(null)
+  const [contestTimeLeft, setContestTimeLeft] = useState(calculateContestTimeLeft())
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setContestTimeLeft(calculateContestTimeLeft())
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [])
 
   if (activeContest === 'creator') {
     return (
@@ -64,12 +88,10 @@ export function ContestsSection({ setTab }) {
             </div>
             
             {/* Badges in Banner */}
-            <div style={{ display: 'flex', gap: 6, marginTop: 8, justifyContent: 'center' }}>
+            <div style={{ display: 'flex', gap: 6, marginTop: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
               <div style={{
-                background: 'rgba(255, 255, 255, 0.18)',
-                backdropFilter: 'blur(10px)',
-                WebkitBackdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.25)',
+                background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+                border: '1px solid rgba(245, 158, 11, 0.35)',
                 borderRadius: 50,
                 padding: '4px 12px',
                 fontSize: 10,
@@ -84,10 +106,8 @@ export function ContestsSection({ setTab }) {
                 <span>$HH</span>
               </div>
               <div style={{
-                background: 'rgba(255, 255, 255, 0.18)',
-                backdropFilter: 'blur(10px)',
-                WebkitBackdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.25)',
+                background: 'rgba(0, 0, 0, 0.65)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
                 borderRadius: 50,
                 padding: '4px 12px',
                 fontSize: 10,
@@ -95,6 +115,21 @@ export function ContestsSection({ setTab }) {
                 color: '#FFFFFF'
               }}>
                 3 winners
+              </div>
+              <div style={{
+                background: 'rgba(252, 64, 31, 0.15)',
+                border: '1px solid rgba(252, 64, 31, 0.3)',
+                borderRadius: 50,
+                padding: '4px 12px',
+                fontSize: 10,
+                fontWeight: 800,
+                color: '#FC401F',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4
+              }}>
+                <span>⏳</span>
+                <span style={{ fontFamily: "'DM Mono', monospace" }}>{contestTimeLeft}</span>
               </div>
             </div>
           </div>
@@ -252,7 +287,7 @@ export function ContestsSection({ setTab }) {
             padding: '14px 14px 12px',
             cursor: 'default',
             boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
-            height: 134,
+            height: 140,
             boxSizing: 'border-box',
             display: 'flex',
             flexDirection: 'column',
@@ -322,28 +357,28 @@ export function ContestsSection({ setTab }) {
         <div
           onClick={() => setActiveContest('creator')}
           style={{
-            background: '#090514',
+            background: '#1D1204',
             borderRadius: 20,
-            padding: '14px 14px 12px',
+            padding: '12px 12px 10px',
             cursor: 'pointer',
             transition: 'all 0.2s',
-            boxShadow: '0 8px 32px rgba(46,16,101,0.2)',
-            height: 134,
+            boxShadow: '0 8px 32px rgba(245, 158, 11, 0.15)',
+            height: 140,
             boxSizing: 'border-box',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
             position: 'relative',
             overflow: 'hidden',
-            border: '1px solid rgba(139,92,246,0.25)'
+            border: '1px solid rgba(245, 158, 11, 0.3)'
           }}
           onMouseEnter={e => {
             e.currentTarget.style.transform = 'translateY(-1.5px)'
-            e.currentTarget.style.boxShadow = '0 12px 36px rgba(46,16,101,0.3)'
+            e.currentTarget.style.boxShadow = '0 12px 36px rgba(245, 158, 11, 0.25)'
           }}
           onMouseLeave={e => {
             e.currentTarget.style.transform = 'none'
-            e.currentTarget.style.boxShadow = '0 8px 32px rgba(46,16,101,0.2)'
+            e.currentTarget.style.boxShadow = '0 8px 32px rgba(245, 158, 11, 0.15)'
           }}
         >
           {/* Graded background image */}
@@ -353,42 +388,64 @@ export function ContestsSection({ setTab }) {
             backgroundImage: 'url(/banner.jpg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            filter: 'hue-rotate(50deg) brightness(0.6) contrast(1.15)',
+            filter: 'hue-rotate(25deg) brightness(0.4) contrast(1.15)',
             zIndex: 0,
             pointerEvents: 'none'
           }} />
 
           <div style={{ position: 'relative', zIndex: 1 }}>
-            <div style={{ fontSize: 14.5, fontWeight: 800, color: '#FFFFFF' }}>Creator Contest</div>
+            <div style={{ fontSize: 13.5, fontWeight: 850, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Creator Contest</div>
             
-            {/* Semi-transparent badges */}
-            <div style={{ display: 'flex', gap: 4, marginTop: 4, flexWrap: 'wrap' }}>
-              <div style={{
-                background: 'rgba(255, 255, 255, 0.12)',
-                border: '1px solid rgba(255, 255, 255, 0.25)',
-                borderRadius: 8,
-                padding: '2px 5px',
-                fontSize: 8.5,
-                fontWeight: 800,
-                color: '#FFFFFF',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 3
-              }}>
-                <span>$100 in</span>
-                <img src="/logo.jfif" alt="$HH" style={{ width: 10, height: 10, borderRadius: '50%', objectFit: 'cover' }} />
-                <span>$HH</span>
+            {/* Badges container */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 4 }}>
+              {/* Row 1: Orange & Black Badges */}
+              <div style={{ display: 'flex', gap: 4 }}>
+                <div style={{
+                  background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+                  border: '1px solid rgba(245, 158, 11, 0.35)',
+                  borderRadius: 6,
+                  padding: '1.5px 4px',
+                  fontSize: 8,
+                  fontWeight: 850,
+                  color: '#FFFFFF',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 2
+                }}>
+                  <span>$100 in</span>
+                  <img src="/logo.jfif" alt="$HH" style={{ width: 9, height: 9, borderRadius: '50%', objectFit: 'cover' }} />
+                  <span>$HH</span>
+                </div>
+                <div style={{
+                  background: 'rgba(0, 0, 0, 0.65)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  borderRadius: 6,
+                  padding: '1.5px 4px',
+                  fontSize: 8,
+                  fontWeight: 850,
+                  color: '#FFFFFF'
+                }}>
+                  3 winners
+                </div>
               </div>
-              <div style={{
-                background: 'rgba(255, 255, 255, 0.12)',
-                border: '1px solid rgba(255, 255, 255, 0.25)',
-                borderRadius: 8,
-                padding: '2px 5px',
-                fontSize: 8.5,
-                fontWeight: 800,
-                color: '#FFFFFF'
-              }}>
-                3 winners
+              
+              {/* Row 2: Red Timer Badge */}
+              <div>
+                <div style={{
+                  background: 'rgba(252, 64, 31, 0.15)',
+                  border: '1px solid rgba(252, 64, 31, 0.3)',
+                  borderRadius: 6,
+                  padding: '1.5px 4px',
+                  fontSize: 8,
+                  fontWeight: 850,
+                  color: '#FC401F',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 2
+                }}>
+                  <span>⏳</span>
+                  <span style={{ fontFamily: "'DM Mono', monospace" }}>{contestTimeLeft}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -398,22 +455,22 @@ export function ContestsSection({ setTab }) {
             position: 'relative',
             zIndex: 1,
             width: '100%',
-            height: 30,
+            height: 28,
             background: 'rgba(255, 255, 255, 0.12)',
             border: '1px solid rgba(255, 255, 255, 0.25)',
-            borderRadius: 10,
+            borderRadius: 8,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             color: '#FFFFFF',
-            fontSize: 12.5,
+            fontSize: 12,
             fontWeight: 800,
             transition: 'background 0.2s'
           }}
           onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
           onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
           >
-            Participate
+            Participate →
           </div>
         </div>
       </div>
