@@ -53,7 +53,7 @@ const formatConcise = (num) => {
 }
 
 export function RaffleSection({ address, basename }) {
-  const [raffleType, setRaffleType] = useState('usdc') // 'usdc' | 'hh'
+  const [raffleType, setRaffleType] = useState('hh') // 'hh' | 'usdc'
   const { round, participants, lastWinner, myTickets, myAmount, refetch } = useRoundState(address, raffleType.toUpperCase())
   const [msLeft,       setMsLeft]       = useState(0)
   const [txModal,      setTxModal]      = useState(null) // { amount }
@@ -278,28 +278,6 @@ export function RaffleSection({ address, basename }) {
           gap: 6
         }}>
           <button
-            onClick={() => setRaffleType('usdc')}
-            style={{
-              flex: 1,
-              padding: '8px 10px',
-              borderRadius: 12,
-              border: raffleType === 'usdc' ? 'none' : '1px solid rgba(255,255,255,0.8)',
-              background: raffleType === 'usdc' 
-                ? 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)' 
-                : 'rgba(255, 255, 255, 0.6)',
-              color: raffleType === 'usdc' ? '#fff' : '#717886',
-              fontWeight: 850,
-              fontSize: 11.5,
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-              boxShadow: raffleType === 'usdc' 
-                ? '0 2px 8px rgba(0,82,255,0.15)' 
-                : 'none'
-            }}
-          >
-            🎰 USDC Raffle
-          </button>
-          <button
             onClick={() => setRaffleType('hh')}
             style={{
               flex: 1,
@@ -316,10 +294,42 @@ export function RaffleSection({ address, basename }) {
               transition: 'all 0.2s',
               boxShadow: raffleType === 'hh' 
                 ? '0 2px 8px rgba(139,92,246,0.15)' 
-                : 'none'
+                : 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 6
             }}
           >
-            💎 $HH Raffle
+            <img src="/logo.jfif" alt="$HH" style={{ width: 13, height: 13, borderRadius: '50%', objectFit: 'cover' }} />
+            $HH Raffle
+          </button>
+          <button
+            onClick={() => setRaffleType('usdc')}
+            style={{
+              flex: 1,
+              padding: '8px 10px',
+              borderRadius: 12,
+              border: raffleType === 'usdc' ? 'none' : '1px solid rgba(255,255,255,0.8)',
+              background: raffleType === 'usdc' 
+                ? 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)' 
+                : 'rgba(255, 255, 255, 0.6)',
+              color: raffleType === 'usdc' ? '#fff' : '#717886',
+              fontWeight: 850,
+              fontSize: 11.5,
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              boxShadow: raffleType === 'usdc' 
+                ? '0 2px 8px rgba(0,82,255,0.15)' 
+                : 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 6
+            }}
+          >
+            <img src="/usdc-logo.png" alt="USDC" style={{ width: 13, height: 13 }} />
+            USDC Raffle
           </button>
         </div>
       </div>
@@ -346,6 +356,11 @@ export function RaffleSection({ address, basename }) {
                 {raffleType === 'hh' ? `${formatConcise(displayTotalPot)} ` : `${displayTotalPot.toFixed(2)} `}
                 <span style={{ fontSize: 18, marginLeft: 2, opacity: 0.75 }}>{raffleType === 'hh' ? '$HH' : 'USDC'}</span>
               </div>
+              {raffleType === 'hh' && (
+                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', fontWeight: 800, marginTop: 4 }}>
+                  ≈${(displayTotalPot * hhPrice).toFixed(2)}
+                </div>
+              )}
             </div>
             <div style={{ textAlign: 'right' }}>
               <div style={{ fontFamily: "'DM Mono',monospace", fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.65)', letterSpacing: 1, marginBottom: 4 }}>
@@ -412,7 +427,7 @@ export function RaffleSection({ address, basename }) {
           <div>
             <div style={{ fontSize: 9, color: '#717886', fontWeight: 800, marginBottom: 2, letterSpacing: '0.3px' }}>YOUR POSITION</div>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#0A0B0D' }}>
-              {displayMyTickets} tickets · {raffleType === 'hh' ? `${formatConcise(displayMyAmount)} $HH` : `${displayMyAmount.toFixed(2)} USDC`}
+              {displayMyTickets} tickets · {raffleType === 'hh' ? `${formatConcise(displayMyAmount)} $HH (≈$${(displayMyAmount * hhPrice).toFixed(2)})` : `${displayMyAmount.toFixed(2)} USDC`}
             </div>
           </div>
           <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 26, fontWeight: 900, color: raffleType === 'hh' ? '#8B5CF6' : '#0000FF' }}>{displayMyChance}%</div>
@@ -443,7 +458,7 @@ export function RaffleSection({ address, basename }) {
                 {raffleType === 'hh' ? `${formatConcise(a / hhPrice)} $HH` : `${a} USDC`}
               </div>
               <div style={{ fontSize: 8, color: raffleType === 'hh' ? '#D8B4FE' : '#3C8AFF', fontWeight: 700 }}>
-                {Math.round(a / TICKET_UNIT)} TICKET{Math.round(a / TICKET_UNIT) > 1 ? 'S' : ''}
+                {raffleType === 'hh' ? `≈$${a} · ` : ''}{Math.round(a / TICKET_UNIT)} TICKET{Math.round(a / TICKET_UNIT) > 1 ? 'S' : ''}
               </div>
             </button>
           ))}
@@ -472,8 +487,11 @@ export function RaffleSection({ address, basename }) {
                   <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 14, fontWeight: 900, color: raffleType === 'hh' ? '#8B5CF6' : '#0000FF' }}>
                     {raffleType === 'hh' ? `${formatConcise(p.amount)} $HH` : `${p.amount.toFixed(2)} USDC`}
                   </div>
-                  <div style={{ fontSize: 9, color: raffleType === 'hh' ? '#8B5CF6' : '#3C8AFF', fontWeight: 700 }}>
-                    {displayTotalPot > 0 ? (p.amount / displayTotalPot * 100).toFixed(1) : 0}%
+                  <div style={{ fontSize: 9, color: '#717886', fontWeight: 650, marginTop: 1 }}>
+                    {raffleType === 'hh' && `≈$${(p.amount * hhPrice).toFixed(2)} · `}
+                    <span style={{ color: raffleType === 'hh' ? '#8B5CF6' : '#3C8AFF', fontWeight: 700 }}>
+                      {displayTotalPot > 0 ? (p.amount / displayTotalPot * 100).toFixed(1) : 0}%
+                    </span>
                   </div>
                 </div>
               </div>
@@ -502,8 +520,14 @@ export function RaffleSection({ address, basename }) {
             <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 18, fontWeight: 900, color: raffleType === 'hh' ? '#8B5CF6' : '#0000FF' }}>
               +{raffleType === 'hh' ? `${formatConcise(parseFloat(lastWinner.amount))} $HH` : `${lastWinner.amount} USDC`}
             </div>
-            <div style={{ fontSize: 9, color: '#717886', fontWeight: 600 }}>
+            {raffleType === 'hh' && (
+              <div style={{ fontSize: 9.5, color: '#10B981', fontWeight: 700, marginTop: 1 }}>
+                ≈${(parseFloat(lastWinner.amount) * hhPrice).toFixed(2)}
+              </div>
+            )}
+            <div style={{ fontSize: 9, color: '#717886', fontWeight: 600, marginTop: 2 }}>
               of {raffleType === 'hh' ? `${formatConcise(parseFloat(lastWinner.pot))} $HH` : `${lastWinner.pot} USDC`}
+              {raffleType === 'hh' && ` (≈$${(parseFloat(lastWinner.pot) * hhPrice).toFixed(2)})`}
             </div>
           </div>
         </div>
