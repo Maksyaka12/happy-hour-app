@@ -248,37 +248,6 @@ export function AirdropChecklist({ setTab }) {
       }
     },
     {
-      id: 'boxes',
-      title: 'Happy Box Openings',
-      desc: 'Open 12+ boxes',
-      progress: checklistStats.boxes,
-      target: 12,
-      style: {
-        background: '#090514',
-        border: '1px solid rgba(139,92,246,0.25)',
-        imageFilter: 'hue-rotate(50deg) brightness(0.60) contrast(1.15)',
-        barColor: '#A78BFA'
-      }
-    },
-    {
-      id: 'holding',
-      title: (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <img src="/logo.jfif" alt="$HH" style={{ width: 18, height: 18, borderRadius: '50%', objectFit: 'cover' }} />
-          <span>$HH Holding Duration</span>
-        </div>
-      ),
-      desc: 'Hold 17M+ $HH for 10+ days',
-      progress: checklistStats.holdingDays,
-      target: 10,
-      style: {
-        background: 'linear-gradient(145deg, rgba(36, 36, 44, 0.95) 0%, rgba(56, 58, 68, 0.90) 50%, rgba(24, 24, 30, 0.98) 100%)',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
-        imageFilter: 'grayscale(100%) brightness(0.40) contrast(1.1)',
-        barColor: '#38BDF8'
-      }
-    },
-    {
       id: 'social_tasks',
       title: 'Social Tasks',
       desc: 'Complete 20+ social tasks',
@@ -289,6 +258,19 @@ export function AirdropChecklist({ setTab }) {
         border: '1px solid rgba(236,72,153,0.25)',
         imageFilter: 'hue-rotate(320deg) brightness(0.40) contrast(1.15)',
         barColor: '#EC4899'
+      }
+    },
+    {
+      id: 'boxes',
+      title: 'Happy Box Openings',
+      desc: 'Open 12+ boxes',
+      progress: checklistStats.boxes,
+      target: 12,
+      style: {
+        background: '#090514',
+        border: '1px solid rgba(139,92,246,0.25)',
+        imageFilter: 'hue-rotate(50deg) brightness(0.60) contrast(1.15)',
+        barColor: '#A78BFA'
       }
     },
     {
@@ -307,6 +289,24 @@ export function AirdropChecklist({ setTab }) {
         border: '1px solid rgba(239,68,68,0.25)',
         imageFilter: 'hue-rotate(0deg) brightness(0.35) contrast(1.2)',
         barColor: '#EF4444'
+      }
+    },
+    {
+      id: 'holding',
+      title: (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <img src="/logo.jfif" alt="$HH" style={{ width: 18, height: 18, borderRadius: '50%', objectFit: 'cover' }} />
+          <span>$HH Holding Duration</span>
+        </div>
+      ),
+      desc: 'Hold 17M+ $HH for 10+ days',
+      progress: checklistStats.holdingDays,
+      target: 10,
+      style: {
+        background: 'linear-gradient(145deg, rgba(36, 36, 44, 0.95) 0%, rgba(56, 58, 68, 0.90) 50%, rgba(24, 24, 30, 0.98) 100%)',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
+        imageFilter: 'grayscale(100%) brightness(0.40) contrast(1.1)',
+        barColor: '#38BDF8'
       }
     }
   ]
@@ -474,18 +474,41 @@ export function AirdropChecklist({ setTab }) {
         </div>
       </div>
 
-      {/* Info Card (Clean Light Blue Theme) */}
+      {/* Info Card (Premium Dark/Indigo Accent Theme) */}
       <div style={{
-        background: '#EFF6FF',
-        border: '1px solid #BFDBFE',
+        background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.4) 0%, rgba(15, 23, 42, 0.5) 100%)',
+        border: '1px solid rgba(59, 130, 246, 0.15)',
         borderRadius: 20,
         padding: '16px 20px',
-        marginBottom: 16,
-        color: '#1E40AF'
+        marginBottom: 20,
+        boxShadow: '0 8px 32px rgba(10, 10, 15, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+        boxSizing: 'border-box'
       }}>
-        <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-          <span style={{ fontSize: 16 }}>ℹ️</span>
-          <p style={{ margin: 0, fontSize: 12, lineHeight: 1.5, fontWeight: 600 }}>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+          <span style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 22,
+            height: 22,
+            borderRadius: '50%',
+            background: 'rgba(59, 130, 246, 0.15)',
+            border: '1px solid rgba(59, 130, 246, 0.25)',
+            color: '#3B82F6',
+            fontSize: 11,
+            fontWeight: 800,
+            fontFamily: "'Outfit', 'Inter', sans-serif"
+          }}>
+            i
+          </span>
+          <p style={{
+            margin: 0,
+            fontSize: 12,
+            lineHeight: 1.5,
+            fontWeight: 600,
+            color: '#94A3B8',
+            fontFamily: "'Outfit', 'Inter', sans-serif"
+          }}>
             These are the minimum criteria. The more check-ins, boosts, box openings, and referrals you complete, the larger your final allocation. Required criteria are necessary for eligibility, while optional ones activate the allocation multiplier.
           </p>
         </div>
@@ -600,12 +623,16 @@ export function AirdropChecklist({ setTab }) {
                 } else if (item.id === 'staking') {
                   sessionStorage.setItem('scroll_to_element', 'staking-card')
                   setTab('earn')
-                } else if (item.id === 'boxes' || item.id === 'hh_burn_boxes') {
+                } else if (item.id === 'boxes') {
+                  setTab('boxes')
+                } else if (item.id === 'hh_burn_boxes') {
+                  sessionStorage.setItem('scroll_to_element', 'boxes-section-top')
                   setTab('boxes')
                 } else if (item.id === 'referrals') {
                   sessionStorage.setItem('scroll_to_element', 'referrals-card')
                   setTab('home')
                 } else if (item.id === 'social_tasks') {
+                  sessionStorage.setItem('scroll_to_element', 'tasks-section-top')
                   setTab('tasks')
                 }
               }}
@@ -778,12 +805,16 @@ export function AirdropChecklist({ setTab }) {
                 } else if (item.id === 'staking') {
                   sessionStorage.setItem('scroll_to_element', 'staking-card')
                   setTab('earn')
-                } else if (item.id === 'boxes' || item.id === 'hh_burn_boxes') {
+                } else if (item.id === 'boxes') {
+                  setTab('boxes')
+                } else if (item.id === 'hh_burn_boxes') {
+                  sessionStorage.setItem('scroll_to_element', 'boxes-section-top')
                   setTab('boxes')
                 } else if (item.id === 'referrals') {
                   sessionStorage.setItem('scroll_to_element', 'referrals-card')
                   setTab('home')
                 } else if (item.id === 'social_tasks') {
+                  sessionStorage.setItem('scroll_to_element', 'tasks-section-top')
                   setTab('tasks')
                 }
               }}

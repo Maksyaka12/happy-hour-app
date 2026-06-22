@@ -99,6 +99,20 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
   const boxWrite = useBuilderWrite()
   const buyAttemptWrite = useBuilderWrite()
 
+  // Scroll to element if redirecting from Checklist
+  useEffect(() => {
+    const targetId = sessionStorage.getItem('scroll_to_element')
+    if (targetId) {
+      setTimeout(() => {
+        const el = document.getElementById(targetId)
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          sessionStorage.removeItem('scroll_to_element')
+        }
+      }, 350)
+    }
+  }, [address])
+
   // Fetch HH price from DexScreener
   useEffect(() => {
     const getPrice = async () => {
@@ -523,7 +537,7 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
   const isBuyingAttemptLoading = buyAttemptWrite.isPending || buyAttemptWrite.isConfirming || isProcessingBuyAttempt
 
   return (
-    <div style={{ padding: '0 16px 120px', animation: 'hbFadeIn 0.4s ease' }}>
+    <div id="boxes-section-top" style={{ padding: '0 16px 120px', animation: 'hbFadeIn 0.4s ease' }}>
       <style>{`
         @keyframes hbFadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
         @keyframes hbBob { 0%,100% { transform:translateY(0) scale(1); } 50% { transform:translateY(-4px) scale(1.03); } }

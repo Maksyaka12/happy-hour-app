@@ -193,6 +193,20 @@ export function TasksSection({ address }) {
   const [showPendingPosts, setShowPendingPosts] = useState(false)
   const [reviewingId, setReviewingId] = useState(null)
 
+  // Scroll to element if redirecting from Checklist
+  useEffect(() => {
+    const targetId = sessionStorage.getItem('scroll_to_element')
+    if (targetId) {
+      setTimeout(() => {
+        const el = document.getElementById(targetId)
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          sessionStorage.removeItem('scroll_to_element')
+        }
+      }, 350)
+    }
+  }, [address])
+
   useEffect(() => {
     if (address) {
       try {
@@ -568,7 +582,7 @@ export function TasksSection({ address }) {
   }, [txError])
 
   return (
-    <div style={{ paddingBottom: 120, padding: '0 12px 120px' }}>
+    <div id="tasks-section-top" style={{ paddingBottom: 120, padding: '0 12px 120px' }}>
       <style>{`
         .tasks-content-wrapper,
         .tasks-content-wrapper * {
