@@ -533,11 +533,22 @@ export function AirdropChecklist({ setTab }) {
             <div 
               key={item.id} 
               onClick={() => {
-                if (item.id === 'checkins' || item.id === 'boosts' || item.id === 'holding' || item.id === 'staking') {
+                if (item.id === 'checkins') {
+                  sessionStorage.setItem('scroll_to_element', 'checkin-card')
+                  setTab('earn')
+                } else if (item.id === 'boosts') {
+                  sessionStorage.setItem('scroll_to_element', 'boost-card')
+                  setTab('earn')
+                } else if (item.id === 'holding') {
+                  sessionStorage.setItem('scroll_to_element', 'holding-card')
+                  setTab('earn')
+                } else if (item.id === 'staking') {
+                  sessionStorage.setItem('scroll_to_element', 'staking-card')
                   setTab('earn')
                 } else if (item.id === 'boxes') {
                   setTab('boxes')
                 } else if (item.id === 'referrals') {
+                  sessionStorage.setItem('scroll_to_element', 'referrals-card')
                   setTab('home')
                 }
               }}
@@ -698,11 +709,22 @@ export function AirdropChecklist({ setTab }) {
             <div 
               key={item.id} 
               onClick={() => {
-                if (item.id === 'checkins' || item.id === 'boosts' || item.id === 'holding' || item.id === 'staking') {
+                if (item.id === 'checkins') {
+                  sessionStorage.setItem('scroll_to_element', 'checkin-card')
+                  setTab('earn')
+                } else if (item.id === 'boosts') {
+                  sessionStorage.setItem('scroll_to_element', 'boost-card')
+                  setTab('earn')
+                } else if (item.id === 'holding') {
+                  sessionStorage.setItem('scroll_to_element', 'holding-card')
+                  setTab('earn')
+                } else if (item.id === 'staking') {
+                  sessionStorage.setItem('scroll_to_element', 'staking-card')
                   setTab('earn')
                 } else if (item.id === 'boxes') {
                   setTab('boxes')
                 } else if (item.id === 'referrals') {
+                  sessionStorage.setItem('scroll_to_element', 'referrals-card')
                   setTab('home')
                 }
               }}

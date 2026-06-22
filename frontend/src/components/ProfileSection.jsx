@@ -422,6 +422,20 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
     if (isAdmin) loadSimulations()
   }, [address])
 
+  // Scroll to element if redirecting from Checklist
+  useEffect(() => {
+    const targetId = sessionStorage.getItem('scroll_to_element')
+    if (targetId) {
+      setTimeout(() => {
+        const el = document.getElementById(targetId)
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          sessionStorage.removeItem('scroll_to_element')
+        }
+      }, 350)
+    }
+  }, [address])
+
   const loadSimulations = async () => {
     const { data } = await db.from('users').select('*').eq(atob('aXNfYm90'), true).order('points', { ascending: false })
     setSimulatedUsers(data || [])
@@ -1049,7 +1063,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
       </div>
 
       {/* Referral Program: Senior Hub */}
-      <div style={{
+      <div id="referrals-card" style={{
         borderRadius: 20,
         padding: '16px 18px',
         marginBottom: 16,

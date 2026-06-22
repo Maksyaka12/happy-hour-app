@@ -410,7 +410,7 @@ export function StakingSection({ setTab }) {
     <div style={{ animation: 'fadeIn 0.3s ease-out', width: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
       
       {/* Card 1: Holding Rewards (Premium Slate/Graphite Theme - Slightly Lighter than Staking) */}
-      <div style={{
+      <div id="holding-card" style={{
         background: 'linear-gradient(145deg, rgba(36, 36, 44, 0.95) 0%, rgba(56, 58, 68, 0.90) 50%, rgba(24, 24, 30, 0.98) 100%)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
@@ -562,7 +562,7 @@ export function StakingSection({ setTab }) {
       </div>
 
       {/* Card 2: Staking Rewards (Premium Slate/Graphite Dark Grey Theme) */}
-      <div style={{
+      <div id="staking-card" style={{
         background: 'linear-gradient(145deg, rgba(20, 20, 25, 0.95) 0%, rgba(38, 39, 48, 0.90) 50%, rgba(12, 12, 16, 0.98) 100%)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',

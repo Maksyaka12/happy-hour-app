@@ -98,6 +98,20 @@ export function EarnSection({ setTab, address: propAddress }) {
     loadProfile()
   }, [address, today])
 
+  // Scroll to element if redirecting from Checklist
+  useEffect(() => {
+    const targetId = sessionStorage.getItem('scroll_to_element')
+    if (targetId) {
+      setTimeout(() => {
+        const el = document.getElementById(targetId)
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          sessionStorage.removeItem('scroll_to_element')
+        }
+      }, 350)
+    }
+  }, [address])
+
   // --- Check-in Success Effect ---
   useEffect(() => {
     if (!isSuccess || !txHash || processedTxRef.current === txHash || !address) return
@@ -328,7 +342,7 @@ export function EarnSection({ setTab, address: propAddress }) {
       {/* Daily Actions Stack — 2-Column Themed Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         {/* Daily Check-in Card (Dark Blue theme) */}
-        <div style={{
+        <div id="checkin-card" style={{
           background: '#0B1E3F',
           borderRadius: 20,
           padding: '14px 14px 12px',
@@ -392,7 +406,7 @@ export function EarnSection({ setTab, address: propAddress }) {
         </div>
 
         {/* Daily HP Boost Card (Dark Green theme) */}
-        <div style={{
+        <div id="boost-card" style={{
           background: '#081E15',
           borderRadius: 20,
           padding: '14px 14px 12px',
