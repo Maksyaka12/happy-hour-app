@@ -216,11 +216,11 @@ export function RaffleSection({ address, basename }) {
   const glowColor = isHH ? 'rgba(59, 130, 246, 0.25)' : 'rgba(16, 185, 129, 0.25)'
   const hueFilter = isHH
     ? 'hue-rotate(0deg) brightness(0.4) contrast(1.15)' 
-    : 'hue-rotate(120deg) brightness(0.4) contrast(1.15)'
+    : 'hue-rotate(200deg) brightness(0.4) contrast(1.15)'
 
   const heroHueFilter = isHH
     ? 'hue-rotate(0deg) brightness(0.68) contrast(1.1)' 
-    : 'hue-rotate(120deg) brightness(0.68) contrast(1.1)'
+    : 'hue-rotate(200deg) brightness(0.68) contrast(1.1)'
 
   const cardBg = isHH
     ? 'linear-gradient(145deg, #051329 0%, #0A224A 100%)'
