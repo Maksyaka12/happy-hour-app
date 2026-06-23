@@ -494,9 +494,9 @@ export default function App() {
                   border: '1px solid #DEE1E7',
                   borderRadius: 16,
                   padding: 4,
-                  marginBottom: 20,
-                  maxWidth: 290,
-                  margin: '0 auto 20px',
+                  width: '100%',
+                  boxSizing: 'border-box',
+                  margin: '0 0 20px',
                   boxShadow: 'inset 0 2px 4px rgba(10,11,13,0.05)',
                   gap: 6
                 }}>
