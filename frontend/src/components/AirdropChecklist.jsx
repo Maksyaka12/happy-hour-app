@@ -56,7 +56,8 @@ export function AirdropChecklist({ setTab }) {
     stakedCumulative: 0,
     referrals: 0,
     socialTasks: 0,
-    hhBurnBoxes: 0
+    hhBurnBoxes: 0,
+    raffles: 0
   })
 
   useEffect(() => {
@@ -101,8 +102,8 @@ export function AirdropChecklist({ setTab }) {
         let holdingDays = 0
         let stakedCumulative = 0
         let referrals = 0
-        let socialTasks = 0
         let hhBurnBoxes = 0
+        let raffles = 0
 
         // Attempt RPC call first for performance
         const { data, error } = await db.rpc('get_user_distribution_criteria', { p_address: userAddr })
@@ -115,6 +116,7 @@ export function AirdropChecklist({ setTab }) {
           referrals = data.referrals || 0
           socialTasks = data.social_tasks || 0
           hhBurnBoxes = data.hh_burn_boxes || 0
+          raffles = data.raffles || 0
         } else {
           console.warn('RPC failed or not deployed, running optimized fallback queries:', error)
           
@@ -194,6 +196,13 @@ export function AirdropChecklist({ setTab }) {
             .eq('is_hh', true)
             .not('box_type', 'in', '("standard_bundle","happy_bundle","shield","extra_attempt")')
           hhBurnBoxes = (hhBoxesCount || 0) + (criteriaData?.adjust_hh_burn_boxes || 0)
+
+          // Fallback 8: Count raffle entries (bets)
+          const { count: betsCount } = await db
+            .from('bets')
+            .select('*', { count: 'exact', head: true })
+            .eq('address', userAddr)
+          raffles = (betsCount || 0) + (criteriaData?.adjust_raffles || 0)
         }
 
         setChecklistStats({
@@ -204,7 +213,8 @@ export function AirdropChecklist({ setTab }) {
           stakedCumulative,
           referrals,
           socialTasks,
-          hhBurnBoxes
+          hhBurnBoxes,
+          raffles
         })
       } catch (err) {
         console.warn('Error loading user stats from db:', err)
@@ -335,6 +345,33 @@ export function AirdropChecklist({ setTab }) {
         imageFilter: 'grayscale(100%) brightness(0.40) contrast(1.1)',
         barColor: '#38BDF8'
       }
+    },
+    {
+      id: 'raffles',
+      title: 'Happy Raffle Entries',
+      desc: 'Participate in 10+ raffles',
+      progress: checklistStats.raffles,
+      target: 10,
+      style: {
+        background: '#0B1E3F',
+        border: '1px solid rgba(59,130,246,0.25)',
+        imageFilter: 'hue-rotate(240deg) brightness(0.40) contrast(1.15)',
+        barColor: '#0052FF'
+      }
+    },
+    {
+      id: 'raids',
+      title: 'Successful Raids',
+      desc: 'Complete 5+ successful raids',
+      progress: 0,
+      target: 5,
+      isComingSoon: true,
+      style: {
+        background: '#1D0A0A',
+        border: '1px solid rgba(239,68,68,0.25)',
+        imageFilter: 'hue-rotate(330deg) brightness(0.35) contrast(1.15)',
+        barColor: '#EF4444'
+      }
     }
   ]
 
@@ -375,7 +412,7 @@ export function AirdropChecklist({ setTab }) {
     }
   ]
 
-  const completedRequired = requiredItems.filter(item => item.progress >= item.target).length
+  const completedRequired = requiredItems.filter(item => item.isComingSoon || item.progress >= item.target).length
   const completedOptional = optionalItems.filter(item => item.progress >= item.target).length
   const totalRequired = requiredItems.length
 
@@ -713,6 +750,8 @@ export function AirdropChecklist({ setTab }) {
                 } else if (item.id === 'social_tasks') {
                   sessionStorage.setItem('scroll_to_element', 'tasks-section-top')
                   setTab('tasks')
+                } else if (item.id === 'raffles') {
+                  setTab('raffle')
                 }
               }}
               style={{
@@ -785,23 +824,45 @@ export function AirdropChecklist({ setTab }) {
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: 52,
-                    height: 18,
-                    fontSize: 9,
-                    fontWeight: 900,
-                    background: isCompleted ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.15)',
-                    color: isCompleted ? '#10B981' : '#FFFFFF',
-                    border: isCompleted ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(255, 255, 255, 0.15)',
-                    borderRadius: 6,
-                    fontFamily: "'Outfit', 'Inter', sans-serif",
-                    boxSizing: 'border-box'
-                  }}>
-                    {formatNumber(item.progress)}/{item.target}
-                  </span>
+                  {item.isComingSoon ? (
+                    <span style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: 72,
+                      height: 18,
+                      fontSize: 8,
+                      fontWeight: 900,
+                      background: 'rgba(255, 255, 255, 0.15)',
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      borderRadius: 6,
+                      fontFamily: "'Outfit', 'Inter', sans-serif",
+                      boxSizing: 'border-box',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.2px'
+                    }}>
+                      Coming Soon
+                    </span>
+                  ) : (
+                    <span style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: 52,
+                      height: 18,
+                      fontSize: 9,
+                      fontWeight: 900,
+                      background: isCompleted ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.15)',
+                      color: isCompleted ? '#10B981' : '#FFFFFF',
+                      border: isCompleted ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(255, 255, 255, 0.15)',
+                      borderRadius: 6,
+                      fontFamily: "'Outfit', 'Inter', sans-serif",
+                      boxSizing: 'border-box'
+                    }}>
+                      {formatNumber(item.progress)}/{item.target}
+                    </span>
+                  )}
                   {isCompleted && <span style={{ color: '#10B981', fontSize: 11, fontWeight: 900, fontFamily: "'Outfit', 'Inter', sans-serif" }}>Done</span>}
                 </div>
               </div>
@@ -818,7 +879,7 @@ export function AirdropChecklist({ setTab }) {
               }}>
                 <div style={{
                   height: '100%',
-                  width: `${Math.min(100, (item.progress / item.target) * 100)}%`,
+                  width: item.isComingSoon ? '0%' : `${Math.min(100, (item.progress / item.target) * 100)}%`,
                   background: isCompleted ? '#10B981' : item.style.barColor,
                   borderRadius: 2
                 }} />
