@@ -541,7 +541,7 @@ export function ContestsSection({ setTab, address }) {
             textShadow: '0 2px 10px rgba(0,0,0,0.5)',
             letterSpacing: '-0.5px'
           }}>
-            Contest Hub
+            Contests Hub
           </div>
         </div>
       </div>
