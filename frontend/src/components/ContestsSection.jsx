@@ -202,7 +202,27 @@ export function ContestsSection({ setTab, address }) {
             {/* Badges in Banner */}
             <div style={{ display: 'flex', gap: 6, marginTop: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
               <div style={{
-                background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+                background: 'linear-gradient(135deg, #FCD34D 0%, #F59E0B 100%)',
+                border: '1px solid rgba(245, 158, 11, 0.5)',
+                borderRadius: 50,
+                height: 22,
+                boxSizing: 'border-box',
+                padding: '0 12px',
+                fontSize: 10,
+                fontWeight: 900,
+                color: '#2A1A06',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 4,
+                boxShadow: '0 2px 8px rgba(245, 158, 11, 0.3)'
+              }}>
+                <span style={{ lineHeight: 1 }}>$120 in</span>
+                <img src="/logo.jfif" alt="$HH" style={{ width: 12, height: 12, borderRadius: '50%', objectFit: 'cover', border: '1px solid rgba(42, 26, 6, 0.2)' }} />
+                <span style={{ lineHeight: 1 }}>$HH</span>
+              </div>
+              <div style={{
+                background: 'rgba(245, 158, 11, 0.12)',
                 border: '1px solid rgba(245, 158, 11, 0.35)',
                 borderRadius: 50,
                 height: 22,
@@ -210,26 +230,7 @@ export function ContestsSection({ setTab, address }) {
                 padding: '0 12px',
                 fontSize: 10,
                 fontWeight: 800,
-                color: '#FFFFFF',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 4
-              }}>
-                <span style={{ lineHeight: 1 }}>$120 in</span>
-                <img src="/logo.jfif" alt="$HH" style={{ width: 12, height: 12, borderRadius: '50%', objectFit: 'cover' }} />
-                <span style={{ lineHeight: 1 }}>$HH</span>
-              </div>
-              <div style={{
-                background: 'rgba(0, 0, 0, 0.65)',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                borderRadius: 50,
-                height: 22,
-                boxSizing: 'border-box',
-                padding: '0 12px',
-                fontSize: 10,
-                fontWeight: 800,
-                color: '#FFFFFF',
+                color: '#FBBF24',
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center'
@@ -648,15 +649,15 @@ export function ContestsSection({ setTab, address }) {
               {/* Row 1: Orange & Black Badges */}
               <div style={{ display: 'flex', gap: 4 }}>
                 <div style={{
-                  background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
-                  border: '1px solid rgba(245, 158, 11, 0.35)',
+                  background: 'linear-gradient(135deg, #FCD34D 0%, #F59E0B 100%)',
+                  border: '1px solid rgba(245, 158, 11, 0.5)',
                   borderRadius: 6,
                   height: 18,
                   boxSizing: 'border-box',
                   padding: '0 5px',
                   fontSize: 8,
-                  fontWeight: 850,
-                  color: '#FFFFFF',
+                  fontWeight: 900,
+                  color: '#2A1A06',
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -664,19 +665,19 @@ export function ContestsSection({ setTab, address }) {
                   lineHeight: 1
                 }}>
                   <span style={{ lineHeight: 1 }}>$120 in</span>
-                  <img src="/logo.jfif" alt="$HH" style={{ width: 9, height: 9, borderRadius: '50%', objectFit: 'cover' }} />
+                  <img src="/logo.jfif" alt="$HH" style={{ width: 9, height: 9, borderRadius: '50%', objectFit: 'cover', border: '0.5px solid rgba(42, 26, 6, 0.2)' }} />
                   <span style={{ lineHeight: 1 }}>$HH</span>
                 </div>
                 <div style={{
-                  background: 'rgba(0, 0, 0, 0.65)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  background: 'rgba(245, 158, 11, 0.12)',
+                  border: '1px solid rgba(245, 158, 11, 0.35)',
                   borderRadius: 6,
                   height: 18,
                   boxSizing: 'border-box',
                   padding: '0 5px',
                   fontSize: 8,
                   fontWeight: 850,
-                  color: '#FFFFFF',
+                  color: '#FBBF24',
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
