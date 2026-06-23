@@ -102,6 +102,7 @@ export function AirdropChecklist({ setTab }) {
         let holdingDays = 0
         let stakedCumulative = 0
         let referrals = 0
+        let socialTasks = 0
         let hhBurnBoxes = 0
         let raffles = 0
 
