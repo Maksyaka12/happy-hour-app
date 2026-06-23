@@ -39,7 +39,7 @@ export default function App() {
   const [leaderboardSubTab, setLeaderboardSubTab] = useState(() => {
     try {
       let saved = localStorage.getItem('happy_leaderboard_subtab') || 'usdc'
-      if (saved === 'hp') saved = 'hh'
+      if (saved === 'hp' || saved === 'contests') saved = 'usdc'
       return saved
     } catch { return 'usdc' }
   })
@@ -99,6 +99,7 @@ export default function App() {
     boxes: 'Happy Boxes',
     tasks: 'Tasks',
     leaderboard: 'Rewards',
+    contests: 'Contests',
   }
 
   useEffect(() => {
@@ -483,6 +484,7 @@ export default function App() {
               <RaidMode address={address} />
             </div>
           )}
+          {tab === 'contests' && <ContestsSection setTab={setTab} address={address} />}
           {tab === 'leaderboard' && (
             <>
               <div style={{ padding: '0 16px' }}>
@@ -493,7 +495,7 @@ export default function App() {
                   borderRadius: 16,
                   padding: 4,
                   marginBottom: 20,
-                  maxWidth: 380,
+                  maxWidth: 290,
                   margin: '0 auto 20px',
                   boxShadow: 'inset 0 2px 4px rgba(10,11,13,0.05)',
                   gap: 6
@@ -501,7 +503,7 @@ export default function App() {
                   <button
                     onClick={() => setLeaderboardSubTab('usdc')}
                     style={{
-                      flex: 1.2,
+                      flex: 1,
                       padding: '8px 10px',
                       borderRadius: 12,
                       border: leaderboardSubTab === 'usdc' ? 'none' : '1px solid rgba(255,255,255,0.8)',
@@ -528,7 +530,7 @@ export default function App() {
                   <button
                     onClick={() => setLeaderboardSubTab('hh')}
                     style={{
-                      flex: 1.2,
+                      flex: 1,
                       padding: '8px 10px',
                       borderRadius: 12,
                       border: leaderboardSubTab === 'hh' ? 'none' : '1px solid rgba(255,255,255,0.8)',
@@ -552,41 +554,13 @@ export default function App() {
                     <img src="/logo.jfif" alt="$HH" style={{ width: 12, height: 12, borderRadius: '50%', objectFit: 'cover' }} />
                     $HH Rewards
                   </button>
-                  <button
-                    onClick={() => setLeaderboardSubTab('contests')}
-                    style={{
-                      flex: 0.8,
-                      padding: '8px 10px',
-                      borderRadius: 12,
-                      border: leaderboardSubTab === 'contests' ? 'none' : '1px solid rgba(255,255,255,0.8)',
-                      background: leaderboardSubTab === 'contests' 
-                        ? 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)' 
-                        : 'rgba(255, 255, 255, 0.6)',
-                      color: leaderboardSubTab === 'contests' ? '#fff' : '#717886',
-                      fontWeight: 850,
-                      fontSize: 10,
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                      boxShadow: leaderboardSubTab === 'contests' 
-                        ? '0 4px 12px rgba(0,82,255,0.2)' 
-                        : '0 2px 4px rgba(10,11,13,0.02)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 4
-                    }}
-                  >
-                    Contests
-                  </button>
                 </div>
               </div>
 
               {leaderboardSubTab === 'usdc' ? (
                 <LeaderboardSection address={address} />
-              ) : leaderboardSubTab === 'hh' ? (
-                <AirdropChecklist address={address} setTab={setTab} />
               ) : (
-                <ContestsSection setTab={setTab} address={address} />
+                <AirdropChecklist address={address} setTab={setTab} />
               )}
             </>
           )}

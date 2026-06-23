@@ -16,11 +16,12 @@ const isBaseApp = () => {
 
 export function BottomNav({ tab, setTab }) {
   const tabs = [
-    { id: 'raffle',      label: 'Raffle',  icon: '🎰' },
-    { id: 'tasks',       label: 'Tasks',   icon: '📋' },
-    { id: 'leaderboard', label: 'Rewards', icon: '🏆' },
-    { id: 'earn',        label: 'Earn',    icon: '💎' },
-    { id: 'home',        label: 'Home',    icon: '🏠' },
+    { id: 'raffle',      label: 'Raffle',   icon: '🎰' },
+    { id: 'tasks',       label: 'Tasks',    icon: '📋' },
+    { id: 'contests',    label: 'Contests', icon: '🏅' },
+    { id: 'leaderboard', label: 'Rewards',  icon: '🏆' },
+    { id: 'earn',        label: 'Earn',     icon: '💎' },
+    { id: 'home',        label: 'Home',     icon: '🏠' },
   ]
 
   // Base App bug fixed, no offset needed
