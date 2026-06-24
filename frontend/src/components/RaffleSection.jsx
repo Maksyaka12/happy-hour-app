@@ -854,9 +854,9 @@ export function RaffleSection({ address, basename }) {
             ['How long does each round last?',   'Each round runs exactly 60 minutes.'],
             ['When do deposits close?',           'Deposits close 3 minutes before the draw.'],
             ['How is the winner selected?',       'Secure random selection, lucky-based. Anyone with 1+ ticket can win. More tickets = more chances.'],
-            ['How many points do I get for playing?', (
+            ['How many points do I get?', (
               <>
-                You earn <strong style={{ color: '#10B981' }}>HP</strong> for participating in the raffle. The winner of the round receives the main prize pool.
+                Raffle winner receives <strong style={{ color: '#10B981' }}>1 HP</strong> 
               </>
             )],
             ['What happens if I’m the only player in a round?', (
