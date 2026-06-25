@@ -535,7 +535,12 @@ function HHIntroSection() {
             fontWeight: 600,
             cursor: 'pointer',
             display: 'inline-flex',
-            onMouseLeave={e => e.currentTarget.style.background = '#0052ff'}
+            alignItems: 'center',
+            gap: 6,
+            transition: 'background 0.2s',
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = '#0043d0'}
+          onMouseLeave={e => e.currentTarget.style.background = '#0052ff'}
         >
           Check $HH Economy →
         </button>
