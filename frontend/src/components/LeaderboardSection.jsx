@@ -170,14 +170,14 @@ export function LeaderboardSection({ address }) {
 
         <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', paddingTop: 0, paddingBottom: 32 }}>
           <div style={{
-            fontFamily: "'Barlow Condensed', sans-serif",
+            fontFamily: "'Outfit', 'Inter', sans-serif",
             fontSize: 42,
             fontWeight: 900,
             color: '#fff',
             lineHeight: 1.1,
             textShadow: '0 4px 15px rgba(0,0,0,0.6)',
             marginBottom: 0,
-            letterSpacing: '-1.0px'
+            letterSpacing: '-1px'
           }}>
             USDC Distribution
           </div>

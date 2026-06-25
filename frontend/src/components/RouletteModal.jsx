@@ -3,9 +3,18 @@ import { useState, useEffect, useRef } from 'react'
 import { UserAvatar } from './UserAvatar'
 
 const TICKET_W = 80
+const MAX_STRIP = 300 // Max DOM nodes in strip — prevents lag with many participants/tickets
 const COLORS = ["#FF6B6B", "#FFD93D", "#6BCB77", "#4D96FF", "#C77DFF", "#FF9F1C", "#00B4D8", "#F72585", "#3A86FF", "#8338EC"]
 const pColor = (addr) => COLORS[parseInt(addr?.slice(2, 4) || '0', 16) % COLORS.length]
 const short = (a) => a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—'
+const fmtPrize = (n) => {
+  if (!n) return '0'
+  const v = parseFloat(n)
+  if (v >= 1e9) return (v / 1e9).toFixed(2).replace(/\.?0+$/, '') + 'b'
+  if (v >= 1e6) return (v / 1e6).toFixed(2).replace(/\.?0+$/, '') + 'm'
+  if (v >= 1e3) return (v / 1e3).toFixed(2).replace(/\.?0+$/, '') + 'k'
+  return v % 1 === 0 ? v.toFixed(0) : v.toFixed(2)
+}
 
 export function RouletteModal({ participants, totalPot, winner: supabaseWinner, prize, currency = 'USDC', onComplete }) {
   const [offset, setOffset] = useState(0)
@@ -14,15 +23,18 @@ export function RouletteModal({ participants, totalPot, winner: supabaseWinner, 
   const [winner, setWinner] = useState(null)
   const rafRef = useRef(null)
 
-  // Build ticket pool
+  // Build capped ticket pool — proportional weights but never more than MAX_STRIP total
+  // Prevents millions of DOM nodes which causes severe lag for HH (large token amounts)
+  const rawStrip = []
+  participants.forEach(p => {
+    const ticketCount = Math.max(1, p.tickets || 1)
+    for (let j = 0; j < ticketCount; j++) rawStrip.push(p)
+  })
+  // Repeat proportionally to fill ~300 slots
+  const repeats = Math.max(1, Math.floor(MAX_STRIP / rawStrip.length))
   const strip = []
-  for (let i = 0; i < 60; i++) {
-    participants.forEach(p => {
-      // IMPORTANT: use p.tickets only — p.amount for HH is in raw token units (e.g. 50000 HH)
-      // which would produce millions of tickets and lag the animation
-      const ticketCount = Math.max(1, p.tickets || 1)
-      for (let j = 0; j < ticketCount; j++) strip.push(p)
-    })
+  for (let i = 0; i < repeats; i++) {
+    rawStrip.forEach(p => strip.push(p))
   }
 
   // Ensure spin is long by finding a matching ticket near the end of the strip
@@ -106,7 +118,7 @@ export function RouletteModal({ participants, totalPot, winner: supabaseWinner, 
             {winner.name || short(winner.address)}
           </div>
           <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 48, fontWeight: 900, color: '#FFD700', lineHeight: 1 }}>
-            +{prize ? prize.toFixed(2) : (participants.length === 1 ? totalPot : totalPot * 0.8).toFixed(2)} {currency}
+            +{fmtPrize(prize || (participants.length === 1 ? totalPot : totalPot * 0.85))} {currency}
           </div>
           <button onClick={onComplete} style={{
             marginTop: 24, background: '#0000FF', color: '#fff',

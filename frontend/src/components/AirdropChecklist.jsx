@@ -510,13 +510,13 @@ export function AirdropChecklist({ setTab }) {
 
         <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', paddingTop: 0, paddingBottom: 32 }}>
           <div style={{
-            fontFamily: "'Barlow Condensed', sans-serif",
+            fontFamily: "'Outfit', 'Inter', sans-serif",
             fontSize: 42,
             fontWeight: 900,
             color: '#FFFFFF',
             lineHeight: 1.1,
             textShadow: '0 2px 10px rgba(0,0,0,0.5)',
-            letterSpacing: '-0.5px',
+            letterSpacing: '-1px',
             marginBottom: 0
           }}>
             $HH Distribution
