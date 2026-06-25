@@ -580,56 +580,7 @@ export function AirdropChecklist({ setTab }) {
         </div>
       </div>
 
-      {/* Info Card (Premium Glassmorphism Theme) */}
-      <div style={{
-        background: 'linear-gradient(135deg, rgba(0, 82, 255, 0.08) 0%, rgba(0, 82, 255, 0.03) 100%)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        border: '1px solid rgba(0, 82, 255, 0.22)',
-        borderRadius: 16,
-        padding: '12px 16px',
-        marginBottom: 16,
-        boxShadow: '0 8px 32px rgba(0, 82, 255, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
-        boxSizing: 'border-box'
-      }}>
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 6,
-          color: '#1E293B',
-          fontFamily: "'Outfit', 'Inter', sans-serif",
-          fontSize: 11.5,
-          lineHeight: 1.4
-        }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ color: '#0052FF', fontSize: 12 }}>•</span>
-              <span>
-                <strong style={{ color: '#0052FF', fontWeight: 800 }}>Required Criteria</strong>: Necessary for airdrop eligibility.
-              </span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ color: '#0052FF', fontSize: 12 }}>•</span>
-              <span>
-                <strong style={{ color: '#D97706', fontWeight: 800 }}>Optional Criteria</strong>: Provides allocation multiplier.
-              </span>
-            </div>
-          </div>
-          
-          <p style={{
-            margin: 0,
-            fontSize: 10.5,
-            color: '#475569',
-            lineHeight: 1.4,
-            fontWeight: 500,
-            borderTop: '1px solid rgba(0, 82, 255, 0.1)',
-            paddingTop: 6,
-            marginTop: 0
-          }}>
-            These represent the minimum eligibility thresholds, but all progress is cumulative. Exceeding these targets will dynamically increase your final allocation.
-          </p>
-        </div>
-      </div>
+
 
       {/* Eligibility Status Banner (ONLY visible when eligible) */}
       {isEligible && (
@@ -888,6 +839,67 @@ export function AirdropChecklist({ setTab }) {
             </div>
           )
         })}
+      </div>
+
+      {/* ═══ Info Card ═══ */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 24, marginBottom: 10, padding: '0 4px' }}>
+        <h3 style={{
+          fontFamily: "'Outfit', 'Inter', sans-serif",
+          fontSize: 16,
+          fontWeight: 800,
+          color: '#0A0B0D',
+          margin: 0,
+        }}>
+          Info
+        </h3>
+      </div>
+      <div style={{
+        background: 'linear-gradient(135deg, rgba(0, 82, 255, 0.08) 0%, rgba(0, 82, 255, 0.03) 100%)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(0, 82, 255, 0.22)',
+        borderRadius: 16,
+        padding: '12px 16px',
+        marginBottom: 24,
+        boxShadow: '0 8px 32px rgba(0, 82, 255, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
+        boxSizing: 'border-box'
+      }}>
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 6,
+          color: '#1E293B',
+          fontFamily: "'Outfit', 'Inter', sans-serif",
+          fontSize: 11.5,
+          lineHeight: 1.4
+        }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ color: '#0052FF', fontSize: 12 }}>•</span>
+              <span>
+                <strong style={{ color: '#0052FF', fontWeight: 800 }}>Required Criteria</strong>: Necessary for airdrop eligibility.
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ color: '#0052FF', fontSize: 12 }}>•</span>
+              <span>
+                <strong style={{ color: '#D97706', fontWeight: 800 }}>Optional Criteria</strong>: Provides allocation multiplier.
+              </span>
+            </div>
+          </div>
+          <p style={{
+            margin: 0,
+            fontSize: 10.5,
+            color: '#475569',
+            lineHeight: 1.4,
+            fontWeight: 500,
+            borderTop: '1px solid rgba(0, 82, 255, 0.1)',
+            paddingTop: 6,
+            marginTop: 0
+          }}>
+            These represent the minimum eligibility thresholds, but all progress is cumulative. Exceeding these targets will dynamically increase your final allocation.
+          </p>
+        </div>
       </div>
 
       {/* ═══ Optional Section Header (Outside the card) ═══ */}

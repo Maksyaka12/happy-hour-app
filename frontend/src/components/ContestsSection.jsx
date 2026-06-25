@@ -200,60 +200,65 @@ export function ContestsSection({ setTab, address }) {
             </div>
             
             {/* Badges in Banner */}
-            <div style={{ display: 'flex', gap: 6, marginTop: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 6, marginTop: 8, justifyContent: 'center', flexWrap: 'wrap', alignItems: 'center' }}>
               <div style={{
-                background: 'linear-gradient(135deg, #FCD34D 0%, #F59E0B 100%)',
-                border: '1px solid rgba(245, 158, 11, 0.5)',
+                background: 'rgba(255, 255, 255, 0.18)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.28)',
                 borderRadius: 50,
-                height: 22,
+                height: 24,
                 boxSizing: 'border-box',
                 padding: '0 12px',
                 fontSize: 10,
                 fontWeight: 900,
-                color: '#2A1A06',
+                color: '#FFFFFF',
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: 4,
-                boxShadow: '0 2px 8px rgba(245, 158, 11, 0.3)'
+                gap: 4
               }}>
-                <span style={{ lineHeight: 1 }}>$120 in</span>
-                <img src="/logo.jfif" alt="$HH" style={{ width: 12, height: 12, borderRadius: '50%', objectFit: 'cover', border: '1px solid rgba(42, 26, 6, 0.2)' }} />
+                <span style={{ lineHeight: 1 }}>$120</span>
+                <img src="/logo.jfif" alt="$HH" style={{ width: 12, height: 12, borderRadius: '50%', objectFit: 'cover' }} />
                 <span style={{ lineHeight: 1 }}>$HH</span>
               </div>
               <div style={{
-                background: 'rgba(245, 158, 11, 0.12)',
-                border: '1px solid rgba(245, 158, 11, 0.35)',
+                background: 'rgba(255, 255, 255, 0.18)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.28)',
                 borderRadius: 50,
-                height: 22,
+                height: 24,
                 boxSizing: 'border-box',
                 padding: '0 12px',
                 fontSize: 10,
                 fontWeight: 800,
-                color: '#FBBF24',
+                color: '#FFFFFF',
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center'
               }}>
                 <span style={{ lineHeight: 1 }}>3 winners</span>
               </div>
-              <div style={{
-                background: 'rgba(252, 64, 31, 0.15)',
-                border: '1px solid rgba(252, 64, 31, 0.3)',
-                borderRadius: 50,
-                height: 22,
-                boxSizing: 'border-box',
-                padding: '0 12px',
-                fontSize: 10,
-                fontWeight: 800,
-                color: '#FC401F',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 4
-              }}>
-                <span style={{ display: 'inline-block', lineHeight: 1 }}>left:</span>
-                <span style={{ fontFamily: "'DM Mono', monospace", display: 'inline-block', lineHeight: 1 }}>{contestTimeLeft}</span>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                <span style={{ fontSize: 7.5, fontWeight: 800, color: 'rgba(255,255,255,0.55)', letterSpacing: '0.5px', fontFamily: "'Outfit', 'Inter', sans-serif", textTransform: 'uppercase' }}>TIME LEFT</span>
+                <div style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255, 255, 255, 0.18)',
+                  borderRadius: 10,
+                  height: 24,
+                  padding: '0 10px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  <span style={{
+                    fontFamily: "'Outfit', 'Inter', sans-serif",
+                    fontSize: 11,
+                    fontWeight: 800,
+                    color: '#FFFFFF',
+                    fontVariantNumeric: 'tabular-nums'
+                  }}>{contestTimeLeft}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -533,13 +538,13 @@ export function ContestsSection({ setTab, address }) {
 
         <div style={{ position: 'relative', zIndex: 2, textAlign: 'center' }}>
           <div style={{
-            fontFamily: "'Barlow Condensed', sans-serif",
-            fontSize: 38,
+            fontFamily: "'Outfit', 'Inter', sans-serif",
+            fontSize: 42,
             fontWeight: 900,
             color: '#FFFFFF',
             lineHeight: 1.1,
             textShadow: '0 2px 10px rgba(0,0,0,0.5)',
-            letterSpacing: '-0.5px'
+            letterSpacing: '-1px'
           }}>
             Contests Hub
           </div>
@@ -616,68 +621,45 @@ export function ContestsSection({ setTab, address }) {
             pointerEvents: 'none'
           }} />
 
-          {/* Floating creative emojis */}
-          {[
-            { char: '🎨', top: '8%', right: '12%', size: 20, opacity: 0.35, r: '12deg', dur: 4.0 },
-            { char: '🖌️', bottom: '25%', left: '15%', size: 18, opacity: 0.3, r: '-15deg', dur: 4.5 },
-            { char: '✏️', top: '40%', right: '35%', size: 16, opacity: 0.25, r: '8deg', dur: 5.0 }
-          ].map((s, i) => (
-            <div key={i} style={{
-              position: 'absolute',
-              top: s.top,
-              right: s.right,
-              left: s.left,
-              bottom: s.bottom,
-              zIndex: 1,
-              pointerEvents: 'none',
-              userSelect: 'none',
-              animation: `floatingLogo ${s.dur}s ease-in-out infinite`,
-              fontSize: s.size,
-              opacity: s.opacity,
-              transform: `rotate(${s.r})`,
-              filter: 'blur(0.3px)'
-            }}>
-              {s.char}
-            </div>
-          ))}
-
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{ fontSize: 13.5, fontWeight: 850, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Launch Contest</div>
             
             {/* Badges container */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 4 }}>
-              {/* Row 1: Orange & Black Badges */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginTop: 5 }}>
+              {/* Row 1: Prize & Winners Badges */}
               <div style={{ display: 'flex', gap: 4 }}>
                 <div style={{
-                  background: 'linear-gradient(135deg, #FCD34D 0%, #F59E0B 100%)',
-                  border: '1px solid rgba(245, 158, 11, 0.5)',
+                  background: 'rgba(255, 255, 255, 0.18)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255, 255, 255, 0.25)',
                   borderRadius: 6,
                   height: 18,
                   boxSizing: 'border-box',
-                  padding: '0 5px',
+                  padding: '0 6px',
                   fontSize: 8,
                   fontWeight: 900,
-                  color: '#2A1A06',
+                  color: '#FFFFFF',
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: 2,
+                  gap: 3,
                   lineHeight: 1
                 }}>
-                  <span style={{ lineHeight: 1 }}>$120 in</span>
-                  <img src="/logo.jfif" alt="$HH" style={{ width: 9, height: 9, borderRadius: '50%', objectFit: 'cover', border: '0.5px solid rgba(42, 26, 6, 0.2)' }} />
+                  <span style={{ lineHeight: 1 }}>$120</span>
+                  <img src="/logo.jfif" alt="$HH" style={{ width: 9, height: 9, borderRadius: '50%', objectFit: 'cover' }} />
                   <span style={{ lineHeight: 1 }}>$HH</span>
                 </div>
                 <div style={{
-                  background: 'rgba(245, 158, 11, 0.12)',
-                  border: '1px solid rgba(245, 158, 11, 0.35)',
+                  background: 'rgba(255, 255, 255, 0.18)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255, 255, 255, 0.25)',
                   borderRadius: 6,
                   height: 18,
                   boxSizing: 'border-box',
-                  padding: '0 5px',
+                  padding: '0 6px',
                   fontSize: 8,
                   fontWeight: 850,
-                  color: '#FBBF24',
+                  color: '#FFFFFF',
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -687,26 +669,27 @@ export function ContestsSection({ setTab, address }) {
                 </div>
               </div>
               
-              {/* Row 2: Red Timer Badge */}
-              <div>
+              {/* Row 2: Timer */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <span style={{ fontSize: 7, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.5px', fontFamily: "'Outfit', 'Inter', sans-serif", textTransform: 'uppercase' }}>TIME LEFT</span>
                 <div style={{
-                  background: 'rgba(252, 64, 31, 0.15)',
-                  border: '1px solid rgba(252, 64, 31, 0.3)',
-                  borderRadius: 6,
-                  height: 18,
-                  boxSizing: 'border-box',
-                  padding: '0 5px',
-                  fontSize: 8,
-                  fontWeight: 850,
-                  color: '#FC401F',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  borderRadius: 8,
+                  height: 22,
+                  padding: '0 7px',
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: 2,
-                  lineHeight: 1
                 }}>
-                  <span style={{ lineHeight: 1 }}>left:</span>
-                  <span style={{ fontFamily: "'DM Mono', monospace", lineHeight: 1 }}>{contestTimeLeft}</span>
+                  <span style={{
+                    fontFamily: "'Outfit', 'Inter', sans-serif",
+                    fontSize: 10,
+                    fontWeight: 800,
+                    color: '#FFFFFF',
+                    fontVariantNumeric: 'tabular-nums'
+                  }}>{contestTimeLeft}</span>
                 </div>
               </div>
             </div>
