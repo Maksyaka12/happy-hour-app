@@ -18,7 +18,9 @@ export function RouletteModal({ participants, totalPot, winner: supabaseWinner, 
   const strip = []
   for (let i = 0; i < 60; i++) {
     participants.forEach(p => {
-      const ticketCount = p.tickets || Math.round(p.amount / 0.1)
+      // IMPORTANT: use p.tickets only — p.amount for HH is in raw token units (e.g. 50000 HH)
+      // which would produce millions of tickets and lag the animation
+      const ticketCount = Math.max(1, p.tickets || 1)
       for (let j = 0; j < ticketCount; j++) strip.push(p)
     })
   }
