@@ -326,15 +326,15 @@ export function EarnSection({ setTab, address: propAddress }) {
 
         <div style={{ position: 'relative', zIndex: 2, textAlign: 'center' }}>
           <div style={{
-            fontFamily: "'Barlow Condensed', sans-serif",
-            fontSize: 38,
+            fontFamily: "'Outfit', 'Inter', sans-serif",
+            fontSize: 32,
             fontWeight: 900,
             color: '#FFFFFF',
             lineHeight: 1.1,
             textShadow: '0 2px 10px rgba(0,0,0,0.5)',
-            letterSpacing: '-0.5px'
+            letterSpacing: '-1px'
           }}>
-            REWARDS HUB
+            Rewards Hub
           </div>
         </div>
       </div>

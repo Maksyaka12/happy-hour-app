@@ -511,7 +511,7 @@ export function AirdropChecklist({ setTab }) {
         <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', paddingTop: 0, paddingBottom: 32 }}>
           <div style={{
             fontFamily: "'Outfit', 'Inter', sans-serif",
-            fontSize: 42,
+            fontSize: 28,
             fontWeight: 900,
             color: '#FFFFFF',
             lineHeight: 1.1,
