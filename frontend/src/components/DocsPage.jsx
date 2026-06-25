@@ -152,8 +152,8 @@ function IntroSection({ onNav }) {
       <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0f172a', margin: '0 0 12px', letterSpacing: '-0.3px' }}>
         What is Happy Hour?
       </h2>
-      <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.8, margin: '0 0 16px' }}>
-        Happy Hour is a consumer application built on Base, featuring hourly USDC and $HH raffles with full on-chain randomization — giving every participant an equal chance to win. The platform includes a comprehensive points system that rewards users for in-app activity, with seasonal USDC distributions for the most active community members.
+      <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.8, margin: '0 0 28px' }}>
+        Happy Hour is one of the first consumer apps built on Base, featuring its own native utility coin — $HH. The platform operates on a seasonal model, where each Season lasts 30 days and rewards the most active and loyal users through a Points System — with USDC and $HH distributions at the end of every season. Beyond seasonal rewards, Happy Hour includes incentivized community contests, $HH staking, hourly on-chain raffles in both USDC and $HH, and a range of additional gamified in-app features — making it a full-featured ecosystem rather than a single-purpose app.
       </p>
       <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.8, margin: '0 0 28px' }}>
         $HH is the <span style={{ fontWeight: 600, color: '#334155' }}>native utility coin</span> of Happy Hour App. It was created by the Bankr community — the coin is <span style={{ fontWeight: 600, color: '#334155' }}>owned by BANKR</span> — and we accepted it as the native coin of Happy Hour, embedding <span style={{ fontWeight: 600, color: '#334155' }}>real utility</span> and <span style={{ fontWeight: 600, color: '#334155' }}>economy </span>into it. This makes <span style={{ fontWeight: 600, color: '#334155' }}>$HH a long-term ecosystem coin</span>, not just a speculative asset (memecoin).
