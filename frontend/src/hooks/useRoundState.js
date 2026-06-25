@@ -61,6 +61,7 @@ export function useRoundState(address, currency = 'USDC') {
     const channel = db
       .channel('raffle-realtime')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'bets' }, fetchState)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'bets_hh' }, fetchState)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'rounds' }, fetchState)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, fetchState)
       .subscribe()

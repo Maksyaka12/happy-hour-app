@@ -191,7 +191,7 @@ export default function App() {
   const displayName = basename || short(address)
 
   // Maintenance Mode Toggle
-  const IS_MAINTENANCE_MODE = false;
+  const IS_MAINTENANCE_MODE = true;
 
   if (IS_MAINTENANCE_MODE && !isAdmin) {
     return (
@@ -200,11 +200,11 @@ export default function App() {
         <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#F8F9FC', padding: 24 }}>
           <HappyHourLogo size={64} />
           <h1 style={{ marginTop: 24, fontSize: 28, fontWeight: 900, color: '#0A0B0D', textAlign: 'center', letterSpacing: '-0.5px' }}>
-            Scheduled Maintenance
+            System Debugging & Maintenance
           </h1>
-          <p style={{ marginTop: 16, fontSize: 16, color: '#717886', textAlign: 'center', maxWidth: 400, lineHeight: 1.6 }}>
-            We are currently upgrading the Happy Hour App!<br /><br />
-            The app will be back shortly with exciting new features. Thank you for your patience! 🛠️✨
+          <p style={{ marginTop: 16, fontSize: 16, color: '#717886', textAlign: 'center', maxWidth: 455, lineHeight: 1.6 }}>
+            We are currently conducting a debugging process and system maintenance.<br /><br />
+            The app will be back online shortly. Thank you for your patience! 🛠️✨
           </p>
         </div>
       </>

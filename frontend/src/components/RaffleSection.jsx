@@ -125,7 +125,8 @@ export function RaffleSection({ address, basename }) {
           // pg_cron missed - browser fallback
           console.warn('[raffle] pg_cron missed the round, browser fallback triggered')
           fallbackRef.current = true
-          db.functions.invoke('draw-round').catch(console.error)
+          const functionName = isHH ? 'draw-round-hh' : 'draw-round-usdc'
+          db.functions.invoke(functionName).catch(console.error)
         }
       }
     }
