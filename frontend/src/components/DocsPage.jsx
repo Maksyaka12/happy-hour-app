@@ -21,7 +21,7 @@ const NAV = [
     ]
   },
   {
-    group: '$HH Coin',
+    group: '$HH Native Coin',
     items: [
       { id: 'hh-introduction', label: '$HH Introduction' },
       { id: 'hh-utility',      label: '$HH Utility' },
@@ -156,7 +156,7 @@ function IntroSection({ onNav }) {
         Happy Hour is one of the first consumer apps built on Base, featuring its own native utility coin $HH. The platform operates on a <span style={{ fontWeight: 700, color: '#334155' }}>Seasonal Model</span>, where each Season lasts <span style={{ fontWeight: 700, color: '#334155' }}>30 days</span> and <span style={{ fontWeight: 700, color: '#334155' }}>rewards</span> the most active and loyal users through a Points System — with USDC and $HH distributions at the end of every season. Beyond seasonal rewards, Happy Hour includes incentivized community <span style={{ fontWeight: 700, color: '#334155' }}>contests</span>, $HH <span style={{ fontWeight: 700, color: '#334155' }}>staking</span>, hourly <span style={{ fontWeight: 700, color: '#334155' }}>onchain raffles</span>, and a range of additional gamified in-app features — making it a full-featured ecosystem rather than a single-purpose app.
       </p>
       <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.8, margin: '0 0 28px' }}>
-        $HH is the <span style={{ fontWeight: 600, color: '#334155' }}>native utility coin</span> of Happy Hour App, used as the main in-app currency across the entire platform. It was created by the Bankr community — the coin is <span style={{ fontWeight: 600, color: '#334155' }}>owned by BANKR</span> — and we accepted it as the native coin of Happy Hour, embedding <span style={{ fontWeight: 600, color: '#334155' }}>real utility</span> and <span style={{ fontWeight: 600, color: '#334155' }}>economy </span>into it. This makes <span style={{ fontWeight: 600, color: '#334155' }}>$HH a long-term ecosystem coin</span>, backed by the application and fully oriented toward strengthening its value and weight within the ecosystem.
+        $HH is the <span style={{ fontWeight: 600, color: '#334155' }}>native utility coin</span> of Happy Hour App, used as the main in-app currency across the entire platform. It was created by the Bankr community — the coin CA is <span style={{ fontWeight: 600, color: '#334155' }}>owned by BANKR</span> — and we accepted it as the native coin of Happy Hour, embedding <span style={{ fontWeight: 600, color: '#334155' }}>real utility</span> and <span style={{ fontWeight: 600, color: '#334155' }}>economy </span>into it. This makes <span style={{ fontWeight: 600, color: '#334155' }}>$HH a long-term ecosystem coin</span>, backed by the application and fully oriented toward strengthening its value and weight within the ecosystem.
       </p>
 
       <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0f172a', margin: '32px 0 16px', letterSpacing: '-0.3px' }}>
@@ -181,15 +181,6 @@ function IntroSection({ onNav }) {
         />
       </div>
 
-      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0f172a', margin: '32px 0 12px', letterSpacing: '-0.3px' }}>
-        Happy Hour Vision
-      </h2>
-      <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.8, margin: '0 0 16px' }}>
-        Our vision is to build the go-to consumer layer on Base — a place where onchain activity is genuinely rewarding, and where users feel a real sense of progression and ownership rather than just passively holding tokens.
-      </p>
-      <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.8, margin: '0 0 28px' }}>
-        We believe the next wave of crypto adoption will be driven by apps that combine real utility, community incentives, and engaging mechanics. Happy Hour is built around that thesis: every feature — from raffles to staking to contests — is designed to give users a reason to show up, participate, and grow with the platform. The $HH token is central to this, serving as both the fuel and the reward of the ecosystem.
-      </p>
 
       <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0f172a', margin: '32px 0 12px', letterSpacing: '-0.3px' }}>
         Built on Base
@@ -487,7 +478,7 @@ function HHIntroSection() {
   return (
     <section id="hh-introduction" style={{ marginTop: 60, paddingTop: 40, borderTop: '1px solid #f1f5f9' }}>
       <div style={{ fontSize: 12.5, fontWeight: 600, color: '#0052ff', marginBottom: 10, letterSpacing: 0.2 }}>
-        $HH Coin
+        $HH Native Coin
       </div>
       <img 
         src="/banner-introduction.jfif" 
@@ -498,7 +489,7 @@ function HHIntroSection() {
         $HH Introduction
       </h1>
       <p style={{ fontSize: 14.5, color: '#64748b', margin: '0 0 16px', lineHeight: 1.75 }}>
-        $HH is the <span style={{ fontWeight: 600, color: '#334155' }}>native utility coin</span> of Happy Hour App, used as the main in-app currency across the entire platform. It was created by the Bankr community — the coin is <span style={{ fontWeight: 600, color: '#334155' }}>owned by BANKR</span>, ensuring full transparency, zero team speculation, and no insider allocations. We <span style={{ fontWeight: 600, color: '#334155' }}>accepted $HH</span> as the native coin of Happy Hour and embedded <span style={{ fontWeight: 600, color: '#334155' }}>real utility</span> into it across the entire application. This makes $HH a <span style={{ fontWeight: 600, color: '#334155' }}>long-term ecosystem coin</span> — backed by the application and fully oriented toward strengthening its value and weight within the ecosystem.
+        $HH is the <span style={{ fontWeight: 600, color: '#334155' }}>native utility coin</span> of Happy Hour App, used as the main in-app currency across the entire platform. It was created by the Bankr community — the coin CA is <span style={{ fontWeight: 600, color: '#334155' }}>owned by BANKR</span>, ensuring full transparency, zero team speculation, and no insider allocations. We <span style={{ fontWeight: 600, color: '#334155' }}>accepted $HH</span> as the native coin of Happy Hour and embedded <span style={{ fontWeight: 600, color: '#334155' }}>real utility</span> into it across the entire application. This makes $HH a <span style={{ fontWeight: 600, color: '#334155' }}>long-term ecosystem coin</span> — backed by the application and fully oriented toward strengthening its value and weight within the ecosystem.
       </p>
       <p style={{ fontSize: 14.5, color: '#64748b', margin: '0 0 24px', lineHeight: 1.75 }}>
         The Happy Hour team is fully committed to supporting $HH and reinforcing its role within our ecosystem. We are continuously building, integrating, and expanding utility to ensure its long-term strength, organic demand, and stability.
@@ -527,7 +518,7 @@ function HHIntroSection() {
           </div>
         </div>
         <p style={{ fontSize: 13, color: '#475569', lineHeight: 1.65, margin: '0 0 20px', borderTop: '1px solid #e2e8f0', paddingTop: 18 }}>
-          All $HH collected by Happy Hour as the Fee Recipient is dedicated to strengthening the coin's economy through <span style={{ fontWeight: 700, color: '#334155' }}>burning</span> (reducing circulating supply) and <span style={{ fontWeight: 700, color: '#334155' }}>funding community rewards</span> (staking incentives and seasonal $HH rewards within the app).
+          All $HH collected by Happy Hour as the Fee Recipient is dedicated to strengthening the coin's economy through <span style={{ fontWeight: 700, color: '#334155' }}>burning</span> (reducing circulating supply), <span style={{ fontWeight: 700, color: '#334155' }}>market development</span> of the project, and <span style={{ fontWeight: 700, color: '#334155' }}>funding community rewards</span> (staking incentives, contests, and seasonal $HH rewards within the app).
         </p>
         <button 
           onClick={() => {
@@ -563,7 +554,7 @@ function HHUtilitySection() {
   return (
     <section id="hh-utility" style={{ marginTop: 60, paddingTop: 40, borderTop: '1px solid #f1f5f9' }}>
       <div style={{ fontSize: 12.5, fontWeight: 600, color: '#0052ff', marginBottom: 10, letterSpacing: 0.2 }}>
-        $HH Coin
+        $HH Native Coin
       </div>
       <img 
         src="/banner-utility.jfif" 
@@ -616,7 +607,7 @@ function HHEconomySection() {
   return (
     <section id="hh-economy" style={{ marginTop: 60, paddingTop: 40, borderTop: '1px solid #f1f5f9' }}>
       <div style={{ fontSize: 12.5, fontWeight: 600, color: '#0052ff', marginBottom: 10, letterSpacing: 0.2 }}>
-        $HH Coin
+        $HH Native Coin
       </div>
       <img 
         src="/banner-economy.jfif" 
