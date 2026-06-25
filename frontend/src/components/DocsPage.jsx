@@ -576,7 +576,7 @@ function HHUtilitySection() {
           },
           {
             title: 'Staking & Incentivized Staking',
-            body: '$HH can be locked for 7 days (103% APR) or 10 days (166% APR) to earn APR rewards paid in $HH, plus HP points that contribute to seasonal USDC reward allocations. Staking directly reduces circulating supply and creates long-term holding incentives. Additionally, incentivized staking campaigns are periodically launched with boosted rewards for active community participants.',
+            body: '$HH can be locked for 7 days (103% APR) or 10 days (166% APR) to earn APR rewards paid in $HH, plus HP points that contribute to seasonal USDC reward allocations. Staking directly reduces circulating supply and creates long-term holding incentives.',
           },
           {
             title: 'Hold-to-Earn',
@@ -618,10 +618,10 @@ function HHEconomySection() {
         $HH Economy
       </h1>
       <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.75, margin: '0 0 16px' }}>
-        The $HH economy is designed to be deflationary and community-first. Every transaction feeds back into the ecosystem — either <span style={{ fontWeight: 600, color: '#334155' }}>reducing supply</span> or <span style={{ fontWeight: 600, color: '#334155' }}>funding community</span> rewards.
+        $HH created by the Bankr community, with <span style={{ fontWeight: 600, color: '#334155' }}>BANKR</span> as the <span style={{ fontWeight: 600, color: '#334155' }}>official coin CA owner</span>. This is an organic, community-driven coin with <span style={{ fontWeight: 600, color: '#334155' }}>zero VC allocations</span>, <span style={{ fontWeight: 600, color: '#334155' }}>zero team token unlocks</span>, and <span style={{ fontWeight: 600, color: '#334155' }}>no insider distributions</span>. It is powered by sustained, real-world utility in a live application through automated burns, staking, hold-to-earn points, and continuous deflationary feedback loops.
       </p>
       <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.75, margin: '0 0 16px' }}>
-        $HH created by the Bankr community, with <span style={{ fontWeight: 600, color: '#334155' }}>BANKR</span> as the <span style={{ fontWeight: 600, color: '#334155' }}>official coin CA owner</span>. This is an organic, community-driven coin with <span style={{ fontWeight: 600, color: '#334155' }}>zero VC allocations</span>, <span style={{ fontWeight: 600, color: '#334155' }}>zero team token unlocks</span>, and <span style={{ fontWeight: 600, color: '#334155' }}>no insider distributions</span>. It is powered by sustained, real-world utility in a live application through automated burns, staking, hold-to-earn points, and continuous deflationary feedback loops.
+        The $HH economy is designed to be deflationary and oriented toward strengthening the coin. Every $HH transaction feeds back into the ecosystem — either <span style={{ fontWeight: 600, color: '#334155' }}>reducing supply</span> or <span style={{ fontWeight: 600, color: '#334155' }}>funding community</span> rewards.
       </p>
       <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.75, margin: '0 0 28px' }}>
         The Happy Hour team is fully committed to <span style={{ fontWeight: 600, color: '#334155' }}>supporting $HH</span> and reinforcing its role within our ecosystem. We are continuously building, integrating, and expanding utility to ensure its <span style={{ fontWeight: 600, color: '#334155' }}>long-term strength</span>, <span style={{ fontWeight: 600, color: '#334155' }}>organic demand</span>, and <span style={{ fontWeight: 600, color: '#334155' }}>stability</span>.
@@ -635,7 +635,7 @@ function HHEconomySection() {
             Recipient Fee Utilization
           </h3>
           <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.7, margin: 0, paddingLeft: 14 }}>
-            Since <span style={{ fontWeight: 600, color: '#334155' }}>@happyhour_base</span> is the official <span style={{ fontWeight: 600, color: '#334155' }}>Fee Recipient</span> of the <span style={{ fontWeight: 600, color: '#334155' }}>$HH coin</span> - all $HH collected through the designated fee recipient address are utilized to strengthen the coin's economy. A significant portion of these fees is permanently burned, while the remainder is redistributed to fund staking incentives and loyalty rewards for active users.
+            Since <span style={{ fontWeight: 600, color: '#334155' }}>@happyhour_base</span> is the official <span style={{ fontWeight: 600, color: '#334155' }}>Fee Recipient</span> of the <span style={{ fontWeight: 600, color: '#334155' }}>$HH coin</span> — all $HH collected through the designated fee recipient address are utilized to strengthen the coin's economy. A significant portion of these fees is <span style={{ fontWeight: 600, color: '#334155' }}>permanently burned</span>, with the remainder directed toward <span style={{ fontWeight: 600, color: '#334155' }}>market development</span> and <span style={{ fontWeight: 600, color: '#334155' }}>community incentives</span> including staking rewards, contests, and seasonal distributions.
           </p>
         </div>
 
