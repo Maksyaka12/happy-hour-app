@@ -518,7 +518,7 @@ function HHIntroSection() {
           </div>
         </div>
         <p style={{ fontSize: 13, color: '#475569', lineHeight: 1.65, margin: '0 0 20px', borderTop: '1px solid #e2e8f0', paddingTop: 18 }}>
-          All $HH collected by Happy Hour as the Fee Recipient is dedicated to strengthening the coin's economy through <span style={{ fontWeight: 700, color: '#334155' }}>burning</span> (reducing circulating supply), <span style={{ fontWeight: 700, color: '#334155' }}>market development</span> of the project, and <span style={{ fontWeight: 700, color: '#334155' }}>funding community rewards</span> (staking incentives, contests, and seasonal $HH rewards within the app).
+          All $HH collected by Happy Hour as the Fee Recipient is dedicated to strengthening the coin's economy through <span style={{ fontWeight: 700, color: '#334155' }}>burning</span> (reducing circulating supply), <span style={{ fontWeight: 700, color: '#334155' }}>market development</span>, and <span style={{ fontWeight: 700, color: '#334155' }}>funding community rewards</span> (staking incentives, contests, and seasonal $HH rewards within the app).
         </p>
         <button 
           onClick={() => {
@@ -535,12 +535,7 @@ function HHIntroSection() {
             fontWeight: 600,
             cursor: 'pointer',
             display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-            transition: 'background 0.2s',
-          }}
-          onMouseEnter={e => e.currentTarget.style.background = '#0043d0'}
-          onMouseLeave={e => e.currentTarget.style.background = '#0052ff'}
+            onMouseLeave={e => e.currentTarget.style.background = '#0052ff'}
         >
           Check $HH Economy →
         </button>
@@ -567,20 +562,20 @@ function HHUtilitySection() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         {[
           {
-            title: 'Staking',
-            body: 'Lock $HH for 7 days (103% APR) or 10 days (166% APR) to earn APR rewards paid in $HH, plus HP points that contribute to your seasonal USDC reward allocation. Staking directly reduces circulating supply and creates long-term holding incentives.',
-          },
-          {
-            title: 'Hold-to-Earn',
-            body: 'Holding $HH in your registered in app wallet earns HP points passively every day. The more $HH you hold, the more points you accumulate — rewarding long-term holders with seasonal USDC distributions.',
-          },
-          {
             title: 'Native In-App Currency',
             body: '$HH is the native currency of the Happy Hour App, powering all in-app transactions and payments.',
           },
           {
             title: 'In-App Burn',
             body: '30% of every transaction and payment made in $HH within the app is permanently burned, removing $HH from circulation. Certain in-app features also offer direct $HH burning to unlock exclusive privileges and boost points generation for seasonal USDC rewards.',
+          },
+          {
+            title: 'Staking & Incentivized Staking',
+            body: '$HH can be locked for 7 days (103% APR) or 10 days (166% APR) to earn APR rewards paid in $HH, plus HP points that contribute to seasonal USDC reward allocations. Staking directly reduces circulating supply and creates long-term holding incentives. Additionally, incentivized staking campaigns are periodically launched with boosted rewards for active community participants.',
+          },
+          {
+            title: 'Hold-to-Earn',
+            body: 'Holding $HH in a registered in-app wallet earns HP points passively every day. The more $HH held, the more points accumulate — rewarding long-term holders with seasonal USDC distributions.',
           },
           {
             title: 'Points & Seasonal Rewards',
