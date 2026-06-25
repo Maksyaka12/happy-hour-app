@@ -239,24 +239,24 @@ export function ContestsSection({ setTab, address }) {
                 <span style={{ lineHeight: 1 }}>3 winners</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-                <span style={{ fontSize: 7.5, fontWeight: 800, color: 'rgba(255,255,255,0.55)', letterSpacing: '0.5px', fontFamily: "'Outfit', 'Inter', sans-serif", textTransform: 'uppercase' }}>TIME LEFT</span>
                 <div style={{
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  backdropFilter: 'blur(8px)',
-                  border: '1px solid rgba(255, 255, 255, 0.18)',
-                  borderRadius: 10,
-                  height: 24,
-                  padding: '0 10px',
+                  background: 'rgba(0, 0, 0, 0.55)',
+                  backdropFilter: 'blur(6px)',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  borderRadius: 6,
+                  height: 16,
+                  padding: '0 5px',
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}>
                   <span style={{
                     fontFamily: "'Outfit', 'Inter', sans-serif",
-                    fontSize: 11,
-                    fontWeight: 800,
+                    fontSize: 10,
+                    fontWeight: 700,
                     color: '#FFFFFF',
-                    fontVariantNumeric: 'tabular-nums'
+                    fontVariantNumeric: 'tabular-nums',
+                    letterSpacing: '0.3px'
                   }}>{contestTimeLeft}</span>
                 </div>
               </div>
