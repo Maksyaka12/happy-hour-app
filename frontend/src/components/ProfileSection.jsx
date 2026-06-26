@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useDisconnect, useWriteContract, useBalance, useReadContract } from 'wagmi'
 import { formatUnits, parseUnits } from 'viem'
-import { APP_URL, FOUNDATION, CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI, HH_MANAGER_ADDRESS } from '../config/constants'
+import { APP_URL, FOUNDATION, CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI, HH_MANAGER_ADDRESS, STAKING_ADDRESS } from '../config/constants'
 import { db } from '../config/supabase'
 import { UserAvatar } from './UserAvatar'
 import { HistorySection } from './HistorySection'
@@ -149,6 +149,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
   const [paymentsRefundAmount, setPaymentsRefundAmount] = useState('')
   const [paymentsHHRefundAmount, setPaymentsHHRefundAmount] = useState('')
   const [hhRaffleRefundAmount, setHhRaffleRefundAmount] = useState('')
+  const [stakingHHRefundAmount, setStakingHHRefundAmount] = useState('')
   const HH_RAFFLE_VAULT = '0x3bdF461984142C473F2185B4F0F64a918B8ce49b'
 
   const rescueMyFunds = () => {
@@ -320,6 +321,41 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
     })
   }
 
+  const refundStakingHHSpecific = () => {
+    const amountBigInt = safeParseUnits(stakingHHRefundAmount, 18);
+    if (amountBigInt === 0n) return;
+
+    wagmiWriteContract({
+      address: STAKING_ADDRESS,
+      abi: [{
+        name: 'withdrawExcessRewards',
+        type: 'function',
+        inputs: [{ name: '_amount', type: 'uint256' }],
+        outputs: [],
+        stateMutability: 'nonpayable'
+      }],
+      functionName: 'withdrawExcessRewards',
+      args: [amountBigInt]
+    })
+  }
+
+  const refundStakingHHAll = () => {
+    if (excessRewardsRaw === 0n) return;
+
+    wagmiWriteContract({
+      address: STAKING_ADDRESS,
+      abi: [{
+        name: 'withdrawExcessRewards',
+        type: 'function',
+        inputs: [{ name: '_amount', type: 'uint256' }],
+        outputs: [],
+        stateMutability: 'nonpayable'
+      }],
+      functionName: 'withdrawExcessRewards',
+      args: [excessRewardsRaw]
+    })
+  }
+
   const { data: vaultBalanceData } = useBalance({
     address: FOUNDATION,
     token: USDC_ADDRESS,
@@ -351,6 +387,47 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
       refetchInterval: 5000,
     }
   })
+
+  const { data: hhStakingBalanceData } = useBalance({
+    address: STAKING_ADDRESS,
+    token: HH_ADDRESS,
+    query: {
+      refetchInterval: 5000,
+    }
+  })
+
+  const { data: totalStakedPrincipalRaw } = useReadContract({
+    address: STAKING_ADDRESS,
+    abi: [{
+      name: 'totalStakedPrincipal',
+      type: 'function',
+      inputs: [],
+      outputs: [{ name: '', type: 'uint256' }],
+      stateMutability: 'view'
+    }],
+    functionName: 'totalStakedPrincipal',
+    query: {
+      refetchInterval: 5000,
+    }
+  })
+
+  const { data: deadHHBalanceData } = useBalance({
+    address: '0x000000000000000000000000000000000000dEaD',
+    token: HH_ADDRESS,
+    query: {
+      refetchInterval: 10000,
+    }
+  })
+
+  const hhStakingBalanceRaw = hhStakingBalanceData?.value || 0n;
+  const excessRewardsRaw = (totalStakedPrincipalRaw !== undefined && hhStakingBalanceRaw > totalStakedPrincipalRaw)
+    ? (hhStakingBalanceRaw - totalStakedPrincipalRaw)
+    : 0n;
+
+  const excessRewardsFormatted = parseFloat(formatUnits(excessRewardsRaw, 18)).toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 6
+  });
 
   const [userStats, setUserStats] = useState({
     points: 0,
@@ -1678,6 +1755,88 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
               >
                 Full Refund
               </button>
+            </div>
+          </div>
+
+          {/* $HH Staking Vault Balance */}
+          <div style={{ marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid rgba(252, 165, 165, 0.4)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+              <div style={{ fontSize: 10, fontWeight: 800, color: '#B91C1C', letterSpacing: '0.5px' }}>
+                $HH Staking Vault Balance
+                <span style={{ marginLeft: 6, fontWeight: 550, color: '#6B7280', textTransform: 'none' }}>
+                  (Excess: {excessRewardsFormatted} $HH)
+                </span>
+              </div>
+              <div style={{ fontSize: 12, fontWeight: 900, color: '#991B1B', fontFamily: "'DM Mono', monospace" }}>
+                {hhStakingBalanceData
+                  ? formatExactOrConcise(hhStakingBalanceData)
+                  : '0.00'} $HH
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <input
+                type="number"
+                value={stakingHHRefundAmount}
+                onChange={(e) => setStakingHHRefundAmount(e.target.value)}
+                placeholder="Amount $HH"
+                style={{
+                  flex: 1.5,
+                  padding: '8px 10px',
+                  borderRadius: 12,
+                  border: '1px solid #FCA5A5',
+                  background: '#fff',
+                  fontSize: 10,
+                  fontFamily: "'DM Mono', monospace",
+                  outline: 'none',
+                  color: '#0A0B0D'
+                }}
+              />
+              <button
+                onClick={refundStakingHHSpecific}
+                style={{
+                  flex: 1,
+                  padding: '8px 8px',
+                  background: '#DC2626',
+                  color: '#fff',
+                  borderRadius: 12,
+                  fontWeight: 800,
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: 10,
+                  boxShadow: '0 4px 12px rgba(220,38,38,0.15)',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                Refund
+              </button>
+              <button
+                onClick={refundStakingHHAll}
+                style={{
+                  flex: 1,
+                  padding: '8px 8px',
+                  background: '#991B1B',
+                  color: '#fff',
+                  borderRadius: 12,
+                  fontWeight: 800,
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: 10,
+                  boxShadow: '0 4px 12px rgba(153,27,27,0.15)',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                Full Refund
+              </button>
+            </div>
+          </div>
+
+          {/* $HH Burned (Dead Wallet) */}
+          <div style={{ marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid rgba(252, 165, 165, 0.4)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ fontSize: 10, fontWeight: 800, color: '#B91C1C', letterSpacing: '0.5px' }}>Total $HH Burned (Dead Address)</div>
+              <div style={{ fontSize: 12, fontWeight: 900, color: '#991B1B', fontFamily: "'DM Mono', monospace" }}>
+                {deadHHBalanceData ? formatExactOrConcise(deadHHBalanceData) : '0.00'} $HH
+              </div>
             </div>
           </div>
 
