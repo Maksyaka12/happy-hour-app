@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useDisconnect, useWriteContract, useBalance, useReadContract } from 'wagmi'
-import { formatUnits } from 'viem'
+import { formatUnits, parseUnits } from 'viem'
 import { APP_URL, FOUNDATION, CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI } from '../config/constants'
 import { db } from '../config/supabase'
 import { UserAvatar } from './UserAvatar'
@@ -31,6 +31,31 @@ const formatConcise = (num) => {
   }
   return n.toFixed(2).replace(/\.00$/, '')
 }
+
+const formatExactOrConcise = (balanceData) => {
+  if (!balanceData) return '0.00';
+  const num = parseFloat(balanceData.formatted);
+  return num.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 6
+  });
+}
+
+const safeParseUnits = (amountStr, decimals = 18) => {
+  if (!amountStr || isNaN(amountStr)) return 0n;
+  const parts = amountStr.trim().split('.');
+  let processed = amountStr.trim();
+  if (parts.length > 1) {
+    processed = `${parts[0]}.${parts[1].slice(0, decimals)}`;
+  }
+  try {
+    return parseUnits(processed, decimals);
+  } catch (e) {
+    console.error("Error parsing units:", e);
+    return 0n;
+  }
+}
+
 
 export function ProfileSection({ address, basename, totalUsers, setTab }) {
   const { disconnect } = useDisconnect()
@@ -122,12 +147,13 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
   // Admin states
   const [refundAmount, setRefundAmount] = useState('')
   const [paymentsRefundAmount, setPaymentsRefundAmount] = useState('')
+  const [paymentsHHRefundAmount, setPaymentsHHRefundAmount] = useState('')
   const [hhRaffleRefundAmount, setHhRaffleRefundAmount] = useState('')
   const HH_RAFFLE_VAULT = '0x3bdF461984142C473F2185B4F0F64a918B8ce49b'
 
   const rescueMyFunds = () => {
-    if (!refundAmount || isNaN(refundAmount)) return;
-    const amountBigInt = BigInt(Math.floor(parseFloat(refundAmount) * 1000000));
+    const amountBigInt = safeParseUnits(refundAmount, 6);
+    if (amountBigInt === 0n) return;
 
     wagmiWriteContract({
       address: '0xdE76F43E17B1173947f63b72C85a2f0d9a97702F',
@@ -151,12 +177,9 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
     })
   }
 
-  // HH Raffle Vault rescue — withdraws HH from the vault to admin
-  const rescueHHFunds = () => {
-    if (!hhRaffleRefundAmount || isNaN(hhRaffleRefundAmount)) return;
-    const amountBigInt = BigInt(
-      Math.floor(parseFloat(hhRaffleRefundAmount) * 1e18).toString()
-    );
+  const refundHHRaffleSpecific = () => {
+    const amountBigInt = safeParseUnits(hhRaffleRefundAmount, 18);
+    if (amountBigInt === 0n) return;
 
     wagmiWriteContract({
       address: HH_RAFFLE_VAULT,
@@ -180,6 +203,31 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
     })
   }
 
+  const refundHHRaffleAll = () => {
+    if (!hhRaffleVaultBalanceData?.value) return;
+
+    wagmiWriteContract({
+      address: HH_RAFFLE_VAULT,
+      abi: [{
+        name: 'rescueFunds',
+        type: 'function',
+        inputs: [
+          { name: '_token', type: 'address' },
+          { name: '_to', type: 'address' },
+          { name: '_amount', type: 'uint256' }
+        ],
+        outputs: [],
+        stateMutability: 'nonpayable'
+      }],
+      functionName: 'rescueFunds',
+      args: [
+        HH_ADDRESS,
+        address,
+        hhRaffleVaultBalanceData.value
+      ]
+    })
+  }
+
   const sweepPaymentsVault = () => {
     wagmiWriteContract({
       address: CHECKIN_TARGET,
@@ -196,8 +244,8 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
   }
 
   const refundPaymentsVaultSpecific = () => {
-    if (!paymentsRefundAmount || isNaN(paymentsRefundAmount)) return;
-    const amountBigInt = BigInt(Math.floor(parseFloat(paymentsRefundAmount) * 1000000));
+    const amountBigInt = safeParseUnits(paymentsRefundAmount, 6);
+    if (amountBigInt === 0n) return;
 
     wagmiWriteContract({
       address: CHECKIN_TARGET,
@@ -221,6 +269,57 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
     })
   }
 
+  const refundPaymentsHHSpecific = () => {
+    const amountBigInt = safeParseUnits(paymentsHHRefundAmount, 18);
+    if (amountBigInt === 0n) return;
+
+    wagmiWriteContract({
+      address: CHECKIN_TARGET,
+      abi: [{
+        name: 'rescueToken',
+        type: 'function',
+        inputs: [
+          { name: '_token', type: 'address' },
+          { name: '_to', type: 'address' },
+          { name: '_amount', type: 'uint256' }
+        ],
+        outputs: [],
+        stateMutability: 'nonpayable'
+      }],
+      functionName: 'rescueToken',
+      args: [
+        HH_ADDRESS,
+        address,
+        amountBigInt
+      ]
+    })
+  }
+
+  const refundPaymentsHHAll = () => {
+    if (!paymentsVaultHHBalanceData?.value) return;
+
+    wagmiWriteContract({
+      address: CHECKIN_TARGET,
+      abi: [{
+        name: 'rescueToken',
+        type: 'function',
+        inputs: [
+          { name: '_token', type: 'address' },
+          { name: '_to', type: 'address' },
+          { name: '_amount', type: 'uint256' }
+        ],
+        outputs: [],
+        stateMutability: 'nonpayable'
+      }],
+      functionName: 'rescueToken',
+      args: [
+        HH_ADDRESS,
+        address,
+        paymentsVaultHHBalanceData.value
+      ]
+    })
+  }
+
   const { data: vaultBalanceData } = useBalance({
     address: FOUNDATION,
     token: USDC_ADDRESS,
@@ -240,6 +339,14 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
   const { data: paymentsVaultBalanceData } = useBalance({
     address: CHECKIN_TARGET,
     token: USDC_ADDRESS,
+    query: {
+      refetchInterval: 5000,
+    }
+  })
+
+  const { data: paymentsVaultHHBalanceData } = useBalance({
+    address: CHECKIN_TARGET,
+    token: HH_ADDRESS,
     query: {
       refetchInterval: 5000,
     }
@@ -1381,8 +1488,8 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
               <div style={{ fontSize: 10, fontWeight: 800, color: '#B91C1C', letterSpacing: '0.5px' }}>$HH Raffle Vault Balance</div>
               <div style={{ fontSize: 12, fontWeight: 900, color: '#991B1B', fontFamily: "'DM Mono', monospace" }}>
                 {hhRaffleVaultBalanceData
-                  ? formatConcise(parseFloat(hhRaffleVaultBalanceData.formatted))
-                  : '0'} $HH
+                  ? formatExactOrConcise(hhRaffleVaultBalanceData)
+                  : '0.00'} $HH
               </div>
             </div>
             <div style={{ display: 'flex', gap: 6 }}>
@@ -1404,7 +1511,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
                 }}
               />
               <button
-                onClick={rescueHHFunds}
+                onClick={refundHHRaffleSpecific}
                 style={{
                   flex: 1,
                   padding: '8px 8px',
@@ -1419,12 +1526,31 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
                   whiteSpace: 'nowrap'
                 }}
               >
-                Rescue $HH
+                Refund
+              </button>
+              <button
+                onClick={refundHHRaffleAll}
+                style={{
+                  flex: 1,
+                  padding: '8px 8px',
+                  background: '#991B1B',
+                  color: '#fff',
+                  borderRadius: 12,
+                  fontWeight: 800,
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: 10,
+                  boxShadow: '0 4px 12px rgba(153,27,27,0.15)',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                Full Refund
               </button>
             </div>
           </div>
 
-          <div style={{ marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid rgba(252, 165, 165, 0.4)' }}>
+          {/* Payments Vault Balance */}
+          <div style={{ marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid rgba(252, 165, 165, 0.4)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
               <div style={{ fontSize: 10, fontWeight: 800, color: '#B91C1C', letterSpacing: '0.5px' }}>Payments Vault Balance</div>
               <div style={{ fontSize: 12, fontWeight: 900, color: '#991B1B', fontFamily: "'DM Mono', monospace" }}>
@@ -1469,6 +1595,73 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
               </button>
               <button
                 onClick={sweepPaymentsVault}
+                style={{
+                  flex: 1,
+                  padding: '8px 8px',
+                  background: '#991B1B',
+                  color: '#fff',
+                  borderRadius: 12,
+                  fontWeight: 800,
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: 10,
+                  boxShadow: '0 4px 12px rgba(153,27,27,0.15)',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                Full Refund
+              </button>
+            </div>
+          </div>
+
+          {/* $HH Payment Vault Balance */}
+          <div style={{ marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid rgba(252, 165, 165, 0.4)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+              <div style={{ fontSize: 10, fontWeight: 800, color: '#B91C1C', letterSpacing: '0.5px' }}>$HH Payment Vault Balance</div>
+              <div style={{ fontSize: 12, fontWeight: 900, color: '#991B1B', fontFamily: "'DM Mono', monospace" }}>
+                {paymentsVaultHHBalanceData
+                  ? formatExactOrConcise(paymentsVaultHHBalanceData)
+                  : '0.00'} $HH
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <input
+                type="number"
+                value={paymentsHHRefundAmount}
+                onChange={(e) => setPaymentsHHRefundAmount(e.target.value)}
+                placeholder="Amount $HH"
+                style={{
+                  flex: 1.5,
+                  padding: '8px 10px',
+                  borderRadius: 12,
+                  border: '1px solid #FCA5A5',
+                  background: '#fff',
+                  fontSize: 10,
+                  fontFamily: "'DM Mono', monospace",
+                  outline: 'none',
+                  color: '#0A0B0D'
+                }}
+              />
+              <button
+                onClick={refundPaymentsHHSpecific}
+                style={{
+                  flex: 1,
+                  padding: '8px 8px',
+                  background: '#DC2626',
+                  color: '#fff',
+                  borderRadius: 12,
+                  fontWeight: 800,
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: 10,
+                  boxShadow: '0 4px 12px rgba(220,38,38,0.15)',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                Refund
+              </button>
+              <button
+                onClick={refundPaymentsHHAll}
                 style={{
                   flex: 1,
                   padding: '8px 8px',
