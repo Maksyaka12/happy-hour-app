@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useDisconnect, useWriteContract, useBalance, useReadContract } from 'wagmi'
 import { formatUnits, parseUnits } from 'viem'
-import { APP_URL, FOUNDATION, CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI } from '../config/constants'
+import { APP_URL, FOUNDATION, CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI, HH_MANAGER_ADDRESS } from '../config/constants'
 import { db } from '../config/supabase'
 import { UserAvatar } from './UserAvatar'
 import { HistorySection } from './HistorySection'
@@ -274,7 +274,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
     if (amountBigInt === 0n) return;
 
     wagmiWriteContract({
-      address: CHECKIN_TARGET,
+      address: HH_MANAGER_ADDRESS,
       abi: [{
         name: 'rescueToken',
         type: 'function',
@@ -299,7 +299,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
     if (!paymentsVaultHHBalanceData?.value) return;
 
     wagmiWriteContract({
-      address: CHECKIN_TARGET,
+      address: HH_MANAGER_ADDRESS,
       abi: [{
         name: 'rescueToken',
         type: 'function',
@@ -345,7 +345,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
   })
 
   const { data: paymentsVaultHHBalanceData } = useBalance({
-    address: CHECKIN_TARGET,
+    address: HH_MANAGER_ADDRESS,
     token: HH_ADDRESS,
     query: {
       refetchInterval: 5000,
