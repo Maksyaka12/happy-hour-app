@@ -122,6 +122,8 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
   // Admin states
   const [refundAmount, setRefundAmount] = useState('')
   const [paymentsRefundAmount, setPaymentsRefundAmount] = useState('')
+  const [hhRaffleRefundAmount, setHhRaffleRefundAmount] = useState('')
+  const HH_RAFFLE_VAULT = '0x3bdF461984142C473F2185B4F0F64a918B8ce49b'
 
   const rescueMyFunds = () => {
     if (!refundAmount || isNaN(refundAmount)) return;
@@ -144,6 +146,35 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
       args: [
         '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
         '0x4c91D3BEd372C11795b9Ce9a9017dFE447Bf050a',
+        amountBigInt
+      ]
+    })
+  }
+
+  // HH Raffle Vault rescue — withdraws HH from the vault to admin
+  const rescueHHFunds = () => {
+    if (!hhRaffleRefundAmount || isNaN(hhRaffleRefundAmount)) return;
+    const amountBigInt = BigInt(
+      Math.floor(parseFloat(hhRaffleRefundAmount) * 1e18).toString()
+    );
+
+    wagmiWriteContract({
+      address: HH_RAFFLE_VAULT,
+      abi: [{
+        name: 'rescueFunds',
+        type: 'function',
+        inputs: [
+          { name: '_token', type: 'address' },
+          { name: '_to', type: 'address' },
+          { name: '_amount', type: 'uint256' }
+        ],
+        outputs: [],
+        stateMutability: 'nonpayable'
+      }],
+      functionName: 'rescueFunds',
+      args: [
+        HH_ADDRESS,
+        address,
         amountBigInt
       ]
     })
@@ -193,6 +224,14 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
   const { data: vaultBalanceData } = useBalance({
     address: FOUNDATION,
     token: USDC_ADDRESS,
+    query: {
+      refetchInterval: 5000,
+    }
+  })
+
+  const { data: hhRaffleVaultBalanceData } = useBalance({
+    address: HH_RAFFLE_VAULT,
+    token: HH_ADDRESS,
     query: {
       refetchInterval: 5000,
     }
@@ -1336,7 +1375,55 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
             </div>
           </div>
 
-          {/* Payments Vault Block */}
+          {/* HH Raffle Vault Balance */}
+          <div style={{ marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid rgba(252, 165, 165, 0.4)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+              <div style={{ fontSize: 10, fontWeight: 800, color: '#B91C1C', letterSpacing: '0.5px' }}>$HH Raffle Vault Balance</div>
+              <div style={{ fontSize: 12, fontWeight: 900, color: '#991B1B', fontFamily: "'DM Mono', monospace" }}>
+                {hhRaffleVaultBalanceData
+                  ? formatConcise(parseFloat(hhRaffleVaultBalanceData.formatted))
+                  : '0'} $HH
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <input
+                type="number"
+                value={hhRaffleRefundAmount}
+                onChange={(e) => setHhRaffleRefundAmount(e.target.value)}
+                placeholder="Amount $HH"
+                style={{
+                  flex: 1.5,
+                  padding: '8px 10px',
+                  borderRadius: 12,
+                  border: '1px solid #FCA5A5',
+                  background: '#fff',
+                  fontSize: 10,
+                  fontFamily: "'DM Mono', monospace",
+                  outline: 'none',
+                  color: '#0A0B0D'
+                }}
+              />
+              <button
+                onClick={rescueHHFunds}
+                style={{
+                  flex: 1,
+                  padding: '8px 8px',
+                  background: '#DC2626',
+                  color: '#fff',
+                  borderRadius: 12,
+                  fontWeight: 800,
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: 10,
+                  boxShadow: '0 4px 12px rgba(220,38,38,0.15)',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                Rescue $HH
+              </button>
+            </div>
+          </div>
+
           <div style={{ marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid rgba(252, 165, 165, 0.4)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
               <div style={{ fontSize: 10, fontWeight: 800, color: '#B91C1C', letterSpacing: '0.5px' }}>Payments Vault Balance</div>
