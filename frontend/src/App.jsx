@@ -599,7 +599,7 @@ export default function App() {
                 onMouseLeave={e => e.currentTarget.style.opacity = '1'}
               >
                 <img src="/bankr-logo.jpg" alt="Bankr Logo" style={{ width: 22, height: 22, borderRadius: 6, objectFit: 'cover' }} />
-                <span>Bankr Community</span>
+                <span>Bankr</span>
               </a>
             </span>
           </div>
