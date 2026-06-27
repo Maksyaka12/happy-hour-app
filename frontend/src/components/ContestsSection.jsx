@@ -968,7 +968,11 @@ function WinnersPedestal() {
             <img src="/winners/2 palce.jpg" alt="2nd Place" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
           <div style={{ fontSize: 9.5, fontWeight: 800, color: '#000000', marginBottom: 1, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>@Benny___5</div>
-          <a href="https://x.com/Benny___5" target="_blank" rel="noopener noreferrer" style={{ fontSize: 8.5, fontWeight: 700, color: '#F59E0B', textDecoration: 'none', marginBottom: 4 }}>view profile</a>
+          <div style={{ display: 'flex', gap: 4, marginBottom: 4, alignItems: 'center' }}>
+            <a href="https://x.com/Benny___5" target="_blank" rel="noopener noreferrer" style={{ fontSize: 8.5, fontWeight: 700, color: '#F59E0B', textDecoration: 'none' }}>view profile</a>
+            <span style={{ fontSize: 8.5, color: '#717886' }}>·</span>
+            <a href="https://basescan.org/tx/0xda57e3fde642b797356fcd3bf7360c3329ba0fa923fa2ebf0e4474dd9e483ae6" target="_blank" rel="noopener noreferrer" style={{ fontSize: 8.5, fontWeight: 700, color: '#F59E0B', textDecoration: 'none' }}>payout</a>
+          </div>
           
           {/* Pedestal block */}
           <div style={{
@@ -1014,7 +1018,11 @@ function WinnersPedestal() {
             <img src="/winners/1 place.jpg" alt="1st Place" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
           <div style={{ fontSize: 10, fontWeight: 800, color: '#000000', marginBottom: 1, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>@DrsonaliV20871</div>
-          <a href="https://x.com/DrsonaliV20871" target="_blank" rel="noopener noreferrer" style={{ fontSize: 9, fontWeight: 700, color: '#F59E0B', textDecoration: 'none', marginBottom: 4 }}>view profile</a>
+          <div style={{ display: 'flex', gap: 4, marginBottom: 4, alignItems: 'center' }}>
+            <a href="https://x.com/DrsonaliV20871" target="_blank" rel="noopener noreferrer" style={{ fontSize: 8.5, fontWeight: 700, color: '#F59E0B', textDecoration: 'none' }}>view profile</a>
+            <span style={{ fontSize: 8.5, color: '#717886' }}>·</span>
+            <a href="https://basescan.org/tx/0xb1553466b66949b35045256c00f8d02d14cc7e0bb98045d5465fe69f128cd2eb" target="_blank" rel="noopener noreferrer" style={{ fontSize: 8.5, fontWeight: 700, color: '#F59E0B', textDecoration: 'none' }}>payout</a>
+          </div>
           
           {/* Pedestal block */}
           <div style={{
@@ -1057,7 +1065,11 @@ function WinnersPedestal() {
             <img src="/winners/3 palce.jpg" alt="3rd Place" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
           <div style={{ fontSize: 9.5, fontWeight: 800, color: '#000000', marginBottom: 1, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>@Shillawakning</div>
-          <a href="https://x.com/Shillawakning" target="_blank" rel="noopener noreferrer" style={{ fontSize: 8.5, fontWeight: 700, color: '#F59E0B', textDecoration: 'none', marginBottom: 4 }}>view profile</a>
+          <div style={{ display: 'flex', gap: 4, marginBottom: 4, alignItems: 'center' }}>
+            <a href="https://x.com/Shillawakning" target="_blank" rel="noopener noreferrer" style={{ fontSize: 8.5, fontWeight: 700, color: '#F59E0B', textDecoration: 'none' }}>view profile</a>
+            <span style={{ fontSize: 8.5, color: '#717886' }}>·</span>
+            <a href="https://basescan.org/tx/0x6047a5aa9461a684d1a3a8d8a8415d21f72554f321a5b7fa4e2f2888a5c3221a" target="_blank" rel="noopener noreferrer" style={{ fontSize: 8.5, fontWeight: 700, color: '#F59E0B', textDecoration: 'none' }}>payout</a>
+          </div>
           
           {/* Pedestal block */}
           <div style={{
