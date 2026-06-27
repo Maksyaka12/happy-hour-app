@@ -191,7 +191,65 @@ const stats = {
 
 ---
 
-## 5. Autonomy & Reasoning Guidelines
+## 5. Public REST API Endpoints (Supabase REST & Edge Functions)
+If you need to make HTTP REST requests instead of using the Supabase client library, use the following endpoints:
+
+* **Base URL**: `https://xiyrzftdeefszsiukkjc.supabase.co`
+* **Headers**:
+  * `apikey`: `sb_publishable_C1OnF0Bi-L1hcIsPfQ8_BQ_-eT3XLzK`
+  * `Authorization`: `Bearer sb_publishable_C1OnF0Bi-L1hcIsPfQ8_BQ_-eT3XLzK`
+  * `Content-Type`: `application/json`
+
+### A. GET `/functions/v1/get-state?address={wallet}&currency=HH`
+Returns the user profile, active raffle details, participants list, and Top 50 leaderboard:
+* **Response format**:
+  ```json
+  {
+    "user": { "address": "0xwallet", "points": 120.0, "streak": 5, "boost_last": "2026-06-27" },
+    "leaders": [ { "address": "0x...", "points": 500.0, "streak": 12 } ],
+    "round": { "id": 123, "status": "open", "ends_at": "2026-06-27T04:00:00Z" }
+  }
+  ```
+
+### B. GET `/rest/v1/users?select=points&order=points.desc&offset=49&limit=1`
+Returns the points value of the 50th rank (USDC Eligibility threshold):
+* **Response format**:
+  ```json
+  [ { "points": 345.5 } ]
+  ```
+
+### C. POST `/rest/v1/rpc/get_user_distribution_criteria`
+Returns the checklist statistics for the wallet:
+* **Body**: `{"p_address": "0xwallet"}`
+* **Response format**:
+  ```json
+  {
+    "checkins": 12,
+    "boosts": 10,
+    "boxes": 24,
+    "holding_days": 15,
+    "staked_cumulative": "45000000.00",
+    "referrals": 4,
+    "social_tasks": 21,
+    "hh_burn_boxes": 11,
+    "raffles": 14
+  }
+  ```
+
+### D. Action Registration (POST endpoints)
+Register on-chain actions in the database after transaction confirmation:
+* **POST `/rest/v1/rpc/process_checkin`** (USDC Check-in)
+  * Body: `{"p_address": "0xwallet", "p_tx_hash": "0xtxhash"}`
+* **POST `/rest/v1/rpc/process_hp_boost_hh`** ($HH Daily Boost)
+  * Body: `{"p_address": "0xwallet", "p_tx_hash": "0xtxhash"}`
+* **POST `/rest/v1/rpc/add_staked_cumulative`** ($HH Staking amount registration)
+  * Body: `{"p_address": "0xwallet", "p_amount": stakedAmountFloat}`
+* **POST `/rest/v1/rpc/burn_hh_for_boxes`** ($HH extra box attempts registration)
+  * Body: `{"p_address": "0xwallet", "p_tx_hash": "0xtxhash", "p_amount": hhAmountFloat}`
+
+---
+
+## 6. Autonomy & Reasoning Guidelines
 The agent is designed to act with high autonomy:
 1. **No Static Strategy**: Do not default to a single hardcoded loop. Every user has a different budget, $HH balance, and objectives.
 2. **Analysis & Diagnostics**: Inspect the user's rank, checklist progress, and active stakes before offering a custom recommendation.
