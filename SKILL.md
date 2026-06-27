@@ -47,7 +47,7 @@ Enters the hourly $HH raffle.
 ### E. Daily Check-in (USDC)
 Performs the daily login check-in.
 * **Execution**:
-  * Transfers `0.0001` USDC to `0x7E861466bC2845C9f57051fb9652bC4a56d95542`.
+  * Transfers exactly **`0.0001` USDC** (which is `100` atomic units, since USDC has 6 decimals) to the check-in contract `0x7E861466bC2845C9f57051fb9652bC4a56d95542`.
 
 ---
 
@@ -89,7 +89,7 @@ The agent must execute a continuous loop following this decision matrix:
 ### B. Leaderboard Strategy (Target: Top 50)
 * **Goal**: To be eligible for seasonal USDC rewards, the user must rank in the **Top 50**.
 * **Action plan**:
-  1. Retrieve the current user rank and points (HP).
+  1. Retrieve the current user rank and points (HP) using Supabase queries.
   2. Query the points required for the 50th place.
   3. Calculate the HP gap: `gap = pointsNeeded - userPoints`.
   4. If the gap is positive and there is available $HH budget, calculate how many boxes to open: `extraBoxesNeeded = gap / averagePointsPerBox`.
@@ -101,4 +101,60 @@ The agent must execute a continuous loop following this decision matrix:
   - Ensure the user has at least one active staking position.
   - Complete daily/weekly box opening thresholds.
   - Make at least one $HH raffle deposit to activate the raffle participant multiplier.
-  - Keep check-in streak alive (Streak Protection).
+  - Keep check-in streak alive (Streak Protection).
+
+---
+
+## 4. API & Database Queries for Strategy Calculations
+
+To execute the reasoning loop and strategy calculations, the AI agent must query the following endpoints and database tables:
+
+### A. Fetching $HH Token Price
+* **Method**: REST HTTP GET
+* **Endpoint**: `https://api.dexscreener.com/latest/dex/tokens/0x8235EdF32a1e10Bd1867ad622915AB613664cbA3`
+* **JSON Path**: `pairs[0].priceUsd` (parsed as float)
+
+### B. Supabase Database Queries
+The agent can query these directly using the Supabase client (`SUPABASE_URL` and `SUPABASE_ANON` from the app config):
+
+1. **Get Current User HP Points & Rank**:
+   * **SQL Query**:
+     ```sql
+     -- Get user points
+     SELECT points FROM users WHERE address = '0xuseraddress';
+     
+     -- Get user rank
+     SELECT count(*) + 1 AS rank FROM users WHERE points > (SELECT points FROM users WHERE address = '0xuseraddress');
+     ```
+   * **JS Supabase Client**:
+     ```javascript
+     // Get points
+     const { data: user } = await supabase.from('users').select('points').eq('address', userAddress).single();
+     
+     // Get rank
+     const { count } = await supabase.from('users').select('*', { count: 'exact', head: true }).gt('points', user.points);
+     const rank = (count || 0) + 1;
+     ```
+
+2. **Get 50th Place HP Points (Top 50 Threshold)**:
+   * **SQL Query**:
+     ```sql
+     SELECT points FROM users ORDER BY points DESC LIMIT 1 OFFSET 49;
+     ```
+   * **JS Supabase Client**:
+     ```javascript
+     const { data } = await supabase.from('users').select('points').order('points', { ascending: false }).limit(50);
+     const points50th = data[49]?.points || 0;
+     ```
+
+3. **Get Average HP Won per Box (for gap calculations)**:
+   * **SQL Query**:
+     ```sql
+     SELECT COALESCE(avg(hp_won), 25) AS avg_hp FROM opened_boxes;
+     ```
+   * **JS Supabase Client**:
+     ```javascript
+     const { data } = await supabase.from('opened_boxes').select('hp_won');
+     const avgHp = data.length > 0 ? (data.reduce((acc, b) => acc + b.hp_won, 0) / data.length) : 25;
+     ```
+
