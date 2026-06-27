@@ -915,21 +915,19 @@ function WinnersPedestal() {
       backdropFilter: 'blur(20px)',
       WebkitBackdropFilter: 'blur(20px)',
       border: '1px solid rgba(245, 158, 11, 0.3)',
-      borderRadius: 24,
-      padding: '24px 20px',
+      borderRadius: 20,
+      padding: '16px 14px 12px',
       marginBottom: 20,
       boxShadow: '0 8px 32px rgba(245, 158, 11, 0.08)',
       boxSizing: 'border-box',
       fontFamily: "'Outfit', 'Inter', sans-serif"
     }}>
       <h3 style={{
-        margin: '0 0 24px',
-        fontSize: 18,
-        fontWeight: 900,
+        margin: '0 0 16px',
+        fontSize: 15,
+        fontWeight: 800,
         color: '#F59E0B',
         textAlign: 'center',
-        textTransform: 'uppercase',
-        letterSpacing: '1.5px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -943,9 +941,9 @@ function WinnersPedestal() {
         display: 'flex',
         alignItems: 'flex-end',
         justifyContent: 'center',
-        gap: 12,
-        marginTop: 20,
-        height: 220,
+        gap: 10,
+        marginTop: 10,
+        height: 160,
         boxSizing: 'border-box'
       }}>
         {/* 2nd Place */}
@@ -954,40 +952,40 @@ function WinnersPedestal() {
           flexDirection: 'column',
           alignItems: 'center',
           flex: 1,
-          maxWidth: 100
+          maxWidth: 90
         }}>
           {/* Avatar */}
           <div style={{
             position: 'relative',
-            width: 54,
-            height: 54,
+            width: 40,
+            height: 40,
             borderRadius: '50%',
             border: '2px solid #C0C0C0', // Silver
-            boxShadow: '0 0 12px rgba(192, 192, 192, 0.3)',
-            marginBottom: 8,
+            boxShadow: '0 0 10px rgba(192, 192, 192, 0.3)',
+            marginBottom: 4,
             overflow: 'hidden'
           }}>
             <img src="/winners/2 palce.jpg" alt="2nd Place" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
-          <div style={{ fontSize: 11, fontWeight: 800, color: '#FFFFFF', marginBottom: 2, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>@Benny___5</div>
-          <a href="https://x.com/Benny___5" target="_blank" rel="noopener noreferrer" style={{ fontSize: 9.5, fontWeight: 700, color: '#F59E0B', textDecoration: 'none', marginBottom: 8 }}>view profile</a>
+          <div style={{ fontSize: 9.5, fontWeight: 800, color: '#000000', marginBottom: 1, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>@Benny___5</div>
+          <a href="https://x.com/Benny___5" target="_blank" rel="noopener noreferrer" style={{ fontSize: 8.5, fontWeight: 700, color: '#F59E0B', textDecoration: 'none', marginBottom: 4 }}>view profile</a>
           
           {/* Pedestal block */}
           <div style={{
             width: '100%',
-            height: 60,
+            height: 42,
             background: 'linear-gradient(180deg, #4A4A4A 0%, #2A2A2A 100%)',
             border: '1px solid #C0C0C0',
             borderBottom: 'none',
-            borderRadius: '8px 8px 0 0',
+            borderRadius: '6px 6px 0 0',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 4px 16px rgba(0,0,0,0.3)'
+            boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
           }}>
-            <span style={{ fontSize: 20, fontWeight: 900, color: '#C0C0C0', lineHeight: 1 }}>2</span>
-            <span style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.7)', marginTop: 2 }}>$30</span>
+            <span style={{ fontSize: 16, fontWeight: 900, color: '#C0C0C0', lineHeight: 1 }}>2</span>
+            <span style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.7)', marginTop: 1 }}>$30</span>
           </div>
         </div>
 
@@ -997,43 +995,43 @@ function WinnersPedestal() {
           flexDirection: 'column',
           alignItems: 'center',
           flex: 1,
-          maxWidth: 110,
-          transform: 'translateY(-10px)'
+          maxWidth: 100,
+          transform: 'translateY(-6px)'
         }}>
-          {/* Crown / Trophy emoji */}
-          <span style={{ fontSize: 16, marginBottom: 2, animation: 'floatingLogo 3s ease-in-out infinite' }}>👑</span>
+          {/* Crown */}
+          <span style={{ fontSize: 12, marginBottom: 1, animation: 'floatingLogo 3s ease-in-out infinite' }}>👑</span>
           {/* Avatar */}
           <div style={{
             position: 'relative',
-            width: 68,
-            height: 68,
+            width: 48,
+            height: 48,
             borderRadius: '50%',
-            border: '3px solid #FFD700', // Gold
-            boxShadow: '0 0 20px rgba(255, 215, 0, 0.4)',
-            marginBottom: 8,
+            border: '2px solid #FFD700', // Gold
+            boxShadow: '0 0 16px rgba(255, 215, 0, 0.4)',
+            marginBottom: 4,
             overflow: 'hidden'
           }}>
             <img src="/winners/1 place.jpg" alt="1st Place" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
-          <div style={{ fontSize: 12, fontWeight: 800, color: '#FFFFFF', marginBottom: 2, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>@DrsonaliV20871</div>
-          <a href="https://x.com/DrsonaliV20871" target="_blank" rel="noopener noreferrer" style={{ fontSize: 10, fontWeight: 700, color: '#F59E0B', textDecoration: 'none', marginBottom: 8 }}>view profile</a>
+          <div style={{ fontSize: 10, fontWeight: 800, color: '#000000', marginBottom: 1, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>@DrsonaliV20871</div>
+          <a href="https://x.com/DrsonaliV20871" target="_blank" rel="noopener noreferrer" style={{ fontSize: 9, fontWeight: 700, color: '#F59E0B', textDecoration: 'none', marginBottom: 4 }}>view profile</a>
           
           {/* Pedestal block */}
           <div style={{
             width: '100%',
-            height: 85,
+            height: 60,
             background: 'linear-gradient(180deg, #F59E0B 0%, #B45309 100%)',
-            border: '1.5px solid #FFD700',
+            border: '1px solid #FFD700',
             borderBottom: 'none',
-            borderRadius: '12px 12px 0 0',
+            borderRadius: '8px 8px 0 0',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 6px 20px rgba(245, 158, 11, 0.2)'
+            boxShadow: '0 6px 16px rgba(245, 158, 11, 0.2)'
           }}>
-            <span style={{ fontSize: 28, fontWeight: 900, color: '#FFD700', lineHeight: 1 }}>1</span>
-            <span style={{ fontSize: 11, fontWeight: 900, color: '#FFFFFF', marginTop: 2 }}>$60</span>
+            <span style={{ fontSize: 22, fontWeight: 900, color: '#FFD700', lineHeight: 1 }}>1</span>
+            <span style={{ fontSize: 10, fontWeight: 900, color: '#FFFFFF', marginTop: 1 }}>$60</span>
           </div>
         </div>
 
@@ -1043,40 +1041,40 @@ function WinnersPedestal() {
           flexDirection: 'column',
           alignItems: 'center',
           flex: 1,
-          maxWidth: 100
+          maxWidth: 90
         }}>
           {/* Avatar */}
           <div style={{
             position: 'relative',
-            width: 50,
-            height: 50,
+            width: 36,
+            height: 36,
             borderRadius: '50%',
             border: '2px solid #CD7F32', // Bronze
-            boxShadow: '0 0 10px rgba(205, 127, 50, 0.3)',
-            marginBottom: 8,
+            boxShadow: '0 0 8px rgba(205, 127, 50, 0.3)',
+            marginBottom: 4,
             overflow: 'hidden'
           }}>
             <img src="/winners/3 palce.jpg" alt="3rd Place" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
-          <div style={{ fontSize: 11, fontWeight: 800, color: '#FFFFFF', marginBottom: 2, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>@Shillawakning</div>
-          <a href="https://x.com/Shillawakning" target="_blank" rel="noopener noreferrer" style={{ fontSize: 9.5, fontWeight: 700, color: '#F59E0B', textDecoration: 'none', marginBottom: 8 }}>view profile</a>
+          <div style={{ fontSize: 9.5, fontWeight: 800, color: '#000000', marginBottom: 1, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>@Shillawakning</div>
+          <a href="https://x.com/Shillawakning" target="_blank" rel="noopener noreferrer" style={{ fontSize: 8.5, fontWeight: 700, color: '#F59E0B', textDecoration: 'none', marginBottom: 4 }}>view profile</a>
           
           {/* Pedestal block */}
           <div style={{
             width: '100%',
-            height: 45,
+            height: 32,
             background: 'linear-gradient(180deg, #3A2512 0%, #1E120A 100%)',
             border: '1px solid #CD7F32',
             borderBottom: 'none',
-            borderRadius: '8px 8px 0 0',
+            borderRadius: '6px 6px 0 0',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+            boxShadow: '0 4px 10px rgba(0,0,0,0.3)'
           }}>
-            <span style={{ fontSize: 18, fontWeight: 900, color: '#CD7F32', lineHeight: 1 }}>3</span>
-            <span style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.7)', marginTop: 2 }}>$30</span>
+            <span style={{ fontSize: 14, fontWeight: 900, color: '#CD7F32', lineHeight: 1 }}>3</span>
+            <span style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.7)', marginTop: 1 }}>$30</span>
           </div>
         </div>
       </div>
