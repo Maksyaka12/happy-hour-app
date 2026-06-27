@@ -1,60 +1,104 @@
-# Happy Hour Skill
+# Happy Hour AI Agent Skill Definition
 
-This skill allows Bankr to interact with the Happy Hour App on Base. Happy Hour is a consumer app with seasonal rewards, staking, daily activities, and hourly raffles.
+This skill allows Bankr AI agents to autonomously interact with the Happy Hour App on Base. It equips the agent with tools to execute on-chain transactions, analyze user progress, formulate strategies to reach the Top 50 Leaderboard, and perform daily tasks to maximize airdrop allocation.
 
-## Integration Details
-- **Token ($HH)**: 0x8235EdF32a1e10Bd1867ad622915AB613664cbA3 (Base)
-- **Staking Contract**: 0xFd23526111280b78FF4e7F38B1fAF5818B9c5214 (Base)
-- **Main App Contract**: 0x13802fDe66BCf54BcebE2242aF0836A5Dfb45Fc8 (Base)
-- **Raffle Contract**: 0x3bdF461984142C473F2185B4F0F64a918B8ce49b (Base)
-- **Check-in Contract**: 0x7E861466bC2845C9f57051fb9652bC4a56d95542 (Base)
+---
 
-## Capabilities
+## 1. System Integration Details
+* **Network**: Base Mainnet (Chain ID: 8453)
+* **$HH Token**: `0x8235EdF32a1e10Bd1867ad622915AB613664cbA3` (18 Decimals)
+* **USDC Token**: `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` (6 Decimals)
+* **$HH Staking Contract**: `0xFd23526111280b78FF4e7F38B1fAF5818B9c5214`
+* **HappyHourHHManager (Main App)**: `0x13802fDe66BCf54BcebE2242aF0836A5Dfb45Fc8`
+* **HappyHourHHRaffleVault ($HH Raffle)**: `0x3bdF461984142C473F2185B4F0F64a918B8ce49b`
+* **HappyHourPaymentsVault (USDC Check-in)**: `0x7E861466bC2845C9f57051fb9652bC4a56d95542`
 
-### Staking $HH
-Stake your $HH tokens for a specific duration to earn HP points and APR.
-- **Action**: `stake $HH`
-- **Contract**: 0xFd23526111280b78FF4e7F38B1fAF5818B9c5214
-- **Function**: `stake(uint256 _amount, uint256 _durationDays)`
-- **Durations**: 7 days (103% APR) or 10 days (166% APR).
-- **Auto-unstake**: Bankr can automatically unstake when the staking period ends.
+---
 
-### Unstaking $HH
-Withdraw your staked $HH after the lock period.
-- **Action**: `unstake $HH position N` or `unstake happy hour position N`
-- **Contract**: 0xFd23526111280b78FF4e7F38B1fAF5818B9c5214
-- **Function**: `unstake(uint256 _positionIndex)`
+## 2. Core Capabilities & Contract Interactions
 
-### Daily Check-in
-Perform your daily check-in to maintain your streak and earn HP points.
-- **Action**: `happy hour check-in`
-- **Contract**: 0x7E861466bC2845C9f57051fb9652bC4a56d95542
-- **Note**: Free transaction (0 USDC transfer to check-in contract)
+### A. $HH Staking & Unstaking
+Allows the agent to deposit $HH into staking or withdraw mature stakes.
+* **Staking**:
+  * **Function**: `stake(uint256 _amount, uint256 _durationDays)` on `0xFd23526111280b78FF4e7F38B1fAF5818B9c5214`
+  * **Durations & APR**: 7 days (103% APR) or 10 days (166% APR).
+* **Unstaking**:
+  * **Function**: `unstake(uint256 _positionIndex)` on `0xFd23526111280b78FF4e7F38B1fAF5818B9c5214`
 
-### Join Raffle
-Participate in the hourly raffles using $HH.
-- **Action**: `join happy hour raffle $X`
-- **Contract**: 0x3bdF461984142C473F2185B4F0F64a918B8ce49b
-- **Function**: `depositHH(uint256 _amount)`
-- **Amounts**: 0.1, 0.5, 1, 3, 5, 10 USD (converted to $HH at current price)
+### B. Daily HP Boost (Paid in $HH)
+Purchases the daily multiplier/points boost.
+* **Pricing**: `$0.10` USD worth of $HH tokens (calculated as `0.10 / hhPrice` on-chain or via API).
+* **Execution**:
+  1. Approve `HH_MANAGER_ADDRESS` to spend $HH (if allowance is low).
+  2. Call `payWithHH(uint256 _amount, string _serviceType)` on `0x13802fDe66BCf54BcebE2242aF0836A5Dfb45Fc8` with `_serviceType = "boost"`.
 
-### Open Boxes
-Burn $HH to open reward boxes.
-- **Action**: `open happy hour boxes`
-- **Contract**: 0x13802fDe66BCf54BcebE2242aF0836A5Dfb45Fc8
-- **Function**: `burnHHForBoxes(uint256 _amount)`
+### C. Buy & Open Boxes (Paid in $HH)
+Burns $HH to get extra attempts to open Happy Boxes.
+* **Pricing**: `$0.10` USD worth of $HH per attempt/box (calculated as `0.10 / hhPrice`).
+* **Execution**:
+  1. Approve `HH_MANAGER_ADDRESS` to spend $HH (if allowance is low).
+  2. Call `burnHHForBoxes(uint256 _amount)` on `0x13802fDe66BCf54BcebE2242aF0836A5Dfb45Fc8`.
 
-### Pay for Service
-Use $HH to pay for in-app services.
-- **Action**: `pay with $HH`
-- **Contract**: 0x13802fDe66BCf54BcebE2242aF0836A5Dfb45Fc8
-- **Function**: `payWithHH(uint256 _amount, string _serviceType)`
+### D. $HH Raffle Entries
+Enters the hourly $HH raffle.
+* **Execution**:
+  * Call `depositHH(uint256 _amount)` on `0x3bdF461984142C473F2185B4F0F64a918B8ce49b`.
 
-### View Status
-Check your HP points, leaderboard position, and staking status.
-- **Action**: `show my happy hour status`
+### E. Daily Check-in (USDC)
+Performs the daily login check-in.
+* **Execution**:
+  * Transfers `0.0001` USDC to `0x7E861466bC2845C9f57051fb9652bC4a56d95542`.
 
-## Automation
-- **Auto Check-in**: Bankr can perform daily check-ins automatically.
-- **Auto Unstake**: Bankr monitors staking positions and automatically unstakes when the lock period ends.
-- **Auto Re-stake**: Bankr can re-stake unlocked $HH to maintain APR rewards.
+---
+
+## 3. AI Reasoning & Staking Strategy Loop
+
+The agent must execute a continuous loop following this decision matrix:
+
+```
+                  ┌──────────────────────────────┐
+                  │   Fetch User Stats & Goals   │
+                  └──────────────┬───────────────┘
+                                 ▼
+                  ┌──────────────────────────────┐
+                  │ Perform Daily Check-in/Boost │
+                  └──────────────┬───────────────┘
+                                 ▼
+                  ┌──────────────────────────────┐
+                  │ Check for Unstake Positions  │
+                  └──────────────┬───────────────┘
+                                 ▼
+                  ┌──────────────────────────────┐
+                  │ Analyse Leaderboard & Quests │
+                  └──────────────┬───────────────┘
+                                 ▼
+        ┌────────────────────────┴────────────────────────┐
+        ▼                                                 ▼
+┌──────────────┐                                  ┌──────────────┐
+│  In Top 50?  │                                  │  Checklist?  │
+└──────┬───────┘                                  └──────┬───────┘
+       │                                                 │
+       ├─► Yes: Maintain position & Staking              ├─► Complete missing tasks
+       └─► No: Open extra boxes & increase volume         └─► Maximize allocation
+```
+
+### A. Daily Routine:
+1. **Check-in & Boost**: Execute `happyHourCheckIn` and `happyHourBoost` (using $HH) every day.
+2. **Claim Maturities**: Query active stakes. If any lock has expired (`block.timestamp >= endTime`), execute `unstake` and restake immediately to compound.
+
+### B. Leaderboard Strategy (Target: Top 50)
+* **Goal**: To be eligible for seasonal USDC rewards, the user must rank in the **Top 50**.
+* **Action plan**:
+  1. Retrieve the current user rank and points (HP).
+  2. Query the points required for the 50th place.
+  3. Calculate the HP gap: `gap = pointsNeeded - userPoints`.
+  4. If the gap is positive and there is available $HH budget, calculate how many boxes to open: `extraBoxesNeeded = gap / averagePointsPerBox`.
+  5. Spend the budget to open boxes via `burnHHForBoxes` to bridge the gap.
+
+### C. Airdrop Checklist Multiplier Strategy
+* **Goal**: Maximize the number of completed criteria on the checklist. A higher count increases the final airdrop allocation.
+* **Actions**:
+  - Ensure the user has at least one active staking position.
+  - Complete daily/weekly box opening thresholds.
+  - Make at least one $HH raffle deposit to activate the raffle participant multiplier.
+  - Keep check-in streak alive (Streak Protection).
