@@ -189,14 +189,20 @@ export function AirdropChecklist({ setTab }) {
             .eq('address', userAddr)
           socialTasks = (socialCount || 0) + (criteriaData?.adjust_social_tasks || 0)
 
-          // Fallback 7: Count $HH box openings (burns)
+          // Fallback 7: Count $HH box openings (burns) + hh_burns attempts
           const { count: hhBoxesCount } = await db
             .from('opened_boxes')
             .select('*', { count: 'exact', head: true })
             .eq('address', userAddr)
             .eq('is_hh', true)
             .not('box_type', 'in', '("standard_bundle","happy_bundle","shield","extra_attempt")')
-          hhBurnBoxes = (hhBoxesCount || 0) + (criteriaData?.adjust_hh_burn_boxes || 0)
+          
+          const { count: hhBurnsCount } = await db
+            .from('hh_burns')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_address', userAddr)
+
+          hhBurnBoxes = (hhBoxesCount || 0) + (hhBurnsCount || 0) + (criteriaData?.adjust_hh_burn_boxes || 0)
 
           // Fallback 8: Count raffle entries (bets)
           const { count: betsCount } = await db
