@@ -186,11 +186,39 @@ export function ContestsSection({ setTab, address }) {
         return parseInt(b.transactionIndex, 16) - parseInt(a.transactionIndex, 16)
       })
 
-      const DEX_ADDRESSES = [
-        '0x6ff5693b99212da76ad316178a184ab56d299b43',
-        '0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9',
-        '0x169c68ac7fa3fe19f1745cdbfee9000afd502c3066537b4c24d0afbf2452198b'
+      const exclusions = [
+        '0xFd23526111280b78FF4e7F38B1fAF5818B9c5214', // Staking
+        '0x3bdF461984142C473F2185B4F0F64a918B8ce49b', // Raffle
+        '0x7E861466bC2845C9f57051fb9652bC4a56d95542', // Check-in target
+        '0x13802fDe66BCf54BcebE2242aF0836A5Dfb45Fc8', // HH Manager
+        '0xdE76F43E17B1173947f63b72C85a2f0d9a97702F', // Foundation
+        '0x000000000000000000000000000000000000dead', // Dead
+        '0x0000000000000000000000000000000000000000'  // Zero
       ].map(a => a.toLowerCase())
+
+      const uniqueCounterparties = Array.from(new Set(allLogs.map(log => {
+        const from = '0x' + log.topics[1].substring(26).toLowerCase()
+        const to = '0x' + log.topics[2].substring(26).toLowerCase()
+        return from === walletAddress.toLowerCase() ? to : from
+      })))
+
+      const filteredCounterparties = uniqueCounterparties.filter(cp => !exclusions.includes(cp))
+
+      const codePromises = filteredCounterparties.map(cp =>
+        fetch('https://mainnet.base.org', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            jsonrpc: '2.0',
+            id: 4,
+            method: 'eth_getCode',
+            params: [cp, 'latest']
+          })
+        }).then(r => r.json()).then(d => ({ address: cp, isContract: d.result && d.result !== '0x' }))
+      )
+
+      const codes = await Promise.all(codePromises)
+      const contractCounterparties = new Set(codes.filter(c => c.isContract).map(c => c.address))
 
       let totalHH = 0
       const txMap = new Map()
@@ -199,11 +227,9 @@ export function ContestsSection({ setTab, address }) {
         const from = '0x' + log.topics[1].substring(26).toLowerCase()
         const to = '0x' + log.topics[2].substring(26).toLowerCase()
         const value = Number(BigInt(log.data)) / 1e18
+        const counterparty = from === walletAddress.toLowerCase() ? to : from
 
-        const isFromDex = DEX_ADDRESSES.includes(from)
-        const isToDex = DEX_ADDRESSES.includes(to)
-
-        if (isFromDex || isToDex) {
+        if (contractCounterparties.has(counterparty)) {
           totalHH += value
           const tradeType = log.type === 'buy' ? 'Buy' : 'Sell'
           const txHash = log.transactionHash
