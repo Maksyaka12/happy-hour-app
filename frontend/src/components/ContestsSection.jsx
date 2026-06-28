@@ -907,7 +907,7 @@ export function ContestsSection({ setTab, address }) {
               textShadow: '0 2px 10px rgba(0,0,0,0.5)',
               letterSpacing: '-0.5px'
             }}>
-              Trader Contest
+              Trading Contest
             </div>
             
             {/* Badges in Banner */}
@@ -983,17 +983,25 @@ export function ContestsSection({ setTab, address }) {
           fontFamily: "'Outfit', 'Inter', sans-serif"
         }}>
           <h3 style={{ margin: '0 0 12px', fontSize: 18, fontWeight: 800, color: '#DC2626' }}>About the Contest</h3>
-          <p style={{ margin: '0 0 16px', fontSize: 13, lineHeight: 1.5, color: '#475569', fontWeight: 600 }}>
-            Our next contest is dedicated to $HH trading! Simply trade $HH using any platform of your choice to participate in the contest and win rewards.
+          <p style={{ margin: '0 0 8px', fontSize: 13, lineHeight: 1.5, color: '#475569', fontWeight: 600 }}>
+            Trading contest is dedicated to $HH trading! Simply trade $HH using any platform to participate in the contest and win rewards.
+          </p>
+          <p style={{ margin: '0 0 16px', fontSize: 12.5, fontFamily: "'DM Mono', monospace", color: '#EF4444', fontWeight: 700 }}>
+            CA: 0x8235EdF32a1e10Bd1867ad622915AB613664cbA3
           </p>
 
-          <div style={{ margin: '0 0 20px', fontSize: 13, color: '#475569', fontWeight: 500 }}>
+          <div style={{ margin: '0 0 16px', fontSize: 13, color: '#475569', fontWeight: 500 }}>
             <ul style={{ margin: 0, paddingLeft: 20, lineHeight: 1.7 }}>
-              <li>Simply trade $HH through any platform of your choice.</li>
+              <li>Login to Happy Hour using your trading wallet.</li>
+              <li>Simply trade $HH through any platform.</li>
               <li>Absolutely all volume made using your connected wallet is tracked in real-time.</li>
               <li>The wallet you connect to Happy Hour is your trading wallet (if you trade with a different address, simply connect it to the app).</li>
             </ul>
           </div>
+
+          <p style={{ margin: '0 0 16px', fontSize: 13, color: '#475569', fontWeight: 600, lineHeight: 1.5 }}>
+            The top 3 traders with the highest $HH trading volume at the end of the contest will share the $100 in $HH coin pool.
+          </p>
 
           <div style={{ borderTop: '1px solid rgba(239, 68, 68, 0.15)', paddingTop: 16 }}>
             <h4 style={{ margin: '0 0 8px', fontSize: 14, fontWeight: 700, color: '#1E293B' }}>Rewards breakdown:</h4>
@@ -1278,7 +1286,7 @@ export function ContestsSection({ setTab, address }) {
                 boxSizing: 'border-box'
               }}>
                 <div style={{ fontSize: 14.5, fontWeight: 800, color: '#B91C1C', marginBottom: 12 }}>
-                  Real-time Trader Contest Leaderboard
+                  Real-time Trading Contest Leaderboard
                 </div>
 
                 {loadingAdminLeaderboard ? (
@@ -1568,7 +1576,7 @@ export function ContestsSection({ setTab, address }) {
             
             {/* Left side */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, position: 'relative', zIndex: 1 }}>
-              <div style={{ fontSize: 18, fontWeight: 900, color: '#FFFFFF' }}>Trader Contest</div>
+              <div style={{ fontSize: 18, fontWeight: 900, color: '#FFFFFF' }}>Trading Contest</div>
               <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                 <div style={{
                   background: 'linear-gradient(135deg, #0052FF 0%, #7C3AED 100%)',
