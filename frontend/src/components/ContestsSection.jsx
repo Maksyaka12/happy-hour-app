@@ -29,6 +29,12 @@ export function ContestsSection({ setTab, address }) {
   const [loadingTraderContest, setLoadingTraderContest] = useState(false)
   const [hhPrice, setHhPrice] = useState(0.0000003458)
 
+  // Admin Leaderboard States
+  const [adminLeaderboard, setAdminLeaderboard] = useState([])
+  const [showAdminLeaderboard, setShowAdminLeaderboard] = useState(false)
+  const [loadingAdminLeaderboard, setLoadingAdminLeaderboard] = useState(false)
+  const [adminLeaderboardError, setAdminLeaderboardError] = useState('')
+
   // Submit Form States
   const [postUrl, setPostUrl] = useState('')
   const [postStatus, setPostStatus] = useState('') // '', 'submitting', 'success', 'error'
@@ -266,6 +272,151 @@ export function ContestsSection({ setTab, address }) {
       fetchUserTrades(address)
     }
   }, [activeContest, address])
+
+  const loadContestLeaderboard = async () => {
+    setLoadingAdminLeaderboard(true)
+    setAdminLeaderboardError('')
+    try {
+      const { data: dbUsers, error: dbErr } = await db.from('users').select('address')
+      if (dbErr) throw dbErr
+
+      const userAddresses = new Set(dbUsers.map(u => u.address.toLowerCase()))
+
+      const START_BLOCK = 47850000 
+      const currentBlockHex = await fetch('https://mainnet.base.org', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'eth_blockNumber' })
+      }).then(r => r.json()).then(d => parseInt(d.result, 16))
+
+      const endBlock = currentBlockHex
+      const chunkSize = 10000
+      const promises = []
+      const token = '0x8235EdF32a1e10Bd1867ad622915AB613664cbA3'
+      const transferTopic = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
+
+      for (let from = START_BLOCK; from < endBlock; from += chunkSize) {
+        const to = Math.min(from + chunkSize - 1, endBlock)
+        const fromHex = '0x' + from.toString(16)
+        const toHex = '0x' + to.toString(16)
+
+        promises.push(
+          fetch('https://mainnet.base.org', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              jsonrpc: '2.0',
+              id: 2,
+              method: 'eth_getLogs',
+              params: [{
+                address: token,
+                topics: [transferTopic],
+                fromBlock: fromHex,
+                toBlock: toHex
+              }]
+            })
+          }).then(r => r.json()).then(d => d.result || [])
+        )
+      }
+
+      const results = await Promise.all(promises)
+      const allLogs = results.flat()
+
+      const exclusions = [
+        '0xFd23526111280b78FF4e7F38B1fAF5818B9c5214',
+        '0x3bdF461984142C473F2185B4F0F64a918B8ce49b',
+        '0x7E861466bC2845C9f57051fb9652bC4a56d95542',
+        '0x13802fDe66BCf54BcebE2242aF0836A5Dfb45Fc8',
+        '0xdE76F43E17B1173947f63b72C85a2f0d9a97702F',
+        '0x000000000000000000000000000000000000dead',
+        '0x0000000000000000000000000000000000000000'
+      ].map(a => a.toLowerCase())
+
+      const uniqueCounterparties = new Set()
+      const relevantLogs = []
+
+      for (const log of allLogs) {
+        const from = '0x' + log.topics[1].substring(26).toLowerCase()
+        const to = '0x' + log.topics[2].substring(26).toLowerCase()
+
+        const isFromUser = userAddresses.has(from)
+        const isToUser = userAddresses.has(to)
+
+        if (isFromUser || isToUser) {
+          relevantLogs.push(log)
+          const counterparty = isFromUser ? to : from
+          if (!exclusions.includes(counterparty)) {
+            uniqueCounterparties.add(counterparty)
+          }
+        }
+      }
+
+      const codePromises = Array.from(uniqueCounterparties).map(cp =>
+        fetch('https://mainnet.base.org', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            jsonrpc: '2.0',
+            id: 4,
+            method: 'eth_getCode',
+            params: [cp, 'latest']
+          })
+        }).then(r => r.json()).then(d => ({ address: cp, isContract: d.result && d.result !== '0x' }))
+      )
+
+      const codes = await Promise.all(codePromises)
+      const contractCounterparties = new Set(codes.filter(c => c.isContract).map(c => c.address))
+
+      const userVolumes = {}
+
+      for (const log of relevantLogs) {
+        const from = '0x' + log.topics[1].substring(26).toLowerCase()
+        const to = '0x' + log.topics[2].substring(26).toLowerCase()
+        const value = Number(BigInt(log.data)) / 1e18
+
+        const isFromUser = userAddresses.has(from)
+        const isToUser = userAddresses.has(to)
+
+        if (isFromUser) {
+          if (contractCounterparties.has(to)) {
+            if (!userVolumes[from]) userVolumes[from] = { buys: 0, sells: 0, total: 0 }
+            userVolumes[from].sells += value
+            userVolumes[from].total += value
+          }
+        }
+        if (isToUser) {
+          if (contractCounterparties.has(from)) {
+            if (!userVolumes[to]) userVolumes[to] = { buys: 0, sells: 0, total: 0 }
+            userVolumes[to].buys += value
+            userVolumes[to].total += value
+          }
+        }
+      }
+
+      const leaderboard = Object.keys(userVolumes)
+        .filter(addr => addr !== '0x000000000000000000000000000000000000dead' && addr !== '0x0000000000000000000000000000000000000000')
+        .map(addr => ({
+          address: addr,
+          buys: userVolumes[addr].buys,
+          sells: userVolumes[addr].sells,
+          total: userVolumes[addr].total
+        }))
+        .sort((a, b) => b.total - a.total)
+
+      setAdminLeaderboard(leaderboard)
+    } catch (e) {
+      console.error('Error loading admin leaderboard:', e)
+      setAdminLeaderboardError('Failed to load leaderboard. Please try again.')
+    } finally {
+      setLoadingAdminLeaderboard(false)
+    }
+  }
+
+  useEffect(() => {
+    if (showAdminLeaderboard && address?.toLowerCase() === '0x4c91d3bed372c11795b9ce9a9017dfe447bf050a') {
+      loadContestLeaderboard()
+    }
+  }, [address, showAdminLeaderboard])
 
   if (activeContest === 'creator') {
     return (
@@ -818,6 +969,115 @@ export function ContestsSection({ setTab, address }) {
           </div>
         </div>
 
+        {/* Admin Contest Leaderboard Button */}
+        {address?.toLowerCase() === '0x4c91d3bed372c11795b9ce9a9017dfe447bf050a' && (
+          <div style={{ marginBottom: 20 }}>
+            <button
+              onClick={() => setShowAdminLeaderboard(!showAdminLeaderboard)}
+              style={{
+                background: '#FEE2E2',
+                border: '1px solid #FCA5A5',
+                color: '#B91C1C',
+                borderRadius: 12,
+                padding: '8px 14px',
+                fontSize: 12.5,
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6
+              }}
+            >
+              📊 View Contest Leaderboard {adminLeaderboard.length > 0 ? `(${adminLeaderboard.length})` : ''}
+            </button>
+
+            {showAdminLeaderboard && (
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(239, 68, 68, 0.03) 100%)',
+                border: '1px solid rgba(239, 68, 68, 0.22)',
+                borderRadius: 16,
+                padding: 16,
+                marginTop: 12,
+                boxSizing: 'border-box'
+              }}>
+                <div style={{ fontSize: 14.5, fontWeight: 800, color: '#B91C1C', marginBottom: 12 }}>
+                  Real-time Trader Contest Leaderboard
+                </div>
+
+                {loadingAdminLeaderboard ? (
+                  <div style={{ display: 'flex', justifyContent: 'center', padding: '24px 0' }}>
+                    <div style={{ width: 24, height: 24, border: '3px solid rgba(185,28,28,0.2)', borderTopColor: '#B91C1C', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                  </div>
+                ) : adminLeaderboardError ? (
+                  <div style={{ fontSize: 12.5, color: '#B91C1C', textAlign: 'center', padding: '12px 0', fontWeight: 600 }}>
+                    {adminLeaderboardError}
+                  </div>
+                ) : adminLeaderboard.length === 0 ? (
+                  <div style={{ fontSize: 12.5, color: '#B91C1C', textAlign: 'center', padding: '12px 0', fontWeight: 600 }}>
+                    No trading users detected.
+                  </div>
+                ) : (
+                  <div className="dark-scrollbar" style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 350, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                    {adminLeaderboard.map((item, idx) => (
+                      <div key={item.address} style={{
+                        background: '#FFFFFF',
+                        borderRadius: 14,
+                        padding: '12px 14px',
+                        border: '1px solid rgba(239, 68, 68, 0.15)',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <span style={{
+                            background: idx < 3 ? 'linear-gradient(135deg, #0052FF 0%, #7C3AED 100%)' : '#E2E8F0',
+                            color: idx < 3 ? '#FFFFFF' : '#475569',
+                            fontSize: 11,
+                            fontWeight: 900,
+                            width: 22,
+                            height: 22,
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}>
+                            {idx + 1}
+                          </span>
+                          <div>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: '#1E293B', fontFamily: "'DM Mono', monospace" }}>
+                              {item.address.substring(0, 6)}...{item.address.substring(item.address.length - 4)}
+                            </div>
+                            <div style={{ fontSize: 11, color: '#64748B', marginTop: 1 }}>
+                              Buys: {item.buys.toLocaleString(undefined, { maximumFractionDigits: 0 })} HH / Sells: {item.sells.toLocaleString(undefined, { maximumFractionDigits: 0 })} HH
+                            </div>
+                          </div>
+                        </div>
+
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ fontSize: 14, fontWeight: 900, color: '#1E293B' }}>
+                            {item.total.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                            <span style={{ fontSize: 10, color: '#EF4444', fontWeight: 800, marginLeft: 4 }}>HH</span>
+                          </div>
+                          <a
+                            href={`https://basescan.org/address/${item.address}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ fontSize: 10, color: '#0052FF', textDecoration: 'none', fontWeight: 700 }}
+                            onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
+                            onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
+                          >
+                            Basescan ↗
+                          </a>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Content Details (Glassmorphic Card) */}
         <div style={{
           background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(239, 68, 68, 0.03) 100%)',
@@ -1036,7 +1296,7 @@ export function ContestsSection({ setTab, address }) {
                       No trades detected. Trades will update automatically when you perform swaps.
                     </div>
                   ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 180, overflowY: 'auto' }}>
+                    <div className="dark-scrollbar" style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 240, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
                       {userTrades.slice(0, 5).map(trade => (
                         <div key={trade.hash} style={{
                           background: 'rgba(255, 255, 255, 0.03)',

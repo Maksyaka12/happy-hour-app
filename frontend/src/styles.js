@@ -41,6 +41,22 @@ export const CSS = `
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
+  .dark-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .dark-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+  }
+  .dark-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 3px;
+  }
+  .dark-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
+  }
+
   button { -webkit-tap-highlight-color: transparent; }
   button:active { transform: scale(0.97); }
 
