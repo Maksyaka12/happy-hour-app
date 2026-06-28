@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { db } from '../config/supabase'
 
 const CONTEST_TARGET_DATE = new Date(Date.UTC(2026, 5, 27, 19, 52, 0))
+const TRADING_CONTEST_TARGET_DATE = new Date(Date.UTC(2026, 6, 4, 15, 0, 0)) // Saturday, July 4, 2026, 15:00 UTC
 
 const calculateContestTimeLeft = () => {
   const now = new Date()
@@ -17,9 +18,24 @@ const calculateContestTimeLeft = () => {
   return `${d}d ${h.toString().padStart(2, '0')}h ${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`
 }
 
+const calculateTradingContestTimeLeft = () => {
+  const now = new Date()
+  const diff = TRADING_CONTEST_TARGET_DATE.getTime() - now.getTime()
+  
+  if (isNaN(diff) || diff <= 0) return '00d 00h 00m 00s'
+  
+  const d = Math.floor(diff / 86400000)
+  const h = Math.floor((diff % 86400000) / 3600000)
+  const m = Math.floor((diff % 3600000) / 60000)
+  const s = Math.floor((diff % 60000) / 1000)
+  
+  return `${d}d ${h.toString().padStart(2, '0')}h ${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`
+}
+
 export function ContestsSection({ setTab, address }) {
   const [activeContest, setActiveContest] = useState(null)
   const [contestTimeLeft, setContestTimeLeft] = useState(calculateContestTimeLeft())
+  const [tradingContestTimeLeft, setTradingContestTimeLeft] = useState(calculateTradingContestTimeLeft())
   const [selectedFilter, setSelectedFilter] = useState('all') // 'all', 'ongoing', 'ended'
 
   // Trader Contest States
@@ -104,6 +120,7 @@ export function ContestsSection({ setTab, address }) {
   useEffect(() => {
     const timer = setInterval(() => {
       setContestTimeLeft(calculateContestTimeLeft())
+      setTradingContestTimeLeft(calculateTradingContestTimeLeft())
     }, 1000)
     return () => clearInterval(timer)
   }, [])
@@ -948,8 +965,8 @@ export function ContestsSection({ setTab, address }) {
                 <span style={{ lineHeight: 1 }}>3 winners</span>
               </div>
               <div style={{
-                background: 'rgba(0, 0, 0, 0.55)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
+                background: '#10B981',
+                border: '1px solid rgba(16, 185, 129, 0.5)',
                 borderRadius: 50,
                 height: 24,
                 padding: '0 12px',
@@ -961,9 +978,9 @@ export function ContestsSection({ setTab, address }) {
                   fontFamily: "'Outfit', 'Inter', sans-serif",
                   fontSize: 10,
                   fontWeight: 800,
-                  color: '#EF4444',
+                  color: '#FFFFFF',
                   letterSpacing: '0.5px'
-                }}>Active</span>
+                }}>{tradingContestTimeLeft}</span>
               </div>
             </div>
           </div>
@@ -994,6 +1011,7 @@ export function ContestsSection({ setTab, address }) {
             <ul style={{ margin: 0, paddingLeft: 20, lineHeight: 1.7 }}>
               <li>Login to Happy Hour using your trading wallet.</li>
               <li>Simply trade $HH through any platform.</li>
+              <li>Track your $HH trading volume in the Trading Card.</li>
               <li>Absolutely all volume made using your connected wallet is tracked in real-time.</li>
               <li>The wallet you connect to Happy Hour is your trading wallet (if you trade with a different address, simply connect it to the app).</li>
             </ul>
@@ -1538,11 +1556,11 @@ export function ContestsSection({ setTab, address }) {
             style={{
               background: '#140505',
               borderRadius: 20,
-              padding: '16px 20px',
+              padding: '12px 18px',
               cursor: 'pointer',
               transition: 'all 0.2s',
               boxShadow: '0 8px 32px rgba(239, 68, 68, 0.15)',
-              minHeight: 120,
+              minHeight: 96,
               boxSizing: 'border-box',
               display: 'flex',
               alignItems: 'center',
@@ -1631,7 +1649,7 @@ export function ContestsSection({ setTab, address }) {
                 alignItems: 'center',
                 justifyContent: 'center'
               }}>
-                <span>Active</span>
+                <span>{tradingContestTimeLeft}</span>
               </div>
               <div style={{
                 background: 'rgba(255, 255, 255, 0.12)',
@@ -1662,11 +1680,11 @@ export function ContestsSection({ setTab, address }) {
             style={{
               background: '#2A1A06',
               borderRadius: 20,
-              padding: '16px 20px',
+              padding: '12px 18px',
               cursor: 'pointer',
               transition: 'all 0.2s',
               boxShadow: '0 8px 32px rgba(245, 158, 11, 0.15)',
-              minHeight: 120,
+              minHeight: 96,
               boxSizing: 'border-box',
               display: 'flex',
               alignItems: 'center',
