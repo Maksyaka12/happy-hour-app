@@ -833,13 +833,14 @@ export function ContestsSection({ setTab, address }) {
         }}>
           <h3 style={{ margin: '0 0 12px', fontSize: 18, fontWeight: 800, color: '#DC2626' }}>About the Contest</h3>
           <p style={{ margin: '0 0 16px', fontSize: 13, lineHeight: 1.5, color: '#475569', fontWeight: 600 }}>
-            Trade $HH coin on Uniswap V4 to climb the leaderboard! Absolutely all volume made using your connected wallet is tracked in real-time.
+            Our next contest is dedicated to $HH trading! Simply trade $HH using any platform of your choice to participate in the contest and win rewards.
           </p>
 
           <div style={{ margin: '0 0 20px', fontSize: 13, color: '#475569', fontWeight: 500 }}>
             <ul style={{ margin: 0, paddingLeft: 20, lineHeight: 1.7 }}>
-              <li>Swaps must be performed after block 47,850,000 to be counted.</li>
-              <li>The top 3 wallets with the highest trading volume (Buys + Sells) during the contest period will win a share of the prize pool.</li>
+              <li>Simply trade $HH through any platform of your choice.</li>
+              <li>Absolutely all volume made using your connected wallet is tracked in real-time.</li>
+              <li>The wallet you connect to Happy Hour is your trading wallet (if you trade with a different address, simply connect it to the app).</li>
             </ul>
           </div>
 
@@ -853,17 +854,19 @@ export function ContestsSection({ setTab, address }) {
           </div>
         </div>
 
-        {/* User Trading Status Card (Premium Dark Action Card style) */}
+        {/* User Trading Status Card (Premium Staking-inspired style) */}
         <div style={{
-          background: '#140505',
-          borderRadius: 24,
-          padding: 24,
-          boxShadow: '0 8px 32px rgba(239, 68, 68, 0.15)',
+          background: 'linear-gradient(145deg, rgba(20, 10, 10, 0.95) 0%, rgba(35, 18, 18, 0.90) 50%, rgba(14, 5, 5, 0.98) 100%)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          border: '1px solid rgba(255, 255, 255, 0.15)',
+          borderRadius: 20,
+          padding: '16px 18px',
+          boxShadow: '0 8px 32px rgba(10, 5, 5, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
           boxSizing: 'border-box',
           fontFamily: "'Outfit', 'Inter', sans-serif",
           position: 'relative',
           overflow: 'hidden',
-          border: '1px solid rgba(239, 68, 68, 0.25)',
           marginTop: 16
         }}>
           {/* Background image overlay */}
@@ -878,18 +881,35 @@ export function ContestsSection({ setTab, address }) {
             pointerEvents: 'none'
           }} />
 
-          <div style={{ position: 'relative', zIndex: 1 }}>
-            <h3 style={{
-              margin: '0 0 16px',
-              fontSize: 18,
-              fontWeight: 800,
-              color: '#FFFFFF',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8
-            }}>
-              📊 Your Trading Status
-            </h3>
+          {/* Shimmer glow */}
+          <div style={{
+            position: 'absolute',
+            top: -30,
+            right: -30,
+            width: 120,
+            height: 120,
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(255, 255, 255, 0.06) 0%, transparent 70%)',
+            pointerEvents: 'none'
+          }} />
+
+          <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ fontSize: 14.5, fontWeight: 900, color: '#FFFFFF', letterSpacing: '0.2px' }}>
+                Your Trading Status
+              </div>
+              <span style={{
+                background: 'rgba(16, 185, 129, 0.15)',
+                color: '#34D399',
+                padding: '3px 8px',
+                borderRadius: 8,
+                fontSize: 10,
+                fontWeight: 800,
+                border: '1px solid rgba(16, 185, 129, 0.25)'
+              }}>
+                Active
+              </span>
+            </div>
 
             {!address ? (
               <div style={{
@@ -899,88 +919,129 @@ export function ContestsSection({ setTab, address }) {
                 border: '1px solid rgba(239, 68, 68, 0.25)',
                 borderRadius: 16,
                 color: '#FCA5A5',
-                fontSize: 14,
-                fontWeight: 700
+                fontSize: 13,
+                fontWeight: 700,
+                marginTop: 4
               }}>
                 Please connect your wallet at the top to track your trading volume!
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                {/* Volume stats */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {/* Two Plates Layout */}
                 <div style={{
-                  background: 'rgba(255, 255, 255, 0.04)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  borderRadius: 16,
-                  padding: '16px 20px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  gap: 12
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: 12,
+                  marginTop: 2
                 }}>
-                  <div>
-                    <div style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.55)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Trading Volume</div>
-                    <div style={{ fontSize: 24, fontWeight: 900, color: '#FFFFFF', marginTop: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      {userVolumeHH.toLocaleString(undefined, { maximumFractionDigits: 2 })}
-                      <span style={{ fontSize: 14, color: '#EF4444', fontWeight: 800 }}>HH</span>
-                    </div>
-                    <div style={{ fontSize: 13, color: '#FCD34D', fontWeight: 700, marginTop: 2 }}>
-                      ≈ ${userVolumeUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  {/* Left Plate: Total Trading Volume */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                    <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.5px' }}>
+                      Total trading volume
+                    </span>
+                    <div style={{
+                      background: 'rgba(255, 255, 255, 0.06)',
+                      border: '1px solid rgba(255, 255, 255, 0.12)',
+                      borderRadius: 14,
+                      minHeight: 52,
+                      padding: '8px 12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)',
+                      boxSizing: 'border-box'
+                    }}>
+                      <img src="/logo.jfif" alt="$HH" style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover' }} />
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <span style={{ fontSize: 14, fontWeight: 900, color: '#FFFFFF', lineHeight: 1.2 }}>
+                          {userVolumeHH.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                        </span>
+                        <span style={{ fontSize: 11, color: '#FCD34D', fontWeight: 700, marginTop: 1 }}>
+                          ≈ ${userVolumeUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4, textAlign: 'right' }}>
-                    <div style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.55)', fontWeight: 600 }}>Volume Breakdown</div>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: '#34D399' }}>
-                      Buys: {userTrades.filter(t => t.type === 'Buy').reduce((acc, t) => acc + t.amountHH, 0).toLocaleString(undefined, { maximumFractionDigits: 0 })} HH
-                    </div>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: '#FCA5A5' }}>
-                      Sells: {userTrades.filter(t => t.type === 'Sell').reduce((acc, t) => acc + t.amountHH, 0).toLocaleString(undefined, { maximumFractionDigits: 0 })} HH
+                  {/* Right Plate: Volume Breakdown */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                    <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.5px' }}>
+                      Volume breakdown
+                    </span>
+                    <div style={{
+                      background: 'rgba(255, 255, 255, 0.06)',
+                      border: '1px solid rgba(255, 255, 255, 0.12)',
+                      borderRadius: 14,
+                      minHeight: 52,
+                      padding: '8px 12px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      gap: 2,
+                      boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)',
+                      boxSizing: 'border-box'
+                    }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: '#34D399', lineHeight: 1.1 }}>
+                        Buys: {userTrades.filter(t => t.type === 'Buy').reduce((acc, t) => acc + t.amountHH, 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                      </div>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: '#FCA5A5', lineHeight: 1.1 }}>
+                        Sells: {userTrades.filter(t => t.type === 'Sell').reduce((acc, t) => acc + t.amountHH, 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Wallet identifier */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 13 }}>
+                <div style={{
+                  background: 'rgba(255, 255, 255, 0.03)',
+                  border: '1px solid rgba(255, 255, 255, 0.06)',
+                  borderRadius: 12,
+                  padding: '10px 14px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  fontSize: 12,
+                  marginTop: 4
+                }}>
                   <span style={{ color: 'rgba(255, 255, 255, 0.55)', fontWeight: 600 }}>Tracking Wallet:</span>
                   <span style={{ fontFamily: "'DM Mono', monospace", color: '#FFFFFF', fontWeight: 700 }}>
-                    {address}
+                    {address.substring(0, 8)}...{address.substring(address.length - 8)}
                   </span>
                 </div>
 
                 {/* Trade History */}
-                <div style={{ marginTop: 8 }}>
-                  <div style={{ fontSize: 14, fontWeight: 800, color: '#FFFFFF', marginBottom: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ marginTop: 6 }}>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: '#FFFFFF', marginBottom: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span>Recent Trades ({userTrades.length})</span>
                     {loadingTraderContest && (
-                      <div style={{ width: 14, height: 14, border: '2px solid rgba(255,255,255,0.2)', borderTopColor: '#EF4444', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                      <div style={{ width: 12, height: 12, border: '2px solid rgba(255,255,255,0.2)', borderTopColor: '#EF4444', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
                     )}
                   </div>
 
                   {loadingTraderContest && userTrades.length === 0 ? (
-                    <div style={{ display: 'flex', justifyContent: 'center', padding: '24px 0' }}>
-                      <div style={{ width: 24, height: 24, border: '3px solid rgba(255,255,255,0.2)', borderTopColor: '#EF4444', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                    <div style={{ display: 'flex', justifyContent: 'center', padding: '16px 0' }}>
+                      <div style={{ width: 20, height: 20, border: '2px solid rgba(255,255,255,0.2)', borderTopColor: '#EF4444', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
                     </div>
                   ) : userTrades.length === 0 ? (
                     <div style={{
                       textAlign: 'center',
-                      padding: '20px 12px',
+                      padding: '16px 12px',
                       background: 'rgba(255, 255, 255, 0.02)',
-                      border: '1px dashed rgba(255, 255, 255, 0.1)',
-                      borderRadius: 16,
-                      color: 'rgba(255, 255, 255, 0.5)',
-                      fontSize: 12.5,
-                      lineHeight: 1.5
+                      border: '1px dashed rgba(255, 255, 255, 0.08)',
+                      borderRadius: 14,
+                      color: 'rgba(255, 255, 255, 0.4)',
+                      fontSize: 12,
+                      lineHeight: 1.4
                     }}>
-                      No trades detected. Trades will update automatically when you perform swaps on Uniswap V4.
+                      No trades detected. Trades will update automatically when you perform swaps.
                     </div>
                   ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 240, overflowY: 'auto' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 180, overflowY: 'auto' }}>
                       {userTrades.slice(0, 5).map(trade => (
                         <div key={trade.hash} style={{
                           background: 'rgba(255, 255, 255, 0.03)',
-                          borderRadius: 14,
-                          padding: '12px 14px',
+                          borderRadius: 12,
+                          padding: '10px 12px',
                           border: '1px solid rgba(255, 255, 255, 0.06)',
                           display: 'flex',
                           justifyContent: 'space-between',
@@ -988,21 +1049,21 @@ export function ContestsSection({ setTab, address }) {
                         }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                             <span style={{
-                              background: trade.type === 'Buy' ? 'rgba(52, 211, 153, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                              background: trade.type === 'Buy' ? 'rgba(52, 211, 153, 0.12)' : 'rgba(239, 68, 68, 0.12)',
                               color: trade.type === 'Buy' ? '#34D399' : '#FCA5A5',
-                              fontSize: 10,
+                              fontSize: 9,
                               fontWeight: 900,
-                              padding: '3px 8px',
-                              borderRadius: 6,
+                              padding: '2px 6px',
+                              borderRadius: 5,
                               textTransform: 'uppercase'
                             }}>
                               {trade.type}
                             </span>
                             <div>
-                              <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF' }}>
+                              <div style={{ fontSize: 12.5, fontWeight: 700, color: '#FFFFFF' }}>
                                 {trade.amountHH.toLocaleString(undefined, { maximumFractionDigits: 0 })} HH
                               </div>
-                              <div style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.5)', marginTop: 1 }}>
+                              <div style={{ fontSize: 10.5, color: 'rgba(255, 255, 255, 0.5)', marginTop: 0.5 }}>
                                 ≈ ${trade.amountUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                               </div>
                             </div>
@@ -1014,7 +1075,7 @@ export function ContestsSection({ setTab, address }) {
                             rel="noopener noreferrer"
                             style={{
                               fontSize: 11,
-                              color: '#FCA5A5',
+                              color: '#38BDF8',
                               fontWeight: 700,
                               textDecoration: 'none',
                               fontFamily: "'DM Mono', monospace"
