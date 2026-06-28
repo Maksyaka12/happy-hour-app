@@ -124,13 +124,13 @@ export function ContestsSection({ setTab, address }) {
         console.error('Error fetching HH price:', e)
       }
 
-      const START_BLOCK = 47850000 
       const currentBlockHex = await fetch('https://mainnet.base.org', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'eth_blockNumber' })
       }).then(r => r.json()).then(d => parseInt(d.result, 16))
 
+      const START_BLOCK = Math.max(0, currentBlockHex - 1800)
       const endBlock = currentBlockHex
       const chunkSize = 10000
       const promises = []
@@ -282,13 +282,13 @@ export function ContestsSection({ setTab, address }) {
 
       const userAddresses = new Set(dbUsers.map(u => u.address.toLowerCase()))
 
-      const START_BLOCK = 47850000 
       const currentBlockHex = await fetch('https://mainnet.base.org', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'eth_blockNumber' })
       }).then(r => r.json()).then(d => parseInt(d.result, 16))
 
+      const START_BLOCK = Math.max(0, currentBlockHex - 1800)
       const endBlock = currentBlockHex
       const chunkSize = 10000
       const promises = []
@@ -969,115 +969,6 @@ export function ContestsSection({ setTab, address }) {
           </div>
         </div>
 
-        {/* Admin Contest Leaderboard Button */}
-        {address?.toLowerCase() === '0x4c91d3bed372c11795b9ce9a9017dfe447bf050a' && (
-          <div style={{ marginBottom: 20 }}>
-            <button
-              onClick={() => setShowAdminLeaderboard(!showAdminLeaderboard)}
-              style={{
-                background: '#FEE2E2',
-                border: '1px solid #FCA5A5',
-                color: '#B91C1C',
-                borderRadius: 12,
-                padding: '8px 14px',
-                fontSize: 12.5,
-                fontWeight: 700,
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6
-              }}
-            >
-              📊 View Contest Leaderboard {adminLeaderboard.length > 0 ? `(${adminLeaderboard.length})` : ''}
-            </button>
-
-            {showAdminLeaderboard && (
-              <div style={{
-                background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(239, 68, 68, 0.03) 100%)',
-                border: '1px solid rgba(239, 68, 68, 0.22)',
-                borderRadius: 16,
-                padding: 16,
-                marginTop: 12,
-                boxSizing: 'border-box'
-              }}>
-                <div style={{ fontSize: 14.5, fontWeight: 800, color: '#B91C1C', marginBottom: 12 }}>
-                  Real-time Trader Contest Leaderboard
-                </div>
-
-                {loadingAdminLeaderboard ? (
-                  <div style={{ display: 'flex', justifyContent: 'center', padding: '24px 0' }}>
-                    <div style={{ width: 24, height: 24, border: '3px solid rgba(185,28,28,0.2)', borderTopColor: '#B91C1C', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-                  </div>
-                ) : adminLeaderboardError ? (
-                  <div style={{ fontSize: 12.5, color: '#B91C1C', textAlign: 'center', padding: '12px 0', fontWeight: 600 }}>
-                    {adminLeaderboardError}
-                  </div>
-                ) : adminLeaderboard.length === 0 ? (
-                  <div style={{ fontSize: 12.5, color: '#B91C1C', textAlign: 'center', padding: '12px 0', fontWeight: 600 }}>
-                    No trading users detected.
-                  </div>
-                ) : (
-                  <div className="dark-scrollbar" style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 350, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                    {adminLeaderboard.map((item, idx) => (
-                      <div key={item.address} style={{
-                        background: '#FFFFFF',
-                        borderRadius: 14,
-                        padding: '12px 14px',
-                        border: '1px solid rgba(239, 68, 68, 0.15)',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center'
-                      }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                          <span style={{
-                            background: idx < 3 ? 'linear-gradient(135deg, #0052FF 0%, #7C3AED 100%)' : '#E2E8F0',
-                            color: idx < 3 ? '#FFFFFF' : '#475569',
-                            fontSize: 11,
-                            fontWeight: 900,
-                            width: 22,
-                            height: 22,
-                            borderRadius: '50%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                          }}>
-                            {idx + 1}
-                          </span>
-                          <div>
-                            <div style={{ fontSize: 13, fontWeight: 700, color: '#1E293B', fontFamily: "'DM Mono', monospace" }}>
-                              {item.address.substring(0, 6)}...{item.address.substring(item.address.length - 4)}
-                            </div>
-                            <div style={{ fontSize: 11, color: '#64748B', marginTop: 1 }}>
-                              Buys: {item.buys.toLocaleString(undefined, { maximumFractionDigits: 0 })} HH / Sells: {item.sells.toLocaleString(undefined, { maximumFractionDigits: 0 })} HH
-                            </div>
-                          </div>
-                        </div>
-
-                        <div style={{ textAlign: 'right' }}>
-                          <div style={{ fontSize: 14, fontWeight: 900, color: '#1E293B' }}>
-                            {item.total.toLocaleString(undefined, { maximumFractionDigits: 2 })}
-                            <span style={{ fontSize: 10, color: '#EF4444', fontWeight: 800, marginLeft: 4 }}>HH</span>
-                          </div>
-                          <a
-                            href={`https://basescan.org/address/${item.address}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{ fontSize: 10, color: '#0052FF', textDecoration: 'none', fontWeight: 700 }}
-                            onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
-                            onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
-                          >
-                            Basescan ↗
-                          </a>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
         {/* Content Details (Glassmorphic Card) */}
         <div style={{
           background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(239, 68, 68, 0.03) 100%)',
@@ -1156,7 +1047,7 @@ export function ContestsSection({ setTab, address }) {
           <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ fontSize: 14.5, fontWeight: 900, color: '#FFFFFF', letterSpacing: '0.2px' }}>
-                Your Trading Status
+                Trading Card
               </div>
               <span style={{
                 background: 'rgba(16, 185, 129, 0.15)',
@@ -1197,7 +1088,7 @@ export function ContestsSection({ setTab, address }) {
                   {/* Left Plate: Total Trading Volume */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
                     <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.5px' }}>
-                      Total trading volume
+                      Total Volume
                     </span>
                     <div style={{
                       background: 'rgba(255, 255, 255, 0.06)',
@@ -1226,7 +1117,7 @@ export function ContestsSection({ setTab, address }) {
                   {/* Right Plate: Volume Breakdown */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
                     <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.5px' }}>
-                      Volume breakdown
+                      Volume Breakdown
                     </span>
                     <div style={{
                       background: 'rgba(255, 255, 255, 0.06)',
@@ -1354,6 +1245,115 @@ export function ContestsSection({ setTab, address }) {
             )}
           </div>
         </div>
+
+        {/* Admin Contest Leaderboard Button */}
+        {address?.toLowerCase() === '0x4c91d3bed372c11795b9ce9a9017dfe447bf050a' && (
+          <div style={{ marginTop: 20 }}>
+            <button
+              onClick={() => setShowAdminLeaderboard(!showAdminLeaderboard)}
+              style={{
+                background: '#FEE2E2',
+                border: '1px solid #FCA5A5',
+                color: '#B91C1C',
+                borderRadius: 12,
+                padding: '8px 14px',
+                fontSize: 12.5,
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6
+              }}
+            >
+              📊 View Contest Leaderboard {adminLeaderboard.length > 0 ? `(${adminLeaderboard.length})` : ''}
+            </button>
+
+            {showAdminLeaderboard && (
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(239, 68, 68, 0.03) 100%)',
+                border: '1px solid rgba(239, 68, 68, 0.22)',
+                borderRadius: 16,
+                padding: 16,
+                marginTop: 12,
+                boxSizing: 'border-box'
+              }}>
+                <div style={{ fontSize: 14.5, fontWeight: 800, color: '#B91C1C', marginBottom: 12 }}>
+                  Real-time Trader Contest Leaderboard
+                </div>
+
+                {loadingAdminLeaderboard ? (
+                  <div style={{ display: 'flex', justifyContent: 'center', padding: '24px 0' }}>
+                    <div style={{ width: 24, height: 24, border: '3px solid rgba(185,28,28,0.2)', borderTopColor: '#B91C1C', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                  </div>
+                ) : adminLeaderboardError ? (
+                  <div style={{ fontSize: 12.5, color: '#B91C1C', textAlign: 'center', padding: '12px 0', fontWeight: 600 }}>
+                    {adminLeaderboardError}
+                  </div>
+                ) : adminLeaderboard.length === 0 ? (
+                  <div style={{ fontSize: 12.5, color: '#B91C1C', textAlign: 'center', padding: '12px 0', fontWeight: 600 }}>
+                    No trading users detected.
+                  </div>
+                ) : (
+                  <div className="dark-scrollbar" style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 350, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                    {adminLeaderboard.map((item, idx) => (
+                      <div key={item.address} style={{
+                        background: '#FFFFFF',
+                        borderRadius: 14,
+                        padding: '12px 14px',
+                        border: '1px solid rgba(239, 68, 68, 0.15)',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <span style={{
+                            background: idx < 3 ? 'linear-gradient(135deg, #0052FF 0%, #7C3AED 100%)' : '#E2E8F0',
+                            color: idx < 3 ? '#FFFFFF' : '#475569',
+                            fontSize: 11,
+                            fontWeight: 900,
+                            width: 22,
+                            height: 22,
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}>
+                            {idx + 1}
+                          </span>
+                          <div>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: '#1E293B', fontFamily: "'DM Mono', monospace" }}>
+                              {item.address.substring(0, 6)}...{item.address.substring(item.address.length - 4)}
+                            </div>
+                            <div style={{ fontSize: 11, color: '#64748B', marginTop: 1 }}>
+                              Buys: {item.buys.toLocaleString(undefined, { maximumFractionDigits: 0 })} HH / Sells: {item.sells.toLocaleString(undefined, { maximumFractionDigits: 0 })} HH
+                            </div>
+                          </div>
+                        </div>
+
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ fontSize: 14, fontWeight: 900, color: '#1E293B' }}>
+                            {item.total.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                            <span style={{ fontSize: 10, color: '#EF4444', fontWeight: 800, marginLeft: 4 }}>HH</span>
+                          </div>
+                          <a
+                            href={`https://basescan.org/address/${item.address}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ fontSize: 10, color: '#0052FF', textDecoration: 'none', fontWeight: 700 }}
+                            onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
+                            onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
+                          >
+                            Basescan ↗
+                          </a>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     )
   }
