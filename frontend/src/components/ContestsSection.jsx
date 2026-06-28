@@ -988,22 +988,22 @@ export function ContestsSection({ setTab, address }) {
 
         {/* Content Details (Glassmorphic Card) */}
         <div style={{
-          background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(239, 68, 68, 0.03) 100%)',
+          background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(245, 158, 11, 0.03) 100%)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid #140505',
+          border: '1px solid #2A1A06',
           borderRadius: 20,
           padding: '20px',
-          boxShadow: '0 8px 32px rgba(239, 68, 68, 0.06)',
+          boxShadow: '0 8px 32px rgba(245, 158, 11, 0.06)',
           boxSizing: 'border-box',
           color: '#1E293B',
           fontFamily: "'Outfit', 'Inter', sans-serif"
         }}>
-          <h3 style={{ margin: '0 0 12px', fontSize: 18, fontWeight: 800, color: '#DC2626' }}>About the Contest</h3>
+          <h3 style={{ margin: '0 0 12px', fontSize: 18, fontWeight: 800, color: '#D97706' }}>About the Contest</h3>
           <p style={{ margin: '0 0 8px', fontSize: 13, lineHeight: 1.5, color: '#475569', fontWeight: 600 }}>
             Trading contest is dedicated to $HH trading! Simply trade $HH using any platform to participate in the contest and win rewards.
           </p>
-          <p style={{ margin: '0 0 16px', fontSize: 12.5, fontFamily: "'DM Mono', monospace", color: '#EF4444', fontWeight: 700 }}>
+          <p style={{ margin: '0 0 16px', fontSize: 12.5, fontFamily: "'DM Mono', monospace", color: '#D97706', fontWeight: 700 }}>
             CA: 0x8235EdF32a1e10Bd1867ad622915AB613664cbA3
           </p>
 
@@ -1021,7 +1021,7 @@ export function ContestsSection({ setTab, address }) {
             The top 3 traders with the highest $HH trading volume at the end of the contest will share the $100 in $HH coin pool.
           </p>
 
-          <div style={{ borderTop: '1px solid rgba(239, 68, 68, 0.15)', paddingTop: 16 }}>
+          <div style={{ borderTop: '1px solid rgba(245, 158, 11, 0.15)', paddingTop: 16 }}>
             <h4 style={{ margin: '0 0 8px', fontSize: 14, fontWeight: 700, color: '#1E293B' }}>Rewards breakdown:</h4>
             <ul style={{ margin: 0, paddingLeft: 20, fontSize: 13, color: '#475569', lineHeight: 1.6, fontWeight: 500 }}>
               <li>1st Place: $50 in $HH coin</li>
