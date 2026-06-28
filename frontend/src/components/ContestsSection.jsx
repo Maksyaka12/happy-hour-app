@@ -363,7 +363,7 @@ export function ContestsSection({ setTab, address }) {
                 justifyContent: 'center',
                 gap: 4
               }}>
-                <span style={{ lineHeight: 1 }}>$120</span>
+                <span style={{ lineHeight: 1 }}>$120 in</span>
                 <img src="/logo.jfif" alt="$HH" style={{ width: 12, height: 12, borderRadius: '50%', objectFit: 'cover' }} />
                 <span style={{ lineHeight: 1 }}>$HH</span>
               </div>
@@ -736,8 +736,8 @@ export function ContestsSection({ setTab, address }) {
             {/* Badges in Banner */}
             <div style={{ display: 'flex', gap: 6, marginTop: 8, justifyContent: 'center', flexWrap: 'wrap', alignItems: 'center' }}>
               <div style={{
-                background: 'linear-gradient(135deg, #EF4444 0%, #B91C1C 100%)',
-                border: '1px solid rgba(239, 68, 68, 0.5)',
+                background: 'linear-gradient(135deg, #0052FF 0%, #7C3AED 100%)',
+                border: '1px solid rgba(0, 82, 255, 0.5)',
                 borderRadius: 50,
                 height: 24,
                 boxSizing: 'border-box',
@@ -750,9 +750,9 @@ export function ContestsSection({ setTab, address }) {
                 justifyContent: 'center',
                 gap: 4
               }}>
-                <span style={{ lineHeight: 1 }}>$100</span>
-                <img src="/logo.jfif" alt="$HH" style={{ width: 11, height: 11, borderRadius: '50%', objectFit: 'cover' }} />
-                <span style={{ lineHeight: 1 }}>Prize Pool</span>
+                <span style={{ lineHeight: 1 }}>$100 in</span>
+                <img src="/logo.jfif" alt="$HH" style={{ width: 12, height: 12, borderRadius: '50%', objectFit: 'cover' }} />
+                <span style={{ lineHeight: 1 }}>$HH</span>
               </div>
               <div style={{
                 background: 'rgba(255, 255, 255, 0.12)',
@@ -798,17 +798,19 @@ export function ContestsSection({ setTab, address }) {
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
           border: '1px solid rgba(239, 68, 68, 0.22)',
-          borderRadius: 24,
-          padding: 24,
+          borderRadius: 20,
+          padding: 20,
           marginBottom: 20,
           boxShadow: '0 8px 32px rgba(239, 68, 68, 0.06)',
-          boxSizing: 'border-box'
+          boxSizing: 'border-box',
+          color: '#1E293B',
+          fontFamily: "'Outfit', 'Inter', sans-serif"
         }}>
           <h3 style={{
             margin: '0 0 12px',
             fontSize: 18,
             fontWeight: 800,
-            color: '#FFFFFF',
+            color: '#B91C1C',
             fontFamily: "'Outfit', 'Inter', sans-serif"
           }}>
             About the Contest
@@ -817,8 +819,9 @@ export function ContestsSection({ setTab, address }) {
             margin: 0,
             fontSize: 13.5,
             lineHeight: 1.6,
-            color: 'rgba(255, 255, 255, 0.8)',
-            fontFamily: "'Outfit', 'Inter', sans-serif"
+            color: '#475569',
+            fontFamily: "'Outfit', 'Inter', sans-serif",
+            fontWeight: 600
           }}>
             Trade $HH tokens on Uniswap V4 to climb the leaderboard! Absolutely all volume made using your connected wallet is tracked in real-time. The top 3 wallets with the highest trading volume (Buys + Sells) during the contest period will win a share of the $100 prize pool:
             <br />• <strong>1st Place</strong>: $50
@@ -829,13 +832,11 @@ export function ContestsSection({ setTab, address }) {
 
         {/* User Trading Status Card */}
         <div style={{
-          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          borderRadius: 24,
-          padding: 24,
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+          background: '#FFFFFF',
+          border: '1px solid #E2E8F0',
+          borderRadius: 20,
+          padding: 20,
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.04)',
           boxSizing: 'border-box',
           fontFamily: "'Outfit', 'Inter', sans-serif"
         }}>
@@ -843,7 +844,7 @@ export function ContestsSection({ setTab, address }) {
             margin: '0 0 16px',
             fontSize: 18,
             fontWeight: 800,
-            color: '#FFFFFF',
+            color: '#1E293B',
             display: 'flex',
             alignItems: 'center',
             gap: 8
@@ -858,7 +859,7 @@ export function ContestsSection({ setTab, address }) {
               background: 'rgba(239, 68, 68, 0.05)',
               border: '1px solid rgba(239, 68, 68, 0.15)',
               borderRadius: 16,
-              color: '#EF4444',
+              color: '#B91C1C',
               fontSize: 14,
               fontWeight: 700
             }}>
@@ -868,8 +869,8 @@ export function ContestsSection({ setTab, address }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
               {/* Volume stats */}
               <div style={{
-                background: 'rgba(255, 255, 255, 0.03)',
-                border: '1px solid rgba(255, 255, 255, 0.06)',
+                background: '#F8FAFC',
+                border: '1px solid #E2E8F0',
                 borderRadius: 16,
                 padding: '16px 20px',
                 display: 'flex',
@@ -879,22 +880,22 @@ export function ContestsSection({ setTab, address }) {
                 gap: 12
               }}>
                 <div>
-                  <div style={{ fontSize: 12, color: '#717886', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Trading Volume</div>
-                  <div style={{ fontSize: 24, fontWeight: 900, color: '#FFFFFF', marginTop: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <div style={{ fontSize: 12, color: '#475569', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Trading Volume</div>
+                  <div style={{ fontSize: 24, fontWeight: 900, color: '#1E293B', marginTop: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
                     {userVolumeHH.toLocaleString(undefined, { maximumFractionDigits: 2 })}
-                    <span style={{ fontSize: 14, color: '#EF4444', fontWeight: 800 }}>HH</span>
+                    <span style={{ fontSize: 14, color: '#B91C1C', fontWeight: 800 }}>HH</span>
                   </div>
-                  <div style={{ fontSize: 13, color: '#EF4444', fontWeight: 700, marginTop: 2 }}>
+                  <div style={{ fontSize: 13, color: '#B45309', fontWeight: 700, marginTop: 2 }}>
                     ≈ ${userVolumeUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </div>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4, textAlign: 'right' }}>
-                  <div style={{ fontSize: 11, color: '#717886', fontWeight: 600 }}>Volume Breakdown</div>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: '#10B981' }}>
+                  <div style={{ fontSize: 11, color: '#475569', fontWeight: 600 }}>Volume Breakdown</div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#059669' }}>
                     Buys: {userTrades.filter(t => t.type === 'Buy').reduce((acc, t) => acc + t.amountHH, 0).toLocaleString(undefined, { maximumFractionDigits: 0 })} HH
                   </div>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: '#EF4444' }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#DC2626' }}>
                     Sells: {userTrades.filter(t => t.type === 'Sell').reduce((acc, t) => acc + t.amountHH, 0).toLocaleString(undefined, { maximumFractionDigits: 0 })} HH
                   </div>
                 </div>
@@ -902,33 +903,33 @@ export function ContestsSection({ setTab, address }) {
 
               {/* Wallet identifier */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 13 }}>
-                <span style={{ color: '#717886', fontWeight: 600 }}>Tracking Wallet:</span>
-                <span style={{ fontFamily: "'DM Mono', monospace", color: '#FFFFFF', fontWeight: 700 }}>
+                <span style={{ color: '#475569', fontWeight: 600 }}>Tracking Wallet:</span>
+                <span style={{ fontFamily: "'DM Mono', monospace", color: '#1E293B', fontWeight: 700 }}>
                   {address}
                 </span>
               </div>
 
               {/* Trade History */}
               <div style={{ marginTop: 8 }}>
-                <div style={{ fontSize: 14, fontWeight: 800, color: '#FFFFFF', marginBottom: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ fontSize: 14, fontWeight: 800, color: '#1E293B', marginBottom: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span>Recent Trades ({userTrades.length})</span>
                   {loadingTraderContest && (
-                    <div style={{ width: 14, height: 14, border: '2px solid rgba(255,255,255,0.2)', borderTopColor: '#EF4444', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                    <div style={{ width: 14, height: 14, border: '2px solid rgba(0,0,0,0.1)', borderTopColor: '#0052FF', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
                   )}
                 </div>
 
                 {loadingTraderContest && userTrades.length === 0 ? (
                   <div style={{ display: 'flex', justifyContent: 'center', padding: '24px 0' }}>
-                    <div style={{ width: 24, height: 24, border: '3px solid rgba(255,255,255,0.2)', borderTopColor: '#EF4444', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                    <div style={{ width: 24, height: 24, border: '3px solid rgba(0,0,0,0.1)', borderTopColor: '#0052FF', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
                   </div>
                 ) : userTrades.length === 0 ? (
                   <div style={{
                     textAlign: 'center',
                     padding: '20px 12px',
-                    background: 'rgba(255, 255, 255, 0.02)',
-                    border: '1px dashed rgba(255, 255, 255, 0.1)',
+                    background: '#F8FAFC',
+                    border: '1px dashed #E2E8F0',
                     borderRadius: 16,
-                    color: '#717886',
+                    color: '#64748B',
                     fontSize: 12.5,
                     lineHeight: 1.5
                   }}>
@@ -938,10 +939,10 @@ export function ContestsSection({ setTab, address }) {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 240, overflowY: 'auto' }}>
                     {userTrades.slice(0, 5).map(trade => (
                       <div key={trade.hash} style={{
-                        background: 'rgba(255, 255, 255, 0.02)',
+                        background: '#F8FAFC',
                         borderRadius: 14,
                         padding: '12px 14px',
-                        border: '1px solid rgba(255, 255, 255, 0.05)',
+                        border: '1px solid #E2E8F0',
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center'
@@ -949,7 +950,7 @@ export function ContestsSection({ setTab, address }) {
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                           <span style={{
                             background: trade.type === 'Buy' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                            color: trade.type === 'Buy' ? '#10B981' : '#EF4444',
+                            color: trade.type === 'Buy' ? '#059669' : '#DC2626',
                             fontSize: 10,
                             fontWeight: 900,
                             padding: '3px 8px',
@@ -959,10 +960,10 @@ export function ContestsSection({ setTab, address }) {
                             {trade.type}
                           </span>
                           <div>
-                            <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF' }}>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: '#1E293B' }}>
                               {trade.amountHH.toLocaleString(undefined, { maximumFractionDigits: 0 })} HH
                             </div>
-                            <div style={{ fontSize: 11, color: '#717886', marginTop: 1 }}>
+                            <div style={{ fontSize: 11, color: '#475569', marginTop: 1 }}>
                               ≈ ${trade.amountUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </div>
                           </div>
@@ -974,7 +975,7 @@ export function ContestsSection({ setTab, address }) {
                           rel="noopener noreferrer"
                           style={{
                             fontSize: 11,
-                            color: '#EF4444',
+                            color: '#0052FF',
                             fontWeight: 700,
                             textDecoration: 'none',
                             fontFamily: "'DM Mono', monospace"
@@ -1209,8 +1210,8 @@ export function ContestsSection({ setTab, address }) {
               <div style={{ fontSize: 18, fontWeight: 900, color: '#FFFFFF' }}>Trader Contest</div>
               <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                 <div style={{
-                  background: 'linear-gradient(135deg, #EF4444 0%, #B91C1C 100%)',
-                  border: '1px solid rgba(239, 68, 68, 0.5)',
+                  background: 'linear-gradient(135deg, #0052FF 0%, #7C3AED 100%)',
+                  border: '1px solid rgba(0, 82, 255, 0.5)',
                   borderRadius: 6,
                   height: 20,
                   boxSizing: 'border-box',
@@ -1223,9 +1224,9 @@ export function ContestsSection({ setTab, address }) {
                   justifyContent: 'center',
                   gap: 3,
                 }}>
-                  <span>$100</span>
+                  <span>$100 in</span>
                   <img src="/logo.jfif" alt="$HH" style={{ width: 11, height: 11, borderRadius: '50%', objectFit: 'cover' }} />
-                  <span>Pool</span>
+                  <span>$HH</span>
                 </div>
                 <div style={{
                   background: 'rgba(255, 255, 255, 0.12)',
@@ -1347,7 +1348,7 @@ export function ContestsSection({ setTab, address }) {
                   justifyContent: 'center',
                   gap: 3,
                 }}>
-                  <span>$120</span>
+                  <span>$120 in</span>
                   <img src="/logo.jfif" alt="$HH" style={{ width: 11, height: 11, borderRadius: '50%', objectFit: 'cover' }} />
                   <span>$HH</span>
                 </div>
