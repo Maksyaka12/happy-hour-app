@@ -147,7 +147,7 @@ export function ContestsSection({ setTab, address }) {
         body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'eth_blockNumber' })
       }).then(r => r.json()).then(d => parseInt(d.result, 16))
 
-      const START_BLOCK = Math.max(0, currentBlockHex - 1800)
+      const START_BLOCK = 47944627
       const endBlock = currentBlockHex
       const chunkSize = 10000
       const promises = []
@@ -305,7 +305,7 @@ export function ContestsSection({ setTab, address }) {
         body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'eth_blockNumber' })
       }).then(r => r.json()).then(d => parseInt(d.result, 16))
 
-      const START_BLOCK = Math.max(0, currentBlockHex - 1800)
+      const START_BLOCK = 47944627
       const endBlock = currentBlockHex
       const chunkSize = 10000
       const promises = []
@@ -1011,7 +1011,7 @@ export function ContestsSection({ setTab, address }) {
             <ul style={{ margin: 0, paddingLeft: 20, lineHeight: 1.7 }}>
               <li>Login to Happy Hour using your trading wallet.</li>
               <li>Simply trade $HH through any platform.</li>
-              <li>Track your $HH trading volume in the Trading Card.</li>
+              <li>Track your volume in the Trading Card.</li>
               <li>Absolutely all volume made using your connected wallet is tracked in real-time.</li>
               <li>The wallet you connect to Happy Hour is your trading wallet (if you trade with a different address, simply connect it to the app).</li>
             </ul>
