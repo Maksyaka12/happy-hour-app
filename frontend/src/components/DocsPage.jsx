@@ -19,6 +19,7 @@ const NAV = [
       { id: 'official-links', label: 'Official Links' },
       { id: 'contracts',      label: 'Official Contracts' },
       { id: 'official-addresses', label: 'Official Addresses' },
+      { id: 'roadmap',        label: 'Roadmap' },
     ]
   },
   {
@@ -712,6 +713,7 @@ const PATH_TO_ID = {
   'adresses': 'official-addresses',
   'addresses': 'official-addresses',
   'official-addresses': 'official-addresses',
+  'roadmap': 'roadmap',
   'hh-introduction': 'hh-introduction',
   'utility': 'hh-utility',
   'economy': 'hh-economy'
@@ -722,9 +724,195 @@ const ID_TO_PATH = {
   'official-links': 'links',
   'contracts': 'contracts',
   'official-addresses': 'adresses',
+  'roadmap': 'roadmap',
   'hh-introduction': 'hh-introduction',
   'hh-utility': 'utility',
   'hh-economy': 'economy'
+}
+
+// ─── Section: ROADMAP ─────────────────────────────────────────────────────────
+function RoadmapSection() {
+  const phases = [
+    {
+      title: 'Token Economics & Utility Design',
+      status: 'completed',
+      date: 'Q1 2026',
+      desc: 'Designing the deflationary economy of $HH with a 30% burn and 70% community rewards split for in-app transactions, staking vaults, and seasonal distributions.'
+    },
+    {
+      title: 'In-App Core Integration',
+      status: 'completed',
+      date: 'Q2 2026',
+      desc: 'Embedding $HH as the native currency of the Happy Hour App. Launching hourly raffles, staking programs, premium Happy Boxes, and daily passive HP calculations.'
+    },
+    {
+      title: 'Season 2 Launch & Platform Overhaul',
+      status: 'completed',
+      date: 'Q2 2026',
+      desc: 'Full UI/UX redesign, implementing a live Trading Contest, pagination, improved database indexing, and launching Season 2 with higher USDC & $HH prize pools.'
+    },
+    {
+      title: 'Agentic Economy Integration',
+      status: 'active',
+      date: 'Q3 2026',
+      desc: 'Integrating Happy Hour and the $HH coin into the emerging Agentic Economy on Base. Enabling autonomous AI agents to trade, stake, participate in raffles, and trigger automated buybacks.'
+    },
+    {
+      title: 'Ecosystem Expansion',
+      status: 'coming-soon',
+      date: 'Future',
+      desc: 'Expanding utility through external partnerships, developer API release, and decentralized governance mechanisms.'
+    }
+  ]
+
+  return (
+    <section id="roadmap">
+      <div style={{ fontSize: 12.5, fontWeight: 600, color: '#0052ff', marginBottom: 10, letterSpacing: 0.2 }}>
+        Roadmap
+      </div>
+      <h1 style={{ fontSize: 32, fontWeight: 800, color: '#0f172a', margin: '0 0 10px', letterSpacing: '-0.5px', lineHeight: 1.2 }}>
+        Ecosystem Roadmap
+      </h1>
+      <p style={{ fontSize: 14, color: '#475569', margin: '0 0 32px', lineHeight: 1.65 }}>
+        Our long-term roadmap details the evolution of the Happy Hour ecosystem, from initial deflationary utility design to full integration into the emerging AI-powered Agentic Economy on Base.
+      </p>
+
+      <div style={{ position: 'relative', paddingLeft: 32, marginTop: 24, marginBottom: 40 }}>
+        {/* Vertical timeline line */}
+        <div style={{
+          position: 'absolute',
+          left: 11,
+          top: 8,
+          bottom: 24,
+          width: 2,
+          background: 'linear-gradient(to bottom, #10B981 0%, #10B981 55%, #0052FF 75%, #CBD5E1 100%)',
+        }} />
+
+        {/* Phases list */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+          {phases.map((p, idx) => {
+            const isCompleted = p.status === 'completed'
+            const isActive = p.status === 'active'
+            const isComing = p.status === 'coming-soon'
+
+            return (
+              <div key={idx} style={{ position: 'relative' }}>
+                {/* Dot */}
+                <div style={{
+                  position: 'absolute',
+                  left: -32,
+                  top: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  zIndex: 2
+                }}>
+                  {isCompleted && (
+                    <div style={{
+                      width: 20,
+                      height: 20,
+                      borderRadius: '50%',
+                      background: '#10B981',
+                      border: '2px solid #10B981',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginLeft: 2
+                    }}>
+                      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#FFF" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </div>
+                  )}
+                  {isActive && (
+                    <div 
+                      className="roadmap-pulse"
+                      style={{
+                        width: 24,
+                        height: 24,
+                        borderRadius: '50%',
+                        background: '#0052FF',
+                        border: '3px solid #FFFFFF',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: '0 0 10px rgba(0, 82, 255, 0.5)'
+                      }}
+                    >
+                      <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#FFFFFF' }} />
+                    </div>
+                  )}
+                  {isComing && (
+                    <div style={{
+                      width: 18,
+                      height: 18,
+                      borderRadius: '50%',
+                      background: '#F1F5F9',
+                      border: '2px solid #CBD5E1',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginLeft: 3
+                    }}>
+                      <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#CBD5E1' }} />
+                    </div>
+                  )}
+                </div>
+
+                {/* Content */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                    <span style={{
+                      fontSize: 11,
+                      fontWeight: 800,
+                      color: isCompleted ? '#10B981' : isActive ? '#0052FF' : '#64748B',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px'
+                    }}>
+                      Phase {idx + 1}
+                    </span>
+                    <span style={{ fontSize: 11, color: '#94A3B8', fontWeight: 500 }}>•</span>
+                    <span style={{ fontSize: 11, color: '#64748B', fontWeight: 600 }}>{p.date}</span>
+                    {isActive && (
+                      <span style={{
+                        background: 'rgba(0, 82, 255, 0.1)',
+                        color: '#0052FF',
+                        padding: '2px 8px',
+                        borderRadius: 99,
+                        fontSize: 9.5,
+                        fontWeight: 800,
+                        border: '1px solid rgba(0, 82, 255, 0.2)',
+                        letterSpacing: '0.2px'
+                      }}>
+                        WE ARE HERE
+                      </span>
+                    )}
+                  </div>
+                  <h3 style={{
+                    fontSize: 15.5,
+                    fontWeight: 800,
+                    color: isActive ? '#0052FF' : '#0F172A',
+                    margin: 0
+                  }}>
+                    {p.title}
+                  </h3>
+                  <p style={{
+                    fontSize: 13.5,
+                    color: '#475569',
+                    lineHeight: 1.6,
+                    margin: 0,
+                    fontWeight: isActive ? 500 : 400
+                  }}>
+                    {p.desc}
+                  </p>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </section>
+  )
 }
 
 // ─── ROOT DOCS COMPONENT ──────────────────────────────────────────────────────
@@ -795,6 +983,14 @@ export function DocsPage() {
         .docs-nav-item.active { background: #eff6ff !important; color: #0052ff !important; font-weight: 700 !important; }
         .docs-content-section p + p { margin-top: 0; }
         section[id] { scroll-margin-top: 80px; }
+        @keyframes pulse-active {
+          0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 82, 255, 0.6); }
+          70% { transform: scale(1.2); box-shadow: 0 0 0 10px rgba(0, 82, 255, 0); }
+          100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 82, 255, 0); }
+        }
+        .roadmap-pulse {
+          animation: pulse-active 2s infinite;
+        }
         @media (max-width: 768px) {
           .docs-sidebar { display: none !important; }
           .docs-sidebar.open { display: flex !important; position: fixed; top: 60px; left: 0; bottom: 0; z-index: 99; box-shadow: 4px 0 20px rgba(0,0,0,0.1); }
@@ -934,6 +1130,7 @@ export function DocsPage() {
             <LinksSection />
             <ContractsSection />
             <OfficialAddressesSection />
+            <RoadmapSection />
             <HHIntroSection />
             <HHUtilitySection />
             <HHEconomySection />
