@@ -1002,33 +1002,38 @@ export function ContestsSection({ setTab, address }) {
         }}>
           <h3 style={{ margin: '0 0 12px', fontSize: 18, fontWeight: 800, color: '#D97706' }}>About the Contest</h3>
           <p style={{ margin: '0 0 8px', fontSize: 13, lineHeight: 1.5, color: '#475569', fontWeight: 600 }}>
-            Trading contest is dedicated to $HH trading! Simply trade $HH using any platform to participate in the contest and win rewards.
+            Trade $HH coin on any platform to climb the leaderboard and win a share of the prize pool!
           </p>
           <p style={{ margin: '0 0 16px', fontSize: 12.5, fontFamily: "'DM Mono', monospace", color: '#D97706', fontWeight: 700 }}>
             CA: 0x8235EdF32a1e10Bd1867ad622915AB613664cbA3
           </p>
 
           <div style={{ margin: '0 0 16px', fontSize: 13, color: '#475569', fontWeight: 500 }}>
+            <h4 style={{ margin: '0 0 8px', fontSize: 13.5, fontWeight: 700, color: '#1E293B' }}>How to Participate:</h4>
             <ul style={{ margin: 0, paddingLeft: 20, lineHeight: 1.7 }}>
-              <li>Login to Happy Hour using your trading wallet.</li>
-              <li>Simply trade $HH through any platform.</li>
-              <li>Track your volume in the Trading Card.</li>
-              <li>Absolutely all volume made using your connected wallet is tracked in real-time.</li>
-              <li>The wallet you connect to Happy Hour is your trading wallet (if you trade with a different address, simply connect it to the app).</li>
+              <li><strong>Connect:</strong> Login to Happy Hour using your active trading wallet.</li>
+              <li><strong>Trade:</strong> Swap $HH coin on any platform of your choice.</li>
+              <li><strong>Track:</strong> All volume (Buys + Sells) is automatically tracked in real-time on your Trading Card.</li>
             </ul>
           </div>
 
           <p style={{ margin: '0 0 16px', fontSize: 13, color: '#475569', fontWeight: 600, lineHeight: 1.5 }}>
-            The top 3 traders with the highest $HH trading volume at the end of the contest will share the $100 in $HH coin pool.
+            The top 3 wallets with the highest trading volume at the end of the contest will share the **$100 in $HH coin** pool:
           </p>
 
           <div style={{ borderTop: '1px solid rgba(245, 158, 11, 0.15)', paddingTop: 16 }}>
-            <h4 style={{ margin: '0 0 8px', fontSize: 14, fontWeight: 700, color: '#1E293B' }}>Rewards breakdown:</h4>
-            <ul style={{ margin: 0, paddingLeft: 20, fontSize: 13, color: '#475569', lineHeight: 1.6, fontWeight: 500 }}>
-              <li>1st Place: $50 in $HH coin</li>
-              <li>2nd Place: $25 in $HH coin</li>
-              <li>3rd Place: $25 in $HH coin</li>
-            </ul>
+            <h4 style={{ margin: '0 0 10px', fontSize: 13.5, fontWeight: 700, color: '#1E293B' }}>Prize Pool:</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13, color: '#475569', fontWeight: 500 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 15 }}>🥇</span> <strong>1st Place:</strong> $50 in $HH coin
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 15 }}>🥈</span> <strong>2nd Place:</strong> $25 in $HH coin
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 15 }}>🥉</span> <strong>3rd Place:</strong> $25 in $HH coin
+              </div>
+            </div>
           </div>
         </div>
 
