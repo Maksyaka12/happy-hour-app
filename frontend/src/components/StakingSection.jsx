@@ -31,6 +31,19 @@ const formatConcise = (num) => {
   return n.toFixed(2).replace(/\.00$/, '')
 }
 
+const getPositionApr = (pos) => {
+  const days = pos.lockPeriod || pos.durationDays
+  if (days === '7' || days === 7 || pos.apr === 103) return 103
+  if (days === '10' || days === 10 || pos.apr === 166) return 166
+  if (pos.apr) {
+    return pos.apr > 1000 ? Math.round(pos.apr / 100) : pos.apr
+  }
+  const durationMs = (pos.unlockTime || 0) - (pos.startTime || 0)
+  const durationDaysEstimate = Math.round(durationMs / (24 * 3600 * 1000))
+  if (durationDaysEstimate >= 9) return 166
+  return 103
+}
+
 export function StakingSection({ setTab }) {
   const { address, isConnected } = useAccount()
   const [hhPrice, setHhPrice] = useState(0.00025) // Fallback price
@@ -740,9 +753,22 @@ export function StakingSection({ setTab }) {
           >
             Unstake
           </button>
+          <button
+            onClick={() => setStakeActionTab('history')}
+            style={{
+              flex: 1, padding: '6px 10px', border: 'none', borderRadius: 7, fontSize: 11.5, fontWeight: 800,
+              background: stakeActionTab === 'history' ? '#FFFFFF' : 'transparent',
+              color: stakeActionTab === 'history' ? '#090514' : 'rgba(255,255,255,0.5)',
+              boxShadow: stakeActionTab === 'history' ? '0 1px 4px rgba(0,0,0,0.15)' : 'none',
+              cursor: 'pointer',
+              outline: 'none'
+            }}
+          >
+            History
+          </button>
         </div>
 
-        {stakeActionTab === 'stake' ? (
+        {stakeActionTab === 'stake' && (
           <div style={{ position: 'relative', zIndex: 2 }}>
             {/* Lock Period Selector */}
             <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
@@ -759,10 +785,15 @@ export function StakingSection({ setTab }) {
                   fontWeight: 800,
                   cursor: 'pointer',
                   outline: 'none',
-                  transition: 'all 0.15s'
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 2,
+                  transition: 'all 0.2s'
                 }}
               >
-                7 Days (103% APR)
+                <span>7 Days Lock</span>
+                <span style={{ fontSize: 9, color: lockPeriod === '7' ? '#D8B4FE' : 'rgba(255,255,255,0.4)', fontWeight: 700 }}>103% APR • 20% HP Boost</span>
               </button>
               <button
                 onClick={() => setLockPeriod('10')}
@@ -777,60 +808,58 @@ export function StakingSection({ setTab }) {
                   fontWeight: 800,
                   cursor: 'pointer',
                   outline: 'none',
-                  transition: 'all 0.15s'
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 2,
+                  transition: 'all 0.2s'
                 }}
               >
-                10 Days (166% APR)
+                <span>10 Days Lock</span>
+                <span style={{ fontSize: 9, color: lockPeriod === '10' ? '#D8B4FE' : 'rgba(255,255,255,0.4)', fontWeight: 700 }}>166% APR • 20% HP Boost</span>
               </button>
             </div>
 
-            <div style={{ position: 'relative', marginBottom: 10 }}>
+            {/* Input Box */}
+            <div style={{
+              background: 'rgba(0, 0, 0, 0.2)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: 12,
+              padding: 10,
+              marginBottom: 10,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
               <input
                 type="number"
+                placeholder="0.0"
                 value={stakingAmount}
-                onChange={(e) => setStakingAmount(e.target.value)}
-                placeholder="Amount to stake"
+                onChange={e => setStakingAmount(e.target.value)}
                 style={{
-                  width: '100%', padding: '10px 115px 10px 12px', borderRadius: 10,
-                  border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.25)',
-                  color: '#FFFFFF', fontSize: 13, fontWeight: 700, outline: 'none',
-                  boxSizing: 'border-box'
+                  background: 'none', border: 'none', color: '#FFFFFF',
+                  fontSize: 16, fontWeight: 800, width: '60%', outline: 'none',
+                  fontFamily: 'inherit'
                 }}
               />
-              <div style={{
-                position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
-                display: 'flex', gap: 4, alignItems: 'center'
-              }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <button
-                  onClick={() => setStakingAmount((walletBalance * 0.25).toFixed(0))}
+                  onClick={() => setStakingAmount(walletBalance.toString())}
                   style={{
-                    background: 'rgba(255,255,255,0.08)', border: 'none', color: 'rgba(255,255,255,0.7)', fontSize: 9, fontWeight: 900,
-                    padding: '3px 5px', borderRadius: 5, cursor: 'pointer', outline: 'none'
-                  }}
-                >
-                  25%
-                </button>
-                <button
-                  onClick={() => setStakingAmount((walletBalance * 0.5).toFixed(0))}
-                  style={{
-                    background: 'rgba(255,255,255,0.08)', border: 'none', color: 'rgba(255,255,255,0.7)', fontSize: 9, fontWeight: 900,
-                    padding: '3px 5px', borderRadius: 5, cursor: 'pointer', outline: 'none'
-                  }}
-                >
-                  50%
-                </button>
-                 <button
-                  onClick={() => {
-                    const rounded = Math.floor(walletBalance * 100) / 100
-                    setStakingAmount(rounded > 0 ? rounded.toString() : walletBalance.toString())
-                  }}
-                  style={{
-                    background: 'rgba(255,255,255,0.15)', border: 'none', color: '#A78BFA', fontSize: 9, fontWeight: 900,
-                    padding: '3px 6px', borderRadius: 5, cursor: 'pointer', outline: 'none'
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    borderRadius: 6,
+                    padding: '3px 8px',
+                    color: '#FFFFFF',
+                    fontSize: 10,
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    outline: 'none'
                   }}
                 >
                   MAX
                 </button>
+                <span style={{ fontSize: 13, fontWeight: 800, color: '#A0AEC0' }}>$HH</span>
               </div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10.5, color: 'rgba(255,255,255,0.6)', marginBottom: 12 }}>
@@ -852,7 +881,9 @@ export function StakingSection({ setTab }) {
               {allowance < parseFloat(stakingAmount || 0) ? 'Approve $HH' : 'Stake'}
             </button>
           </div>
-        ) : (
+        )}
+
+        {stakeActionTab === 'unstake' && (
           <div style={{ position: 'relative', zIndex: 2 }}>
             {/* Unstake positions list */}
             {activeStakes.filter(s => s.active).length === 0 ? (
@@ -864,7 +895,7 @@ export function StakingSection({ setTab }) {
                 fontWeight: 750,
                 background: 'rgba(255,255,255,0.02)',
                 borderRadius: 14,
-                border: '1px dashed rgba(255,255,255,0.1)'
+                border: '1px dashed rgba(255, 255, 255, 0.1)'
               }}>
                 No active stakes. Lock your $HH in the "Stake" tab to earn passive HP.
               </div>
@@ -989,6 +1020,121 @@ export function StakingSection({ setTab }) {
                               Unstake
                             </button>
                           )}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {stakeActionTab === 'history' && (
+          <div style={{ position: 'relative', zIndex: 2 }}>
+            {/* History unstaked list */}
+            {activeStakes.filter(s => !s.active).length === 0 ? (
+              <div style={{
+                textAlign: 'center',
+                padding: '24px 16px',
+                color: 'rgba(255, 255, 255, 0.45)',
+                fontSize: 12.5,
+                fontWeight: 750,
+                background: 'rgba(255,255,255,0.02)',
+                borderRadius: 14,
+                border: '1px dashed rgba(255, 255, 255, 0.1)'
+              }}>
+                No staking history found. Unstaked positions will appear here.
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {/* Summary Row */}
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  background: 'rgba(255,255,255,0.04)',
+                  padding: '10px 14px',
+                  borderRadius: 12,
+                  fontSize: 11.5,
+                  fontWeight: 800,
+                  color: 'rgba(255,255,255,0.7)',
+                  border: '1px solid rgba(255,255,255,0.08)'
+                }}>
+                  <span>Total Staked: <strong style={{ color: '#FFFFFF' }}>{formatConcise(activeStakes.filter(s => !s.active).reduce((acc, s) => acc + s.amount, 0))} $HH</strong></span>
+                  <span>Total Payouts: <strong style={{ color: '#10B981' }}>{formatConcise(
+                    activeStakes.filter(s => !s.active).reduce((acc, s) => {
+                      const aprVal = getPositionApr(s)
+                      const durationDays = parseInt(s.lockPeriod || s.durationDays) || 7
+                      const yieldAmount = (s.amount * aprVal * durationDays) / 36500
+                      return acc + s.amount + yieldAmount
+                    }, 0)
+                  )} $HH</strong></span>
+                </div>
+
+                {/* Scrollable list */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 180, overflowY: 'auto', paddingRight: 2 }}>
+                  {activeStakes.filter(s => !s.active).map((s) => {
+                    const aprVal = getPositionApr(s)
+                    const durationDays = parseInt(s.lockPeriod || s.durationDays) || 7
+                    const yieldAmount = (s.amount * aprVal * durationDays) / 36500
+                    const totalPayout = s.amount + yieldAmount
+                    
+                    const formattedDate = new Date(s.unlockTime || s.endTime).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric'
+                    })
+
+                    return (
+                      <div key={s.id} style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        background: 'rgba(255,255,255,0.02)',
+                        padding: '10px 12px',
+                        borderRadius: 12,
+                        border: '1px solid rgba(255,255,255,0.05)',
+                        gap: 6
+                      }}>
+                        {/* Column 1: Staked Amount & USD */}
+                        <div style={{ flex: '1 1 30%', display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
+                          <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Staked</span>
+                          <span style={{ fontSize: 12.5, fontWeight: 900, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {formatNumber(s.amount, 0)} $HH
+                          </span>
+                          <span style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.45)', fontWeight: 600 }}>
+                            ≈${formatNumber(s.amount * hhPrice, 2)}
+                          </span>
+                        </div>
+
+                        {/* Column 2: APR & Date */}
+                        <div style={{ flex: '1 1 35%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                          <span style={{
+                            background: 'rgba(167, 139, 250, 0.1)',
+                            color: '#A78BFA',
+                            padding: '2px 6px',
+                            borderRadius: 6,
+                            fontSize: 9,
+                            fontWeight: 900,
+                            border: '1px solid rgba(167, 139, 250, 0.2)',
+                            whiteSpace: 'nowrap'
+                          }}>
+                            {aprVal}% APR
+                          </span>
+                          <span style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.4)', fontWeight: 700 }}>
+                            {formattedDate}
+                          </span>
+                        </div>
+
+                        {/* Column 3: Unstaked (Total Payout) */}
+                        <div style={{ flex: '1 1 35%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2, minWidth: 0 }}>
+                          <span style={{ fontSize: 9, color: 'rgba(16, 185, 129, 0.5)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Unstaked Payout</span>
+                          <span style={{ fontSize: 12.5, fontWeight: 900, color: '#10B981', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            +{formatNumber(totalPayout, 0)} $HH
+                          </span>
+                          <span style={{ fontSize: 9.5, color: 'rgba(16, 185, 129, 0.6)', fontWeight: 600 }}>
+                            ≈${formatNumber(totalPayout * hhPrice, 2)}
+                          </span>
                         </div>
                       </div>
                     )
