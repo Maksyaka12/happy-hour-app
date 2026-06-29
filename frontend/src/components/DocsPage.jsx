@@ -708,6 +708,10 @@ const PATH_TO_ID = {
   'links': 'official-links',
   'official-links': 'official-links',
   'contracts': 'contracts',
+  'official-contracts': 'contracts',
+  'adresses': 'official-addresses',
+  'addresses': 'official-addresses',
+  'official-addresses': 'official-addresses',
   'hh-introduction': 'hh-introduction',
   'utility': 'hh-utility',
   'economy': 'hh-economy'
@@ -717,6 +721,7 @@ const ID_TO_PATH = {
   'introduction': 'introduction',
   'official-links': 'links',
   'contracts': 'contracts',
+  'official-addresses': 'adresses',
   'hh-introduction': 'hh-introduction',
   'hh-utility': 'utility',
   'hh-economy': 'economy'
