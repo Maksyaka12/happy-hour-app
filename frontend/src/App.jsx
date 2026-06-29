@@ -27,6 +27,22 @@ function getReferralCode() {
   return ref || null
 }
 
+const TRADING_CONTEST_TARGET_DATE = new Date(Date.UTC(2026, 6, 4, 15, 0, 0)) // Saturday, July 4, 2026, 15:00 UTC
+
+const calculateTradingContestTimeLeft = () => {
+  const now = new Date()
+  const diff = TRADING_CONTEST_TARGET_DATE.getTime() - now.getTime()
+  
+  if (isNaN(diff) || diff <= 0) return '00d 00h 00m 00s'
+  
+  const d = Math.floor(diff / 86400000)
+  const h = Math.floor((diff % 86400000) / 3600000)
+  const m = Math.floor((diff % 3600000) / 60000)
+  const s = Math.floor((diff % 60000) / 1000)
+  
+  return `${d}d ${h.toString().padStart(2, '0')}h ${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`
+}
+
 export default function App() {
   const [tab, setTab] = useState(() => {
     try {
@@ -45,6 +61,14 @@ export default function App() {
   })
   const [caCopied, setCaCopied] = useState(false)
   const [initialContest, setInitialContest] = useState(null)
+  const [tradingContestTimeLeft, setTradingContestTimeLeft] = useState(calculateTradingContestTimeLeft())
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTradingContestTimeLeft(calculateTradingContestTimeLeft())
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [])
 
   useEffect(() => {
     try { localStorage.setItem('happy_leaderboard_subtab', leaderboardSubTab) } catch { }
@@ -471,11 +495,24 @@ export default function App() {
             e.currentTarget.style.background = '#0A0B0D';
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
             <span style={{ fontSize: 13, fontWeight: 750, color: '#FFFFFF', letterSpacing: '-0.1px' }}>
               Trading Contest is live
             </span>
             <span style={{ fontSize: 14 }}>🔥</span>
+            <span style={{ 
+              fontSize: 11.5, 
+              fontWeight: 700, 
+              color: '#FBBF24', 
+              fontFamily: "'DM Mono', monospace", 
+              background: 'rgba(251, 191, 36, 0.1)',
+              padding: '2px 8px',
+              borderRadius: 6,
+              border: '1px solid rgba(251, 191, 36, 0.2)',
+              marginLeft: 4
+            }}>
+              Ends in: {tradingContestTimeLeft}
+            </span>
           </div>
 
           <div style={{ 
