@@ -868,7 +868,7 @@ function RoadmapSection() {
             </span>
           </h3>
           <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.6, margin: 0, fontWeight: 500 }}>
-            Next big goal is to integrate the Happy Hour ecosystem and the $HH coin into the Agentic Economy on Base, exploring compatibility with BankrBot and autonomous agent skills. The task is to establish interfaces that allow AI agents to interact with the Happy Hour app: utilizing dApp features, earning in-app points, and executing staking, with the goal of positioning Happy Hour as a key hub for agentic automation and human-agent collaboration on Base.
+            The goal is to integrate the Happy Hour ecosystem and the $HH coin into the Agentic Economy on Base, exploring compatibility with Bankr and autonomous agent skills. The task is to make Happy Hour a core part of the Agentic Economy, allowing AI agents to interact with the Happy Hour app by utilizing dApp features, earning in-app points, executing staking, and other available features. Ultimately, Happy Hour is set to become an application widely used not only by humans but also by autonomous agents on Base, positioning Happy Hour as a key hub for agentic automation and human-agent collaboration.
           </p>
         </div>
 
