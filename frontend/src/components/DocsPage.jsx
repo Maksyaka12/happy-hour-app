@@ -930,6 +930,8 @@ export function DocsPage() {
   const [activeSection, setActiveSection] = useState('introduction')
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const contentRef = useRef(null)
+  const isScrollingRef = useRef(false)
+  const scrollTimeoutRef = useRef(null)
 
   useEffect(() => {
     // Scroll to initial section from URL pathname
@@ -940,17 +942,25 @@ export function DocsPage() {
       const timer = setTimeout(() => {
         const el = document.getElementById(initialId);
         if (el) {
+          isScrollingRef.current = true;
           el.scrollIntoView({ behavior: 'smooth', block: 'start' });
           setActiveSection(initialId);
+          scrollTimeoutRef.current = setTimeout(() => {
+            isScrollingRef.current = false;
+          }, 1000);
         }
       }, 150);
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+        if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+      };
     }
   }, []);
 
   useEffect(() => {
     const obs = new IntersectionObserver(
       (entries) => {
+        if (isScrollingRef.current) return;
         for (const e of entries) {
           if (e.isIntersecting) setActiveSection(e.target.id)
         }
@@ -959,7 +969,10 @@ export function DocsPage() {
     )
     const sections = document.querySelectorAll('section[id]')
     sections.forEach(s => obs.observe(s))
-    return () => obs.disconnect()
+    return () => {
+      obs.disconnect();
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+    }
   }, [])
 
   useEffect(() => {
@@ -973,10 +986,17 @@ export function DocsPage() {
   }, [activeSection]);
 
   const scrollTo = (id) => {
+    isScrollingRef.current = true;
+    if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+
     const el = document.getElementById(id)
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
     setActiveSection(id)
     setMobileNavOpen(false)
+
+    scrollTimeoutRef.current = setTimeout(() => {
+      isScrollingRef.current = false;
+    }, 1000);
   }
 
   const allItems = NAV.flatMap(g => g.items)
