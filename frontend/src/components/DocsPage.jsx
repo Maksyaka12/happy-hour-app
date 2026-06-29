@@ -934,6 +934,12 @@ export function DocsPage() {
   const scrollTimeoutRef = useRef(null)
 
   useEffect(() => {
+    let originalScrollRestoration = 'auto';
+    if ('scrollRestoration' in window.history) {
+      originalScrollRestoration = window.history.scrollRestoration;
+      window.history.scrollRestoration = 'manual';
+    }
+
     // Scroll to initial section from URL pathname
     const pathSegment = window.location.pathname.replace(/^\/docs\/?/, '');
     const cleanSegment = pathSegment.split('/')[0];
@@ -947,14 +953,23 @@ export function DocsPage() {
           setActiveSection(initialId);
           scrollTimeoutRef.current = setTimeout(() => {
             isScrollingRef.current = false;
-          }, 1000);
+          }, 1200);
         }
       }, 150);
       return () => {
         clearTimeout(timer);
         if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+        if ('scrollRestoration' in window.history) {
+          window.history.scrollRestoration = originalScrollRestoration;
+        }
       };
     }
+
+    return () => {
+      if ('scrollRestoration' in window.history) {
+        window.history.scrollRestoration = originalScrollRestoration;
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -994,9 +1009,34 @@ export function DocsPage() {
     setActiveSection(id)
     setMobileNavOpen(false)
 
+    // Fallback timeout to release lock
     scrollTimeoutRef.current = setTimeout(() => {
       isScrollingRef.current = false;
-    }, 1000);
+    }, 1500);
+
+    // Precise scroll-end detection loop
+    let lastY = window.scrollY;
+    let sameCount = 0;
+    const checkScrollEnd = () => {
+      const currentY = window.scrollY;
+      if (currentY === lastY) {
+        sameCount++;
+        if (sameCount >= 3) {
+          isScrollingRef.current = false;
+          if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+        } else {
+          requestAnimationFrame(checkScrollEnd);
+        }
+      } else {
+        sameCount = 0;
+        lastY = currentY;
+        requestAnimationFrame(checkScrollEnd);
+      }
+    };
+
+    setTimeout(() => {
+      requestAnimationFrame(checkScrollEnd);
+    }, 100);
   }
 
   const allItems = NAV.flatMap(g => g.items)
