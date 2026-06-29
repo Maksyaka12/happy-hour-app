@@ -32,8 +32,15 @@ const calculateTradingContestTimeLeft = () => {
   return `${d}d ${h.toString().padStart(2, '0')}h ${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`
 }
 
-export function ContestsSection({ setTab, address }) {
-  const [activeContest, setActiveContest] = useState(null)
+export function ContestsSection({ setTab, address, initialContest = null, onClearInitialContest }) {
+  const [activeContest, setActiveContest] = useState(initialContest)
+
+  useEffect(() => {
+    if (initialContest) {
+      setActiveContest(initialContest)
+      if (onClearInitialContest) onClearInitialContest()
+    }
+  }, [initialContest, onClearInitialContest])
   const [contestTimeLeft, setContestTimeLeft] = useState(calculateContestTimeLeft())
   const [tradingContestTimeLeft, setTradingContestTimeLeft] = useState(calculateTradingContestTimeLeft())
   const [selectedFilter, setSelectedFilter] = useState('all') // 'all', 'ongoing', 'ended'

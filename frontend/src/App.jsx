@@ -44,6 +44,7 @@ export default function App() {
     } catch { return 'usdc' }
   })
   const [caCopied, setCaCopied] = useState(false)
+  const [initialContest, setInitialContest] = useState(null)
 
   useEffect(() => {
     try { localStorage.setItem('happy_leaderboard_subtab', leaderboardSubTab) } catch { }
@@ -445,8 +446,62 @@ export default function App() {
 
         <div style={{ height: 12 }} />
 
-        {/* <EventBanner onClick={() => setTab('boxes')} /> */}
-        {/* <ContestBanner onClick={() => setTab('boxes')} /> */}
+        {/* Trading Contest News Ticker Banner */}
+        <div 
+          onClick={() => {
+            setInitialContest('trader');
+            setTab('contests');
+          }}
+          style={{
+            maxWidth: 640,
+            margin: '0 auto 12px',
+            background: '#0A0B0D',
+            borderRadius: 14,
+            padding: '10px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            cursor: 'pointer',
+            boxShadow: '0 4px 12px rgba(10, 11, 13, 0.08)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            boxSizing: 'border-box',
+            transition: 'transform 0.15s, border-color 0.15s',
+            fontFamily: "'Outfit', 'Inter', sans-serif"
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.transform = 'translateY(-1px)';
+            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.transform = 'none';
+            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: 13, fontWeight: 750, color: '#FFFFFF', letterSpacing: '-0.1px' }}>
+              Trading Contest is live
+            </span>
+            <span style={{ fontSize: 14 }}>🔥</span>
+          </div>
+
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 4, 
+            background: 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)',
+            borderRadius: 8,
+            padding: '4px 8px 4px 10px',
+            boxShadow: '0 2px 6px rgba(0, 82, 255, 0.3)'
+          }}>
+            <span style={{ fontSize: 10.5, fontWeight: 800, color: '#FFFFFF', letterSpacing: '0.2px' }}>
+              Participate
+            </span>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </div>
+        </div>
 
         <div style={{ position: 'relative', zIndex: 1, maxWidth: 640, margin: '0 auto' }}>
           {tab === 'home' && <ProfileSection address={address} basename={basename} totalUsers={totalUsers} setTab={setTab} />}
@@ -484,7 +539,14 @@ export default function App() {
               <RaidMode address={address} />
             </div>
           )}
-          {tab === 'contests' && <ContestsSection setTab={setTab} address={address} />}
+          {tab === 'contests' && (
+            <ContestsSection 
+              setTab={setTab} 
+              address={address} 
+              initialContest={initialContest} 
+              onClearInitialContest={() => setInitialContest(null)} 
+            />
+          )}
           {tab === 'leaderboard' && (
             <>
               <div style={{ padding: '0 16px' }}>
