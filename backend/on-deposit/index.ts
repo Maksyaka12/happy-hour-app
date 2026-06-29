@@ -102,8 +102,12 @@ serve(async (req) => {
       console.log(`[on-deposit] Deposited ${amount} HH ($${amountUsd} USD)`);
     }
 
-    if (amountUsd < MIN_DEPOSIT || amountUsd > MAX_DEPOSIT) {
-      console.log(`[on-deposit] Invalid USD amount ${amountUsd}`);
+    // Apply a 20% tolerance to account for minor price discrepancies/fluctuations between the frontend and DexScreener APIs
+    const minAllowedUsd = MIN_DEPOSIT * 0.8;
+    const maxAllowedUsd = MAX_DEPOSIT * 1.2;
+
+    if (amountUsd < minAllowedUsd || amountUsd > maxAllowedUsd) {
+      console.log(`[on-deposit] Invalid USD amount ${amountUsd} (limits: ${minAllowedUsd} - ${maxAllowedUsd})`);
       continue;
     }
 
@@ -175,7 +179,7 @@ serve(async (req) => {
       continue;
     }
 
-    console.log(`[on-deposit] Recorded ${amount} USDC from ${fromAddr} into round ${round.id}`);
+    console.log(`[on-deposit] Recorded ${amount} ${isHh ? "HH" : "USDC"} from ${fromAddr} into round ${round.id}`);
   }
 
   return new Response(JSON.stringify({ ok: true }), {
