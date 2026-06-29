@@ -823,7 +823,7 @@ function RoadmapSection() {
             Phase 1: Token Economics & Utility Design (Completed)
           </h3>
           <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.6, margin: 0 }}>
-            Designing the deflationary economy of $HH with a 30% burn and 70% community rewards split for in-app transactions, staking vaults, and seasonal distributions.
+            Establish a sustainable deflationary economy for the $HH coin. Implement a smart contract split mechanism directing 30% of all transaction fees to a permanent burn address to decrease circulating supply, and 70% to a community treasury vault to fund ecosystem rewards.
           </p>
         </div>
 
@@ -832,7 +832,7 @@ function RoadmapSection() {
             Phase 2: In-App Core Integration (Completed)
           </h3>
           <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.6, margin: 0 }}>
-            Embedding $HH as the native currency of the Happy Hour App. Launching hourly raffles, staking programs, premium Happy Boxes, and daily passive HP calculations.
+            Embed the $HH token as the native utility currency of the Happy Hour App. Launch onchain staking programs with tiered lock options (7 and 10 days), deploy hourly USDC & $HH raffle mechanics, and integrate interactive elements like Happy Boxes to drive transaction volume.
           </p>
         </div>
 
@@ -841,7 +841,7 @@ function RoadmapSection() {
             Phase 3: Season 2 Launch & Platform Overhaul (Completed)
           </h3>
           <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.6, margin: 0 }}>
-            Full UI/UX redesign, implementing a live Trading Contest, pagination, improved database indexing, and launching Season 2 with higher USDC & $HH prize pools.
+            Execute a comprehensive UI/UX redesign and launch Season 2 of the Happy Hour App with enhanced prize pools. Introduce competitive community programs including a real-time Trading Contest, advanced leaderboards, and optimized pagination for high-throughput activity tracking.
           </p>
         </div>
 
@@ -853,7 +853,7 @@ function RoadmapSection() {
             </span>
           </h3>
           <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.6, margin: 0, fontWeight: 500 }}>
-            Integrating Happy Hour and the $HH coin into the emerging Agentic Economy on Base. Enabling autonomous AI agents to trade, stake, participate in raffles, and trigger automated buybacks.
+            Establish Happy Hour and the $HH token as a leading hub for the autonomous Agentic Economy on Base. Open onchain gates for AI agents to stake, trade, participate in raffles, and trigger automated buybacks, creating a symbiotic ecosystem between human and machine agents.
           </p>
         </div>
 
@@ -865,7 +865,7 @@ function RoadmapSection() {
             </span>
           </h3>
           <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.6, margin: 0 }}>
-            Expanding utility through external partnerships, developer API release, and decentralized governance mechanisms.
+            Broaden the reach of the Happy Hour brand through external strategic partnerships, release the developer API suite to foster third-party integrations, and introduce decentralized governance mechanisms.
           </p>
         </div>
       </div>
