@@ -732,11 +732,12 @@ const ID_TO_PATH = {
 
 function RoadmapSection() {
   const phases = [
-    { id: 1, label: 'Utility Design', status: 'completed' },
-    { id: 2, label: 'In-App Integration', status: 'completed' },
+    { id: 1, label: '$HH Utility Design', status: 'completed' },
+    { id: 2, label: '$HH In-App Integration', status: 'completed' },
     { id: 3, label: 'Season 2 Launch', status: 'completed' },
     { id: 4, label: 'Agentic Economy', status: 'active' },
-    { id: 5, label: 'Expansion', status: 'coming-soon' }
+    { id: 5, label: 'Expansion', status: 'coming-soon' },
+    { id: 6, label: 'Coming Soon...', status: 'coming-soon' }
   ]
 
   return (
@@ -748,19 +749,33 @@ function RoadmapSection() {
         Ecosystem Roadmap
       </h1>
       <p style={{ fontSize: 14, color: '#475569', margin: '0 0 32px', lineHeight: 1.65 }}>
-        Our horizontal roadmap details the evolution of the Happy Hour ecosystem, from initial deflationary utility design to full integration into the emerging AI-powered Agentic Economy on Base.
+        This roadmap outlines the official milestones for the growth, sustainability, and long-term expansion of the Happy Hour ecosystem and the $HH coin.
       </p>
 
       {/* Horizontal Timeline Container */}
-      <div style={{ position: 'relative', padding: '30px 10px', marginBottom: 48, marginTop: 10 }}>
+      <div style={{ 
+        position: 'relative', 
+        padding: '24px 20px', 
+        marginBottom: 48, 
+        marginTop: 10,
+        background: 'rgba(0, 82, 255, 0.02)',
+        border: '1px solid rgba(0, 82, 255, 0.08)',
+        borderRadius: 16
+      }}>
+        {/* Corner Pixel Decorations */}
+        <div style={{ position: 'absolute', top: -1, left: -1, width: 4, height: 4, background: '#0052FF' }} />
+        <div style={{ position: 'absolute', top: -1, right: -1, width: 4, height: 4, background: '#0052FF' }} />
+        <div style={{ position: 'absolute', bottom: -1, left: -1, width: 4, height: 4, background: '#0052FF' }} />
+        <div style={{ position: 'absolute', bottom: -1, right: -1, width: 4, height: 4, background: '#0052FF' }} />
+
         {/* Track Line */}
         <div style={{
           position: 'absolute',
-          top: '39px',
-          left: '7%',
-          right: '7%',
+          top: '32px',
+          left: '9%',
+          right: '9%',
           height: '3px',
-          background: 'linear-gradient(to right, #10B981 0%, #10B981 60%, #0052FF 75%, #E2E8F0 100%)',
+          background: 'linear-gradient(to right, #10B981 0%, #10B981 45%, #0052FF 63%, #E2E8F0 80%, #E2E8F0 100%)',
           zIndex: 1
         }} />
 
@@ -772,7 +787,7 @@ function RoadmapSection() {
             const isComing = p.status === 'coming-soon'
 
             return (
-              <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '18%', textAlign: 'center' }}>
+              <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '15%', textAlign: 'center' }}>
                 {/* Node Dot */}
                 <div style={{
                   width: isActive ? 22 : 16,
@@ -803,7 +818,7 @@ function RoadmapSection() {
 
                 {/* Node Label */}
                 <span style={{
-                  fontSize: '11px',
+                  fontSize: '10.5px',
                   fontWeight: isActive || isCompleted ? 750 : 500,
                   color: isCompleted ? '#0F172A' : isActive ? '#0052FF' : '#64748B',
                   lineHeight: 1.2
@@ -859,13 +874,19 @@ function RoadmapSection() {
 
         <div>
           <h3 style={{ fontSize: 16, fontWeight: 800, color: '#64748B', display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 8px' }}>
-            Phase 5: Ecosystem Expansion
-            <span style={{ fontSize: 11, background: 'rgba(100, 116, 139, 0.1)', color: '#64748B', padding: '2px 8px', borderRadius: 99, border: '1px solid rgba(100, 116, 139, 0.2)' }}>
-              Coming Soon
-            </span>
+            Phase 5: Ecosystem Expansion (Coming Soon)
           </h3>
           <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.6, margin: 0 }}>
             We aim to expand the utility of the $HH token beyond our native platform. Through strategic partnerships, open developer APIs, and decentralized governance, we plan to integrate $HH into the wider web3 ecosystem as a key utility asset.
+          </p>
+        </div>
+
+        <div>
+          <h3 style={{ fontSize: 16, fontWeight: 800, color: '#94A3B8', display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 8px' }}>
+            Coming Soon...
+          </h3>
+          <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.6, margin: 0 }}>
+            The journey doesn't end here. We will continuously introduce new milestones, features, and expansion models to solidify $HH's position as a premier utility coin on Base.
           </p>
         </div>
       </div>
