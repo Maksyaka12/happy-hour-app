@@ -746,10 +746,10 @@ function RoadmapSection() {
         Roadmap
       </div>
       <h1 style={{ fontSize: 32, fontWeight: 800, color: '#0f172a', margin: '0 0 10px', letterSpacing: '-0.5px', lineHeight: 1.2 }}>
-        Happy Hour & $HH Roadmap
+        Roadmap: Happy Hour & $HH
       </h1>
       <p style={{ fontSize: 14, color: '#475569', margin: '0 0 32px', lineHeight: 1.65 }}>
-        This roadmap outlines the official milestones for the growth, sustainability, and long-term expansion of the Happy Hour ecosystem and the $HH coin.
+        This roadmap outlines the official milestones for the growth, sustainability, and long-term expansion of the Happy Hour ecosystem and the $HH coin. The roadmap is a living document that scales alongside the rapidly evolving Base network, reflecting what has been completed, what is currently in progress, and what is planned for the future in real-time.
       </p>
 
       {/* Horizontal Timeline Container */}
@@ -838,7 +838,7 @@ function RoadmapSection() {
             Phase 1: Token Economics & Utility Design (Completed)
           </h3>
           <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.6, margin: 0 }}>
-            Since Happy Hour has adopted the community-created $HH coin as its native utility token, our first critical milestone was designing a bulletproof economic model. We established a sustainable deflationary cycle driven by real utility, featuring an automated fee-split mechanism. Under this framework, 30% of all platform transaction fees are permanently burned—constantly reducing circulating supply—while 70% is funneled directly into the community treasury to seed staking pools and reward active builders. This foundation ensures that every transaction on our platform directly accrues value to $HH holders.
+            Since the Happy Hour platform adopted the community-created $HH coin—originally launched by our community via BankrBot—we committed to supporting and strengthening it as our native token. This phase focuses on designing a robust economic model and utility frameworks aimed at ensuring the token's sustainable growth, increasing market presence, and laying down the foundations for a solid deflationary loop.
           </p>
         </div>
 
@@ -847,7 +847,7 @@ function RoadmapSection() {
             Phase 2: In-App Core Integration (Completed)
           </h3>
           <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.6, margin: 0 }}>
-            We aim to deeply integrate the $HH coin into the core architecture of the Happy Hour app, converting it into the exclusive transactional engine of our platform. By launching high-yield onchain staking vaults (featuring 103% and 166% APR options), hourly USDC & $HH raffles, and gamified loops like premium Happy Boxes, we create a continuous demand sink. Every feature is designed to lock up circulating supply, accelerate token velocity, and incentivize daily active participation, making $HH an indispensable utility asset for all platform participants.
+            The objective is to deeply integrate the $HH coin as the primary utility currency within the Happy Hour application, converting it into the core transactional engine for all actions. This involves building and launching all token-based protocols, payment routes, and reward logic directly on Base mainnet in full alignment with our utility design.
           </p>
         </div>
 
@@ -856,7 +856,7 @@ function RoadmapSection() {
             Phase 3: Season 2 Launch & Platform Overhaul (Completed)
           </h3>
           <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.6, margin: 0 }}>
-            Our objective is to execute a complete overhaul of the platform's user experience and officially launch Season 2 with vastly expanded prize pools. We are building competitive community-centric systems—including a live Trading Contest, real-time volume trackers, and advanced leaderboard metrics—to gamify user engagement. By implementing optimized database pagination and robust onchain trading feeds, we are scaling the platform to support millions of active users while maintaining the premium, low-latency performance expected of a top-tier dApp.
+            Execute a comprehensive platform overhaul to introduce a modern, premium UI/UX along with new utility features centered around the native $HH coin. This phase culminates in the official launch of Season 2, presenting a fully upgraded application that accommodates high community engagement and optimized features.
           </p>
         </div>
 
@@ -868,7 +868,7 @@ function RoadmapSection() {
             </span>
           </h3>
           <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.6, margin: 0, fontWeight: 500 }}>
-            We plan to position Happy Hour and the $HH coin at the absolute vanguard of the emerging AI Agentic Economy on Base. By deploying open onchain entrypoints, we will enable autonomous AI agents to seamlessly stake, trade, participate in hourly raffles, and execute automated buybacks via API. This pioneering integration will bridge the gap between human users and autonomous agents, establishing $HH as the native transactional currency for AI-driven commerce on Base and capturing massive volume from the next wave of decentralized automation.
+            We plan to integrate the Happy Hour ecosystem and the $HH coin into the emerging Agentic Economy on Base, exploring compatibility with BankrBot and autonomous agent skills. The task is to establish interfaces that allow AI agents to interact with our platform, stake, or trade, with the goal of positioning Happy Hour as a key hub for agentic automation and human-agent collaboration on Base.
           </p>
         </div>
 
@@ -877,7 +877,7 @@ function RoadmapSection() {
             Phase 5: Ecosystem Expansion (Coming Soon)
           </h3>
           <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.6, margin: 0 }}>
-            We aim to scale the utility of the $HH token far beyond the boundaries of our native application. Through strategic cross-protocol integrations, decentralized governance (DAO) launch, and the release of our open developer API suite, we plan to embed $HH as a primary collateral and utility asset across the wider Base DeFi ecosystem. By collaborating with leading web3 protocols and developer teams, we are unlocking infinite external utility channels to drive exponential ecosystem growth.
+            We plan to expand the utility of the $HH token beyond our native platform. Through strategic partnerships, open developer APIs, and decentralized governance, we aim to integrate $HH into the wider web3 ecosystem as a key utility asset.
           </p>
         </div>
 
@@ -886,7 +886,7 @@ function RoadmapSection() {
             More to Come...
           </h3>
           <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.6, margin: 0 }}>
-            The journey doesn't end here. The roadmap is a living document that scales alongside the rapidly evolving Base network. We are committed to continuously introducing innovative mechanics, gas-efficient onchain games, and aggressive ecosystem partnerships to solidify $HH's position as a premier, high-utility crypto asset. Stay tuned as we build the future of decentralized entertainment and AI-agent commerce.
+            The roadmap is a living document that scales alongside the rapidly evolving Base network. We will continuously update this page to introduce new milestones, features, and expansion models as the ecosystem matures.
           </p>
         </div>
       </div>
