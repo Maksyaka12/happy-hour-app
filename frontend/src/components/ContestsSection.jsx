@@ -42,6 +42,7 @@ export function ContestsSection({ setTab, address }) {
   const [userVolumeHH, setUserVolumeHH] = useState(0)
   const [userVolumeUSD, setUserVolumeUSD] = useState(0)
   const [userTrades, setUserTrades] = useState([])
+  const [visibleTradesCount, setVisibleTradesCount] = useState(3)
   const [loadingTraderContest, setLoadingTraderContest] = useState(false)
   const [hhPrice, setHhPrice] = useState(0.0000003458)
 
@@ -1213,58 +1214,118 @@ export function ContestsSection({ setTab, address }) {
                       No trades detected. Trades will update automatically when you perform swaps.
                     </div>
                   ) : (
-                    <div className="dark-scrollbar" style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 240, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                      {userTrades.slice(0, 5).map(trade => (
-                        <div key={trade.hash} style={{
-                          background: 'rgba(255, 255, 255, 0.03)',
-                          borderRadius: 12,
-                          padding: '10px 12px',
-                          border: '1px solid rgba(255, 255, 255, 0.06)',
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center'
-                        }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                            <span style={{
-                              background: trade.type === 'Buy' ? 'rgba(52, 211, 153, 0.12)' : 'rgba(239, 68, 68, 0.12)',
-                              color: trade.type === 'Buy' ? '#34D399' : '#FCA5A5',
-                              fontSize: 9,
-                              fontWeight: 900,
-                              padding: '2px 6px',
-                              borderRadius: 5,
-                              textTransform: 'uppercase'
-                            }}>
-                              {trade.type}
-                            </span>
-                            <div>
-                              <div style={{ fontSize: 12.5, fontWeight: 700, color: '#FFFFFF' }}>
-                                {trade.amountHH.toLocaleString(undefined, { maximumFractionDigits: 0 })} HH
-                              </div>
-                              <div style={{ fontSize: 10.5, color: 'rgba(255, 255, 255, 0.5)', marginTop: 0.5 }}>
-                                ≈ ${trade.amountUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    <>
+                      <div className="dark-scrollbar" style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: visibleTradesCount <= 3 ? 180 : 360, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                        {userTrades.slice(0, visibleTradesCount).map(trade => (
+                          <div key={trade.hash} style={{
+                            background: 'rgba(255, 255, 255, 0.03)',
+                            borderRadius: 12,
+                            padding: '10px 12px',
+                            border: '1px solid rgba(255, 255, 255, 0.06)',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center'
+                          }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                              <span style={{
+                                background: trade.type === 'Buy' ? 'rgba(52, 211, 153, 0.12)' : 'rgba(239, 68, 68, 0.12)',
+                                color: trade.type === 'Buy' ? '#34D399' : '#FCA5A5',
+                                fontSize: 9,
+                                fontWeight: 900,
+                                padding: '2px 6px',
+                                borderRadius: 5,
+                                textTransform: 'uppercase'
+                              }}>
+                                {trade.type}
+                              </span>
+                              <div>
+                                <div style={{ fontSize: 12.5, fontWeight: 700, color: '#FFFFFF' }}>
+                                  {trade.amountHH.toLocaleString(undefined, { maximumFractionDigits: 0 })} HH
+                                </div>
+                                <div style={{ fontSize: 10.5, color: 'rgba(255, 255, 255, 0.5)', marginTop: 0.5 }}>
+                                  ≈ ${trade.amountUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                </div>
                               </div>
                             </div>
-                          </div>
 
-                          <a
-                            href={`https://basescan.org/tx/${trade.hash}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{
-                              fontSize: 11,
-                              color: '#38BDF8',
-                              fontWeight: 700,
-                              textDecoration: 'none',
-                              fontFamily: "'DM Mono', monospace"
-                            }}
-                            onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
-                            onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
-                          >
-                            {trade.hash.substring(0, 6)}...{trade.hash.substring(trade.hash.length - 4)} ↗
-                          </a>
+                            <a
+                              href={`https://basescan.org/tx/${trade.hash}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                fontSize: 11,
+                                color: '#38BDF8',
+                                fontWeight: 700,
+                                textDecoration: 'none',
+                                fontFamily: "'DM Mono', monospace"
+                              }}
+                              onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
+                              onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
+                            >
+                              {trade.hash.substring(0, 6)}...{trade.hash.substring(trade.hash.length - 4)} ↗
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+
+                      {userTrades.length > 3 && (
+                        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 10 }}>
+                          {visibleTradesCount < userTrades.length ? (
+                            <button
+                              onClick={() => setVisibleTradesCount(prev => Math.min(prev + 5, userTrades.length))}
+                              style={{
+                                background: 'rgba(255, 255, 255, 0.05)',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                color: '#38BDF8',
+                                borderRadius: 8,
+                                padding: '6px 12px',
+                                fontSize: 12,
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                outline: 'none'
+                              }}
+                              onMouseEnter={e => {
+                                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
+                                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                              }}
+                              onMouseLeave={e => {
+                                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                              }}
+                            >
+                              Show More
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => setVisibleTradesCount(3)}
+                              style={{
+                                background: 'rgba(255, 255, 255, 0.05)',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                color: '#38BDF8',
+                                borderRadius: 8,
+                                padding: '6px 12px',
+                                fontSize: 12,
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                outline: 'none'
+                              }}
+                              onMouseEnter={e => {
+                                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
+                                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                              }}
+                              onMouseLeave={e => {
+                                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                              }}
+                            >
+                              Show Less
+                            </button>
+                          )}
                         </div>
-                      ))}
-                    </div>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
