@@ -1073,7 +1073,7 @@ export function StakingSection({ setTab }) {
 
                 {/* Scrollable list */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 180, overflowY: 'auto', paddingRight: 2 }}>
-                  {activeStakes.filter(s => !s.active).map((s) => {
+                  {activeStakes.filter(s => !s.active).slice().sort((a, b) => b.startTime - a.startTime).map((s) => {
                     const aprVal = getPositionApr(s)
                     const durationDays = parseInt(s.lockPeriod || s.durationDays) || 7
                     const yieldAmount = (s.amount * aprVal * durationDays) / 36500
