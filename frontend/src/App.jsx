@@ -444,8 +444,6 @@ export default function App() {
           </div>
         </div>
 
-        <div style={{ height: 12 }} />
-
         {/* Trading Contest News Ticker Banner */}
         <div 
           onClick={() => {
@@ -453,28 +451,24 @@ export default function App() {
             setTab('contests');
           }}
           style={{
-            maxWidth: 640,
-            margin: '0 auto 12px',
+            width: '100%',
             background: '#0A0B0D',
-            borderRadius: 14,
             padding: '10px 16px',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
+            justifyContent: 'center',
+            gap: 16,
             cursor: 'pointer',
-            boxShadow: '0 4px 12px rgba(10, 11, 13, 0.08)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
             boxSizing: 'border-box',
-            transition: 'transform 0.15s, border-color 0.15s',
+            transition: 'background-color 0.15s',
             fontFamily: "'Outfit', 'Inter', sans-serif"
           }}
           onMouseEnter={e => {
-            e.currentTarget.style.transform = 'translateY(-1px)';
-            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+            e.currentTarget.style.background = '#111317';
           }}
           onMouseLeave={e => {
-            e.currentTarget.style.transform = 'none';
-            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+            e.currentTarget.style.background = '#0A0B0D';
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -488,20 +482,22 @@ export default function App() {
             display: 'flex', 
             alignItems: 'center', 
             gap: 4, 
-            background: 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)',
+            background: 'linear-gradient(135deg, #FBBF24 0%, #F59E0B 50%, #EF4444 100%)',
             borderRadius: 8,
             padding: '4px 8px 4px 10px',
-            boxShadow: '0 2px 6px rgba(0, 82, 255, 0.3)'
+            boxShadow: '0 2px 8px rgba(245, 158, 11, 0.4)'
           }}>
-            <span style={{ fontSize: 10.5, fontWeight: 800, color: '#FFFFFF', letterSpacing: '0.2px' }}>
+            <span style={{ fontSize: 10.5, fontWeight: 800, color: '#0A0B0D', letterSpacing: '0.2px' }}>
               Participate
             </span>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#0A0B0D" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="5" y1="12" x2="19" y2="12" />
               <polyline points="12 5 19 12 12 19" />
             </svg>
           </div>
         </div>
+
+        <div style={{ height: 12 }} />
 
         <div style={{ position: 'relative', zIndex: 1, maxWidth: 640, margin: '0 auto' }}>
           {tab === 'home' && <ProfileSection address={address} basename={basename} totalUsers={totalUsers} setTab={setTab} />}
