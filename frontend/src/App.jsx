@@ -468,7 +468,6 @@ export default function App() {
           </div>
         </div>
 
-        {/* Trading Contest News Ticker Banner */}
         <div 
           onClick={() => {
             setInitialContest('trader');
@@ -477,11 +476,11 @@ export default function App() {
           style={{
             width: '100%',
             background: '#0A0B0D',
-            padding: '10px 16px',
+            padding: '6px 16px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 16,
+            gap: 12,
             cursor: 'pointer',
             borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
             boxSizing: 'border-box',
@@ -495,39 +494,36 @@ export default function App() {
             e.currentTarget.style.background = '#0A0B0D';
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
-            <span style={{ fontSize: 13, fontWeight: 750, color: '#FFFFFF', letterSpacing: '-0.1px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
+            <span style={{ fontSize: 12, fontWeight: 750, color: '#FFFFFF', letterSpacing: '-0.1px' }}>
               Trading Contest is live
             </span>
-            <span style={{ fontSize: 14 }}>🔥</span>
+            <span style={{ fontSize: 13 }}>🔥</span>
             <span style={{ 
               fontSize: 11.5, 
               fontWeight: 700, 
               color: '#FBBF24', 
               fontFamily: "'DM Mono', monospace", 
-              background: 'rgba(251, 191, 36, 0.1)',
-              padding: '2px 8px',
-              borderRadius: 6,
-              border: '1px solid rgba(251, 191, 36, 0.2)',
-              marginLeft: 4
+              marginLeft: 2
             }}>
-              Ends in: {tradingContestTimeLeft}
+              {tradingContestTimeLeft}
             </span>
           </div>
 
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
-            gap: 4, 
+            gap: 3, 
             background: 'linear-gradient(135deg, #FBBF24 0%, #F59E0B 50%, #EF4444 100%)',
-            borderRadius: 8,
-            padding: '4px 8px 4px 10px',
-            boxShadow: '0 2px 8px rgba(245, 158, 11, 0.4)'
+            borderRadius: 6,
+            padding: '3px 6px 3px 8px',
+            boxShadow: '0 1px 4px rgba(245, 158, 11, 0.3)',
+            whiteSpace: 'nowrap'
           }}>
-            <span style={{ fontSize: 10.5, fontWeight: 800, color: '#0A0B0D', letterSpacing: '0.2px' }}>
+            <span style={{ fontSize: 9.5, fontWeight: 800, color: '#0A0B0D', letterSpacing: '0.1px' }}>
               Participate
             </span>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#0A0B0D" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#0A0B0D" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
               <line x1="5" y1="12" x2="19" y2="12" />
               <polyline points="12 5 19 12 12 19" />
             </svg>
