@@ -737,7 +737,7 @@ function RoadmapSection() {
     { id: 3, label: 'Season 2 Launch', status: 'completed' },
     { id: 4, label: 'Agentic Economy', status: 'active' },
     { id: 5, label: 'Expansion', status: 'coming-soon' },
-    { id: 6, label: 'Coming Soon...', status: 'coming-soon' }
+    { id: 6, label: 'More to Come...', status: 'coming-soon' }
   ]
 
   return (
@@ -883,7 +883,7 @@ function RoadmapSection() {
 
         <div>
           <h3 style={{ fontSize: 16, fontWeight: 800, color: '#94A3B8', display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 8px' }}>
-            Coming Soon...
+            More to Come...
           </h3>
           <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.6, margin: 0 }}>
             The journey doesn't end here. We will continuously introduce new milestones, features, and expansion models to solidify $HH's position as a premier utility coin on Base.
