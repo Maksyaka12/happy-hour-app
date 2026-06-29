@@ -1024,6 +1024,15 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
             </ul>
           </div>
 
+          <div style={{ margin: '0 0 16px', fontSize: 13, color: '#475569', fontWeight: 500 }}>
+            <h4 style={{ margin: '0 0 8px', fontSize: 13.5, fontWeight: 700, color: '#9B1C1C' }}>Important:</h4>
+            <ul style={{ margin: 0, paddingLeft: 20, lineHeight: 1.7 }}>
+              <li><strong>Active Wallet:</strong> Connect the exact wallet you use to trade $HH coin.</li>
+              <li><strong>Retroactive:</strong> Connect anytime before the end — all trades are tracked retroactively.</li>
+              <li><strong>Rewards:</strong> Unconnected wallets do not qualify for rewards.</li>
+            </ul>
+          </div>
+
           <p style={{ margin: '0 0 16px', fontSize: 13, color: '#475569', fontWeight: 600, lineHeight: 1.5 }}>
             Top 3 wallets with the highest trading volume at the end of the contest will share a prize pool of $100 in $HH coin:
           </p>
