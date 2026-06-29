@@ -1025,7 +1025,7 @@ export function DocsPage() {
           .docs-sidebar { display: none !important; }
           .docs-sidebar.open { display: flex !important; position: fixed; top: 60px; left: 0; bottom: 0; z-index: 99; box-shadow: 4px 0 20px rgba(0,0,0,0.1); }
           .docs-mobile-menu-btn { display: flex !important; }
-          .docs-content-wrap { padding: 32px 20px 100px !important; }
+          .docs-content-wrap { padding: 32px 20px 75vh !important; }
         }
         @media (min-width: 769px) {
           .docs-mobile-menu-btn { display: none !important; }
@@ -1154,7 +1154,7 @@ export function DocsPage() {
           <main
             ref={contentRef}
             className="docs-content-wrap"
-            style={{ flex: 1, minWidth: 0, padding: '48px 60px 120px', maxWidth: 780 }}
+            style={{ flex: 1, minWidth: 0, padding: '48px 60px 75vh', maxWidth: 780 }}
           >
             <IntroSection onNav={scrollTo} />
             <LinksSection />
