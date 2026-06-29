@@ -1386,47 +1386,55 @@ export function ContestsSection({ setTab, address }) {
                       <div key={item.address} style={{
                         background: '#FFFFFF',
                         borderRadius: 14,
-                        padding: '12px 14px',
+                        padding: '10px 12px',
                         border: '1px solid rgba(239, 68, 68, 0.15)',
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center'
                       }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                           <span style={{
                             background: idx < 3 ? 'linear-gradient(135deg, #0052FF 0%, #7C3AED 100%)' : '#E2E8F0',
                             color: idx < 3 ? '#FFFFFF' : '#475569',
-                            fontSize: 11,
+                            fontSize: 10,
                             fontWeight: 900,
-                            width: 22,
-                            height: 22,
+                            width: 20,
+                            height: 20,
                             borderRadius: '50%',
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'center'
+                            justifyContent: 'center',
+                            flexShrink: 0,
+                            marginTop: 1
                           }}>
                             {idx + 1}
                           </span>
-                          <div>
-                            <div style={{ fontSize: 13, fontWeight: 700, color: '#1E293B', fontFamily: "'DM Mono', monospace" }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: '#1E293B', fontFamily: "'DM Mono', monospace" }}>
                               {item.address.substring(0, 6)}...{item.address.substring(item.address.length - 4)}
                             </div>
-                            <div style={{ fontSize: 11, color: '#64748B', marginTop: 1 }}>
-                              Buys: {item.buys.toLocaleString(undefined, { maximumFractionDigits: 0 })} HH / Sells: {item.sells.toLocaleString(undefined, { maximumFractionDigits: 0 })} HH
+                            <div style={{ fontSize: 10, color: '#64748B' }}>
+                              buys: <span style={{ fontWeight: 600, color: '#0F766E' }}>{item.buys.toLocaleString(undefined, { maximumFractionDigits: 0 })} HH</span>
+                            </div>
+                            <div style={{ fontSize: 10, color: '#64748B' }}>
+                              sells: <span style={{ fontWeight: 600, color: '#B91C1C' }}>{item.sells.toLocaleString(undefined, { maximumFractionDigits: 0 })} HH</span>
+                            </div>
+                            <div style={{ fontSize: 10, color: '#64748B' }}>
+                              USD Volume: <span style={{ fontWeight: 600, color: '#1E293B' }}>≈ ${((item.buys + item.sells) * hhPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                             </div>
                           </div>
                         </div>
 
-                        <div style={{ textAlign: 'right' }}>
-                          <div style={{ fontSize: 14, fontWeight: 900, color: '#1E293B' }}>
-                            {item.total.toLocaleString(undefined, { maximumFractionDigits: 2 })}
-                            <span style={{ fontSize: 10, color: '#EF4444', fontWeight: 800, marginLeft: 4 }}>HH</span>
+                        <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 3 }}>
+                          <div style={{ fontSize: 12.5, fontWeight: 900, color: '#1E293B' }}>
+                            {item.total.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                            <span style={{ fontSize: 9.5, color: '#EF4444', fontWeight: 800, marginLeft: 3 }}>HH</span>
                           </div>
                           <a
                             href={`https://basescan.org/address/${item.address}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            style={{ fontSize: 10, color: '#0052FF', textDecoration: 'none', fontWeight: 700 }}
+                            style={{ fontSize: 9.5, color: '#0052FF', textDecoration: 'none', fontWeight: 700 }}
                             onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
                             onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
                           >
