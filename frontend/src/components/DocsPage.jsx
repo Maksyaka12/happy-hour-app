@@ -732,12 +732,42 @@ const ID_TO_PATH = {
 
 function RoadmapSection() {
   const phases = [
-    { id: 1, label: '$HH Utility Design', status: 'completed' },
-    { id: 2, label: '$HH In-App Integration', status: 'completed' },
-    { id: 3, label: 'App Upgrade & S2', status: 'completed' },
-    { id: 4, label: 'Agentic Economy', status: 'active' },
-    { id: 5, label: 'Expansion', status: 'coming-soon' },
-    { id: 6, label: 'More to Come...', status: 'coming-soon' }
+    { 
+      id: 1, 
+      title: 'Phase 1: Token Economics & Utility Design (Completed)', 
+      desc: 'We officially accepted the $HH coin, which was created by the community via Bankr for the Happy Hour App, making it the native utility coin of the platform. The goal is to establish a dedicated economy and utility framework for the $HH coin that delivers long-term value and drives sustainable growth through a deflationary economic model. We strive to position $HH as a prominent native asset playing a major role in the wider Base ecosystem.',
+      status: 'completed' 
+    },
+    { 
+      id: 2, 
+      title: 'Phase 2: In-App Core Integration (Completed)', 
+      desc: 'The objective is to deeply integrate the $HH coin as the primary utility currency within the Happy Hour application, converting it into the core transactional engine for all actions. This integration establishes $HH as a fully-fledged currency widely used for all transactions and payments inside the Happy Hour App, generating natural demand and utility.',
+      status: 'completed' 
+    },
+    { 
+      id: 3, 
+      title: 'Phase 3: App Upgrade & Season 2 Launch (Completed)', 
+      desc: 'Execute a comprehensive system upgrade to introduce a fully overhauled application with deep integration of the $HH coin as the primary native utility currency. Season 2 represents a major milestone for the app, featuring a premium UI/UX, newly added dApp functionalities running in full alignment with the defined $HH economics and utility, revamped reward systems, and updated logic designed to support and strengthen the native $HH coin.',
+      status: 'completed' 
+    },
+    { 
+      id: 4, 
+      title: 'Phase 4: Agentic Economy Integration', 
+      desc: 'The goal is to integrate the Happy Hour ecosystem and the $HH coin into the Agentic Economy on Base, exploring compatibility with Bankr and autonomous agent skills. The task is to make Happy Hour a core part of the Agentic Economy, allowing AI agents to interact with the Happy Hour app by utilizing dApp features, earning in-app points, executing staking, and other available features. Ultimately, Happy Hour is set to become an application widely used not only by humans but also by autonomous agents on Base, positioning Happy Hour as a key hub for agentic automation and human-agent collaboration.',
+      status: 'active' 
+    },
+    { 
+      id: 5, 
+      title: 'Phase 5: Ecosystem Expansion (Coming Soon)', 
+      desc: 'We plan to expand the utility of the $HH token beyond our native platform. Through strategic partnerships, open developer APIs, and decentralized governance, we aim to integrate $HH into the wider web3 ecosystem as a key utility asset.',
+      status: 'coming-soon' 
+    },
+    { 
+      id: 6, 
+      title: 'More to Come...', 
+      desc: 'The roadmap is a living document that scales alongside the rapidly evolving Base network. We will continuously update this page to introduce new milestones, features, and expansion models as the ecosystem matures.',
+      status: 'coming-soon' 
+    }
   ]
 
   return (
@@ -752,10 +782,10 @@ function RoadmapSection() {
         This roadmap outlines the official milestones for the growth, sustainability, and long-term expansion of the Happy Hour ecosystem and the $HH coin. The roadmap is a living document that scales alongside the rapidly evolving Base network, reflecting what has been completed, what is currently in progress, and what is planned for the future in real-time.
       </p>
 
-      {/* Horizontal Timeline Container */}
+      {/* Vertical Timeline Card Wrapper */}
       <div style={{ 
         position: 'relative', 
-        padding: '24px 20px', 
+        padding: '36px 24px 36px 56px', 
         marginBottom: 48, 
         marginTop: 10,
         background: 'rgba(0, 82, 255, 0.02)',
@@ -771,123 +801,124 @@ function RoadmapSection() {
         {/* Track Line */}
         <div style={{
           position: 'absolute',
-          top: '32px',
-          left: '9%',
-          right: '9%',
-          height: '3px',
-          background: 'linear-gradient(to right, #10B981 0%, #10B981 45%, #0052FF 63%, #E2E8F0 80%, #E2E8F0 100%)',
+          top: '46px',
+          bottom: '46px',
+          left: '38px',
+          width: '3px',
+          background: 'linear-gradient(to bottom, #10B981 0%, #10B981 45%, #0052FF 63%, #E2E8F0 80%, #E2E8F0 100%)',
           zIndex: 1
         }} />
 
-        {/* Nodes */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', zIndex: 2 }}>
+        {/* Phases list */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
           {phases.map((p, idx) => {
             const isCompleted = p.status === 'completed'
             const isActive = p.status === 'active'
             const isComing = p.status === 'coming-soon'
 
             return (
-              <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '15%', textAlign: 'center' }}>
-                {/* Node Dot */}
+              <div key={idx} style={{ position: 'relative' }}>
+                {/* Dot */}
                 <div style={{
-                  width: isActive ? 22 : 16,
-                  height: isActive ? 22 : 16,
-                  borderRadius: '50%',
-                  background: isCompleted ? '#10B981' : isActive ? '#0052FF' : '#E2E8F0',
-                  border: isActive ? '3px solid #FFFFFF' : isComing ? '2px solid #CBD5E1' : 'none',
+                  position: 'absolute',
+                  left: -32,
+                  top: 2,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  boxShadow: isActive ? '0 0 10px rgba(0, 82, 255, 0.5)' : 'none',
-                  marginBottom: 10,
-                  marginTop: isActive ? -3 : 0,
-                  cursor: 'pointer',
-                  transition: 'transform 0.15s'
-                }}
-                className={isActive ? 'roadmap-pulse' : ''}
-                >
+                  zIndex: 2
+                }}>
                   {isCompleted && (
-                    <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#FFF" strokeWidth="4.5">
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
+                    <div style={{
+                      width: 20,
+                      height: 20,
+                      borderRadius: '50%',
+                      background: '#10B981',
+                      border: '2px solid #10B981',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginLeft: 2
+                    }}>
+                      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#FFF" strokeWidth="4.5">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </div>
                   )}
                   {isActive && (
-                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#FFFFFF' }} />
+                    <div 
+                      className="roadmap-pulse"
+                      style={{
+                        width: 24,
+                        height: 24,
+                        borderRadius: '50%',
+                        background: '#0052FF',
+                        border: '3px solid #FFFFFF',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: '0 0 10px rgba(0, 82, 255, 0.5)'
+                      }}
+                    >
+                      <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#FFFFFF' }} />
+                    </div>
+                  )}
+                  {isComing && (
+                    <div style={{
+                      width: 18,
+                      height: 18,
+                      borderRadius: '50%',
+                      background: '#F1F5F9',
+                      border: '2px solid #CBD5E1',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginLeft: 3
+                    }}>
+                      <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#CBD5E1' }} />
+                    </div>
                   )}
                 </div>
 
-                {/* Node Label */}
-                <span style={{
-                  fontSize: '10.5px',
-                  fontWeight: isActive || isCompleted ? 750 : 500,
-                  color: isCompleted ? '#0F172A' : isActive ? '#0052FF' : '#64748B',
-                  lineHeight: 1.2
-                }}>
-                  {p.label}
-                </span>
+                {/* Content */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                    <h3 style={{
+                      fontSize: 16,
+                      fontWeight: 800,
+                      color: isActive ? '#0052FF' : '#0F172A',
+                      margin: 0
+                    }}>
+                      {p.title}
+                    </h3>
+                    {isActive && (
+                      <span style={{
+                        background: 'rgba(0, 82, 255, 0.1)',
+                        color: '#0052FF',
+                        padding: '2px 8px',
+                        borderRadius: 99,
+                        fontSize: 9.5,
+                        fontWeight: 800,
+                        border: '1px solid rgba(0, 82, 255, 0.2)',
+                        letterSpacing: '0.2px'
+                      }}>
+                        WE ARE HERE
+                      </span>
+                    )}
+                  </div>
+                  <p style={{
+                    fontSize: 13.5,
+                    color: '#475569',
+                    lineHeight: 1.6,
+                    margin: 0,
+                    fontWeight: isActive ? 500 : 400
+                  }}>
+                    {p.desc}
+                  </p>
+                </div>
               </div>
             )
           })}
-        </div>
-      </div>
-
-      {/* Detailed Phase Sections */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 28, marginTop: 10 }}>
-        <div>
-          <h3 style={{ fontSize: 16, fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 8px' }}>
-            Phase 1: Token Economics & Utility Design (Completed)
-          </h3>
-          <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.6, margin: 0 }}>
-            We officially accepted the $HH coin, which was created by the community via Bankr for the Happy Hour App, making it the native utility coin of the platform. The goal is to establish a dedicated economy and utility framework for the $HH coin that delivers long-term value and drives sustainable growth through a deflationary economic model. We strive to position $HH as a prominent native asset playing a major role in the wider Base ecosystem.
-          </p>
-        </div>
-
-        <div>
-          <h3 style={{ fontSize: 16, fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 8px' }}>
-            Phase 2: In-App Core Integration (Completed)
-          </h3>
-          <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.6, margin: 0 }}>
-            The objective is to deeply integrate the $HH coin as the primary utility currency within the Happy Hour application, converting it into the core transactional engine for all actions. This integration establishes $HH as a fully-fledged currency widely used for all transactions and payments inside the Happy Hour App, generating natural demand and utility.
-          </p>
-        </div>
-
-        <div>
-          <h3 style={{ fontSize: 16, fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 8px' }}>
-            Phase 3: App Upgrade & Season 2 Launch (Completed)
-          </h3>
-          <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.6, margin: 0 }}>
-            Execute a comprehensive system upgrade to introduce a fully overhauled application with deep integration of the $HH coin as the primary native utility currency. Season 2 represents a major milestone for the app, featuring a premium UI/UX, newly added dApp functionalities running in full alignment with the defined $HH economics and utility, revamped reward systems, and updated logic designed to support and strengthen the native $HH coin.
-          </p>
-        </div>
-
-        <div>
-          <h3 style={{ fontSize: 16, fontWeight: 800, color: '#0052FF', display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 8px' }}>
-            Phase 4: Agentic Economy Integration
-            <span style={{ fontSize: 11, background: 'rgba(0, 82, 255, 0.1)', color: '#0052FF', padding: '2px 8px', borderRadius: 99, border: '1px solid rgba(0, 82, 255, 0.2)', letterSpacing: '0.2px' }}>
-              We Are Here
-            </span>
-          </h3>
-          <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.6, margin: 0, fontWeight: 500 }}>
-            The goal is to integrate the Happy Hour ecosystem and the $HH coin into the Agentic Economy on Base, exploring compatibility with Bankr and autonomous agent skills. The task is to make Happy Hour a core part of the Agentic Economy, allowing AI agents to interact with the Happy Hour app by utilizing dApp features, earning in-app points, executing staking, and other available features. Ultimately, Happy Hour is set to become an application widely used not only by humans but also by autonomous agents on Base, positioning Happy Hour as a key hub for agentic automation and human-agent collaboration.
-          </p>
-        </div>
-
-        <div>
-          <h3 style={{ fontSize: 16, fontWeight: 800, color: '#64748B', display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 8px' }}>
-            Phase 5: Ecosystem Expansion (Coming Soon)
-          </h3>
-          <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.6, margin: 0 }}>
-            We plan to expand the utility of the $HH token beyond our native platform. Through strategic partnerships, open developer APIs, and decentralized governance, we aim to integrate $HH into the wider web3 ecosystem as a key utility asset.
-          </p>
-        </div>
-
-        <div>
-          <h3 style={{ fontSize: 16, fontWeight: 800, color: '#94A3B8', display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 8px' }}>
-            More to Come...
-          </h3>
-          <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.6, margin: 0 }}>
-            The roadmap is a living document that scales alongside the rapidly evolving Base network. We will continuously update this page to introduce new milestones, features, and expansion models as the ecosystem matures.
-          </p>
         </div>
       </div>
     </section>
@@ -1119,44 +1150,48 @@ export function DocsPage() {
               display: 'flex', justifyContent: 'space-between', marginTop: 60,
               paddingTop: 24, borderTop: '1px solid #f1f5f9', gap: 12, flexWrap: 'wrap',
             }}>
-              {allItems.map((item, i) => {
-                if (i === 0) return null
+              {(() => {
+                const currentIndex = allItems.findIndex(item => item.id === activeSection)
+                const prevItem = currentIndex > 0 ? allItems[currentIndex - 1] : null
+                const nextItem = currentIndex < allItems.length - 1 && currentIndex !== -1 ? allItems[currentIndex + 1] : null
+
                 return (
-                  <button
-                    key={item.id + '-prev'}
-                    onClick={() => scrollTo(allItems[i - 1].id)}
-                    style={{
-                      background: 'none', border: '1px solid #e2e8f0', borderRadius: 10,
-                      padding: '10px 18px', cursor: 'pointer', fontSize: 13,
-                      color: '#475569', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6,
-                      transition: 'all 0.15s', fontFamily: 'inherit',
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#0052ff'; e.currentTarget.style.color = '#0052ff' }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#475569' }}
-                  >
-                    ← {allItems[i - 1].label}
-                  </button>
+                  <>
+                    {prevItem ? (
+                      <button
+                        onClick={() => scrollTo(prevItem.id)}
+                        style={{
+                          background: 'none', border: '1px solid #e2e8f0', borderRadius: 10,
+                          padding: '10px 18px', cursor: 'pointer', fontSize: 13,
+                          color: '#475569', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6,
+                          transition: 'all 0.15s', fontFamily: 'inherit',
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor = '#0052ff'; e.currentTarget.style.color = '#0052ff' }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#475569' }}
+                      >
+                        ← {prevItem.label}
+                      </button>
+                    ) : <div />}
+
+                    {nextItem ? (
+                      <button
+                        onClick={() => scrollTo(nextItem.id)}
+                        style={{
+                          background: 'none', border: '1px solid #e2e8f0', borderRadius: 10,
+                          padding: '10px 18px', cursor: 'pointer', fontSize: 13,
+                          color: '#475569', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6,
+                          transition: 'all 0.15s', fontFamily: 'inherit',
+                          marginLeft: 'auto'
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor = '#0052ff'; e.currentTarget.style.color = '#0052ff' }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#475569' }}
+                      >
+                        {nextItem.label} →
+                      </button>
+                    ) : <div />}
+                  </>
                 )
-              })}
-              {allItems.map((item, i) => {
-                if (i === allItems.length - 1) return null
-                return (
-                  <button
-                    key={item.id + '-next'}
-                    onClick={() => scrollTo(allItems[i + 1].id)}
-                    style={{
-                      background: 'none', border: '1px solid #e2e8f0', borderRadius: 10,
-                      padding: '10px 18px', cursor: 'pointer', fontSize: 13,
-                      color: '#475569', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6,
-                      transition: 'all 0.15s', fontFamily: 'inherit', marginLeft: 'auto',
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#0052ff'; e.currentTarget.style.color = '#0052ff' }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#475569' }}
-                  >
-                    {allItems[i + 1].label} →
-                  </button>
-                )
-              })}
+              })()}
             </div>
 
             {/* Footer */}
