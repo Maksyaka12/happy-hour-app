@@ -1002,7 +1002,7 @@ export function ContestsSection({ setTab, address }) {
         }}>
           <h3 style={{ margin: '0 0 12px', fontSize: 18, fontWeight: 800, color: '#D97706' }}>About the Contest</h3>
           <p style={{ margin: '0 0 8px', fontSize: 13, lineHeight: 1.5, color: '#475569', fontWeight: 600 }}>
-            Trade $HH coin on any platform to climb the leaderboard and win a share of the prize pool!
+            Trade $HH coin on any platform щоб участвувати в контесті та розділити призовйи пул!
           </p>
           <p style={{ margin: '0 0 16px', fontSize: 12.5, fontFamily: "'DM Mono', monospace", color: '#D97706', fontWeight: 700 }}>
             CA: 0x8235EdF32a1e10Bd1867ad622915AB613664cbA3
@@ -1011,14 +1011,14 @@ export function ContestsSection({ setTab, address }) {
           <div style={{ margin: '0 0 16px', fontSize: 13, color: '#475569', fontWeight: 500 }}>
             <h4 style={{ margin: '0 0 8px', fontSize: 13.5, fontWeight: 700, color: '#1E293B' }}>How to Participate:</h4>
             <ul style={{ margin: 0, paddingLeft: 20, lineHeight: 1.7 }}>
-              <li><strong>Connect:</strong> Login to Happy Hour using your active trading wallet.</li>
-              <li><strong>Trade:</strong> Swap $HH coin on any platform of your choice.</li>
-              <li><strong>Track:</strong> All volume (Buys + Sells) is automatically tracked in real-time on your Trading Card.</li>
+              <li><strong>Connect:</strong> Login/Register to Happy Hour App using your active trading wallet.</li>
+              <li><strong>Trade:</strong> all trades $HH coin on any platform враховуються</li>
+              <li><strong>Track:</strong> Trading volume is automatically tracked in real-time on your Trading Card.</li>
             </ul>
           </div>
 
           <p style={{ margin: '0 0 16px', fontSize: 13, color: '#475569', fontWeight: 600, lineHeight: 1.5 }}>
-            The top 3 wallets with the highest trading volume at the end of the contest will share the **$100 in $HH coin** pool:
+            Top 3 wallets with the highest trading volume at the end of the contest will share a prize pool $100 в коіні $HH:
           </p>
 
           <div style={{ borderTop: '1px solid rgba(245, 158, 11, 0.15)', paddingTop: 16 }}>
