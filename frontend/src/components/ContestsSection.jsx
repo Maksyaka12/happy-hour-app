@@ -1012,7 +1012,7 @@ export function ContestsSection({ setTab, address }) {
             <h4 style={{ margin: '0 0 8px', fontSize: 13.5, fontWeight: 700, color: '#1E293B' }}>How to Participate:</h4>
             <ul style={{ margin: 0, paddingLeft: 20, lineHeight: 1.7 }}>
               <li><strong>Connect:</strong> Login/Register to Happy Hour App using your active trading wallet.</li>
-              <li><strong>Trade:</strong> All trades of $HH coin on any platform are counted.</li>
+              <li><strong>Trade:</strong> All trades of $HH coin on any platform or DEX are counted.</li>
               <li><strong>Track:</strong> Trading volume is automatically tracked in real-time on your Trading Card.</li>
             </ul>
           </div>
