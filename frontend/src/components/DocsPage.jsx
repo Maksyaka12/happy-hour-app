@@ -17,7 +17,8 @@ const NAV = [
     items: [
       { id: 'introduction',   label: 'Introduction' },
       { id: 'official-links', label: 'Official Links' },
-      { id: 'contracts',      label: 'Contracts' },
+      { id: 'contracts',      label: 'Official Contracts' },
+      { id: 'official-addresses', label: 'Official Addresses' },
     ]
   },
   {
@@ -357,7 +358,7 @@ function LinksSection() {
   )
 }
 
-// ─── Section: CONTRACTS ──────────────────────────────────────────────────────
+// ─── Section: OFFICIAL CONTRACTS ─────────────────────────────────────────────
 function ContractsSection() {
   return (
     <section id="contracts" style={{ marginTop: 60, paddingTop: 40, borderTop: '1px solid #f1f5f9' }}>
@@ -365,10 +366,10 @@ function ContractsSection() {
         Getting Started
       </div>
       <h1 style={{ fontSize: 28, fontWeight: 800, color: '#0f172a', margin: '0 0 10px', letterSpacing: '-0.5px' }}>
-        Contracts
+        Official Contracts
       </h1>
       <p style={{ fontSize: 14.5, color: '#64748b', margin: '0 0 32px', lineHeight: 1.65 }}>
-        All verified on-chain smart contracts deployed on Base mainnet.
+        All verified onchain smart contracts deployed on Base mainnet.
       </p>
 
       {/* Official CA */}
@@ -423,18 +424,45 @@ function ContractsSection() {
               desc="Holds $HH raffle pools and executes payouts: 85% to the winner, 15% is burned"
             />
           </div>
-          <div style={{ borderBottom: '1px solid #f1f5f9' }}>
-            <ContractRow
-              label="HappyHour $HH Staking Vault"
-              addr={CONTRACTS.HH_STAKING}
-            />
-          </div>
           <ContractRow
-            label="Burn Address"
-            addr="0x000000000000000000000000000000000000dEaD"
-            desc="The burn address used to permanently remove $HH from circulation from every in-app transaction & fee recipient burns"
+            label="HappyHour $HH Staking Vault"
+            addr={CONTRACTS.HH_STAKING}
+            desc="Enables locking of $HH tokens to earn daily HP rewards based on stake tier"
           />
         </div>
+      </div>
+    </section>
+  )
+}
+
+// ─── Section: OFFICIAL ADDRESSES ─────────────────────────────────────────────
+function OfficialAddressesSection() {
+  return (
+    <section id="official-addresses" style={{ marginTop: 60, paddingTop: 40, borderTop: '1px solid #f1f5f9' }}>
+      <div style={{ fontSize: 12.5, fontWeight: 600, color: '#0052ff', marginBottom: 10, letterSpacing: 0.2 }}>
+        Getting Started
+      </div>
+      <h1 style={{ fontSize: 28, fontWeight: 800, color: '#0f172a', margin: '0 0 10px', letterSpacing: '-0.5px' }}>
+        Official Addresses
+      </h1>
+      <p style={{ fontSize: 14.5, color: '#64748b', margin: '0 0 32px', lineHeight: 1.65 }}>
+        Official wallet and burn addresses for the Happy Hour ecosystem.
+      </p>
+
+      {/* Official Addresses Table */}
+      <div style={{ border: '1px solid #e2e8f0', borderRadius: 12, overflow: 'hidden' }}>
+        <div style={{ borderBottom: '1px solid #f1f5f9' }}>
+          <ContractRow
+            label="Official Bankr Team Wallet"
+            addr="0x425ae4f4a152541aa3a46e1d7a78c0a9f46f24a2"
+            desc="The only official Bankr wallet of the Happy Hour team, used as the recipient address for fees"
+          />
+        </div>
+        <ContractRow
+          label="Burn Address"
+          addr="0x000000000000000000000000000000000000dEaD"
+          desc="The burn address used to permanently remove $HH from circulation from every in-app transaction & fee recipient burns"
+        />
       </div>
     </section>
   )
@@ -900,6 +928,7 @@ export function DocsPage() {
             <IntroSection onNav={scrollTo} />
             <LinksSection />
             <ContractsSection />
+            <OfficialAddressesSection />
             <HHIntroSection />
             <HHUtilitySection />
             <HHEconomySection />
