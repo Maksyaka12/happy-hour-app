@@ -734,7 +734,7 @@ function RoadmapSection() {
   const phases = [
     { id: 1, label: '$HH Utility Design', status: 'completed' },
     { id: 2, label: '$HH In-App Integration', status: 'completed' },
-    { id: 3, label: 'Season 2 Launch', status: 'completed' },
+    { id: 3, label: 'App Upgrade & S2', status: 'completed' },
     { id: 4, label: 'Agentic Economy', status: 'active' },
     { id: 5, label: 'Expansion', status: 'coming-soon' },
     { id: 6, label: 'More to Come...', status: 'coming-soon' }
@@ -838,7 +838,7 @@ function RoadmapSection() {
             Phase 1: Token Economics & Utility Design (Completed)
           </h3>
           <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.6, margin: 0 }}>
-            Since the Happy Hour platform adopted the community-created $HH coin—originally launched by our community via BankrBot—we committed to supporting and strengthening it as our native token. This phase focuses on designing a robust economic model and utility frameworks aimed at ensuring the token's sustainable growth, increasing market presence, and laying down the foundations for a solid deflationary loop.
+            We officially accepted the $HH coin, which was created by the community via Bankr for the Happy Hour App, making it the native utility coin of the platform. The goal is to establish a dedicated economy and utility framework for the $HH coin that delivers long-term value and drives sustainable growth through a deflationary economic model. We strive to position $HH as a prominent native asset playing a major role in the wider Base ecosystem.
           </p>
         </div>
 
@@ -847,16 +847,16 @@ function RoadmapSection() {
             Phase 2: In-App Core Integration (Completed)
           </h3>
           <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.6, margin: 0 }}>
-            The objective is to deeply integrate the $HH coin as the primary utility currency within the Happy Hour application, converting it into the core transactional engine for all actions. This involves building and launching all token-based protocols, payment routes, and reward logic directly on Base mainnet in full alignment with our utility design.
+            The objective is to deeply integrate the $HH coin as the primary utility currency within the Happy Hour application, converting it into the core transactional engine for all actions. This integration establishes $HH as a fully-fledged currency widely used for all transactions and payments inside the Happy Hour App, generating natural demand and utility.
           </p>
         </div>
 
         <div>
           <h3 style={{ fontSize: 16, fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 8px' }}>
-            Phase 3: Season 2 Launch & Platform Overhaul (Completed)
+            Phase 3: App Upgrade & Season 2 Launch (Completed)
           </h3>
           <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.6, margin: 0 }}>
-            Execute a comprehensive platform overhaul to introduce a modern, premium UI/UX along with new utility features centered around the native $HH coin. This phase culminates in the official launch of Season 2 with the fully integrated native coin $HH as the main in-app currency, presenting a fully upgraded application that accommodates high community engagement and optimized features.
+            Execute a comprehensive system upgrade to introduce a fully overhauled application with deep integration of the $HH coin as the primary native utility currency. Season 2 represents a major milestone for the app, featuring a premium UI/UX, newly added dApp functionalities running in full alignment with the defined $HH economics and utility, revamped reward systems, and updated logic designed to support and strengthen the native $HH coin.
           </p>
         </div>
 
