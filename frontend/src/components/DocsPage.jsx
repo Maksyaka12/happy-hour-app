@@ -838,7 +838,7 @@ function RoadmapSection() {
             Phase 1: Token Economics & Utility Design (Completed)
           </h3>
           <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.6, margin: 0 }}>
-            Establish a sustainable deflationary economy for the $HH coin. Implement a smart contract split mechanism directing 30% of all transaction fees to a permanent burn address to decrease circulating supply, and 70% to a community treasury vault to fund ecosystem rewards.
+            Since the Happy Hour platform adopted the community-created $HH coin—originally launched by our community via BankrBot—we committed to supporting and strengthening it as our native token. This phase focuses on designing a robust economic model and utility frameworks aimed at ensuring the token's sustainable growth, increasing market presence, and laying down the foundations for a solid deflationary loop.
           </p>
         </div>
 
@@ -847,7 +847,7 @@ function RoadmapSection() {
             Phase 2: In-App Core Integration (Completed)
           </h3>
           <p style={{ fontSize: 13.5, color: '#475569', lineHeight: 1.6, margin: 0 }}>
-            Embed the $HH token as the native utility currency of the Happy Hour App. Launch onchain staking programs with tiered lock options (7 and 10 days), deploy hourly USDC & $HH raffle mechanics, and integrate interactive elements like Happy Boxes to drive transaction volume.
+            The objective is to deeply integrate the $HH coin as the primary utility currency within the Happy Hour application, converting it into the core transactional engine for all actions. This involves building and launching all token-based protocols, payment routes, and reward logic directly on Base mainnet in full alignment with our utility design.
           </p>
         </div>
 
