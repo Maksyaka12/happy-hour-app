@@ -453,9 +453,9 @@ function OfficialAddressesSection() {
       <div style={{ border: '1px solid #e2e8f0', borderRadius: 12, overflow: 'hidden' }}>
         <div style={{ borderBottom: '1px solid #f1f5f9' }}>
           <ContractRow
-            label="Official Bankr Team Wallet"
+            label="Official Happy Hour Team Wallet (Bankr)"
             addr="0x425ae4f4a152541aa3a46e1d7a78c0a9f46f24a2"
-            desc="The only official Bankr wallet of the Happy Hour team, used as the recipient address for fees"
+            desc="The only official Bankr wallet of the Happy Hour team, used as the Recipient Fee address to collect $HH, burns, community rewards and marketing development"
           />
         </div>
         <ContractRow
