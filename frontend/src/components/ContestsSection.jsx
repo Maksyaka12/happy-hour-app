@@ -1009,7 +1009,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
         }}>
           <h3 style={{ margin: '0 0 12px', fontSize: 18, fontWeight: 800, color: '#D97706' }}>About the Contest</h3>
           <p style={{ margin: '0 0 8px', fontSize: 13, lineHeight: 1.5, color: '#475569', fontWeight: 600 }}>
-            Trade $HH coin on any platform to participate in the contest and share the prize pool!
+            Trade $HH coin on any platform or DEX on Base to participate in the contest and share the prize pool!
           </p>
           <p style={{ margin: '0 0 16px', fontSize: 12.5, fontFamily: "'DM Mono', monospace", color: '#D97706', fontWeight: 700 }}>
             CA: 0x8235EdF32a1e10Bd1867ad622915AB613664cbA3
