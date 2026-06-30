@@ -41,7 +41,10 @@ serve(async (req) => {
       const deadBal = BigInt(res.result);
       const totalGenesis = 100000000000n * 10n**18n;
       const circulating = totalGenesis - deadBal;
-      const val = (circulating / 10n**18n).toString();
+      const integerPart = circulating / 10n**18n;
+      const fractionalPart = circulating % 10n**18n;
+      const fractionStr = fractionalPart.toString().padStart(18, '0').replace(/0+$/, '');
+      const val = fractionStr ? `${integerPart}.${fractionStr}` : integerPart.toString();
       return new Response(val, {
         headers: {
           "Access-Control-Allow-Origin": "*",
