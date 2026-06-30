@@ -932,6 +932,7 @@ export function DocsPage() {
   const contentRef = useRef(null)
   const isScrollingRef = useRef(false)
   const scrollTimeoutRef = useRef(null)
+  const scrollCleanupRef = useRef(null)
 
   useEffect(() => {
     let originalScrollRestoration = 'auto';
@@ -951,11 +952,23 @@ export function DocsPage() {
           isScrollingRef.current = true;
           el.scrollIntoView({ behavior: 'smooth', block: 'start' });
           setActiveSection(initialId);
+
+          const handleInitialScroll = () => {
+            if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+            scrollTimeoutRef.current = setTimeout(() => {
+              isScrollingRef.current = false;
+              window.removeEventListener('scroll', handleInitialScroll);
+            }, 100);
+          };
+          window.addEventListener('scroll', handleInitialScroll);
+
           scrollTimeoutRef.current = setTimeout(() => {
             isScrollingRef.current = false;
+            window.removeEventListener('scroll', handleInitialScroll);
           }, 1200);
         }
       }, 150);
+
       return () => {
         clearTimeout(timer);
         if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
@@ -976,19 +989,46 @@ export function DocsPage() {
     const obs = new IntersectionObserver(
       (entries) => {
         if (isScrollingRef.current) return;
-        for (const e of entries) {
-          if (e.isIntersecting) setActiveSection(e.target.id)
+        
+        // Find which section is most prominent in the viewport
+        const sections = Array.from(document.querySelectorAll('section[id]'));
+        let bestSection = null;
+        let bestScore = -Infinity;
+
+        sections.forEach(sec => {
+          const rect = sec.getBoundingClientRect();
+          const viewportTop = 80;
+          const viewportBottom = window.innerHeight;
+          const visibleTop = Math.max(rect.top, viewportTop);
+          const visibleBottom = Math.min(rect.bottom, viewportBottom);
+          const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+          
+          if (visibleHeight > 0) {
+            let score = visibleHeight;
+            if (rect.top >= 50 && rect.top <= 200) {
+              score += 1000; // Prefer section whose header is near the top
+            }
+            if (score > bestScore) {
+              bestScore = score;
+              bestSection = sec;
+            }
+          }
+        });
+
+        if (bestSection && bestSection.id !== activeSection) {
+          setActiveSection(bestSection.id);
         }
       },
-      { rootMargin: '-30% 0px -60% 0px', threshold: 0 }
+      { rootMargin: '-80px 0px 0px 0px', threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0] }
     )
     const sections = document.querySelectorAll('section[id]')
     sections.forEach(s => obs.observe(s))
     return () => {
       obs.disconnect();
       if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+      if (scrollCleanupRef.current) scrollCleanupRef.current();
     }
-  }, [])
+  }, [activeSection])
 
   useEffect(() => {
     const segment = ID_TO_PATH[activeSection];
@@ -1003,40 +1043,35 @@ export function DocsPage() {
   const scrollTo = (id) => {
     isScrollingRef.current = true;
     if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+    if (scrollCleanupRef.current) scrollCleanupRef.current();
 
     const el = document.getElementById(id)
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
     setActiveSection(id)
     setMobileNavOpen(false)
 
-    // Fallback timeout to release lock
-    scrollTimeoutRef.current = setTimeout(() => {
-      isScrollingRef.current = false;
-    }, 1500);
-
-    // Precise scroll-end detection loop
-    let lastY = window.scrollY;
-    let sameCount = 0;
-    const checkScrollEnd = () => {
-      const currentY = window.scrollY;
-      if (currentY === lastY) {
-        sameCount++;
-        if (sameCount >= 3) {
-          isScrollingRef.current = false;
-          if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
-        } else {
-          requestAnimationFrame(checkScrollEnd);
-        }
-      } else {
-        sameCount = 0;
-        lastY = currentY;
-        requestAnimationFrame(checkScrollEnd);
-      }
+    const handleScroll = () => {
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+      scrollTimeoutRef.current = setTimeout(() => {
+        isScrollingRef.current = false;
+        window.removeEventListener('scroll', handleScroll);
+        scrollCleanupRef.current = null;
+      }, 100);
     };
 
-    setTimeout(() => {
-      requestAnimationFrame(checkScrollEnd);
-    }, 100);
+    window.addEventListener('scroll', handleScroll);
+
+    const cleanup = () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+    scrollCleanupRef.current = cleanup;
+
+    // Fallback timeout to release lock in case no scroll events occur
+    scrollTimeoutRef.current = setTimeout(() => {
+      isScrollingRef.current = false;
+      cleanup();
+      scrollCleanupRef.current = null;
+    }, 1200);
   }
 
   const allItems = NAV.flatMap(g => g.items)
