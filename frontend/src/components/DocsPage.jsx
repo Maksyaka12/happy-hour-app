@@ -1045,33 +1045,38 @@ export function DocsPage() {
     if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
     if (scrollCleanupRef.current) scrollCleanupRef.current();
 
-    const el = document.getElementById(id)
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    setActiveSection(id)
+    // Close the mobile sidebar first so layout updates and stabilizes
     setMobileNavOpen(false)
+    setActiveSection(id)
 
-    const handleScroll = () => {
-      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+    // Defer the scroll by 100ms to let the DOM settle, avoiding mobile smooth scroll cancellations
+    scrollTimeoutRef.current = setTimeout(() => {
+      const el = document.getElementById(id)
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+
+      const handleScroll = () => {
+        if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+        scrollTimeoutRef.current = setTimeout(() => {
+          isScrollingRef.current = false;
+          window.removeEventListener('scroll', handleScroll);
+          scrollCleanupRef.current = null;
+        }, 100);
+      };
+
+      window.addEventListener('scroll', handleScroll);
+
+      const cleanup = () => {
+        window.removeEventListener('scroll', handleScroll);
+      };
+      scrollCleanupRef.current = cleanup;
+
+      // Fallback timeout to release lock in case no scroll events occur
       scrollTimeoutRef.current = setTimeout(() => {
         isScrollingRef.current = false;
-        window.removeEventListener('scroll', handleScroll);
+        cleanup();
         scrollCleanupRef.current = null;
-      }, 100);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-
-    const cleanup = () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-    scrollCleanupRef.current = cleanup;
-
-    // Fallback timeout to release lock in case no scroll events occur
-    scrollTimeoutRef.current = setTimeout(() => {
-      isScrollingRef.current = false;
-      cleanup();
-      scrollCleanupRef.current = null;
-    }, 1200);
+      }, 1200);
+    }, 100);
   }
 
   const allItems = NAV.flatMap(g => g.items)
