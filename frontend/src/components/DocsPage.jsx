@@ -934,6 +934,11 @@ export function DocsPage() {
   const scrollTimeoutRef = useRef(null)
   const scrollCleanupRef = useRef(null)
 
+  const activeSectionRef = useRef('introduction')
+  useEffect(() => {
+    activeSectionRef.current = activeSection;
+  }, [activeSection]);
+
   useEffect(() => {
     let originalScrollRestoration = 'auto';
     if ('scrollRestoration' in window.history) {
@@ -1015,7 +1020,7 @@ export function DocsPage() {
           }
         });
 
-        if (bestSection && bestSection.id !== activeSection) {
+        if (bestSection && bestSection.id !== activeSectionRef.current) {
           setActiveSection(bestSection.id);
         }
       },
@@ -1028,7 +1033,7 @@ export function DocsPage() {
       if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
       if (scrollCleanupRef.current) scrollCleanupRef.current();
     }
-  }, [activeSection])
+  }, [])
 
   useEffect(() => {
     const segment = ID_TO_PATH[activeSection];
