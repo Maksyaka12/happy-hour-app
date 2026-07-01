@@ -1,14 +1,3 @@
-// backend/draw-round-usdc/index.ts
-// ═══════════════════════════════════════════════════════════
-// Запускається щогодини о :00 через Supabase Cron.
-// 1. Знаходить раунди USDC, що закінчились
-// 2. Обирає переможця (secureRandom)
-// 3. Ставить status = 'spinning' → всі юзери бачать рулетку
-// 4. Чекає 8 сек (анімація)
-// 5. Надсилає 85% USDC переможцю через Smart Wallet / Vault або Direct EOA
-// 6. Ставить status = 'done'
-// ═══════════════════════════════════════════════════════════
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import {
@@ -21,14 +10,12 @@ import {
 import { privateKeyToAccount } from "https://esm.sh/viem@2/accounts";
 import { base } from "https://esm.sh/viem@2/chains";
 
-// ── Константи ────────────────────────────────────────────────
 const USDC_ADDRESS =
   "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" as `0x${string}`;
 const WINNER_SHARE = 0.85;
-const MAX_PAYOUT = 10_000; // USDC — анти-хак ліміт
+const MAX_PAYOUT = 10_000;
 const USDC_DECIMALS = 6;
 
-// ── ABI USDC transfer ────────────────────────────────────────
 const USDC_ABI = [
   {
     name: "transfer",
@@ -49,7 +36,6 @@ const USDC_ABI = [
   },
 ] as const;
 
-// ── ABI Vault Contract ───────────────────────────────────────
 const VAULT_ABI = [
   {
     name: "distributePrize",
@@ -65,11 +51,9 @@ const VAULT_ABI = [
   }
 ] as const;
 
-// ── Smart Contract Switch ────────────────────────────────────
 const USE_VAULT_CONTRACT = Deno.env.get("USE_VAULT_CONTRACT") === "true";
 const VAULT_CONTRACT_ADDRESS = Deno.env.get("VAULT_CONTRACT_ADDRESS") as `0x${string}`;
 
-// ── Supabase client ──────────────────────────────────────────
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
@@ -81,21 +65,11 @@ const CORS = {
   "Content-Type": "application/json",
 };
 
-// ── Helper для отримання суфікса ──────────────────────────────
 function getBuilderDataSuffix(): `0x${string}` | undefined {
   const code = Deno.env.get("BUILDER_CODE") || Deno.env.get("BUILDER_CODE_DATA_SUFFIX");
-
-  if (!code) {
-    console.log("[draw-round-usdc] ℹ️ No Builder Code found in secrets. Skipping attribution.");
-    return undefined;
-  }
-
+  if (!code) return undefined;
   const cleanCode = code.trim();
-
-  if (cleanCode.startsWith("0x")) {
-    console.log("[draw-round-usdc] ✅ Using raw Hex Builder Suffix from secrets.");
-    return cleanCode as `0x${string}`;
-  }
+  if (cleanCode.startsWith("0x")) return cleanCode as `0x${string}`;
 
   try {
     const hexCode = Array.from(cleanCode)
@@ -103,24 +77,17 @@ function getBuilderDataSuffix(): `0x${string}` | undefined {
       .join('');
     const schemaId = '01';
     const marker = '80218021802180218021802180218021';
-    const suffix = `0x${hexCode}${schemaId}${marker}` as `0x${string}`;
-
-    console.log(`[draw-round-usdc] ✅ Generated Builder Suffix from code: ${cleanCode}`);
-    return suffix;
+    return `0x${hexCode}${schemaId}${marker}` as `0x${string}`;
   } catch (e) {
-    console.error(`[draw-round-usdc] ❌ Failed to generate data suffix for code '${cleanCode}':`, e);
     return undefined;
   }
 }
 
-// ── Viem wallet client з Timeout ─────────────────────────────
 function buildWalletClient() {
   const pk = Deno.env.get("BACKEND_SIGNER_PRIVATE_KEY")!;
   if (!pk) throw new Error("BACKEND_SIGNER_PRIVATE_KEY not set");
-
   let safePk = pk.trim();
   if (!safePk.startsWith("0x")) safePk = "0x" + safePk;
-
   const account = privateKeyToAccount(safePk as `0x${string}`);
   const dataSuffix = getBuilderDataSuffix();
 
@@ -135,7 +102,6 @@ function buildWalletClient() {
   });
 }
 
-// ── Promise Timeout Utils ────────────────────────────────────
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   return Promise.race([
     promise,
@@ -143,7 +109,6 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   ]);
 }
 
-// ── Криптографічно захищений рандом ─────────────────────────
 function secureRandom(max: number): number {
   if (max <= 0) throw new Error("max must be > 0");
   const buf = new Uint32Array(1);
@@ -151,7 +116,6 @@ function secureRandom(max: number): number {
   return buf[0] % max;
 }
 
-// ── Перевірки безпеки перед пейаутом ────────────────────────
 function validatePayout(params: {
   winner: string;
   participants: string[];
@@ -161,39 +125,20 @@ function validatePayout(params: {
   maxAllowed: number;
 }) {
   const { winner, participants, payout, totalPool, alreadyPaid, maxAllowed } = params;
-
-  if (!isAddress(winner)) {
-    throw new Error(`SECURITY: Invalid winner address: ${winner}`);
-  }
-
+  if (!isAddress(winner)) throw new Error(`SECURITY: Invalid winner address: ${winner}`);
   if (!participants.map(p => p.toLowerCase()).includes(winner.toLowerCase())) {
     throw new Error(`SECURITY: Winner ${winner} not in participants list`);
   }
-
-  if (alreadyPaid) {
-    throw new Error(`SECURITY: Round already paid`);
-  }
-
-  if (payout > maxAllowed + 0.001) {
-    throw new Error(`SECURITY: Payout ${payout} exceeds max allowed ${maxAllowed}`);
-  }
-
-  if (payout > MAX_PAYOUT) {
-    throw new Error(`SECURITY: Payout ${payout} exceeds limit ${MAX_PAYOUT} USDC`);
-  }
+  if (alreadyPaid) throw new Error(`SECURITY: Round already paid`);
+  if (payout > maxAllowed + 0.001) throw new Error(`SECURITY: Payout exceeds max allowed`);
+  if (payout > MAX_PAYOUT) throw new Error(`SECURITY: Payout exceeds limit`);
 }
 
-// ── Головна функція ──────────────────────────────────────────
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: CORS });
-  }
-
+  if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
   const now = new Date();
-  console.log(`[draw-round-usdc] Starting at ${now.toISOString()}`);
 
   try {
-    // Шукаємо відкриті або закриті раунди USDC, які вже завершилися
     const { data: expiredRounds, error: fetchErr } = await supabase
       .from("rounds")
       .select("*")
@@ -202,45 +147,29 @@ serve(async (req) => {
       .lte("ends_at", new Date(now.getTime() + 2000).toISOString());
 
     if (fetchErr) throw fetchErr;
-
     if (!expiredRounds || expiredRounds.length === 0) {
-      console.log("[draw-round-usdc] No USDC rounds to draw");
       await ensureNextRound(now);
-      return new Response(JSON.stringify({ ok: true, message: "No USDC rounds to draw" }), { headers: CORS });
+      return new Response(JSON.stringify({ ok: true }), { headers: CORS });
     }
 
-    const processedRounds: Array<{
-      id: number;
-      winner: string;
-      prize: number;
-      currency: string;
-      txHash: string;
-      participantsCount: number;
-    }> = [];
+    const processedRounds: any[] = [];
 
     for (const round of expiredRounds) {
-      // Атомарно закриваємо раунд
-      const { data: updated, error: closeErr } = await supabase
+      const { data: updated } = await supabase
         .from("rounds")
         .update({ status: "closed" })
         .eq("id", round.id)
         .eq("status", "open")
         .select("id");
 
-      if (closeErr || !updated || updated.length === 0) {
-        continue;
-      }
+      if (!updated || updated.length === 0) continue;
 
-      console.log(`[draw-round-usdc] ✅ Processing USDC round ${round.id}`);
-
-      // Завантажуємо ставки з таблиці bets
       const { data: bets } = await supabase
         .from("bets")
         .select("address, amount, tickets")
         .eq("round_id", round.id);
 
       if (!bets || bets.length === 0) {
-        console.log(`[draw-round-usdc] Round ${round.id}: no bets`);
         await supabase.from("rounds").update({ status: "done" }).eq("id", round.id);
         await ensureNextRound(now);
         continue;
@@ -256,74 +185,36 @@ serve(async (req) => {
       const participants = [...new Set(bets.map(b => b.address.toLowerCase()))];
       const totalPool = bets.reduce((s, b) => s + parseFloat(b.amount), 0);
 
-      let winner: string;
-      if (participants.length === 1) {
-        winner = participants[0];
-        console.log(`[draw-round-usdc] Round ${round.id}: single player, full refund`);
-      } else {
-        const idx = secureRandom(ticketPool.length);
-        winner = ticketPool[idx];
-        console.log(`[draw-round-usdc] Round ${round.id}: winner = ${winner}`);
-      }
-
-      const winnerStake = bets
-        .filter(b => b.address.toLowerCase() === winner.toLowerCase())
-        .reduce((s, b) => s + parseFloat(b.amount), 0);
-
+      let winner = participants.length === 1 ? participants[0] : ticketPool[secureRandom(ticketPool.length)];
+      const winnerStake = bets.filter(b => b.address.toLowerCase() === winner.toLowerCase()).reduce((s, b) => s + parseFloat(b.amount), 0);
       let prize = participants.length === 1 ? totalPool : totalPool * WINNER_SHARE;
 
-      if (participants.length > 1 && prize < winnerStake) {
-        console.log(`[draw-round-usdc] Round ${round.id}: Prize adjusted to cover winner stake (${winnerStake} USDC)`);
-        prize = winnerStake;
-      }
+      if (participants.length > 1 && prize < winnerStake) prize = winnerStake;
 
       try {
-        validatePayout({
-          winner,
-          participants,
-          payout: prize,
-          totalPool,
-          alreadyPaid: !!round.tx_hash_payout,
-          maxAllowed: prize,
-        });
+        validatePayout({ winner, participants, payout: prize, totalPool, alreadyPaid: !!round.tx_hash_payout, maxAllowed: prize });
       } catch (secErr) {
-        console.error(`[draw-round-usdc] SECURITY CHECK FAILED:`, secErr);
-        await supabase.from("rounds").update({
-          status: "done",
-          payout_error: String(secErr),
-        }).eq("id", round.id);
+        await supabase.from("rounds").update({ status: "done", payout_error: String(secErr) }).eq("id", round.id);
         continue;
       }
 
-      await supabase.from("rounds").update({
-        status: "spinning",
-        winner: winner,
-        prize: prize,
-      }).eq("id", round.id);
-
-      console.log(`[draw-round-usdc] Round ${round.id}: status=spinning, sending transaction...`);
+      await supabase.from("rounds").update({ status: "spinning", winner, prize }).eq("id", round.id);
 
       let txHash: string | undefined;
-      let payoutError: string | undefined;
-
       try {
         const walletClient = buildWalletClient();
-        const decimals = USDC_DECIMALS;
-        const prizeRaw = parseUnits(prize.toFixed(decimals), decimals);
+        const prizeRaw = parseUnits(prize.toFixed(USDC_DECIMALS), USDC_DECIMALS);
         const dataSuffix = getBuilderDataSuffix();
-
         let txPromise: Promise<any>;
 
         if (USE_VAULT_CONTRACT && VAULT_CONTRACT_ADDRESS) {
           const fee = totalPool - prize;
           const feeRaw = parseUnits(Math.max(0, fee).toFixed(USDC_DECIMALS), USDC_DECIMALS);
-          const foundationTarget = walletClient.account.address;
-
           txPromise = withTimeout(walletClient.writeContract({
             address: VAULT_CONTRACT_ADDRESS,
             abi: VAULT_ABI,
             functionName: "distributePrize",
-            args: [winner as `0x${string}`, prizeRaw, foundationTarget, feeRaw],
+            args: [winner as `0x${string}`, prizeRaw, walletClient.account.address, feeRaw],
             gas: 250000n,
             ...(dataSuffix ? { dataSuffix } : {}),
           }), 15000);
@@ -339,77 +230,32 @@ serve(async (req) => {
         }
 
         txHash = await txPromise;
-        console.log(`[draw-round-usdc] ✅ Payout sent: ${txHash}`);
-
-        await supabase.from("rounds").update({
-          tx_hash_payout: txHash,
-        }).eq("id", round.id);
-
-        processedRounds.push({
-          id: round.id,
-          winner,
-          prize,
-          currency: "USDC",
-          txHash,
-          participantsCount: participants.length,
-        });
-
+        await supabase.from("rounds").update({ tx_hash_payout: txHash }).eq("id", round.id);
+        processedRounds.push({ id: round.id, winner, prize, participantsCount: participants.length });
       } catch (payErr) {
-        payoutError = String(payErr);
-        console.error(`[draw-round-usdc] ❌ Payout failed for round ${round.id}:`, payErr);
-
-        await supabase.from("rounds").update({
-          status: "done",
-          payout_error: payoutError,
-        }).eq("id", round.id);
+        await supabase.from("rounds").update({ status: "done", payout_error: String(payErr) }).eq("id", round.id);
       }
     }
 
-    const needsSleep = processedRounds.some(r => r.participantsCount >= 1);
-    if (needsSleep) {
-      console.log(`[draw-round-usdc] Sleeping 8s for frontend animation...`);
+    if (processedRounds.some(r => r.participantsCount >= 1)) {
       await new Promise(r => setTimeout(r, 8000));
     }
 
     for (const pr of processedRounds) {
-      await supabase.from("rounds").update({
-        status: "done",
-      }).eq("id", pr.id);
-
-      await supabase.rpc("add_points", {
-        p_address: pr.winner,
-        p_points: 1.0,
-        p_reason: `Won round ${pr.id}`,
-      });
+      await supabase.from("rounds").update({ status: "done" }).eq("id", pr.id);
+      await supabase.rpc("add_points", { p_address: pr.winner, p_points: 1.0, p_reason: `Won round ${pr.id}` });
       await supabase.rpc("increment_wins", { p_address: pr.winner });
-
-      console.log(`[draw-round-usdc] ✅ Round ${pr.id} finalized. Winner: ${pr.winner}, Prize: ${pr.prize} USDC`);
     }
 
     await ensureNextRound(now);
-
-    return new Response(JSON.stringify({ ok: true }), {
-      headers: CORS,
-    });
-
+    return new Response(JSON.stringify({ ok: true }), { headers: CORS });
   } catch (err) {
-    console.error("[draw-round-usdc] Fatal error:", err);
-    return new Response(JSON.stringify({ ok: false, error: String(err) }), {
-      status: 500,
-      headers: CORS,
-    });
+    return new Response(JSON.stringify({ ok: false, error: String(err) }), { status: 500, headers: CORS });
   }
 });
 
 async function ensureNextRound(now: Date) {
-  const cur = "USDC";
-  const { data: existing } = await supabase
-    .from("rounds")
-    .select("id")
-    .eq("status", "open")   // ← ФІКС: тільки "open", НЕ "spinning"
-    .eq("currency", cur)
-    .limit(1);
-
+  const { data: existing } = await supabase.from("rounds").select("id").in("status", ["open", "spinning"]).eq("currency", "USDC").limit(1);
   if (existing && existing.length > 0) return;
 
   const nextHour = new Date(now);
@@ -424,8 +270,6 @@ async function ensureNextRound(now: Date) {
     ends_at: nextHour.toISOString(),
     status: "open",
     total_pot: 0,
-    currency: cur,
+    currency: "USDC",
   });
-
-  console.log(`[draw-round-usdc] ✅ Created new ${cur} round ending at ${nextHour.toISOString()}`);
 }
