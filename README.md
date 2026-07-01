@@ -15,10 +15,10 @@
   </p>
 
   <p>
-    <a href="https://happy-hour-based.vercel.app/" target="_blank">
+    <a href="https://happy-hour-based.app/" target="_blank">
       <img src="https://img.shields.io/badge/Launch_Web_App-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Web App" />
     </a>
-    <a href="https://happy-hour-based.vercel.app/r/" target="_blank">
+    <a href="https://happy-hour-based.app/r/" target="_blank">
       <img src="https://img.shields.io/badge/Base_App_Redirect-0052FF?style=for-the-badge&logo=base&logoColor=white" alt="Base App Redirect" />
     </a>
   </p>
