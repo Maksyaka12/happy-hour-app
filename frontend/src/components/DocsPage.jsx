@@ -329,6 +329,11 @@ function LinksSection() {
             logo:  '/basescan-logo.svg',
             href:  `https://basescan.org/token/${CONTRACTS.HH_TOKEN}`,
           },
+          {
+            label: 'Bankr Console',
+            logo:  '/bankr-logo.jpg',
+            href:  'https://bankr.bot/terminal/agents/0x8235edf32a1e10bd1867ad622915ab613664cba3',
+          },
         ].map((item, i, arr) => (
           <a
             key={item.label}
