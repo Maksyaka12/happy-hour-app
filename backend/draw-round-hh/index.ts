@@ -293,15 +293,65 @@ serve(async (req) => {
 
       try {
         const walletClient = buildWalletClient();
-        const decimals = HH_DECIMALS;
-        const prizeRaw = parseUnits(prize.toFixed(decimals), decimals);
-        const dataSuffix = getBuilderDataSuffix();
-
-        let txPromise: Promise<any>;
-
         const hhRaffleVaultAddress = (Deno.env.get("HH_RAFFLE_VAULT_ADDRESS") || "0x3bdF461984142C473F2185B4F0F64a918B8ce49b") as `0x${string}`;
-        const fee = totalPool - prize;
-        const feeRaw = parseUnits(Math.max(0, fee).toFixed(HH_DECIMALS), HH_DECIMALS);
+        const hhAddress = (Deno.env.get("HH_ADDRESS") || "0x8235EdF32a1e10Bd1867ad622915AB613664cbA3") as `0x${string}`;
+
+        // 1. Query the actual onchain HH balance of the vault in Wei
+        const rpcUrl = Deno.env.get("BASE_RPC_URL") ?? "https://mainnet.base.org";
+        const paddedVaultAddr = hhRaffleVaultAddress.substring(2).toLowerCase().padStart(64, '0');
+        const balanceRes = await fetch(rpcUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            jsonrpc: "2.0",
+            id: 1,
+            method: "eth_call",
+            params: [
+              {
+                to: hhAddress,
+                data: "0x70a08231" + paddedVaultAddr
+              },
+              "latest"
+            ]
+          })
+        });
+        const balanceJson = await balanceRes.json();
+        const onchainBalanceRaw = BigInt(balanceJson.result);
+        console.log(`[draw-round-hh] Onchain vault balance: ${onchainBalanceRaw.toString()} Wei`);
+
+        if (onchainBalanceRaw === 0n) {
+          throw new Error("Onchain vault balance is 0. Cannot distribute prize.");
+        }
+
+        // 2. Convert winnerStake to raw units
+        const winnerStakeRaw = parseUnits(winnerStake.toFixed(HH_DECIMALS), HH_DECIMALS);
+
+        // 3. Compute raw amounts
+        let prizeRaw: bigint;
+        let feeRaw: bigint;
+
+        if (participants.length === 1) {
+          prizeRaw = onchainBalanceRaw;
+          feeRaw = 0n;
+        } else {
+          prizeRaw = (onchainBalanceRaw * 85n) / 100n;
+          if (prizeRaw < winnerStakeRaw) {
+            console.log(`[draw-round-hh] Adjusting prizeRaw from ${(Number(prizeRaw)/1e18)} to ${(Number(winnerStakeRaw)/1e18)} to cover winner stake`);
+            prizeRaw = winnerStakeRaw;
+            if (prizeRaw > onchainBalanceRaw) {
+              prizeRaw = onchainBalanceRaw;
+            }
+          }
+          feeRaw = onchainBalanceRaw - prizeRaw;
+        }
+
+        // 4. Update prize in database to match the exact decimal representation of prizeRaw
+        prize = Number(prizeRaw) / (10 ** HH_DECIMALS);
+        await supabase.from("rounds").update({ prize }).eq("id", round.id);
+
+        console.log(`[draw-round-hh] Distributing: WinnerAmount = ${(Number(prizeRaw)/1e18)} HH, BurnAmount = ${(Number(feeRaw)/1e18)} HH`);
+        const dataSuffix = getBuilderDataSuffix();
+        let txPromise: Promise<any>;
 
         txPromise = withTimeout(walletClient.writeContract({
           address: hhRaffleVaultAddress,
