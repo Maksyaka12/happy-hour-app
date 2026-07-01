@@ -325,14 +325,14 @@ function LinksSection() {
             href:  'https://www.geckoterminal.com/base/pools/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9',
           },
           {
-            label: 'Basescan',
-            logo:  '/basescan-logo.svg',
-            href:  `https://basescan.org/token/${CONTRACTS.HH_TOKEN}`,
-          },
-          {
             label: 'Bankr Console',
             logo:  '/bankr-logo.jpg',
             href:  'https://bankr.bot/terminal/agents/0x8235edf32a1e10bd1867ad622915ab613664cba3',
+          },
+          {
+            label: 'Basescan',
+            logo:  '/basescan-logo.svg',
+            href:  `https://basescan.org/token/${CONTRACTS.HH_TOKEN}`,
           },
         ].map((item, i, arr) => (
           <a
