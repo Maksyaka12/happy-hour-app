@@ -294,62 +294,36 @@ serve(async (req) => {
       try {
         const walletClient = buildWalletClient();
         const hhRaffleVaultAddress = (Deno.env.get("HH_RAFFLE_VAULT_ADDRESS") || "0x3bdF461984142C473F2185B4F0F64a918B8ce49b") as `0x${string}`;
-        const hhAddress = (Deno.env.get("HH_ADDRESS") || "0x8235EdF32a1e10Bd1867ad622915AB613664cbA3") as `0x${string}`;
 
-        // 1. Query the actual onchain HH balance of the vault in Wei
-        const rpcUrl = Deno.env.get("BASE_RPC_URL") ?? "https://mainnet.base.org";
-        const paddedVaultAddr = hhRaffleVaultAddress.substring(2).toLowerCase().padStart(64, '0');
-        const balanceRes = await fetch(rpcUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            jsonrpc: "2.0",
-            id: 1,
-            method: "eth_call",
-            params: [
-              {
-                to: hhAddress,
-                data: "0x70a08231" + paddedVaultAddr
-              },
-              "latest"
-            ]
-          })
-        });
-        const balanceJson = await balanceRes.json();
-        const onchainBalanceRaw = BigInt(balanceJson.result);
-        console.log(`[draw-round-hh] Onchain vault balance: ${onchainBalanceRaw.toString()} Wei`);
+        // 1. Truncate totalPool down to 4 decimal places to prevent float rounding issues
+        // e.g. 1819836.21479511 becomes 1819836.2147 (strictly rounded down)
+        const safeTotalPool = Math.floor(totalPool * 10000) / 10000;
+        console.log(`[draw-round-hh] Original totalPool: ${totalPool}, Truncated safeTotalPool: ${safeTotalPool}`);
 
-        if (onchainBalanceRaw === 0n) {
-          throw new Error("Onchain vault balance is 0. Cannot distribute prize.");
+        if (safeTotalPool <= 0) {
+          throw new Error(`Total pool ${safeTotalPool} is too small to distribute.`);
         }
 
-        // 2. Convert winnerStake to raw units
-        const winnerStakeRaw = parseUnits(winnerStake.toFixed(HH_DECIMALS), HH_DECIMALS);
+        // 2. Calculate safe prize and fee based on safeTotalPool
+        let safePrize = participants.length === 1 ? safeTotalPool : safeTotalPool * WINNER_SHARE;
 
-        // 3. Compute raw amounts
-        let prizeRaw: bigint;
-        let feeRaw: bigint;
-
-        if (participants.length === 1) {
-          prizeRaw = onchainBalanceRaw;
-          feeRaw = 0n;
-        } else {
-          prizeRaw = (onchainBalanceRaw * 85n) / 100n;
-          if (prizeRaw < winnerStakeRaw) {
-            console.log(`[draw-round-hh] Adjusting prizeRaw from ${(Number(prizeRaw)/1e18)} to ${(Number(winnerStakeRaw)/1e18)} to cover winner stake`);
-            prizeRaw = winnerStakeRaw;
-            if (prizeRaw > onchainBalanceRaw) {
-              prizeRaw = onchainBalanceRaw;
-            }
-          }
-          feeRaw = onchainBalanceRaw - prizeRaw;
+        // Apply winner stake protection if needed, but capped at the safeTotalPool
+        if (participants.length > 1 && safePrize < winnerStake) {
+          console.log(`[draw-round-hh] Adjusting safePrize from ${safePrize} to winnerStake ${winnerStake}`);
+          safePrize = Math.min(winnerStake, safeTotalPool);
         }
 
-        // 4. Update prize in database to match the exact decimal representation of prizeRaw
-        prize = Number(prizeRaw) / (10 ** HH_DECIMALS);
+        const safeFee = Math.max(0, safeTotalPool - safePrize);
+
+        // 3. Convert to raw BigInt units (18 decimals)
+        const prizeRaw = parseUnits(safePrize.toFixed(HH_DECIMALS), HH_DECIMALS);
+        const feeRaw = parseUnits(safeFee.toFixed(HH_DECIMALS), HH_DECIMALS);
+
+        // 4. Update prize in database to match the safePrize
+        prize = safePrize;
         await supabase.from("rounds").update({ prize }).eq("id", round.id);
 
-        console.log(`[draw-round-hh] Distributing: WinnerAmount = ${(Number(prizeRaw)/1e18)} HH, BurnAmount = ${(Number(feeRaw)/1e18)} HH`);
+        console.log(`[draw-round-hh] Distributing: WinnerAmount = ${safePrize} HH, BurnAmount = ${safeFee} HH (Sum = ${safeTotalPool} HH)`);
         const dataSuffix = getBuilderDataSuffix();
         let txPromise: Promise<any>;
 
