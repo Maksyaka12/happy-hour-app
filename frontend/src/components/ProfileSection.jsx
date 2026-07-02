@@ -515,7 +515,9 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
     if (pct === 'MAX') multiplier = 1.0;
 
     const val = maxBal * multiplier;
-    handlePayChange(val.toFixed(6).replace(/\.?0+$/, ''));
+    // Truncate to 2 decimal places (floor, NOT round) to avoid "insufficient balance" errors
+    const truncated = Math.floor(val * 100) / 100;
+    handlePayChange(truncated.toFixed(2));
   }
 
   const handleReceiveChange = (val) => {
