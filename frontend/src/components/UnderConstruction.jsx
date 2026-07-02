@@ -17,39 +17,21 @@ export function UnderConstructionOverlay({ borderRadius = 20 }) {
       background: 'rgba(240, 244, 255, 0.82)',
       borderRadius,
     }}>
-      {/* Construction SVG Icon */}
+      {/* Happy Hour Logo */}
       <div style={{
         width: 56,
         height: 56,
-        background: 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)',
         borderRadius: 16,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 16,
-        boxShadow: '0 8px 24px rgba(0, 82, 255, 0.25)',
+        overflow: 'hidden',
+        marginBottom: 14,
+        boxShadow: '0 8px 24px rgba(0, 82, 255, 0.2)',
         flexShrink: 0,
       }}>
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="3"/>
-          <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
-        </svg>
-      </div>
-
-      {/* Badge */}
-      <div style={{
-        background: 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)',
-        color: '#FFFFFF',
-        fontSize: 8.5,
-        fontWeight: 900,
-        padding: '3px 10px',
-        borderRadius: 20,
-        letterSpacing: '0.8px',
-        textTransform: 'uppercase',
-        marginBottom: 10,
-        fontFamily: "'Outfit', 'Inter', sans-serif",
-      }}>
-        Coming Soon
+        <img
+          src="/logo.jfif"
+          alt="Happy Hour"
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        />
       </div>
 
       {/* Title */}
@@ -59,30 +41,35 @@ export function UnderConstructionOverlay({ borderRadius = 20 }) {
         color: '#0A0B0D',
         textAlign: 'center',
         lineHeight: 1.3,
-        marginBottom: 8,
+        marginBottom: 10,
         fontFamily: "'Outfit', 'Inter', sans-serif",
         letterSpacing: '-0.2px',
       }}>
         Building Happy Hour v2
       </div>
 
-      {/* Subtitle */}
+      {/* Subtitle lines */}
       <div style={{
-        fontSize: 11.5,
-        fontWeight: 600,
-        color: '#717886',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 5,
+        maxWidth: 250,
         textAlign: 'center',
-        lineHeight: 1.55,
-        maxWidth: 240,
         fontFamily: "'Outfit', 'Inter', sans-serif",
       }}>
-        We're upgrading to a{' '}
-        <span style={{ color: '#0052FF', fontWeight: 800 }}>Full-Scale AI Platform</span>.
-        {' '}Raffles & Staking are live now.
-        We'll be back soon with the full experience.
+        <div style={{ fontSize: 11.5, fontWeight: 700, color: '#0052FF', lineHeight: 1.4 }}>
+          Full-Scale AI Platform на шляху.
+        </div>
+        <div style={{ fontSize: 11, fontWeight: 600, color: '#4B5563', lineHeight: 1.5 }}>
+          Raffles &amp; Staking досі доступні —<br />
+          ви можете користуватись цим.
+        </div>
+        <div style={{ fontSize: 11, fontWeight: 600, color: '#717886', lineHeight: 1.4 }}>
+          We'll be back soon.
+        </div>
       </div>
 
-      {/* Divider with dots */}
+      {/* Pulsing dots */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 14 }}>
         {[0, 0.3, 0.6].map((delay, i) => (
           <div key={i} style={{
