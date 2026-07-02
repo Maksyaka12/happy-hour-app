@@ -58,11 +58,11 @@ export function UnderConstructionOverlay({ borderRadius = 20 }) {
         fontFamily: "'Outfit', 'Inter', sans-serif",
       }}>
         <div style={{ fontSize: 11.5, fontWeight: 700, color: '#0052FF', lineHeight: 1.4 }}>
-          Full-Scale AI Platform на шляху.
+          Full-Scale AI Platform is on the way.
         </div>
         <div style={{ fontSize: 11, fontWeight: 600, color: '#4B5563', lineHeight: 1.5 }}>
-          Raffles &amp; Staking досі доступні —<br />
-          ви можете користуватись цим.
+          Raffles &amp; Staking are still available —<br />
+          enjoy them while you wait.
         </div>
         <div style={{ fontSize: 11, fontWeight: 600, color: '#717886', lineHeight: 1.4 }}>
           We'll be back soon.
