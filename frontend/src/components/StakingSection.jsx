@@ -844,7 +844,11 @@ export function StakingSection({ setTab }) {
               />
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <button
-                  onClick={() => setStakingAmount(walletBalance.toString())}
+                  onClick={() => {
+                    // Truncate to 2 decimal places (floor, NOT round) to avoid balance overshoot errors
+                    const truncated = Math.floor(walletBalance * 100) / 100;
+                    setStakingAmount(truncated.toFixed(2));
+                  }}
                   style={{
                     background: 'rgba(255, 255, 255, 0.08)',
                     border: '1px solid rgba(255, 255, 255, 0.15)',

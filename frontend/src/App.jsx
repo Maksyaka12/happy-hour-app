@@ -17,6 +17,7 @@ import { ProfileSection } from './components/ProfileSection'
 import { BottomNav } from './components/BottomNav'
 import { HappyHourLogo } from './components/HappyHourLogo'
 import { EventBanner } from './components/EventBanner'
+import { UnderConstructionSection } from './components/UnderConstruction'
 import { CSS } from './styles'
 import { HAS_SUPABASE_CONFIG, USDC_ADDRESS, USDC_ABI } from './config/constants'
 
@@ -536,10 +537,18 @@ export default function App() {
           {tab === 'home' && <ProfileSection address={address} basename={basename} totalUsers={totalUsers} setTab={setTab} />}
           {tab === 'raffle' && <RaffleSection address={address} basename={basename} />}
           {tab === 'earn' && <EarnSection setTab={setTab} address={address} />}
-          {tab === 'boxes' && <HappyBoxesSection address={address} setTab={setTab} />}
-          {tab === 'tasks' && <TasksSection address={address} />}
+          {tab === 'boxes' && (
+            <UnderConstructionSection style={{ padding: '12px 12px 120px' }}>
+              <HappyBoxesSection address={address} setTab={setTab} />
+            </UnderConstructionSection>
+          )}
+          {tab === 'tasks' && (
+            <UnderConstructionSection style={{ padding: '12px 12px 120px' }}>
+              <TasksSection address={address} />
+            </UnderConstructionSection>
+          )}
           {tab === 'raid' && (
-            <div style={{ padding: '0 0 100px' }}>
+            <UnderConstructionSection style={{ padding: '0 0 100px' }}>
               <div style={{ padding: '0 12px', marginBottom: 12 }}>
                 <button
                   onClick={() => setTab('earn')}
@@ -566,94 +575,97 @@ export default function App() {
                 </button>
               </div>
               <RaidMode address={address} />
-            </div>
+            </UnderConstructionSection>
           )}
           {tab === 'contests' && (
-            <ContestsSection 
-              setTab={setTab} 
-              address={address} 
-              initialContest={initialContest} 
-              onClearInitialContest={() => setInitialContest(null)} 
-            />
+            <UnderConstructionSection style={{ minHeight: '80vh' }}>
+              <ContestsSection
+                setTab={setTab}
+                address={address}
+                initialContest={initialContest}
+                onClearInitialContest={() => setInitialContest(null)}
+              />
+            </UnderConstructionSection>
           )}
           {tab === 'leaderboard' && (
-            <>
-              <div style={{ padding: '0 16px' }}>
-                <div style={{
-                  display: 'flex',
-                  background: '#EEF0F3',
-                  border: '1px solid #DEE1E7',
-                  borderRadius: 16,
-                  padding: 4,
-                  width: '100%',
-                  boxSizing: 'border-box',
-                  margin: '0 0 20px',
-                  boxShadow: 'inset 0 2px 4px rgba(10,11,13,0.05)',
-                  gap: 6
-                }}>
-                  <button
-                    onClick={() => setLeaderboardSubTab('usdc')}
-                    style={{
-                      flex: 1,
-                      padding: '8px 10px',
-                      borderRadius: 12,
-                      border: leaderboardSubTab === 'usdc' ? 'none' : '1px solid rgba(255,255,255,0.8)',
-                      background: leaderboardSubTab === 'usdc' 
-                        ? 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)' 
-                        : 'rgba(255, 255, 255, 0.6)',
-                      color: leaderboardSubTab === 'usdc' ? '#fff' : '#717886',
-                      fontWeight: 850,
-                      fontSize: 10,
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                      boxShadow: leaderboardSubTab === 'usdc' 
-                        ? '0 4px 12px rgba(0,82,255,0.2)' 
-                        : '0 2px 4px rgba(10,11,13,0.02)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 4
-                    }}
-                  >
-                    <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12 }} />
-                    USDC Rewards
-                  </button>
-                  <button
-                    onClick={() => setLeaderboardSubTab('hh')}
-                    style={{
-                      flex: 1,
-                      padding: '8px 10px',
-                      borderRadius: 12,
-                      border: leaderboardSubTab === 'hh' ? 'none' : '1px solid rgba(255,255,255,0.8)',
-                      background: leaderboardSubTab === 'hh' 
-                        ? 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)' 
-                        : 'rgba(255, 255, 255, 0.6)',
-                      color: leaderboardSubTab === 'hh' ? '#fff' : '#717886',
-                      fontWeight: 850,
-                      fontSize: 10,
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                      boxShadow: leaderboardSubTab === 'hh' 
-                        ? '0 4px 12px rgba(0,82,255,0.2)' 
-                        : '0 2px 4px rgba(10,11,13,0.02)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 4
-                    }}
-                  >
-                    <img src="/logo.jfif" alt="$HH" style={{ width: 12, height: 12, borderRadius: '50%', objectFit: 'cover' }} />
-                    $HH Rewards
-                  </button>
+            <UnderConstructionSection style={{ minHeight: '80vh', padding: '0 0 100px' }}>
+              <>
+                <div style={{ padding: '0 16px' }}>
+                  <div style={{
+                    display: 'flex',
+                    background: '#EEF0F3',
+                    border: '1px solid #DEE1E7',
+                    borderRadius: 16,
+                    padding: 4,
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    margin: '0 0 20px',
+                    boxShadow: 'inset 0 2px 4px rgba(10,11,13,0.05)',
+                    gap: 6
+                  }}>
+                    <button
+                      onClick={() => setLeaderboardSubTab('usdc')}
+                      style={{
+                        flex: 1,
+                        padding: '8px 10px',
+                        borderRadius: 12,
+                        border: leaderboardSubTab === 'usdc' ? 'none' : '1px solid rgba(255,255,255,0.8)',
+                        background: leaderboardSubTab === 'usdc'
+                          ? 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)'
+                          : 'rgba(255, 255, 255, 0.6)',
+                        color: leaderboardSubTab === 'usdc' ? '#fff' : '#717886',
+                        fontWeight: 850,
+                        fontSize: 10,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        boxShadow: leaderboardSubTab === 'usdc'
+                          ? '0 4px 12px rgba(0,82,255,0.2)'
+                          : '0 2px 4px rgba(10,11,13,0.02)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 4
+                      }}
+                    >
+                      <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12 }} />
+                      USDC Rewards
+                    </button>
+                    <button
+                      onClick={() => setLeaderboardSubTab('hh')}
+                      style={{
+                        flex: 1,
+                        padding: '8px 10px',
+                        borderRadius: 12,
+                        border: leaderboardSubTab === 'hh' ? 'none' : '1px solid rgba(255,255,255,0.8)',
+                        background: leaderboardSubTab === 'hh'
+                          ? 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)'
+                          : 'rgba(255, 255, 255, 0.6)',
+                        color: leaderboardSubTab === 'hh' ? '#fff' : '#717886',
+                        fontWeight: 850,
+                        fontSize: 10,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        boxShadow: leaderboardSubTab === 'hh'
+                          ? '0 4px 12px rgba(0,82,255,0.2)'
+                          : '0 2px 4px rgba(10,11,13,0.02)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 4
+                      }}
+                    >
+                      <img src="/logo.jfif" alt="$HH" style={{ width: 12, height: 12, borderRadius: '50%', objectFit: 'cover' }} />
+                      $HH Rewards
+                    </button>
+                  </div>
                 </div>
-              </div>
-
-              {leaderboardSubTab === 'usdc' ? (
-                <LeaderboardSection address={address} />
-              ) : (
-                <AirdropChecklist address={address} setTab={setTab} />
-              )}
-            </>
+                {leaderboardSubTab === 'usdc' ? (
+                  <LeaderboardSection address={address} />
+                ) : (
+                  <AirdropChecklist address={address} setTab={setTab} />
+                )}
+              </>
+            </UnderConstructionSection>
           )}
         </div>
         <footer style={{

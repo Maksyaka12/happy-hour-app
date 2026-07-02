@@ -5,6 +5,7 @@ import { APP_URL, FOUNDATION, CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, HH_ADDRESS
 import { db } from '../config/supabase'
 import { UserAvatar } from './UserAvatar'
 import { HistorySection } from './HistorySection'
+import { UnderConstructionSection } from './UnderConstruction'
 
 const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
 
@@ -501,7 +502,9 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
     if (pct === 'MAX') multiplier = 1.0;
 
     const val = maxBal * multiplier;
-    handlePayChange(val.toFixed(6).replace(/\.?0+$/, ''));
+    // Truncate to 2 decimal places (floor, NOT round) to prevent insufficient balance errors
+    const truncated = Math.floor(val * 100) / 100;
+    handlePayChange(truncated.toFixed(2));
   }
 
   const handleReceiveChange = (val) => {
@@ -1285,8 +1288,10 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
         </div>
       </div>
 
-      {/* Referral Program: Senior Hub */}
-      <div id="referrals-card" style={{
+      {/* Referral Hub + History — Under Construction overlay */}
+      <UnderConstructionSection style={{ marginBottom: 16 }}>
+        {/* Referral Program: Senior Hub */}
+        <div id="referrals-card" style={{
         borderRadius: 20,
         padding: '16px 18px',
         marginBottom: 16,
@@ -1491,6 +1496,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
       </div>
 
       <HistorySection address={address} />
+      </UnderConstructionSection>
 
       {/* Spacer to push Admin Panel lower */}
       <div style={{ height: 60 }} />

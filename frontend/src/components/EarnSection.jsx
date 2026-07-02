@@ -8,6 +8,7 @@ import { useBuilderWrite } from '../hooks/useBuilderWrite'
 import { TxModal } from './TxModal'
 import { RaidMode } from './RaidMode'
 import { StakingSection } from './StakingSection'
+import { UnderConstructionSection } from './UnderConstruction'
 
 // Helper for date
 const todayUTC = () => new Date().toISOString().split('T')[0]
@@ -258,7 +259,13 @@ export function EarnSection({ setTab, address: propAddress }) {
 
   return (
     <div style={{ maxWidth: 640, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 12, padding: '12px 12px 120px', animation: 'fadeIn 0.3s ease-out' }}>
-      
+
+      {/* Yield & Staking details — ACTIVE, shown at top */}
+      <StakingSection setTab={setTab} />
+
+      {/* Everything below is under construction */}
+      <UnderConstructionSection>
+
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes floatingLogo {
           0% { transform: translateY(0px); }
@@ -706,8 +713,7 @@ export function EarnSection({ setTab, address: propAddress }) {
         </div>
       </div>
 
-      {/* Yield & Staking details */}
-      <StakingSection setTab={setTab} />
+      </UnderConstructionSection>
 
       {/* Transaction Modals */}
       {txModal === 'checkin' && (
