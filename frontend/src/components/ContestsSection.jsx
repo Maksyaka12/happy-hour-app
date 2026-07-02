@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { db } from '../config/supabase'
 
 const CONTEST_TARGET_DATE = new Date(Date.UTC(2026, 5, 27, 19, 52, 0))
@@ -466,7 +466,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
           onMouseEnter={e => e.currentTarget.style.color = '#F59E0B'}
           onMouseLeave={e => e.currentTarget.style.color = '#717886'}
         >
-          ← Back to Contests
+          в†ђ Back to Contests
         </button>
 
         {/* Contest Banner - Themed to match the Contest Card */}
@@ -510,10 +510,10 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
           
           {/* Floating creative emojis */}
           {[
-            { char: '🎨', top: '10%', right: '15%', size: 28, opacity: 0.35, r: '15deg', dur: 4.2 },
-            { char: '🖌️', bottom: '15%', left: '20%', size: 24, opacity: 0.3, r: '-20deg', dur: 4.8 },
-            { char: '✏️', top: '45%', left: '8%', size: 22, opacity: 0.25, r: '10deg', dur: 5.5 },
-            { char: '📝', bottom: '10%', right: '25%', size: 20, opacity: 0.3, r: '-15deg', dur: 3.9 }
+            { char: 'рџЋЁ', top: '10%', right: '15%', size: 28, opacity: 0.35, r: '15deg', dur: 4.2 },
+            { char: 'рџ–ЊпёЏ', bottom: '15%', left: '20%', size: 24, opacity: 0.3, r: '-20deg', dur: 4.8 },
+            { char: 'вњЏпёЏ', top: '45%', left: '8%', size: 22, opacity: 0.25, r: '10deg', dur: 5.5 },
+            { char: 'рџ“ќ', bottom: '10%', right: '25%', size: 20, opacity: 0.3, r: '-15deg', dur: 3.9 }
           ].map((s, i) => (
             <div key={i} style={{
               position: 'absolute',
@@ -544,7 +544,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
               textShadow: '0 2px 10px rgba(0,0,0,0.5)',
               letterSpacing: '-0.5px'
             }}>
-              Launch Contest
+              Launch Campaign
             </div>
             
             {/* Badges in Banner */}
@@ -649,9 +649,9 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
           color: '#1E293B',
           fontFamily: "'Outfit', 'Inter', sans-serif"
         }}>
-          <h3 style={{ margin: '0 0 12px', fontSize: 18, fontWeight: 800, color: '#D97706' }}>About the Contest</h3>
+          <h3 style={{ margin: '0 0 12px', fontSize: 18, fontWeight: 800, color: '#D97706' }}>About the Campaign</h3>
           <p style={{ margin: '0 0 16px', fontSize: 13, lineHeight: 1.5, color: '#475569', fontWeight: 600 }}>
-            In honor of the Season 2 launch - we are kicking off our Launch Contest dedicated to creators! Showcase your creativity to share a prize pool.
+            In honor of the Season 2 launch - we are kicking off our Launch Campaign dedicated to creators! Showcase your creativity to share a prize pool.
           </p>
 
           <div style={{ margin: '0 0 20px', fontSize: 13, color: '#475569', fontWeight: 500 }}>
@@ -687,7 +687,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
         }}>
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{ fontSize: 16, fontWeight: 800, color: '#fff', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span>✍️ Submit your Contest post</span>
+              <span>вњЌпёЏ Submit your Campaign post</span>
             </div>
             <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', marginBottom: 14, lineHeight: 1.5, fontWeight: 500 }}>
               Submit your X posts link below. You can submit as many posts as you want.
@@ -696,7 +696,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
             {postStatus === 'success' ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 <div style={{ background: 'rgba(5,150,105,0.25)', borderRadius: 14, padding: '10px 14px', fontSize: 12, color: '#6EE7B7', fontWeight: 800 }}>
-                  ✓ {postMsg}
+                  вњ“ {postMsg}
                 </div>
                 <button
                   onClick={() => { setPostStatus(''); setPostMsg(''); }}
@@ -720,7 +720,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
                 <input
                   value={postUrl}
                   onChange={e => { setPostUrl(e.target.value); setPostStatus(''); setPostMsg('') }}
-                  placeholder="Paste your link here…"
+                  placeholder="Paste your link hereвЂ¦"
                   style={{
                     flex: 1, padding: '10px 16px', borderRadius: 50,
                     border: postStatus === 'error' ? '1.5px solid #FCA5A5' : '1.5px solid rgba(255,255,255,0.2)',
@@ -740,7 +740,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
                     whiteSpace: 'nowrap',
                   }}
                 >
-                  {postStatus === 'submitting' ? '…' : 'Submit'}
+                  {postStatus === 'submitting' ? 'вЂ¦' : 'Submit'}
                 </button>
               </div>
             )}
@@ -776,7 +776,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
                 gap: 6
               }}
             >
-              📬 View Submitted Posts {submissions.length > 0 ? `(${submissions.length})` : ''}
+              рџ“¬ View Submitted Posts {submissions.length > 0 ? `(${submissions.length})` : ''}
             </button>
 
             {showAdminSubmissions && (
@@ -789,7 +789,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
                 boxSizing: 'border-box'
               }}>
                 <div style={{ fontSize: 14, fontWeight: 800, color: '#9A3412', marginBottom: 12 }}>
-                  Contest Submissions ({submissions.length})
+                  Campaign Submissions ({submissions.length})
                 </div>
 
                 {loadingSubmissions ? (
@@ -863,7 +863,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
           onMouseEnter={e => e.currentTarget.style.color = '#EF4444'}
           onMouseLeave={e => e.currentTarget.style.color = '#717886'}
         >
-          ← Back to Contests
+          в†ђ Back to Contests
         </button>
 
         {/* Contest Banner - Red themed */}
@@ -898,10 +898,10 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
           
           {/* Floating financial emojis */}
           {[
-            { char: '📈', top: '10%', right: '15%', size: 28, opacity: 0.35, r: '15deg', dur: 4.5 },
-            { char: '📉', bottom: '15%', left: '20%', size: 24, opacity: 0.3, r: '-20deg', dur: 5.2 },
-            { char: '📊', top: '45%', left: '8%', size: 22, opacity: 0.25, r: '10deg', dur: 3.8 },
-            { char: '💸', bottom: '10%', right: '25%', size: 20, opacity: 0.3, r: '-15deg', dur: 4.4 }
+            { char: 'рџ“€', top: '10%', right: '15%', size: 28, opacity: 0.35, r: '15deg', dur: 4.5 },
+            { char: 'рџ“‰', bottom: '15%', left: '20%', size: 24, opacity: 0.3, r: '-20deg', dur: 5.2 },
+            { char: 'рџ“Љ', top: '45%', left: '8%', size: 22, opacity: 0.25, r: '10deg', dur: 3.8 },
+            { char: 'рџ’ё', bottom: '10%', right: '25%', size: 20, opacity: 0.3, r: '-15deg', dur: 4.4 }
           ].map((s, i) => (
             <div key={i} style={{
               position: 'absolute',
@@ -932,7 +932,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
               textShadow: '0 2px 10px rgba(0,0,0,0.5)',
               letterSpacing: '-0.5px'
             }}>
-              Trading Contest
+              Trading Campaign
             </div>
             
             {/* Badges in Banner */}
@@ -1007,7 +1007,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
           color: '#1E293B',
           fontFamily: "'Outfit', 'Inter', sans-serif"
         }}>
-          <h3 style={{ margin: '0 0 12px', fontSize: 18, fontWeight: 800, color: '#D97706' }}>About the Contest</h3>
+          <h3 style={{ margin: '0 0 12px', fontSize: 18, fontWeight: 800, color: '#D97706' }}>About the Campaign</h3>
           <p style={{ margin: '0 0 8px', fontSize: 13, lineHeight: 1.5, color: '#475569', fontWeight: 600 }}>
             Trade $HH coin on any platform or DEX on Base to participate in the contest and share the prize pool!
           </p>
@@ -1028,7 +1028,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
             <h4 style={{ margin: '0 0 8px', fontSize: 13.5, fontWeight: 700, color: '#9B1C1C' }}>Important:</h4>
             <ul style={{ margin: 0, paddingLeft: 20, lineHeight: 1.7 }}>
               <li><strong>Active Wallet:</strong> Connect the exact wallet you use to trade $HH coin.</li>
-              <li><strong>Retroactive:</strong> Connect anytime before the end — all trades are tracked retroactively.</li>
+              <li><strong>Retroactive:</strong> Connect anytime before the end вЂ” all trades are tracked retroactively.</li>
               <li><strong>Rewards:</strong> Unconnected wallets do not qualify for rewards.</li>
             </ul>
           </div>
@@ -1041,13 +1041,13 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
             <h4 style={{ margin: '0 0 10px', fontSize: 13.5, fontWeight: 700, color: '#1E293B' }}>Prize Pool:</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13, color: '#475569', fontWeight: 500 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 15 }}>🥇</span> <strong>1st Place:</strong> $50 in $HH coin
+                <span style={{ fontSize: 15 }}>рџҐ‡</span> <strong>1st Place:</strong> $50 in $HH coin
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 15 }}>🥈</span> <strong>2nd Place:</strong> $25 in $HH coin
+                <span style={{ fontSize: 15 }}>рџҐ€</span> <strong>2nd Place:</strong> $25 in $HH coin
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 15 }}>🥉</span> <strong>3rd Place:</strong> $25 in $HH coin
+                <span style={{ fontSize: 15 }}>рџҐ‰</span> <strong>3rd Place:</strong> $25 in $HH coin
               </div>
             </div>
           </div>
@@ -1156,7 +1156,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
                           {userVolumeHH.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                         </span>
                         <span style={{ fontSize: 11, color: '#FCD34D', fontWeight: 700, marginTop: 1 }}>
-                          ≈ ${userVolumeUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          в‰€ ${userVolumeUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </span>
                       </div>
                     </div>
@@ -1264,7 +1264,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
                                   {trade.amountHH.toLocaleString(undefined, { maximumFractionDigits: 0 })} HH
                                 </div>
                                 <div style={{ fontSize: 10.5, color: 'rgba(255, 255, 255, 0.5)', marginTop: 0.5 }}>
-                                  ≈ ${trade.amountUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                  в‰€ ${trade.amountUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                 </div>
                               </div>
                             </div>
@@ -1283,7 +1283,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
                               onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
                               onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
                             >
-                              {trade.hash.substring(0, 6)}...{trade.hash.substring(trade.hash.length - 4)} ↗
+                              {trade.hash.substring(0, 6)}...{trade.hash.substring(trade.hash.length - 4)} в†—
                             </a>
                           </div>
                         ))}
@@ -1373,7 +1373,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
                 gap: 6
               }}
             >
-              📊 View Contest Leaderboard {adminLeaderboard.length > 0 ? `(${adminLeaderboard.length})` : ''}
+              рџ“Љ View Campaign Leaderboard {adminLeaderboard.length > 0 ? `(${adminLeaderboard.length})` : ''}
             </button>
 
             {showAdminLeaderboard && (
@@ -1386,7 +1386,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
                 boxSizing: 'border-box'
               }}>
                 <div style={{ fontSize: 14.5, fontWeight: 800, color: '#B91C1C', marginBottom: 12 }}>
-                  Real-time Trading Contest Leaderboard
+                  Real-time Trading Campaign Leaderboard
                 </div>
 
                 {loadingAdminLeaderboard ? (
@@ -1441,7 +1441,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
                               sells: <span style={{ fontWeight: 600, color: '#B91C1C' }}>{item.sells.toLocaleString(undefined, { maximumFractionDigits: 0 })} HH</span>
                             </div>
                             <div style={{ fontSize: 10, color: '#64748B' }}>
-                              USD Volume: <span style={{ fontWeight: 600, color: '#1E293B' }}>≈ ${((item.buys + item.sells) * hhPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                              USD Volume: <span style={{ fontWeight: 600, color: '#1E293B' }}>в‰€ ${((item.buys + item.sells) * hhPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                             </div>
                           </div>
                         </div>
@@ -1459,7 +1459,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
                             onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
                             onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
                           >
-                            Basescan ↗
+                            Basescan в†—
                           </a>
                         </div>
                       </div>
@@ -1554,7 +1554,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
             textShadow: '0 2px 10px rgba(0,0,0,0.5)',
             letterSpacing: '-1px'
           }}>
-            Contests Hub
+            Campaigns Hub
           </div>
         </div>
       </div>
@@ -1583,7 +1583,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
           <img src="/logo.jfif" alt="$HH" style={{ width: 13, height: 13, borderRadius: '50%', objectFit: 'cover', display: 'inline-block', verticalAlign: 'middle', margin: '0 2px 2px' }} />
           {" "}$HH and{" "}
           <img src="/usdc-logo.png" alt="USDC" style={{ width: 13, height: 13, display: 'inline-block', verticalAlign: 'middle', margin: '0 2px 2px' }} />
-          {" "}USDC rewards. Contests are added periodically.
+          {" "}USDC rewards. Campaigns are added periodically.
         </div>
       </div>
 
@@ -1684,7 +1684,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
             
             {/* Left side */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, position: 'relative', zIndex: 1 }}>
-              <div style={{ fontSize: 18, fontWeight: 900, color: '#FFFFFF' }}>Trading Contest</div>
+              <div style={{ fontSize: 18, fontWeight: 900, color: '#FFFFFF' }}>Trading Campaign</div>
               <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                 <div style={{
                   background: 'linear-gradient(135deg, #0052FF 0%, #7C3AED 100%)',
@@ -1757,13 +1757,13 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
               onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
               onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
               >
-                Participate →
+                Participate в†’
               </div>
             </div>
           </div>
         )}
 
-        {/* Block 2: Creator Contest (Ended / Launch Contest) */}
+        {/* Block 2: Creator Contest (Ended / Launch Campaign) */}
         {(selectedFilter === 'all' || selectedFilter === 'ended') && (
           <div
             onClick={() => setActiveContest('creator')}
@@ -1808,7 +1808,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
 
             {/* Left side */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, position: 'relative', zIndex: 1 }}>
-              <div style={{ fontSize: 18, fontWeight: 900, color: '#FFFFFF' }}>Launch Contest</div>
+              <div style={{ fontSize: 18, fontWeight: 900, color: '#FFFFFF' }}>Launch Campaign</div>
               <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                 <div style={{
                   background: 'linear-gradient(135deg, #FCD34D 0%, #F59E0B 100%)',
@@ -1910,7 +1910,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
               onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
               onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
               >
-                {isEnded ? 'View Results →' : 'Participate →'}
+                {isEnded ? 'View Results в†’' : 'Participate в†’'}
               </div>
             </div>
           </div>
@@ -1945,7 +1945,7 @@ function WinnersPedestal() {
         justifyContent: 'center',
         gap: 6
       }}>
-        🏆 Contest Winners
+        рџЏ† Contest Winners
       </h3>
 
       {/* The Pedestal container */}
@@ -1982,7 +1982,7 @@ function WinnersPedestal() {
           <div style={{ fontSize: 9.5, fontWeight: 800, color: '#000000', marginBottom: 1, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>@Benny___5</div>
           <div style={{ display: 'flex', gap: 4, marginBottom: 4, alignItems: 'center' }}>
             <a href="https://x.com/Benny___5" target="_blank" rel="noopener noreferrer" style={{ fontSize: 8.5, fontWeight: 700, color: '#F59E0B', textDecoration: 'none' }}>view profile</a>
-            <span style={{ fontSize: 8.5, color: '#717886' }}>·</span>
+            <span style={{ fontSize: 8.5, color: '#717886' }}>В·</span>
             <a href="https://basescan.org/tx/0xda57e3fde642b797356fcd3bf7360c3329ba0fa923fa2ebf0e4474dd9e483ae6" target="_blank" rel="noopener noreferrer" style={{ fontSize: 8.5, fontWeight: 700, color: '#F59E0B', textDecoration: 'none' }}>payout</a>
           </div>
           
@@ -2015,7 +2015,7 @@ function WinnersPedestal() {
           transform: 'translateY(-6px)'
         }}>
           {/* Crown */}
-          <span style={{ fontSize: 12, marginBottom: 1, animation: 'floatingLogo 3s ease-in-out infinite' }}>👑</span>
+          <span style={{ fontSize: 12, marginBottom: 1, animation: 'floatingLogo 3s ease-in-out infinite' }}>рџ‘‘</span>
           {/* Avatar */}
           <div style={{
             position: 'relative',
@@ -2032,7 +2032,7 @@ function WinnersPedestal() {
           <div style={{ fontSize: 10, fontWeight: 800, color: '#000000', marginBottom: 1, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>@DrsonaliV20871</div>
           <div style={{ display: 'flex', gap: 4, marginBottom: 4, alignItems: 'center' }}>
             <a href="https://x.com/DrsonaliV20871" target="_blank" rel="noopener noreferrer" style={{ fontSize: 8.5, fontWeight: 700, color: '#F59E0B', textDecoration: 'none' }}>view profile</a>
-            <span style={{ fontSize: 8.5, color: '#717886' }}>·</span>
+            <span style={{ fontSize: 8.5, color: '#717886' }}>В·</span>
             <a href="https://basescan.org/tx/0xb1553466b66949b35045256c00f8d02d14cc7e0bb98045d5465fe69f128cd2eb" target="_blank" rel="noopener noreferrer" style={{ fontSize: 8.5, fontWeight: 700, color: '#F59E0B', textDecoration: 'none' }}>payout</a>
           </div>
           
@@ -2079,7 +2079,7 @@ function WinnersPedestal() {
           <div style={{ fontSize: 9.5, fontWeight: 800, color: '#000000', marginBottom: 1, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>@Shillawakning</div>
           <div style={{ display: 'flex', gap: 4, marginBottom: 4, alignItems: 'center' }}>
             <a href="https://x.com/Shillawakning" target="_blank" rel="noopener noreferrer" style={{ fontSize: 8.5, fontWeight: 700, color: '#F59E0B', textDecoration: 'none' }}>view profile</a>
-            <span style={{ fontSize: 8.5, color: '#717886' }}>·</span>
+            <span style={{ fontSize: 8.5, color: '#717886' }}>В·</span>
             <a href="https://basescan.org/tx/0x6047a5aa9461a684d1a3a8d8a8415d21f72554f321a5b7fa4e2f2888a5c3221a" target="_blank" rel="noopener noreferrer" style={{ fontSize: 8.5, fontWeight: 700, color: '#F59E0B', textDecoration: 'none' }}>payout</a>
           </div>
           
@@ -2105,3 +2105,4 @@ function WinnersPedestal() {
     </div>
   )
 }
+

@@ -1,10 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useDisconnect, useWriteContract, useBalance, useReadContract } from 'wagmi'
+import { useDisconnect, useWriteContract, useBalance, useReadContract, useChainId, useSwitchChain } from 'wagmi'
 import { formatUnits, parseUnits } from 'viem'
+import { base } from 'wagmi/chains'
 import { APP_URL, FOUNDATION, CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI, HH_MANAGER_ADDRESS, STAKING_ADDRESS } from '../config/constants'
 import { db } from '../config/supabase'
 import { UserAvatar } from './UserAvatar'
 import { HistorySection } from './HistorySection'
+import { useBuilderWrite } from '../hooks/useBuilderWrite'
+import { TxModal } from './TxModal'
 
 const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
 
@@ -442,6 +445,17 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
   const [linkCopied, setLinkCopied] = useState(false)
   const [codeCopied, setCodeCopied] = useState(false)
 
+  // Check-in states (moved from EarnSection)
+  const todayUTC = () => new Date().toISOString().split('T')[0]
+  const [checkedToday, setCheckedToday] = useState(false)
+  const [streakCount, setStreakCount] = useState(0)
+  const [checkinTxModal, setCheckinTxModal] = useState(false)
+  const [checkinError, setCheckinError] = useState('')
+  const processedCheckinRef = useRef(null)
+  const chainId = useChainId()
+  const { switchChain } = useSwitchChain()
+  const { data: checkinTxHash, writeContract: writeCheckin, isPending: isCheckinPending, isConfirming: isCheckinConfirming, isSuccess: isCheckinSuccess, error: checkinWriteError, reset: resetCheckin } = useBuilderWrite()
+
   // Swap Widget states
   const [isBuying, setIsBuying] = useState(true) // true: SelectToken -> $HH, false: $HH -> SelectToken
   const [payAmount, setPayAmount] = useState('')
@@ -600,7 +614,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
     if (!address) return
     const { data, error } = await db
       .from('users')
-      .select('points, wins, entries, referral_count, referral_points, ref_code, referrer')
+      .select('points, wins, entries, referral_count, referral_points, ref_code, referrer, streak, streak_last')
       .eq('address', address.toLowerCase())
       .maybeSingle()
 
@@ -618,6 +632,10 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
       ref_code: data?.ref_code ?? null,
       referrer: data?.referrer || null
     })
+    // Load streak state
+    const today = todayUTC()
+    setStreakCount(data?.streak || 0)
+    setCheckedToday(data?.streak_last === today)
   }
 
   // Fetch real $HH price from DexScreener
@@ -639,6 +657,49 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
     const interval = setInterval(getPrice, 30000)
     return () => clearInterval(interval)
   }, [])
+
+  // --- Check-in Success Effect ---
+  useEffect(() => {
+    if (!isCheckinSuccess || !checkinTxHash || processedCheckinRef.current === checkinTxHash || !address) return
+    processedCheckinRef.current = checkinTxHash
+    setCheckinError('')
+    db.rpc('process_checkin', {
+      p_address: address.toLowerCase(),
+      p_tx_hash: checkinTxHash,
+    }).then(async ({ data, error }) => {
+      if (error) {
+        console.error('process_checkin:', error)
+        setCheckinError('Check-in saved onchain, but database sync failed.')
+        await loadProfile()
+        return
+      }
+      if (!data?.ok) {
+        setCheckinError(data?.error || 'Check-in was not accepted.')
+        await loadProfile()
+        return
+      }
+      setCheckedToday(true)
+      setStreakCount(data.newStreak ?? streakCount)
+      setCheckinTxModal(false)
+    }).finally(() => {
+      resetCheckin()
+    })
+  }, [address, isCheckinSuccess, checkinTxHash, resetCheckin, streakCount])
+
+  const sendCheckin = () => {
+    setCheckinError('')
+    if (chainId !== base.id) {
+      switchChain({ chainId: base.id })
+      return
+    }
+    writeCheckin({
+      address: USDC_ADDRESS,
+      abi: USDC_ABI,
+      functionName: 'transfer',
+      args: [CHECKIN_TARGET, parseUnits('0.000100', 6)],
+      chainId: base.id,
+    })
+  }
 
   useEffect(() => {
     loadProfile()
@@ -1285,6 +1346,135 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
         </div>
       </div>
 
+      {/* Daily Check-in Card — full width, moved from EarnSection */}
+      <div id="daily-checkin-card" style={{
+        background: '#0B1E3F',
+        borderRadius: 20,
+        padding: '16px 18px 14px',
+        marginBottom: 16,
+        boxShadow: '0 8px 32px rgba(30,58,138,0.2)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 12,
+        position: 'relative',
+        overflow: 'hidden',
+        border: '1px solid rgba(59,130,246,0.25)'
+      }}>
+        {/* Background image overlay */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'url(/banner.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          filter: 'hue-rotate(200deg) brightness(0.35) contrast(1.15)',
+          zIndex: 0,
+          pointerEvents: 'none'
+        }} />
+
+        {/* Header row */}
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 900, color: '#FFFFFF', letterSpacing: '0.1px' }}>Daily Check-in</div>
+            <div style={{ fontSize: 10, color: 'rgba(255, 255, 255, 0.7)', marginTop: 3, fontWeight: 600 }}>
+              daily free HP
+              <span style={{ margin: '0 5px', opacity: 0.5 }}>·</span>
+              keep your streak
+            </div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+            <span style={{ fontSize: 10, fontWeight: 900, background: 'rgba(255,255,255,0.15)', color: '#FFFFFF', padding: '2px 8px', borderRadius: 6 }}>
+              +1 HP
+            </span>
+            {streakCount > 0 && (
+              <span style={{ fontSize: 10, fontWeight: 800, color: '#FBBF24' }}>
+                {streakCount}d 🔥
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Streak Progress Bar */}
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <div style={{ position: 'relative', height: 6, background: 'rgba(255,255,255,0.12)', borderRadius: 10, marginBottom: 18 }}>
+            {/* Progress fill */}
+            <div style={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              height: '100%',
+              borderRadius: 10,
+              width: `${Math.min(100, (streakCount / 30) * 100)}%`,
+              background: 'linear-gradient(90deg, #3B82F6 0%, #60A5FA 100%)',
+              transition: 'width 0.5s ease',
+              boxShadow: '0 0 8px rgba(59,130,246,0.6)'
+            }} />
+
+            {/* Milestone dots */}
+            {[{day: 7, pct: (7/30)*100, label: '7d', reward: '+3 HP'}, {day: 14, pct: (14/30)*100, label: '14d', reward: '+7 HP'}, {day: 30, pct: 100, label: '30d', reward: '+15 HP'}].map(m => (
+              <div key={m.day} style={{
+                position: 'absolute',
+                left: `${m.pct}%`,
+                top: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: 12,
+                height: 12,
+                borderRadius: '50%',
+                background: streakCount >= m.day ? '#60A5FA' : 'rgba(255,255,255,0.25)',
+                border: `2px solid ${streakCount >= m.day ? '#3B82F6' : 'rgba(255,255,255,0.3)'}`,
+                boxShadow: streakCount >= m.day ? '0 0 8px rgba(59,130,246,0.8)' : 'none',
+                zIndex: 2
+              }}>
+                {/* Label below dot */}
+                <div style={{
+                  position: 'absolute',
+                  top: 14,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  whiteSpace: 'nowrap',
+                  textAlign: 'center'
+                }}>
+                  <div style={{ fontSize: 8, fontWeight: 800, color: streakCount >= m.day ? '#60A5FA' : 'rgba(255,255,255,0.5)' }}>{m.label}</div>
+                  <div style={{ fontSize: 7, fontWeight: 700, color: streakCount >= m.day ? '#FBBF24' : 'rgba(255,255,255,0.35)', marginTop: 1 }}>{m.reward}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Claim Button */}
+        <button
+          onClick={() => setCheckinTxModal(true)}
+          disabled={checkedToday}
+          style={{
+            position: 'relative',
+            zIndex: 1,
+            width: '100%',
+            padding: '10px 12px',
+            borderRadius: 12,
+            border: checkedToday ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.25)',
+            background: checkedToday ? 'rgba(255,255,255,0.05)' : 'rgba(255, 255, 255, 0.12)',
+            color: checkedToday ? '#94A3B8' : '#FFFFFF',
+            fontSize: 13,
+            fontWeight: 800,
+            cursor: checkedToday ? 'not-allowed' : 'pointer',
+            outline: 'none',
+            transition: 'background 0.2s',
+            textAlign: 'center'
+          }}
+          onMouseEnter={e => { if (!checkedToday) e.currentTarget.style.background = 'rgba(255,255,255,0.2)' }}
+          onMouseLeave={e => { if (!checkedToday) e.currentTarget.style.background = 'rgba(255,255,255,0.12)' }}
+        >
+          {checkedToday ? '✓ Claimed — Resets at 00:00 UTC' : 'Claim'}
+        </button>
+
+        {checkinError && (
+          <div style={{ position: 'relative', zIndex: 1, color: '#FCA5A5', fontSize: 10.5, fontWeight: 700, textAlign: 'center', marginTop: -4 }}>
+            ⚠️ {checkinError}
+          </div>
+        )}
+      </div>
+
       {/* Referral Program: Senior Hub */}
       <div id="referrals-card" style={{
         borderRadius: 20,
@@ -1323,7 +1513,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
             <div>
               <div style={{ fontSize: 14.5, fontWeight: 900, color: '#FFFFFF', letterSpacing: '0.2px' }}>Referral Hub</div>
               <div style={{ fontSize: 10, color: 'rgba(255, 255, 255, 0.7)', marginTop: 2, fontWeight: 600, lineHeight: 1.4 }}>
-                Invite friends and <span style={{ color: '#FBBF24', fontWeight: 800 }}>earn 20% of their HP</span> forever.
+                Invite friends and <span style={{ color: '#FBBF24', fontWeight: 800 }}>earn 30% of their HP</span> forever.
               </div>
             </div>
           </div>
@@ -2225,6 +2415,20 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
             )}
           </div>
         </div>
+      )}
+      {/* Daily Check-in TxModal */}
+      {checkinTxModal && (
+        <TxModal
+          title="Daily Check-in"
+          subtitle="Claim your daily free HP and keep your streak going!"
+          amount="0.0001"
+          isPending={isCheckinPending}
+          isConfirming={isCheckinConfirming}
+          isSuccess={isCheckinSuccess}
+          error={checkinWriteError}
+          onConfirm={sendCheckin}
+          onCancel={() => { setCheckinTxModal(false); resetCheckin(); }}
+        />
       )}
 
     </div>

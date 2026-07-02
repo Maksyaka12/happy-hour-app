@@ -6,41 +6,19 @@ import { db } from './config/supabase'
 import { useBasename } from './hooks/useBasename'
 import { ConnectScreen } from './components/ConnectScreen'
 import { RaffleSection } from './components/RaffleSection'
-import { TasksSection } from './components/TasksSection'
-import { HappyBoxesSection } from './components/HappyBoxesSection'
-import { LeaderboardSection } from './components/LeaderboardSection'
 import { EarnSection } from './components/EarnSection'
-import { RaidMode } from './components/RaidMode'
-import { AirdropChecklist } from './components/AirdropChecklist'
 import { ContestsSection } from './components/ContestsSection'
 import { ProfileSection } from './components/ProfileSection'
 import { BottomNav } from './components/BottomNav'
 import { HappyHourLogo } from './components/HappyHourLogo'
-import { EventBanner } from './components/EventBanner'
 import { CSS } from './styles'
 import { HAS_SUPABASE_CONFIG, USDC_ADDRESS, USDC_ABI } from './config/constants'
 
-const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
+const short = (a) => (a ? `${a.slice(0, 6)}\u2026${a.slice(-4)}` : '\u2014')
 
 function getReferralCode() {
   const ref = new URLSearchParams(window.location.search).get('ref')?.trim()
   return ref || null
-}
-
-const TRADING_CONTEST_TARGET_DATE = new Date(Date.UTC(2026, 6, 4, 15, 0, 0)) // Saturday, July 4, 2026, 15:00 UTC
-
-const calculateTradingContestTimeLeft = () => {
-  const now = new Date()
-  const diff = TRADING_CONTEST_TARGET_DATE.getTime() - now.getTime()
-  
-  if (isNaN(diff) || diff <= 0) return '00d 00h 00m 00s'
-  
-  const d = Math.floor(diff / 86400000)
-  const h = Math.floor((diff % 86400000) / 3600000)
-  const m = Math.floor((diff % 3600000) / 60000)
-  const s = Math.floor((diff % 60000) / 1000)
-  
-  return `${d}d ${h.toString().padStart(2, '0')}h ${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`
 }
 
 export default function App() {
@@ -49,30 +27,12 @@ export default function App() {
       let saved = localStorage.getItem('happy_tab') || 'raffle'
       if (saved === 'profile') saved = 'home'
       if (saved === 'staking' || saved === 'raid') saved = 'earn'
+      if (saved === 'tasks' || saved === 'leaderboard' || saved === 'boxes') saved = 'raffle'
       return saved
     } catch { return 'raffle' }
   })
-  const [leaderboardSubTab, setLeaderboardSubTab] = useState(() => {
-    try {
-      let saved = localStorage.getItem('happy_leaderboard_subtab') || 'usdc'
-      if (saved === 'hp' || saved === 'contests') saved = 'usdc'
-      return saved
-    } catch { return 'usdc' }
-  })
   const [caCopied, setCaCopied] = useState(false)
   const [initialContest, setInitialContest] = useState(null)
-  const [tradingContestTimeLeft, setTradingContestTimeLeft] = useState(calculateTradingContestTimeLeft())
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTradingContestTimeLeft(calculateTradingContestTimeLeft())
-    }, 1000)
-    return () => clearInterval(timer)
-  }, [])
-
-  useEffect(() => {
-    try { localStorage.setItem('happy_leaderboard_subtab', leaderboardSubTab) } catch { }
-  }, [leaderboardSubTab])
 
   useEffect(() => {
     try { localStorage.setItem('happy_tab', tab) } catch { }
@@ -118,13 +78,10 @@ export default function App() {
   const referralCode = useMemo(() => getReferralCode(), [])
 
   const tabLabels = {
-    home: 'Home',
+    home: 'Profile',
     raffle: 'Happy Raffle',
-    earn: 'Earn',
-    boxes: 'Happy Boxes',
-    tasks: 'Tasks',
-    leaderboard: 'Rewards',
-    contests: 'Contests',
+    earn: 'Staking',
+    contests: 'Campaigns',
   }
 
   useEffect(() => {
@@ -468,106 +425,12 @@ export default function App() {
           </div>
         </div>
 
-        <div 
-          onClick={() => {
-            setInitialContest('trader');
-            setTab('contests');
-          }}
-          style={{
-            width: '100%',
-            background: '#0A0B0D',
-            padding: '6px 16px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 12,
-            cursor: 'pointer',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-            boxSizing: 'border-box',
-            transition: 'background-color 0.15s',
-            fontFamily: "'Outfit', 'Inter', sans-serif"
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.background = '#111317';
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.background = '#0A0B0D';
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
-            <span style={{ fontSize: 12, fontWeight: 750, color: '#FFFFFF', letterSpacing: '-0.1px' }}>
-              Trading Contest is live
-            </span>
-            <span style={{ fontSize: 13 }}>🔥</span>
-            <span style={{ 
-              fontSize: 11.5, 
-              fontWeight: 700, 
-              color: '#FBBF24', 
-              fontFamily: "'DM Mono', monospace", 
-              marginLeft: 2
-            }}>
-              {tradingContestTimeLeft}
-            </span>
-          </div>
-
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: 3, 
-            background: 'linear-gradient(135deg, #FBBF24 0%, #F59E0B 50%, #EF4444 100%)',
-            borderRadius: 6,
-            padding: '3px 6px 3px 8px',
-            boxShadow: '0 1px 4px rgba(245, 158, 11, 0.3)',
-            whiteSpace: 'nowrap'
-          }}>
-            <span style={{ fontSize: 9.5, fontWeight: 800, color: '#0A0B0D', letterSpacing: '0.1px' }}>
-              Participate
-            </span>
-            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#0A0B0D" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
-            </svg>
-          </div>
-        </div>
-
         <div style={{ height: 12 }} />
 
         <div style={{ position: 'relative', zIndex: 1, maxWidth: 640, margin: '0 auto' }}>
           {tab === 'home' && <ProfileSection address={address} basename={basename} totalUsers={totalUsers} setTab={setTab} />}
           {tab === 'raffle' && <RaffleSection address={address} basename={basename} />}
           {tab === 'earn' && <EarnSection setTab={setTab} address={address} />}
-          {tab === 'boxes' && <HappyBoxesSection address={address} setTab={setTab} />}
-          {tab === 'tasks' && <TasksSection address={address} />}
-          {tab === 'raid' && (
-            <div style={{ padding: '0 0 100px' }}>
-              <div style={{ padding: '0 12px', marginBottom: 12 }}>
-                <button
-                  onClick={() => setTab('earn')}
-                  style={{
-                    background: '#FFFFFF',
-                    border: '1px solid rgba(226, 232, 240, 0.8)',
-                    borderRadius: 100,
-                    padding: '6px 14px',
-                    fontSize: 11,
-                    fontWeight: 800,
-                    cursor: 'pointer',
-                    outline: 'none',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 4,
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.01)',
-                    color: '#0A0B0D',
-                    transition: 'all 0.2s'
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-0.5px)'}
-                  onMouseLeave={e => e.currentTarget.style.transform = 'none'}
-                >
-                  ← Back to Earn
-                </button>
-              </div>
-              <RaidMode address={address} />
-            </div>
-          )}
           {tab === 'contests' && (
             <ContestsSection 
               setTab={setTab} 
@@ -575,85 +438,6 @@ export default function App() {
               initialContest={initialContest} 
               onClearInitialContest={() => setInitialContest(null)} 
             />
-          )}
-          {tab === 'leaderboard' && (
-            <>
-              <div style={{ padding: '0 16px' }}>
-                <div style={{
-                  display: 'flex',
-                  background: '#EEF0F3',
-                  border: '1px solid #DEE1E7',
-                  borderRadius: 16,
-                  padding: 4,
-                  width: '100%',
-                  boxSizing: 'border-box',
-                  margin: '0 0 20px',
-                  boxShadow: 'inset 0 2px 4px rgba(10,11,13,0.05)',
-                  gap: 6
-                }}>
-                  <button
-                    onClick={() => setLeaderboardSubTab('usdc')}
-                    style={{
-                      flex: 1,
-                      padding: '8px 10px',
-                      borderRadius: 12,
-                      border: leaderboardSubTab === 'usdc' ? 'none' : '1px solid rgba(255,255,255,0.8)',
-                      background: leaderboardSubTab === 'usdc' 
-                        ? 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)' 
-                        : 'rgba(255, 255, 255, 0.6)',
-                      color: leaderboardSubTab === 'usdc' ? '#fff' : '#717886',
-                      fontWeight: 850,
-                      fontSize: 10,
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                      boxShadow: leaderboardSubTab === 'usdc' 
-                        ? '0 4px 12px rgba(0,82,255,0.2)' 
-                        : '0 2px 4px rgba(10,11,13,0.02)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 4
-                    }}
-                  >
-                    <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12 }} />
-                    USDC Rewards
-                  </button>
-                  <button
-                    onClick={() => setLeaderboardSubTab('hh')}
-                    style={{
-                      flex: 1,
-                      padding: '8px 10px',
-                      borderRadius: 12,
-                      border: leaderboardSubTab === 'hh' ? 'none' : '1px solid rgba(255,255,255,0.8)',
-                      background: leaderboardSubTab === 'hh' 
-                        ? 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)' 
-                        : 'rgba(255, 255, 255, 0.6)',
-                      color: leaderboardSubTab === 'hh' ? '#fff' : '#717886',
-                      fontWeight: 850,
-                      fontSize: 10,
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                      boxShadow: leaderboardSubTab === 'hh' 
-                        ? '0 4px 12px rgba(0,82,255,0.2)' 
-                        : '0 2px 4px rgba(10,11,13,0.02)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 4
-                    }}
-                  >
-                    <img src="/logo.jfif" alt="$HH" style={{ width: 12, height: 12, borderRadius: '50%', objectFit: 'cover' }} />
-                    $HH Rewards
-                  </button>
-                </div>
-              </div>
-
-              {leaderboardSubTab === 'usdc' ? (
-                <LeaderboardSection address={address} />
-              ) : (
-                <AirdropChecklist address={address} setTab={setTab} />
-              )}
-            </>
           )}
         </div>
         <footer style={{
