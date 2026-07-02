@@ -469,70 +469,7 @@ export default function App() {
           </div>
         </div>
 
-        <div 
-          onClick={() => {
-            setInitialContest('trader');
-            setTab('contests');
-          }}
-          style={{
-            width: '100%',
-            background: '#0A0B0D',
-            padding: '6px 16px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 12,
-            cursor: 'pointer',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-            boxSizing: 'border-box',
-            transition: 'background-color 0.15s',
-            fontFamily: "'Outfit', 'Inter', sans-serif"
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.background = '#111317';
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.background = '#0A0B0D';
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
-            <span style={{ fontSize: 12, fontWeight: 750, color: '#FFFFFF', letterSpacing: '-0.1px' }}>
-              Trading Contest is live
-            </span>
-            <span style={{ fontSize: 13 }}>🔥</span>
-            <span style={{ 
-              fontSize: 11.5, 
-              fontWeight: 700, 
-              color: '#FBBF24', 
-              fontFamily: "'DM Mono', monospace", 
-              marginLeft: 2
-            }}>
-              {tradingContestTimeLeft}
-            </span>
-          </div>
-
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: 3, 
-            background: 'linear-gradient(135deg, #FBBF24 0%, #F59E0B 50%, #EF4444 100%)',
-            borderRadius: 6,
-            padding: '3px 6px 3px 8px',
-            boxShadow: '0 1px 4px rgba(245, 158, 11, 0.3)',
-            whiteSpace: 'nowrap'
-          }}>
-            <span style={{ fontSize: 9.5, fontWeight: 800, color: '#0A0B0D', letterSpacing: '0.1px' }}>
-              Participate
-            </span>
-            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#0A0B0D" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
-            </svg>
-          </div>
-        </div>
-
-        <div style={{ height: 12 }} />
-
+        
         <div style={{ position: 'relative', zIndex: 1, maxWidth: 640, margin: '0 auto' }}>
           {tab === 'home' && <ProfileSection address={address} basename={basename} totalUsers={totalUsers} setTab={setTab} />}
           {tab === 'raffle' && <RaffleSection address={address} basename={basename} />}
