@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { db } from '../config/supabase'
 
 const CONTEST_TARGET_DATE = new Date(Date.UTC(2026, 5, 27, 19, 52, 0))
@@ -776,7 +776,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
                 gap: 6
               }}
             >
-              ЁЯУм View Submitted Posts {submissions.length > 0 ? `(${submissions.length})` : ''}
+              📂 View Submitted Posts {submissions.length > 0 ? `(${submissions.length})` : ''}
             </button>
 
             {showAdminSubmissions && (
@@ -1757,7 +1757,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
               onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
               onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
               >
-                Participate тЖТ
+                Participate →
               </div>
             </div>
           </div>
@@ -1910,7 +1910,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
               onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
               onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
               >
-                {isEnded ? 'View Results тЖТ' : 'Participate тЖТ'}
+                {isEnded ? 'View Results →' : 'Participate →'}
               </div>
             </div>
           </div>

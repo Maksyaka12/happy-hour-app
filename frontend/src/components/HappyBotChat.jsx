@@ -8,7 +8,7 @@ export function HappyBotChat({ address, isClubMember }) {
   const [messages, setMessages] = useState([
     {
       sender: 'bot',
-      text: 'Привіт! Я твій персональний Happy Bot асистент. 🤖 Можу підказати твій баланс HP, стрік чек-інів, статус підписки та допомогти налаштувати авто-дії. Чим можу допомогти?',
+      text: 'Hi! I am your personal Happy Bot assistant. 🤖 I can help you check your HP balance, check-in streak, subscription status, and set up routine automations. How can I help you today?',
       time: new Date()
     }
   ])
@@ -54,40 +54,36 @@ export function HappyBotChat({ address, isClubMember }) {
       let botResponse = ''
       const query = input.toLowerCase()
 
-      if (query.includes('привіт') || query.includes('hello') || query.includes('hi')) {
-        botResponse = `Привіт! Радий бачити тебе. ${address ? 'Я готовий відповісти на будь-які питання про твою активність у Happy Hour.' : 'Будь ласка, підключи свій гаманець, щоб я міг бачити твою статистику.'}`
-      } else if (query.includes('поінт') || query.includes('hp') || query.includes('баланс') || query.includes('points')) {
+      if (query.includes('hi') || query.includes('hello') || query.includes('hey') || query.includes('привіт')) {
+        botResponse = `Hello! Great to see you. ${address ? 'I am ready to answer any questions about your activity in Happy Hour.' : 'Please connect your wallet so I can check your stats.'}`
+      } else if (query.includes('point') || query.includes('hp') || query.includes('balance') || query.includes('поінт')) {
         botResponse = address 
-          ? `Твій поточний баланс: *${hp} HP* (Happy Points). Продовжуй активність, щоб заробити більше!` 
-          : 'Підключи гаманець, щоб дізнатися свій баланс поінтів.'
-      } else if (query.includes('стрік') || query.includes('streak') || query.includes('чек-ін') || query.includes('checkin')) {
+          ? `Your current balance is *${hp} HP* (Happy Points). Keep up the activity to earn more!` 
+          : 'Please connect your wallet to check your points balance.'
+      } else if (query.includes('streak') || query.includes('check-in') || query.includes('checkin') || query.includes('стрік')) {
         botResponse = address
-          ? `Твій поточний стрік чек-інів: *${streak} днів* 🔥. ${canCheckIn ? 'Ти можеш зробити чек-ін прямо зараз!' : 'Сьогодні ти вже зробив чек-ін. Повертайся завтра!'}`
-          : 'Підключи гаманець, щоб побачити свій стрік.'
-      } else if (query.includes('стрік') || query.includes('streak') || query.includes('чек-ін') || query.includes('checkin')) {
+          ? `Your current check-in streak is *${streak} days* 🔥. ${canCheckIn ? 'You can check in right now!' : 'You have already checked in today. See you tomorrow!'}`
+          : 'Please connect your wallet to view your streak.'
+      } else if (query.includes('stake') || query.includes('staking') || query.includes('стейк')) {
         botResponse = address
-          ? `Твій поточний стрік чек-інів: *${streak} днів* 🔥. ${canCheckIn ? 'Ти можеш зробити чек-ін прямо зараз!' : 'Сьогодні ти вже зробив чек-ін. Повертайся завтра!'}`
-          : 'Підключи гаманець, щоб побачити свій стрік.'
-      } else if (query.includes('стейк') || query.includes('stake') || query.includes('staking')) {
+          ? `You currently have *${totalStaked.toLocaleString()} $HH* staked. Staking yields APR and awards the Happy Staker badge (+5% chance in raffles)!`
+          : 'Please connect your wallet to check your staked tokens.'
+      } else if (query.includes('raffle') || query.includes('ticket') || query.includes('рафл') || query.includes('квит')) {
         botResponse = address
-          ? `Зараз у тебе застейкано *${totalStaked.toLocaleString()} $HH*. Стейкінг приносить APR та дає право на бейдж Happy Staker (+5% шанс у раффлах)!`
-          : 'Підключи гаманець, щоб перевірити застейкані токени.'
-      } else if (query.includes('рафл') || query.includes('raffle') || query.includes('квит') || query.includes('ticket')) {
-        botResponse = address
-          ? `У поточному годинному раунді у тебе *${raffleTickets} квитків*. Нагадую, що купівля квитка також автоматично реєструє тебе у Daily Raffle з бустами!`
-          : 'Підключи гаманець, щоб побачити свої квитки.'
-      } else if (query.includes('клуб') || query.includes('club') || query.includes('підписк') || query.includes('premium') || query.includes('преміум')) {
+          ? `In the current hourly round, you have *${raffleTickets} tickets*. Remember, buying an hourly ticket automatically qualifies you for the Daily Raffle with your active boosts!`
+          : 'Please connect your wallet to check your tickets.'
+      } else if (query.includes('club') || query.includes('membership') || query.includes('premium') || query.includes('клуб') || query.includes('підписк')) {
         botResponse = isClubMember
-          ? '👑 Ти є учасником Happy Club! Тобі доступні безлімітні запити та авто-дії.'
-          : 'Ти ще не приєднався до Happy Club. Підписка коштує $10/місяць і відкриває авто-чек-ін та авто-депозити. Приєднатися можна в профілі!'
-      } else if (query.includes('автомат') || query.includes('auto') || query.includes('налаштув')) {
+          ? '👑 You are a member of the Happy Club! Unlimited queries and automated routine actions are enabled.'
+          : "You haven't joined the Happy Club yet. The membership costs ~$10/month and unlocks automatic check-ins and auto-buys. You can join via the Profile section!"
+      } else if (query.includes('auto') || query.includes('routine') || query.includes('robot') || query.includes('автомат')) {
         if (!isClubMember) {
-          botResponse = '⚠️ Автоматизація доступна лише для членів Happy Club. Приєднайся до клубу в профілі, щоб увімкнути авто-чек-ін та авто-депозити.'
+          botResponse = '⚠️ Automation is only available for Happy Club members. Join the club in your Profile to enable auto-check-ins and auto-buys.'
         } else {
-          botResponse = '🤖 Автоматизація активна! Твої агенти автоматично роблять чек-ін кожні 24 години та купують квитки в раффлах відповідно до налаштувань.'
+          botResponse = '🤖 Automation is active! Your routine agents automatically perform check-ins every 24 hours and buy raffle tickets based on your preferences.'
         }
       } else {
-        botResponse = 'Я розумію питання про: поінти (HP), стріки, стейкінг, квитки в раффлах, статус підписки Happy Club та автоматизацію. Спробуй запитати: "Скільки в мене поінтів?" або "Який мій стрік?"'
+        botResponse = 'I understand questions about: points (HP), streaks, staking, raffle tickets, Happy Club membership, and automation. Try asking: "How many points do I have?" or "What is my streak?"'
       }
 
       setMessages(prev => [...prev, {
@@ -231,7 +227,7 @@ export function HappyBotChat({ address, isClubMember }) {
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') handleSend() }}
-              placeholder="Спитай щось про твої HP чи Стрік..."
+              placeholder="Ask about your HP, streak, staking..."
               style={{
                 flex: 1,
                 background: 'rgba(255, 255, 255, 0.05)',

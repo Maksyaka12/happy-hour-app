@@ -1652,15 +1652,15 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
         <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', gap: 6 }}>
           {isClubMember ? (
             <div style={{ fontSize: 12.5, color: '#E2E8F0', fontWeight: 600, lineHeight: 1.4 }}>
-              Ваша преміум підписка активна! Агенти в автоматичному режимі виконують щоденні чек-іни та беруть участь у раффлах.
+              Your Premium subscription is active! Agents automatically perform daily check-ins and participate in raffles.
               <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 8, fontWeight: 700 }}>
-                📅 Діє до: {new Date(membershipExpiry * 1000).toLocaleDateString('uk-UA', { day: 'numeric', month: 'long', year: 'numeric' })}
+                📅 Expires on: {new Date(membershipExpiry * 1000).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
               </div>
             </div>
           ) : (
             <>
               <div style={{ fontSize: 12, color: 'rgba(255, 255, 255, 0.8)', fontWeight: 600, lineHeight: 1.4 }}>
-                Отримайте безлімітний доступ до AI-асистента та можливість автоматичного чек-іну і участі в раффлах без вашої участі.
+                Get unlimited access to the AI assistant, along with automatic daily check-ins and raffle entries handled by our routine agents.
               </div>
               
               {/* Duration Selector */}
@@ -1680,7 +1680,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
                     cursor: 'pointer'
                   }}
                 >
-                  30 днів (1 міс)
+                  30 Days (1 mo)
                 </button>
                 <button 
                   type="button"
@@ -1697,11 +1697,11 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
                     cursor: 'pointer'
                   }}
                 >
-                  365 днів (Зберегти 20%)
+                  365 Days (Save 20%)
                 </button>
               </div>
 
-              {/* Payment Buttons Grid */}
+              {/* Payment Grid */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginTop: 4 }}>
                 <button
                   type="button"
@@ -1786,7 +1786,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
                     textDecoration: 'underline'
                   }}
                 >
-                  [Dev] Увімкнути безкоштовно для тесту
+                  [Dev] Enable free membership for testing
                 </span>
               </div>
             </>

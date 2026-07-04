@@ -954,7 +954,7 @@ export function RaffleSection({ address, basename }) {
             {/* Sponsor block */}
             <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
               <span style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.6)', fontWeight: 600, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-                🤝 Спонсор: <span style={{ color: '#FFFFFF', fontWeight: 800 }}>{dailySponsor}</span>
+                🤝 Sponsor: <span style={{ color: '#FFFFFF', fontWeight: 800 }}>{dailySponsor}</span>
               </span>
             </div>
           </div>
@@ -974,12 +974,12 @@ export function RaffleSection({ address, basename }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <div style={{ fontSize: 14.5, fontWeight: 900, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span>{isDailyEligible ? '🟢 Кваліфіковані' : '⚪ Не кваліфіковані'}</span>
+                  <span>{isDailyEligible ? '🟢 Eligible' : '⚪ Not Eligible'}</span>
                 </div>
                 <div style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.6)', marginTop: 4, fontWeight: 650, lineHeight: 1.3 }}>
                   {isDailyEligible 
-                    ? 'Ви автоматично берете участь у сьогоднішньому щоденному розіграші!' 
-                    : 'Купіть хоча б 1 квиток у годинному раффлі за сьогодні, щоб отримати право на участь.'
+                    ? "You are automatically entered into today's daily draw!" 
+                    : "Buy at least 1 ticket in the hourly raffle today to qualify for the daily draw."
                   }
                 </div>
               </div>
@@ -1012,7 +1012,7 @@ export function RaffleSection({ address, basename }) {
                   textAlign: 'center'
                 }}
               >
-                Придбати квиток у $HH Raffle
+                Buy Ticket in $HH Raffle
               </button>
             )}
           </div>
@@ -1052,7 +1052,7 @@ export function RaffleSection({ address, basename }) {
                 textDecoration: 'underline'
               }}
             >
-              [Dev] Симулювати кваліфікацію (10 квитків)
+              [Dev] Simulate eligibility (10 tickets)
             </span>
           </div>
         </div>
