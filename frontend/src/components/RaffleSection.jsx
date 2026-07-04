@@ -13,7 +13,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useWaitForTransactionReceipt, useChainId, useSwitchChain, useReadContract } from 'wagmi'
 import { parseUnits, formatUnits } from 'viem'
 import { base } from 'wagmi/chains'
-import { FOUNDATION, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI, BET_OPTS, TICKET_UNIT, CLOSE_BEFORE_MS, WINNER_SHARE, HH_RAFFLE_VAULT_ADDRESS } from '../config/constants'
+import { FOUNDATION, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI, BET_OPTS, TICKET_UNIT, CLOSE_BEFORE_MS, WINNER_SHARE, HH_RAFFLE_VAULT_ADDRESS, DAILY_ADDRESS, DAILY_ABI } from '../config/constants'
 import { db } from '../config/supabase'
 import { useRoundState } from '../hooks/useRoundState'
 import { useBuilderWrite } from '../hooks/useBuilderWrite'
@@ -89,6 +89,70 @@ export function RaffleSection({ address, basename }) {
     query: { enabled: !!address && raffleType === 'hh', refetchInterval: 10000 }
   })
   const hhAllowance = hhAllowanceRaw !== undefined ? parseFloat(formatUnits(hhAllowanceRaw, 18)) : 0
+
+  // Daily Raffle Hooks
+  const { data: isDailyEligibleRaw } = useReadContract({
+    address: DAILY_ADDRESS,
+    abi: DAILY_ABI,
+    functionName: 'isUserEligible',
+    args: address ? [address] : undefined,
+    query: { enabled: !!address, refetchInterval: 15000 }
+  })
+
+  const { data: dailyUserTicketsRaw } = useReadContract({
+    address: DAILY_ADDRESS,
+    abi: DAILY_ABI,
+    functionName: 'getUserTickets',
+    args: address ? [address] : undefined,
+    query: { enabled: !!address, refetchInterval: 15000 }
+  })
+
+  const { data: dailyPoolRaw } = useReadContract({
+    address: DAILY_ADDRESS,
+    abi: DAILY_ABI,
+    functionName: 'getPoolBalance',
+    query: { enabled: !!address, refetchInterval: 15000 }
+  })
+
+  const { data: dailyTimeRemainingRaw } = useReadContract({
+    address: DAILY_ADDRESS,
+    abi: DAILY_ABI,
+    functionName: 'getTimeRemaining',
+    query: { enabled: !!address, refetchInterval: 15000 }
+  })
+
+  const { data: dailySponsorRaw } = useReadContract({
+    address: DAILY_ADDRESS,
+    abi: DAILY_ABI,
+    functionName: 'sponsorName',
+    query: { enabled: !!address }
+  })
+
+  const { data: dailyRoundRaw } = useReadContract({
+    address: DAILY_ADDRESS,
+    abi: DAILY_ABI,
+    functionName: 'getCurrentRound',
+    query: { enabled: !!address }
+  })
+
+  // Simulated fallback values for development/testing
+  const [simulatedDailyEligible, setSimulatedDailyEligible] = useState(() => {
+    try {
+      return localStorage.getItem('hh_simulated_daily_eligible') === 'true'
+    } catch { return false }
+  })
+  const [simulatedDailyTickets, setSimulatedDailyTickets] = useState(() => {
+    try {
+      return parseInt(localStorage.getItem('hh_simulated_daily_tickets') || '0')
+    } catch { return 0 }
+  })
+
+  const isDailyEligible = isDailyEligibleRaw !== undefined ? isDailyEligibleRaw : simulatedDailyEligible
+  const dailyUserTickets = dailyUserTicketsRaw !== undefined ? Number(dailyUserTicketsRaw) : simulatedDailyTickets
+  const dailyPool = dailyPoolRaw !== undefined ? Number(formatUnits(dailyPoolRaw, 18)) : 10000000 // default 10M HH
+  const dailyTimeRemaining = dailyTimeRemainingRaw !== undefined ? Number(dailyTimeRemainingRaw) : 0
+  const dailySponsor = dailySponsorRaw || 'Happy Hour'
+  const dailyRound = dailyRoundRaw !== undefined ? Number(dailyRoundRaw) : 1
 
   // ── Chain check ──────────────────────────────────────────
   const chainId = useChainId()
@@ -206,6 +270,25 @@ export function RaffleSection({ address, basename }) {
     if (spinData) return spinData.myAmount || 0
     return myAmount || 0
   }, [myAmount, spinData])
+
+  const triggerDailyDraw = () => {
+    if (wrongChain) { switchChain({ chainId: base.id }); return }
+    writeContract({
+      address: DAILY_ADDRESS,
+      abi: DAILY_ABI,
+      functionName: 'requestDailyDraw',
+      chainId: base.id
+    })
+  }
+
+  const simulateDailyEligibility = () => {
+    try {
+      localStorage.setItem('hh_simulated_daily_eligible', 'true')
+      localStorage.setItem('hh_simulated_daily_tickets', '10')
+      setSimulatedDailyEligible(true)
+      setSimulatedDailyTickets(10)
+    } catch (e) { console.error(e) }
+  }
 
   const isHH = raffleType === 'hh'
   const accentColor = isHH ? '#3B82F6' : '#10B981'
@@ -365,371 +448,612 @@ export function RaffleSection({ address, basename }) {
         </div>
       </div>
 
-      {/* Hero card */}
-      <div style={{
-        background: heroCardBg,
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        border: cardBorder,
-        borderRadius: 20,
-        padding: '20px 18px 16px',
-        marginBottom: 12,
-        boxShadow: `${cardShadow}, inset 0 1px 0 rgba(255, 255, 255, 0.08)`,
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
-        {/* Background image overlay */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: 'url(/banner.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          filter: heroHueFilter,
-          zIndex: 0,
-          pointerEvents: 'none'
-        }} />
-
-        {/* Shimmer glow */}
-        <div style={{
-          position: 'absolute',
-          top: -30,
-          right: -30,
-          width: 120,
-          height: 120,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(255, 255, 255, 0.06) 0%, transparent 70%)',
-          pointerEvents: 'none'
-        }} />
-
-        {/* Colored radial gradient glow */}
-        <div style={{
-          position: 'absolute',
-          top: -40,
-          right: -40,
-          width: 180,
-          height: 180,
-          borderRadius: '50%',
-          background: isHH
-            ? 'radial-gradient(circle, rgba(59, 130, 246, 0.22) 0%, transparent 70%)'
-            : 'radial-gradient(circle, rgba(20, 184, 166, 0.22) 0%, transparent 70%)',
-          pointerEvents: 'none',
-          zIndex: 1
-        }} />
-
-        <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-          <div style={{ fontSize: 14.5, fontWeight: 900, color: '#FFFFFF', letterSpacing: '0.2px', textTransform: 'uppercase', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-            Round #${displayRound?.id ?? '—'} Raffle
-          </div>
-          <span style={{
-            background: isClosed ? 'rgba(252, 64, 31, 0.1)' : `${glowColor.replace('0.25', '0.08')}`,
-            color: isClosed ? '#FC401F' : '#FFFFFF',
-            padding: '3px 8px',
-            borderRadius: 8,
-            fontSize: 10,
-            fontWeight: 800,
-            border: isClosed ? '1px solid rgba(252, 64, 31, 0.25)' : `1px solid rgba(255, 255, 255, 0.25)`,
-            fontFamily: "'Outfit', 'Inter', sans-serif"
-          }}>
-            {isClosed ? 'DEPOSITS CLOSED' : 'ACTIVE'}
-          </span>
-        </div>
-
-        {/* Two Plates Layout */}
-        <div style={{
-          position: 'relative',
-          zIndex: 2,
-          display: 'grid',
-          gridTemplateColumns: '1.2fr 0.8fr',
-          gap: 12,
-          marginBottom: 16
-        }}>
-          {/* Left Plate: Prize Pool */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-            <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.5px', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-              PRIZE POOL
-            </span>
-            <div style={{
-              background: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              borderRadius: 14,
-              height: 52,
-              padding: '0 12px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
-            }}>
-              <img src={isHH ? "/logo.jfif" : "/usdc-logo.png"} alt="" style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover' }} />
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ fontSize: 15, fontWeight: 900, color: '#FFFFFF', fontFamily: "'Outfit', 'Inter', sans-serif", lineHeight: 1.1 }}>
-                  {isHH ? `${formatConcise(displayTotalPot)} $HH` : `${displayTotalPot.toFixed(2)} USDC`}
-                </span>
-                <span style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.45)', fontWeight: 700, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-                  {isHH ? `≈$${(displayTotalPot * hhPrice).toFixed(2)}` : `≈$${displayTotalPot.toFixed(2)}`}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Plate: Timer */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-            <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.5px', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-              {isClosed ? 'DRAWS IN' : 'TIME LEFT'}
-            </span>
-            <div style={{
-              background: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              borderRadius: 14,
-              height: 52,
-              padding: '0 12px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
-            }}>
-              <span style={{
-                fontFamily: "'Barlow Condensed', sans-serif",
-                fontSize: 24,
-                fontWeight: 900,
-                color: timerColor,
-                fontVariantNumeric: 'tabular-nums'
-              }}>
-                {fmt(msLeft)}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div style={{ position: 'relative', zIndex: 2 }}>
-          <PBar participants={displayParticipants} totalPot={displayTotalPot} />
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10, flexWrap: 'wrap', gap: 4 }}>
-            <span style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.6)', fontWeight: 600, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-              👥 {displayParticipants.length} players · {displayParticipants.reduce((s, p) => s + (p.tickets || 0), 0)} tickets
-            </span>
-            {displayMyEntry && (
-              <span style={{ fontSize: 11, color: '#FFFFFF', fontWeight: 800, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-                Your chance: <span style={{ color: '#FFFFFF' }}>{displayMyChance}%</span>
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Closed warning */}
-      {isClosed && (
-        <div style={{
-          background: 'rgba(252, 64, 31, 0.08)',
-          border: '1px solid rgba(252, 64, 31, 0.3)',
-          borderRadius: 14,
-          padding: '10px 16px',
-          marginBottom: 12,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-        }}>
-          <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#FC401F', animation: 'blinkDot 1s infinite' }} />
-          <span style={{ fontSize: 12, color: '#FC401F', fontWeight: 700, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-            Deposits closed · Draw in {fmt(msLeft)}
-          </span>
-        </div>
-      )}
-
-      {/* Wrong chain warning */}
-      {wrongChain && (
-        <div style={{
-          background: 'rgba(217, 119, 6, 0.08)',
-          border: '1px solid rgba(217, 119, 6, 0.3)',
-          borderRadius: 14,
-          padding: '10px 16px',
-          marginBottom: 12,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 8,
-        }}>
-          <span style={{ fontSize: 12, color: '#FBBF24', fontWeight: 700, fontFamily: "'Outfit', 'Inter', sans-serif" }}>Switch to Base Mainnet</span>
-          <button
-            onClick={() => switchChain({ chainId: base.id })}
-            style={{
-              background: '#D97706',
-              color: '#fff',
-              borderRadius: 8,
-              padding: '6px 14px',
-              fontSize: 11,
-              fontWeight: 800,
-              border: 'none',
-              cursor: 'pointer',
-              outline: 'none',
-              transition: 'background 0.2s',
-              fontFamily: "'Outfit', 'Inter', sans-serif"
-            }}
-          >
-            {isSwitching ? 'Switching…' : 'Switch'}
-          </button>
-        </div>
-      )}
-
-      {/* My position */}
-      {displayMyEntry && (
-        <div style={{
-          background: cardBg,
-          border: cardBorder, 
-          borderLeft: `4px solid ${accentColor}`,
-          borderRadius: 14,
-          padding: '12px 16px',
-          marginBottom: 16,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          boxShadow: cardShadow,
-        }}>
-          <div>
-            <div style={{ fontSize: 9, color: '#A0AEC0', fontWeight: 800, marginBottom: 4, letterSpacing: '0.5px', textTransform: 'uppercase', fontFamily: "'Outfit', 'Inter', sans-serif" }}>YOUR POSITION</div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-              {displayMyTickets} tickets · <span style={{ color: '#FFFFFF' }}>
-                {isHH ? `${formatConcise(displayMyAmount)} $HH` : `${displayMyAmount.toFixed(2)} USDC`}
-              </span>
-              <span style={{ fontSize: 10.5, color: '#A0AEC0', marginLeft: 6, fontWeight: 500 }}>
-                {isHH ? `≈$${(displayMyAmount * hhPrice).toFixed(2)}` : `≈$${displayMyAmount.toFixed(2)}`}
-              </span>
-            </div>
-          </div>
+      {/* Raffle View Split */}
+      {isHH ? (
+        <>
+          {/* Hero card */}
           <div style={{
-            fontFamily: "'Barlow Condensed', sans-serif",
-            fontSize: 26,
-            fontWeight: 900,
-            color: '#FFFFFF'
-          }}>
-            {displayMyChance}%
-          </div>
-        </div>
-      )}
-
-      {/* Bet buttons */}
-      <div style={{ marginBottom: 16 }}>
-        <div style={{
-          fontFamily: "'Outfit', 'Inter', sans-serif",
-          fontSize: 11.5,
-          color: '#4A5568',
-          fontWeight: 800,
-          letterSpacing: '0.6px',
-          marginBottom: 8,
-          textTransform: 'uppercase'
-        }}>
-          Place Your Bet
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-          {BET_OPTS.map(a => (
-            <button
-              key={a}
-              onClick={() => onBetClick(a)}
-              disabled={isClosed || isPending || isConfirming}
-              style={{
-                background: gradientColor, 
-                border: 'none',
-                borderRadius: 12,
-                padding: '12px 6px',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 3,
-                boxShadow: `0 4px 14px ${glowColor.replace('0.25', '0.2')}`, 
-                cursor: 'pointer',
-                opacity: isClosed ? 0.45 : 1,
-                transition: 'all 0.2s',
-                outline: 'none'
-              }}
-            >
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 4,
-                fontFamily: "'Barlow Condensed', sans-serif",
-                fontSize: 16,
-                fontWeight: 900,
-                color: '#FFFFFF',
-                textTransform: 'uppercase',
-                letterSpacing: '0.3px'
-              }}>
-                {isHH ? formatConcise(a / hhPrice) : a}
-                <img
-                  src={isHH ? "/logo.jfif" : "/usdc-logo.png"}
-                  alt=""
-                  style={{
-                    width: 14,
-                    height: 14,
-                    borderRadius: isHH ? '50%' : 'none',
-                    objectFit: 'cover'
-                  }}
-                />
-              </div>
-              <div style={{ fontSize: 8.5, color: '#E5E7EB', fontWeight: 800, fontFamily: "'Outfit', 'Inter', sans-serif", marginTop: 2 }}>
-                {isHH ? `≈$${a} · ` : ''}{Math.round(a / TICKET_UNIT)} TICKET{Math.round(a / TICKET_UNIT) > 1 ? 'S' : ''}
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Participants */}
-      {displayParticipants.length > 0 && (
-        <div style={{ marginBottom: 16 }}>
-          <div style={{
-            fontFamily: "'Outfit', 'Inter', sans-serif",
-            fontSize: 11.5,
-            color: '#4A5568',
-            fontWeight: 800,
-            letterSpacing: '0.6px',
-            marginBottom: 8,
-            textTransform: 'uppercase'
-          }}>
-            Participants
-          </div>
-          <div style={{
-            background: cardBg,
+            background: heroCardBg,
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
             border: cardBorder,
-            borderTop: `3px solid ${accentColor}`,
-            borderRadius: 14,
-            overflow: 'hidden',
-            boxShadow: cardShadow,
+            borderRadius: 20,
+            padding: '20px 18px 16px',
+            marginBottom: 12,
+            boxShadow: `${cardShadow}, inset 0 1px 0 rgba(255, 255, 255, 0.08)`,
+            position: 'relative',
+            overflow: 'hidden'
           }}>
-            {displayParticipants.map((p, i) => (
-              <div key={i} style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                padding: '10px 14px',
-                background: i % 2 === 0 ? 'rgba(255, 255, 255, 0.02)' : 'rgba(255, 255, 255, 0.005)',
-                borderBottom: i < displayParticipants.length - 1 ? '1px solid rgba(255, 255, 255, 0.08)' : 'none',
-                borderLeft: `3px solid ${pColor(p.address)}`,
+            {/* Background image overlay */}
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              backgroundImage: 'url(/banner.jpg)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              filter: heroHueFilter,
+              zIndex: 0,
+              pointerEvents: 'none'
+            }} />
+
+            {/* Shimmer glow */}
+            <div style={{
+              position: 'absolute',
+              top: -30,
+              right: -30,
+              width: 120,
+              height: 120,
+              borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(255, 255, 255, 0.06) 0%, transparent 70%)',
+              pointerEvents: 'none'
+            }} />
+
+            {/* Colored radial gradient glow */}
+            <div style={{
+              position: 'absolute',
+              top: -40,
+              right: -40,
+              width: 180,
+              height: 180,
+              borderRadius: '50%',
+              background: isHH
+                ? 'radial-gradient(circle, rgba(59, 130, 246, 0.22) 0%, transparent 70%)'
+                : 'radial-gradient(circle, rgba(20, 184, 166, 0.22) 0%, transparent 70%)',
+              pointerEvents: 'none',
+              zIndex: 1
+            }} />
+
+            <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+              <div style={{ fontSize: 14.5, fontWeight: 900, color: '#FFFFFF', letterSpacing: '0.2px', textTransform: 'uppercase', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                Round #${displayRound?.id ?? '—'} Raffle
+              </div>
+              <span style={{
+                background: isClosed ? 'rgba(252, 64, 31, 0.1)' : `${glowColor.replace('0.25', '0.08')}`,
+                color: isClosed ? '#FC401F' : '#FFFFFF',
+                padding: '3px 8px',
+                borderRadius: 8,
+                fontSize: 10,
+                fontWeight: 800,
+                border: isClosed ? '1px solid rgba(252, 64, 31, 0.25)' : `1px solid rgba(255, 255, 255, 0.25)`,
+                fontFamily: "'Outfit', 'Inter', sans-serif"
               }}>
-                <UserAvatar address={p.address} size={28} />
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 12.5, fontWeight: 800, color: '#FFFFFF', fontFamily: "'Outfit', 'Inter', sans-serif" }}>{p.name || short(p.address)}</div>
-                  <div style={{ fontSize: 9.5, color: '#A0AEC0', fontWeight: 600, marginTop: 1, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-                    {p.tickets || Math.round(p.amount / TICKET_UNIT)} tickets
-                  </div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 14.5, fontWeight: 900, color: '#FFFFFF' }}>
-                    {isHH ? `${formatConcise(p.amount)} $HH` : `${p.amount.toFixed(2)} USDC`}
-                  </div>
-                  <div style={{ fontSize: 9.5, color: '#A0AEC0', fontWeight: 650, marginTop: 1, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-                    {isHH && `≈$${(p.amount * hhPrice).toFixed(2)} · `}
-                    <span style={{ color: '#FFFFFF', fontWeight: 800 }}>
-                      {displayTotalPot > 0 ? (p.amount / displayTotalPot * 100).toFixed(1) : 0}%
+                {isClosed ? 'DEPOSITS CLOSED' : 'ACTIVE'}
+              </span>
+            </div>
+
+            {/* Two Plates Layout */}
+            <div style={{
+              position: 'relative',
+              zIndex: 2,
+              display: 'grid',
+              gridTemplateColumns: '1.2fr 0.8fr',
+              gap: 12,
+              marginBottom: 16
+            }}>
+              {/* Left Plate: Prize Pool */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.5px', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                  PRIZE POOL
+                </span>
+                <div style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(8px)',
+                  WebkitBackdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  borderRadius: 14,
+                  height: 52,
+                  padding: '0 12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
+                }}>
+                  <img src={isHH ? "/logo.jfif" : "/usdc-logo.png"} alt="" style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover' }} />
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ fontSize: 15, fontWeight: 900, color: '#FFFFFF', fontFamily: "'Outfit', 'Inter', sans-serif", lineHeight: 1.1 }}>
+                      {isHH ? `${formatConcise(displayTotalPot)} $HH` : `${displayTotalPot.toFixed(2)} USDC`}
+                    </span>
+                    <span style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.45)', fontWeight: 700, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                      {isHH ? `≈$${(displayTotalPot * hhPrice).toFixed(2)}` : `≈$${displayTotalPot.toFixed(2)}`}
                     </span>
                   </div>
                 </div>
               </div>
-            ))}
+
+              {/* Right Plate: Timer */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.5px', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                  {isClosed ? 'DRAWS IN' : 'TIME LEFT'}
+                </span>
+                <div style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(8px)',
+                  WebkitBackdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  borderRadius: 14,
+                  height: 52,
+                  padding: '0 12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
+                }}>
+                  <span style={{
+                    fontFamily: "'Barlow Condensed', sans-serif",
+                    fontSize: 24,
+                    fontWeight: 900,
+                    color: timerColor,
+                    fontVariantNumeric: 'tabular-nums'
+                  }}>
+                    {fmt(msLeft)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ position: 'relative', zIndex: 2 }}>
+              <PBar participants={displayParticipants} totalPot={displayTotalPot} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10, flexWrap: 'wrap', gap: 4 }}>
+                <span style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.6)', fontWeight: 600, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                  👥 {displayParticipants.length} players · {displayParticipants.reduce((s, p) => s + (p.tickets || 0), 0)} tickets
+                </span>
+                {displayMyEntry && (
+                  <span style={{ fontSize: 11, color: '#FFFFFF', fontWeight: 800, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                    Your chance: <span style={{ color: '#FFFFFF' }}>{displayMyChance}%</span>
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Closed warning */}
+          {isClosed && (
+            <div style={{
+              background: 'rgba(252, 64, 31, 0.08)',
+              border: '1px solid rgba(252, 64, 31, 0.3)',
+              borderRadius: 14,
+              padding: '10px 16px',
+              marginBottom: 12,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+            }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#FC401F', animation: 'blinkDot 1s infinite' }} />
+              <span style={{ fontSize: 12, color: '#FC401F', fontWeight: 700, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                Deposits closed · Draw in {fmt(msLeft)}
+              </span>
+            </div>
+          )}
+
+          {/* Wrong chain warning */}
+          {wrongChain && (
+            <div style={{
+              background: 'rgba(217, 119, 6, 0.08)',
+              border: '1px solid rgba(217, 119, 6, 0.3)',
+              borderRadius: 14,
+              padding: '10px 16px',
+              marginBottom: 12,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 8,
+            }}>
+              <span style={{ fontSize: 12, color: '#FBBF24', fontWeight: 700, fontFamily: "'Outfit', 'Inter', sans-serif" }}>Switch to Base Mainnet</span>
+              <button
+                type="button"
+                onClick={() => switchChain({ chainId: base.id })}
+                style={{
+                  background: '#D97706',
+                  color: '#fff',
+                  borderRadius: 8,
+                  padding: '6px 14px',
+                  fontSize: 11,
+                  fontWeight: 800,
+                  border: 'none',
+                  cursor: 'pointer',
+                  outline: 'none',
+                  transition: 'background 0.2s',
+                  fontFamily: "'Outfit', 'Inter', sans-serif"
+                }}
+              >
+                {isSwitching ? 'Switching…' : 'Switch'}
+              </button>
+            </div>
+          )}
+
+          {/* My position */}
+          {displayMyEntry && (
+            <div style={{
+              background: cardBg,
+              border: cardBorder, 
+              borderLeft: `4px solid ${accentColor}`,
+              borderRadius: 14,
+              padding: '12px 16px',
+              marginBottom: 16,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              boxShadow: cardShadow,
+            }}>
+              <div>
+                <div style={{ fontSize: 9, color: '#A0AEC0', fontWeight: 800, marginBottom: 4, letterSpacing: '0.5px', textTransform: 'uppercase', fontFamily: "'Outfit', 'Inter', sans-serif" }}>YOUR POSITION</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                  {displayMyTickets} tickets · <span style={{ color: '#FFFFFF' }}>
+                    {isHH ? `${formatConcise(displayMyAmount)} $HH` : `${displayMyAmount.toFixed(2)} USDC`}
+                  </span>
+                  <span style={{ fontSize: 10.5, color: '#A0AEC0', marginLeft: 6, fontWeight: 500 }}>
+                    {isHH ? `≈$${(displayMyAmount * hhPrice).toFixed(2)}` : `≈$${displayMyAmount.toFixed(2)}`}
+                  </span>
+                </div>
+              </div>
+              <div style={{
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontSize: 26,
+                fontWeight: 900,
+                color: '#FFFFFF'
+              }}>
+                {displayMyChance}%
+              </div>
+            </div>
+          )}
+
+          {/* Bet buttons */}
+          <div style={{ marginBottom: 16 }}>
+            <div style={{
+              fontFamily: "'Outfit', 'Inter', sans-serif",
+              fontSize: 11.5,
+              color: '#4A5568',
+              fontWeight: 800,
+              letterSpacing: '0.6px',
+              marginBottom: 8,
+              textTransform: 'uppercase'
+            }}>
+              Place Your Bet
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+              {BET_OPTS.map(a => (
+                <button
+                  key={a}
+                  type="button"
+                  onClick={() => onBetClick(a)}
+                  disabled={isClosed || isPending || isConfirming}
+                  style={{
+                    background: gradientColor, 
+                    border: 'none',
+                    borderRadius: 12,
+                    padding: '12px 6px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 3,
+                    boxShadow: `0 4px 14px ${glowColor.replace('0.25', '0.2')}`, 
+                    cursor: 'pointer',
+                    opacity: isClosed ? 0.45 : 1,
+                    transition: 'all 0.2s',
+                    outline: 'none'
+                  }}
+                >
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 4,
+                    fontFamily: "'Barlow Condensed', sans-serif",
+                    fontSize: 16,
+                    fontWeight: 900,
+                    color: '#FFFFFF',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.3px'
+                  }}>
+                    {isHH ? formatConcise(a / hhPrice) : a}
+                    <img
+                      src={isHH ? "/logo.jfif" : "/usdc-logo.png"}
+                      alt=""
+                      style={{
+                        width: 14,
+                        height: 14,
+                        borderRadius: isHH ? '50%' : 'none',
+                        objectFit: 'cover'
+                      }}
+                    />
+                  </div>
+                  <div style={{ fontSize: 8.5, color: '#E5E7EB', fontWeight: 800, fontFamily: "'Outfit', 'Inter', sans-serif", marginTop: 2 }}>
+                    {isHH ? `≈$${a} · ` : ''}{Math.round(a / TICKET_UNIT)} TICKET{Math.round(a / TICKET_UNIT) > 1 ? 'S' : ''}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Participants */}
+          {displayParticipants.length > 0 && (
+            <div style={{ marginBottom: 16 }}>
+              <div style={{
+                fontFamily: "'Outfit', 'Inter', sans-serif",
+                fontSize: 11.5,
+                color: '#4A5568',
+                fontWeight: 800,
+                letterSpacing: '0.6px',
+                marginBottom: 8,
+                textTransform: 'uppercase'
+              }}>
+                Participants
+              </div>
+              <div style={{
+                background: cardBg,
+                border: cardBorder,
+                borderTop: `3px solid ${accentColor}`,
+                borderRadius: 14,
+                overflow: 'hidden',
+                boxShadow: cardShadow,
+              }}>
+                {displayParticipants.map((p, i) => (
+                  <div key={i} style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 12,
+                    padding: '10px 14px',
+                    background: i % 2 === 0 ? 'rgba(255, 255, 255, 0.02)' : 'rgba(255, 255, 255, 0.005)',
+                    borderBottom: i < displayParticipants.length - 1 ? '1px solid rgba(255, 255, 255, 0.08)' : 'none',
+                    borderLeft: `3px solid ${pColor(p.address)}`,
+                  }}>
+                    <UserAvatar address={p.address} size={28} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 12.5, fontWeight: 800, color: '#FFFFFF', fontFamily: "'Outfit', 'Inter', sans-serif" }}>{p.name || short(p.address)}</div>
+                      <div style={{ fontSize: 9.5, color: '#A0AEC0', fontWeight: 600, marginTop: 1, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                        {p.tickets || Math.round(p.amount / TICKET_UNIT)} tickets
+                      </div>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 14.5, fontWeight: 900, color: '#FFFFFF' }}>
+                        {isHH ? `${formatConcise(p.amount)} $HH` : `${p.amount.toFixed(2)} USDC`}
+                      </div>
+                      <div style={{ fontSize: 9.5, color: '#A0AEC0', fontWeight: 650, marginTop: 1, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                        {isHH && `≈$${(p.amount * hhPrice).toFixed(2)} · `}
+                        <span style={{ color: '#FFFFFF', fontWeight: 800 }}>
+                          {displayTotalPot > 0 ? (p.amount / displayTotalPot * 100).toFixed(1) : 0}%
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      ) : (
+        /* Daily Raffle View */
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, animation: 'fadeIn 0.3s ease-out' }}>
+          {/* Daily Raffle Hero Card */}
+          <div style={{
+            background: 'linear-gradient(145deg, #021B13 0%, #063C2A 100%)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            border: '1px solid rgba(16, 185, 129, 0.25)',
+            borderRadius: 20,
+            padding: '20px 18px 16px',
+            marginBottom: 12,
+            boxShadow: '0 8px 32px rgba(6, 60, 42, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
+            {/* Background image overlay */}
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              backgroundImage: 'url(/banner.jpg)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              filter: 'hue-rotate(120deg) brightness(0.25) contrast(1.15)',
+              zIndex: 0,
+              pointerEvents: 'none'
+            }} />
+
+            {/* Colored radial gradient glow */}
+            <div style={{
+              position: 'absolute',
+              top: -40,
+              right: -40,
+              width: 180,
+              height: 180,
+              borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(16, 184, 166, 0.22) 0%, transparent 70%)',
+              pointerEvents: 'none',
+              zIndex: 1
+            }} />
+
+            <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+              <div style={{ fontSize: 14.5, fontWeight: 900, color: '#FFFFFF', letterSpacing: '0.2px', textTransform: 'uppercase', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                Daily Raffle · Round #{dailyRound}
+              </div>
+              <span style={{
+                background: 'rgba(16, 185, 129, 0.15)',
+                color: '#34D399',
+                padding: '3px 8px',
+                borderRadius: 8,
+                fontSize: 10,
+                fontWeight: 800,
+                border: '1px solid rgba(16, 185, 129, 0.25)',
+                fontFamily: "'Outfit', 'Inter', sans-serif"
+              }}>
+                VRF PROVED
+              </span>
+            </div>
+
+            {/* Two Plates Layout */}
+            <div style={{
+              position: 'relative',
+              zIndex: 2,
+              display: 'grid',
+              gridTemplateColumns: '1.2fr 0.8fr',
+              gap: 12,
+              marginBottom: 16
+            }}>
+              {/* Left Plate: Prize Pool */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.5px', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                  ESTIMATED PRIZE
+                </span>
+                <div style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(8px)',
+                  WebkitBackdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  borderRadius: 14,
+                  height: 52,
+                  padding: '0 12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
+                }}>
+                  <img src="/logo.jfif" alt="" style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover' }} />
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ fontSize: 15, fontWeight: 900, color: '#FFFFFF', fontFamily: "'Outfit', 'Inter', sans-serif", lineHeight: 1.1 }}>
+                      {formatConcise(dailyPool)} $HH
+                    </span>
+                    <span style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.45)', fontWeight: 700, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                      ≈${(dailyPool * hhPrice).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Plate: Timer */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.5px', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                  TIME LEFT
+                </span>
+                <div style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(8px)',
+                  WebkitBackdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  borderRadius: 14,
+                  height: 52,
+                  padding: '0 12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
+                }}>
+                  <span style={{
+                    fontFamily: "'Barlow Condensed', sans-serif",
+                    fontSize: 24,
+                    fontWeight: 900,
+                    color: '#FFFFFF',
+                    fontVariantNumeric: 'tabular-nums'
+                  }}>
+                    {dailyTimeRemaining > 0 ? new Date(dailyTimeRemaining * 1000).toISOString().substr(11, 8) : '00:00:00'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Sponsor block */}
+            <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
+              <span style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.6)', fontWeight: 600, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                🤝 Спонсор: <span style={{ color: '#FFFFFF', fontWeight: 800 }}>{dailySponsor}</span>
+              </span>
+            </div>
+          </div>
+
+          {/* Eligibility Card */}
+          <div style={{
+            background: isDailyEligible ? '#0B291B' : '#1C1D21',
+            borderRadius: 20,
+            padding: '16px 18px 14px',
+            marginBottom: 12,
+            boxShadow: '0 8px 32px rgba(10,11,13,0.05)',
+            border: isDailyEligible ? '1px solid rgba(16, 185, 129, 0.35)' : '1px solid rgba(255, 255, 255, 0.1)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 12
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div>
+                <div style={{ fontSize: 14.5, fontWeight: 900, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span>{isDailyEligible ? '🟢 Кваліфіковані' : '⚪ Не кваліфіковані'}</span>
+                </div>
+                <div style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.6)', marginTop: 4, fontWeight: 650, lineHeight: 1.3 }}>
+                  {isDailyEligible 
+                    ? 'Ви автоматично берете участь у сьогоднішньому щоденному розіграші!' 
+                    : 'Купіть хоча б 1 квиток у годинному раффлі за сьогодні, щоб отримати право на участь.'
+                  }
+                </div>
+              </div>
+              {isDailyEligible && (
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: 16, fontWeight: 950, color: '#10B981', fontFamily: "'Barlow Condensed', sans-serif" }}>
+                    {dailyUserTickets} TICKET{dailyUserTickets > 1 ? 'S' : ''}
+                  </div>
+                  <div style={{ fontSize: 8.5, color: 'rgba(255,255,255,0.5)', fontWeight: 700 }}>
+                    weighted weight
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {!isDailyEligible && (
+              <button
+                type="button"
+                onClick={() => setRaffleType('hh')}
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  borderRadius: 12,
+                  border: 'none',
+                  background: 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)',
+                  color: '#FFFFFF',
+                  fontSize: 12.5,
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  textAlign: 'center'
+                }}
+              >
+                Придбати квиток у $HH Raffle
+              </button>
+            )}
+          </div>
+
+          {/* Trigger draw button (Overdue state check) */}
+          {dailyTimeRemaining === 0 && (
+            <button
+              type="button"
+              onClick={triggerDailyDraw}
+              style={{
+                width: '100%',
+                padding: '12px 14px',
+                borderRadius: 14,
+                border: '1px solid rgba(16, 185, 129, 0.4)',
+                background: 'rgba(16, 185, 129, 0.12)',
+                color: '#FFFFFF',
+                fontSize: 13.5,
+                fontWeight: 900,
+                cursor: 'pointer',
+                textAlign: 'center',
+                boxShadow: '0 4px 14px rgba(16, 185, 129, 0.15)'
+              }}
+            >
+              🎯 Trigger Daily Draw (VRF)
+            </button>
+          )}
+
+          {/* Local simulation button for dev testing */}
+          <div style={{ textAlign: 'center', marginTop: 4 }}>
+            <span 
+              onClick={simulateDailyEligibility}
+              style={{ 
+                fontSize: 8.5, 
+                fontWeight: 800, 
+                color: 'rgba(255,255,255,0.3)', 
+                cursor: 'pointer',
+                textDecoration: 'underline'
+              }}
+            >
+              [Dev] Симулювати кваліфікацію (10 квитків)
+            </span>
           </div>
         </div>
       )}

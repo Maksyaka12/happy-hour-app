@@ -135,4 +135,167 @@ export const STAKING_ABI = [
   },
 ]
 
+// v2 contract addresses
+export const COORDINATOR_ADDRESS = env.VITE_COORDINATOR_ADDRESS || '0x4f4f7281f62bC473F2185B4F0F64a918B8ce49b'
+export const POINTS_ADDRESS = env.VITE_POINTS_ADDRESS || '0xcA861466bC2845C9f57051fb9652bC4a56d95542'
+export const RAFFLE_ADDRESS = env.VITE_RAFFLE_ADDRESS || '0x3bdF461984142C473F2185B4F0F64a918B8ce49b'
+export const DAILY_ADDRESS = env.VITE_DAILY_ADDRESS || '0x7E861466bC2845C9f57051fb9652bC4a56d95542'
+export const MEMBERSHIP_ADDRESS = env.VITE_MEMBERSHIP_ADDRESS || '0x13802fDe66BCf54BcebE2242aF0836A5Dfb45Fc8'
+
+// v2 ABIs
+export const COORDINATOR_ABI = [
+  {
+    name: 'depositToRaffle',
+    type: 'function',
+    inputs: [{ name: 'amount', type: 'uint256' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    name: 'dailyCheckIn',
+    type: 'function',
+    inputs: [],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    name: 'stakeHH',
+    type: 'function',
+    inputs: [
+      { name: 'amount', type: 'uint256' },
+      { name: 'durationDays', type: 'uint256' }
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    name: 'unstakeHH',
+    type: 'function',
+    inputs: [{ name: 'positionIndex', type: 'uint256' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    name: 'dailyRoutine',
+    type: 'function',
+    inputs: [{ name: 'raffleAmount', type: 'uint256' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    name: 'getUserSummary',
+    type: 'function',
+    inputs: [{ name: 'user', type: 'address' }],
+    outputs: [
+      { name: 'hp', type: 'uint256' },
+      { name: 'streak', type: 'uint256' },
+      { name: 'lastCheckInTime', type: 'uint256' },
+      { name: 'canCheckInToday', type: 'bool' },
+      { name: 'holderBadge', type: 'bool' },
+      { name: 'stakerBadge', type: 'bool' },
+      { name: 'raffleTickets', type: 'uint256' },
+      { name: 'rafflePool', type: 'uint256' },
+      { name: 'dailyPool', type: 'uint256' },
+      { name: 'dailyToken', type: 'address' },
+      { name: 'timeUntilDailyDraw', type: 'uint256' },
+      { name: 'dailyEligible', type: 'bool' },
+      { name: 'isClubMember', type: 'bool' },
+      { name: 'membershipExpiry', type: 'uint256' },
+      { name: 'totalStaked', type: 'uint256' }
+    ],
+    stateMutability: 'view',
+  },
+]
+
+export const DAILY_ABI = [
+  {
+    name: 'requestDailyDraw',
+    type: 'function',
+    inputs: [],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    name: 'getPoolBalance',
+    type: 'function',
+    inputs: [],
+    outputs: [{ type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    name: 'getEligibleCount',
+    type: 'function',
+    inputs: [{ name: 'round', type: 'uint256' }],
+    outputs: [{ type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    name: 'isUserEligible',
+    type: 'function',
+    inputs: [{ name: 'user', type: 'address' }],
+    outputs: [{ type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    name: 'getTimeRemaining',
+    type: 'function',
+    inputs: [],
+    outputs: [{ type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    name: 'sponsorName',
+    type: 'function',
+    inputs: [],
+    outputs: [{ type: 'string' }],
+    stateMutability: 'view',
+  },
+  {
+    name: 'getCurrentRound',
+    type: 'function',
+    inputs: [],
+    outputs: [{ type: 'uint256' }],
+    stateMutability: 'view',
+  },
+]
+
+export const MEMBERSHIP_ABI = [
+  {
+    name: 'purchaseWithHH',
+    type: 'function',
+    inputs: [{ name: 'durationDays', type: 'uint256' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    name: 'purchaseWithUSDC',
+    type: 'function',
+    inputs: [{ name: 'durationDays', type: 'uint256' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    name: 'purchaseWithETH',
+    type: 'function',
+    inputs: [{ name: 'durationDays', type: 'uint256' }],
+    outputs: [],
+    stateMutability: 'payable',
+  },
+  {
+    name: 'isMember',
+    type: 'function',
+    inputs: [{ name: 'user', type: 'address' }],
+    outputs: [{ type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    name: 'getExpiry',
+    type: 'function',
+    inputs: [{ name: 'user', type: 'address' }],
+    outputs: [{ type: 'uint256' }],
+    stateMutability: 'view',
+  },
+]
+
+
 

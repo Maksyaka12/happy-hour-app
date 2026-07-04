@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useDisconnect, useWriteContract, useBalance, useReadContract, useChainId, useSwitchChain } from 'wagmi'
 import { formatUnits, parseUnits } from 'viem'
 import { base } from 'wagmi/chains'
-import { APP_URL, FOUNDATION, CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI, HH_MANAGER_ADDRESS, STAKING_ADDRESS } from '../config/constants'
+import { APP_URL, FOUNDATION, CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI, HH_MANAGER_ADDRESS, STAKING_ADDRESS, MEMBERSHIP_ADDRESS, MEMBERSHIP_ABI } from '../config/constants'
 import { db } from '../config/supabase'
 import { UserAvatar } from './UserAvatar'
 import { HistorySection } from './HistorySection'
@@ -67,6 +67,52 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
   // DexScreener States
   const [hhPrice, setHhPrice] = useState(0.00025)
   const [priceChange, setPriceChange] = useState(8.4)
+
+  // Happy Club Purchase States
+  const [duration, setDuration] = useState(30)
+
+  const buyMembership = (tokenType) => {
+    if (!address) return
+    
+    if (tokenType === 'hh') {
+      const cost = (hhPriceMember * duration) / 30
+      wagmiWriteContract({
+        address: MEMBERSHIP_ADDRESS,
+        abi: MEMBERSHIP_ABI,
+        functionName: 'purchaseWithHH',
+        args: [BigInt(duration)],
+        chainId: base.id
+      })
+    } else if (tokenType === 'usdc') {
+      const cost = (usdcPriceMember * duration) / 30
+      wagmiWriteContract({
+        address: MEMBERSHIP_ADDRESS,
+        abi: MEMBERSHIP_ABI,
+        functionName: 'purchaseWithUSDC',
+        args: [BigInt(duration)],
+        chainId: base.id
+      })
+    } else if (tokenType === 'eth') {
+      const cost = (ethPriceMember * duration) / 30
+      wagmiWriteContract({
+        address: MEMBERSHIP_ADDRESS,
+        abi: MEMBERSHIP_ABI,
+        functionName: 'purchaseWithETH',
+        args: [BigInt(duration)],
+        value: parseUnits(cost.toFixed(18), 18),
+        chainId: base.id
+      })
+    }
+  }
+
+  const simulateBuyMembership = () => {
+    try {
+      localStorage.setItem('hh_simulated_member', 'true')
+      localStorage.setItem('hh_simulated_expiry', (Math.floor(Date.now() / 1000) + duration * 24 * 3600).toString())
+      setSimulatedMember(true)
+      setSimulatedExpiry(Math.floor(Date.now() / 1000) + duration * 24 * 3600)
+    } catch (e) { console.error(e) }
+  }
 
   // Token Balance Fallbacks (LocalStorage mock)
   const [simulatedWalletBalance, setSimulatedWalletBalance] = useState(() => {
@@ -146,6 +192,63 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
   const walletBalance = hhBalanceRaw !== undefined
     ? parseFloat(formatUnits(hhBalanceRaw, 18))
     : simulatedWalletBalance
+
+  // Happy Club Membership Hooks
+  const { data: isClubMemberRaw, refetch: refetchMembership } = useReadContract({
+    address: MEMBERSHIP_ADDRESS,
+    abi: MEMBERSHIP_ABI,
+    functionName: 'isMember',
+    args: address ? [address] : undefined,
+    query: { enabled: !!address, refetchInterval: 15000 }
+  })
+
+  const { data: membershipExpiryRaw } = useReadContract({
+    address: MEMBERSHIP_ADDRESS,
+    abi: MEMBERSHIP_ABI,
+    functionName: 'getExpiry',
+    args: address ? [address] : undefined,
+    query: { enabled: !!address }
+  })
+
+  // Simulated fallback membership
+  const [simulatedMember, setSimulatedMember] = useState(() => {
+    try {
+      return localStorage.getItem('hh_simulated_member') === 'true'
+    } catch { return false }
+  })
+  
+  const [simulatedExpiry, setSimulatedExpiry] = useState(() => {
+    try {
+      return parseInt(localStorage.getItem('hh_simulated_expiry') || '0')
+    } catch { return 0 }
+  })
+
+  const isClubMember = isClubMemberRaw !== undefined ? isClubMemberRaw : simulatedMember
+  const membershipExpiry = membershipExpiryRaw !== undefined ? Number(membershipExpiryRaw) : simulatedExpiry
+
+  // Read pricing for membership
+  const { data: hhPriceMemberRaw } = useReadContract({
+    address: MEMBERSHIP_ADDRESS,
+    abi: MEMBERSHIP_ABI,
+    functionName: 'hhPrice',
+    query: { enabled: !!address }
+  })
+  const { data: usdcPriceMemberRaw } = useReadContract({
+    address: MEMBERSHIP_ADDRESS,
+    abi: MEMBERSHIP_ABI,
+    functionName: 'usdcPrice',
+    query: { enabled: !!address }
+  })
+  const { data: ethPriceMemberRaw } = useReadContract({
+    address: MEMBERSHIP_ADDRESS,
+    abi: MEMBERSHIP_ABI,
+    functionName: 'ethPrice',
+    query: { enabled: !!address }
+  })
+
+  const hhPriceMember = hhPriceMemberRaw ? Number(formatUnits(hhPriceMemberRaw, 18)) : 40000
+  const usdcPriceMember = usdcPriceMemberRaw ? Number(formatUnits(usdcPriceMemberRaw, 6)) : 10
+  const ethPriceMember = ethPriceMemberRaw ? Number(formatUnits(ethPriceMemberRaw, 18)) : 0.003
 
   // Admin states
   const [refundAmount, setRefundAmount] = useState('')
@@ -1475,6 +1578,220 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
             ⚠️ {checkinError}
           </div>
         )}
+      </div>
+
+      {/* Happy Club Membership Card */}
+      <div id="happy-club-card" style={{
+        background: isClubMember ? 'linear-gradient(135deg, #0D1B2A 0%, #1B263B 100%)' : 'linear-gradient(135deg, #1B0F2A 0%, #2D1B4E 100%)',
+        borderRadius: 20,
+        padding: '18px 20px',
+        marginBottom: 16,
+        boxShadow: isClubMember ? '0 8px 32px rgba(59,130,246,0.2)' : '0 8px 32px rgba(139,92,246,0.25)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 12,
+        position: 'relative',
+        overflow: 'hidden',
+        border: isClubMember ? '1px solid rgba(59,130,246,0.35)' : '1px solid rgba(139,92,246,0.35)'
+      }}>
+        {/* Background image overlay */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'url(/banner.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          filter: isClubMember ? 'hue-rotate(200deg) brightness(0.25) contrast(1.2)' : 'hue-rotate(280deg) brightness(0.25) contrast(1.2)',
+          zIndex: 0,
+          pointerEvents: 'none'
+        }} />
+
+        {/* Shine glow */}
+        <div style={{
+          position: 'absolute',
+          top: -40,
+          right: -40,
+          width: 140,
+          height: 140,
+          borderRadius: '50%',
+          background: isClubMember 
+            ? 'radial-gradient(circle, rgba(59, 130, 246, 0.25) 0%, transparent 75%)' 
+            : 'radial-gradient(circle, rgba(139, 92, 246, 0.25) 0%, transparent 75%)',
+          pointerEvents: 'none',
+          zIndex: 1
+        }} />
+
+        {/* Title row */}
+        <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 20 }}>👑</span>
+            <div>
+              <div style={{ fontSize: 16, fontWeight: 950, color: '#FFFFFF', letterSpacing: '0.1px', fontFamily: "'Outfit', sans-serif" }}>
+                HAPPY CLUB
+              </div>
+              <div style={{ fontSize: 9.5, color: isClubMember ? '#93C5FD' : '#C084FC', fontWeight: 800, textTransform: 'uppercase', marginTop: 2 }}>
+                {isClubMember ? 'Premium Member' : 'AI Automation & Perks'}
+              </div>
+            </div>
+          </div>
+          <span style={{
+            background: isClubMember ? 'rgba(59, 130, 246, 0.15)' : 'rgba(139, 92, 246, 0.15)',
+            color: isClubMember ? '#60A5FA' : '#C084FC',
+            padding: '4px 10px',
+            borderRadius: 8,
+            fontSize: 10,
+            fontWeight: 900,
+            border: isClubMember ? '1px solid rgba(59, 130, 246, 0.3)' : '1px solid rgba(139, 92, 246, 0.3)',
+            fontFamily: "'Outfit', sans-serif"
+          }}>
+            {isClubMember ? 'ACTIVE' : 'UPGRADE'}
+          </span>
+        </div>
+
+        {/* Main Content */}
+        <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {isClubMember ? (
+            <div style={{ fontSize: 12.5, color: '#E2E8F0', fontWeight: 600, lineHeight: 1.4 }}>
+              Ваша преміум підписка активна! Агенти в автоматичному режимі виконують щоденні чек-іни та беруть участь у раффлах.
+              <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 8, fontWeight: 700 }}>
+                📅 Діє до: {new Date(membershipExpiry * 1000).toLocaleDateString('uk-UA', { day: 'numeric', month: 'long', year: 'numeric' })}
+              </div>
+            </div>
+          ) : (
+            <>
+              <div style={{ fontSize: 12, color: 'rgba(255, 255, 255, 0.8)', fontWeight: 600, lineHeight: 1.4 }}>
+                Отримайте безлімітний доступ до AI-асистента та можливість автоматичного чек-іну і участі в раффлах без вашої участі.
+              </div>
+              
+              {/* Duration Selector */}
+              <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+                <button 
+                  type="button"
+                  onClick={() => setDuration(30)}
+                  style={{
+                    flex: 1,
+                    padding: '8px 10px',
+                    borderRadius: 10,
+                    border: duration === 30 ? '1px solid #C084FC' : '1px solid rgba(255, 255, 255, 0.15)',
+                    background: duration === 30 ? 'rgba(139, 92, 246, 0.2)' : 'rgba(255, 255, 255, 0.05)',
+                    color: '#FFFFFF',
+                    fontSize: 11.5,
+                    fontWeight: 800,
+                    cursor: 'pointer'
+                  }}
+                >
+                  30 днів (1 міс)
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => setDuration(365)}
+                  style={{
+                    flex: 1,
+                    padding: '8px 10px',
+                    borderRadius: 10,
+                    border: duration === 365 ? '1px solid #C084FC' : '1px solid rgba(255, 255, 255, 0.15)',
+                    background: duration === 365 ? 'rgba(139, 92, 246, 0.2)' : 'rgba(255, 255, 255, 0.05)',
+                    color: '#FFFFFF',
+                    fontSize: 11.5,
+                    fontWeight: 800,
+                    cursor: 'pointer'
+                  }}
+                >
+                  365 днів (Зберегти 20%)
+                </button>
+              </div>
+
+              {/* Payment Buttons Grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginTop: 4 }}>
+                <button
+                  type="button"
+                  onClick={() => buyMembership('hh')}
+                  style={{
+                    padding: '10px 8px',
+                    borderRadius: 12,
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    color: '#FFFFFF',
+                    fontSize: 11,
+                    fontWeight: 900,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 4
+                  }}
+                >
+                  <span>🪙 $HH</span>
+                  <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.5)', fontWeight: 700 }}>
+                    {formatConcise((hhPriceMember * duration) / 30)}
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => buyMembership('usdc')}
+                  style={{
+                    padding: '10px 8px',
+                    borderRadius: 12,
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    color: '#FFFFFF',
+                    fontSize: 11,
+                    fontWeight: 900,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 4
+                  }}
+                >
+                  <span>💵 USDC</span>
+                  <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.5)', fontWeight: 700 }}>
+                    ${((usdcPriceMember * duration) / 30).toFixed(0)}
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => buyMembership('eth')}
+                  style={{
+                    padding: '10px 8px',
+                    borderRadius: 12,
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    color: '#FFFFFF',
+                    fontSize: 11,
+                    fontWeight: 900,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 4
+                  }}
+                >
+                  <span>🛡️ ETH</span>
+                  <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.5)', fontWeight: 700 }}>
+                    {((ethPriceMember * duration) / 30).toFixed(4)}
+                  </span>
+                </button>
+              </div>
+
+              {/* Dev simulation button */}
+              <div style={{ textAlign: 'center', marginTop: 4 }}>
+                <span 
+                  onClick={simulateBuyMembership}
+                  style={{ 
+                    fontSize: 8.5, 
+                    fontWeight: 800, 
+                    color: 'rgba(255,255,255,0.3)', 
+                    cursor: 'pointer',
+                    textDecoration: 'underline'
+                  }}
+                >
+                  [Dev] Увімкнути безкоштовно для тесту
+                </span>
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Referral Program: Senior Hub */}

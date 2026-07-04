@@ -11,8 +11,9 @@ import { ContestsSection } from './components/ContestsSection'
 import { ProfileSection } from './components/ProfileSection'
 import { BottomNav } from './components/BottomNav'
 import { HappyHourLogo } from './components/HappyHourLogo'
+import { HappyBotChat } from './components/HappyBotChat'
 import { CSS } from './styles'
-import { HAS_SUPABASE_CONFIG, USDC_ADDRESS, USDC_ABI } from './config/constants'
+import { HAS_SUPABASE_CONFIG, USDC_ADDRESS, USDC_ABI, MEMBERSHIP_ADDRESS, MEMBERSHIP_ABI } from './config/constants'
 
 const short = (a) => (a ? `${a.slice(0, 6)}\u2026${a.slice(-4)}` : '\u2014')
 
@@ -76,6 +77,34 @@ export default function App() {
     : simulatedUsdcHeader.toFixed(2)
 
   const referralCode = useMemo(() => getReferralCode(), [])
+
+  const { data: isClubMemberRaw } = useReadContract({
+    address: MEMBERSHIP_ADDRESS,
+    abi: MEMBERSHIP_ABI,
+    functionName: 'isMember',
+    args: address ? [address] : undefined,
+    query: { enabled: !!address, refetchInterval: 15000 }
+  })
+
+  const [simulatedMember, setSimulatedMember] = useState(() => {
+    try {
+      return localStorage.getItem('hh_simulated_member') === 'true'
+    } catch { return false }
+  })
+
+  // Keep simulatedMember synced with localStorage changes
+  useEffect(() => {
+    const checkSim = () => {
+      try {
+        const val = localStorage.getItem('hh_simulated_member') === 'true'
+        setSimulatedMember(val)
+      } catch {}
+    }
+    const interval = setInterval(checkSim, 2000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const isClubMember = isClubMemberRaw !== undefined ? isClubMemberRaw : simulatedMember
 
   const tabLabels = {
     home: 'Profile',
@@ -730,6 +759,9 @@ export default function App() {
         </footer>
 
         <BottomNav tab={tab} setTab={setTab} />
+        
+        {/* Floating AI Chat assistant */}
+        {isConnected && <HappyBotChat address={address} isClubMember={isClubMember} />}
       </div>
 
     </>
