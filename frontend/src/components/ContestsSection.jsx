@@ -510,10 +510,10 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
           
           {/* Floating creative emojis */}
           {[
-            { char: '\uD83C\uDFA8', top: '10%', right: '15%', size: 28, opacity: 0.35, r: '15deg', dur: 4.2 }, // 🎨
-            { char: '\u270D\uFE0F', bottom: '15%', left: '20%', size: 24, opacity: 0.3, r: '-20deg', dur: 4.8 }, // ✍️
-            { char: '\u270F\uFE0F', top: '45%', left: '8%', size: 22, opacity: 0.25, r: '10deg', dur: 5.5 }, // ✏️
-            { char: '\uD83D\uDCDD', bottom: '10%', right: '25%', size: 20, opacity: 0.3, r: '-15deg', dur: 3.9 } // 📝
+            { char: '🎨', top: '10%', right: '15%', size: 28, opacity: 0.35, r: '15deg', dur: 4.2 },
+            { char: '✍️', bottom: '15%', left: '20%', size: 24, opacity: 0.3, r: '-20deg', dur: 4.8 },
+            { char: '✏️', top: '45%', left: '8%', size: 22, opacity: 0.25, r: '10deg', dur: 5.5 },
+            { char: '📝', bottom: '10%', right: '25%', size: 20, opacity: 0.3, r: '-15deg', dur: 3.9 }
           ].map((s, i) => (
             <div key={i} style={{
               position: 'absolute',
@@ -687,7 +687,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
         }}>
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{ fontSize: 16, fontWeight: 800, color: '#fff', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span>\uD83D\uDCDD Submit your Campaign post</span> {/* 📝 */}
+              <span>📝 Submit your Campaign post</span>
             </div>
             <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', marginBottom: 14, lineHeight: 1.5, fontWeight: 500 }}>
               Submit your X posts link below. You can submit as many posts as you want.
@@ -696,7 +696,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
             {postStatus === 'success' ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 <div style={{ background: 'rgba(5,150,105,0.25)', borderRadius: 14, padding: '10px 14px', fontSize: 12, color: '#6EE7B7', fontWeight: 800 }}>
-                  \u2714\uFE0F {postMsg} {/* ✔️ */}
+                  ✔️ {postMsg}
                 </div>
                 <button
                   onClick={() => { setPostStatus(''); setPostMsg(''); }}
@@ -898,10 +898,10 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
           
           {/* Floating financial emojis */}
           {[
-            { char: '\uD83D\uDCC8', top: '10%', right: '15%', size: 28, opacity: 0.35, r: '15deg', dur: 4.5 }, // 📈
-            { char: '\uD83D\uDCC9', bottom: '15%', left: '20%', size: 24, opacity: 0.3, r: '-20deg', dur: 5.2 }, // 📉
-            { char: '\uD83C\uDFC6', top: '45%', left: '8%', size: 22, opacity: 0.25, r: '10deg', dur: 3.8 }, // 🏆
-            { char: '\uD83D\uDCB8', bottom: '10%', right: '25%', size: 20, opacity: 0.3, r: '-15deg', dur: 4.4 } // 💸
+            { char: '📈', top: '10%', right: '15%', size: 28, opacity: 0.35, r: '15deg', dur: 4.5 },
+            { char: '📉', bottom: '15%', left: '20%', size: 24, opacity: 0.3, r: '-20deg', dur: 5.2 },
+            { char: '🏆', top: '45%', left: '8%', size: 22, opacity: 0.25, r: '10deg', dur: 3.8 },
+            { char: '💸', bottom: '10%', right: '25%', size: 20, opacity: 0.3, r: '-15deg', dur: 4.4 }
           ].map((s, i) => (
             <div key={i} style={{
               position: 'absolute',
@@ -1041,13 +1041,13 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
             <h4 style={{ margin: '0 0 10px', fontSize: 13.5, fontWeight: 700, color: '#1E293B' }}>Prize Pool:</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13, color: '#475569', fontWeight: 500 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 15 }}>\uD83E\uDD47</span> <strong>1st Place:</strong> $50 in $HH coin {/* 🥇 */}
+                <span style={{ fontSize: 15 }}>🥇</span> <strong>1st Place:</strong> $50 in $HH coin
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 15 }}>\uD83E\uDD48</span> <strong>2nd Place:</strong> $25 in $HH coin {/* 🥈 */}
+                <span style={{ fontSize: 15 }}>🥈</span> <strong>2nd Place:</strong> $25 in $HH coin
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 15 }}>\uD83E\uDD49</span> <strong>3rd Place:</strong> $25 in $HH coin {/* 🥉 */}
+                <span style={{ fontSize: 15 }}>🥉</span> <strong>3rd Place:</strong> $25 in $HH coin
               </div>
             </div>
           </div>
@@ -1283,7 +1283,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
                               onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
                               onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
                             >
-                              {trade.hash.substring(0, 6)}...{trade.hash.substring(trade.hash.length - 4)} \u2197
+                              {trade.hash.substring(0, 6)}...{trade.hash.substring(trade.hash.length - 4)} ↗
                             </a>
                           </div>
                         ))}
@@ -1373,7 +1373,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
                 gap: 6
               }}
             >
-              \uD83C\uDFC6 View Campaign Leaderboard {adminLeaderboard.length > 0 ? `(${adminLeaderboard.length})` : ''} {/* 🏆 */}
+              🏆 View Campaign Leaderboard {adminLeaderboard.length > 0 ? `(${adminLeaderboard.length})` : ''}
             </button>
 
             {showAdminLeaderboard && (
@@ -1459,7 +1459,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
                             onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
                             onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
                           >
-                            Basescan \u2197
+                            Basescan ↗
                           </a>
                         </div>
                       </div>
@@ -1945,7 +1945,7 @@ function WinnersPedestal() {
         justifyContent: 'center',
         gap: 6
       }}>
-        \uD83C\uDFC6 Contest Winners {/* 🏆 */}
+        🏆 Contest Winners
       </h3>
 
       {/* The Pedestal container */}
@@ -2015,7 +2015,7 @@ function WinnersPedestal() {
           transform: 'translateY(-6px)'
         }}>
           {/* Crown */}
-          <span style={{ fontSize: 12, marginBottom: 1, animation: 'floatingLogo 3s ease-in-out infinite' }}>\uD83D\uDC51</span> {/* 👑 */}
+          <span style={{ fontSize: 12, marginBottom: 1, animation: 'floatingLogo 3s ease-in-out infinite' }}>👑</span>
           {/* Avatar */}
           <div style={{
             position: 'relative',
