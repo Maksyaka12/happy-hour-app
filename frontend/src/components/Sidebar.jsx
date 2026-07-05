@@ -2,11 +2,15 @@ import { useState, useEffect } from 'react'
 import { useDisconnect } from 'wagmi'
 import { UserAvatar } from './UserAvatar'
 import { HappyHourLogo } from './HappyHourLogo'
+import { LinkXModal } from './LinkXModal'
 
 const short = (a) => (a ? `${a.slice(0, 6)}...${a.slice(-4)}` : '')
 
 export function Sidebar({ tab, setTab, address, isConnected, displayName, isClubMember, onRequireWallet }) {
   const { disconnect } = useDisconnect()
+
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
+  const [isLinkXModalOpen, setIsLinkXModalOpen] = useState(false)
 
   const [isCollapsed, setIsCollapsed] = useState(() => {
     try {
@@ -323,78 +327,143 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
         background: '#090D16'
       }}>
         {isConnected && address ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: isCollapsed ? 'center' : 'flex-start' }}>
-            {/* User Avatar */}
-            <UserAvatar address={address} size={36} />
-
-            {/* User Meta */}
-            {!isCollapsed && (
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: '#FFFFFF',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
-                }}>
-                  {displayName || short(address)}
+          <div style={{ position: 'relative', width: '100%' }}>
+            <button
+              onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+              style={{
+                width: '100%',
+                background: isProfileMenuOpen ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
+                border: 'none',
+                borderRadius: 12,
+                padding: isCollapsed ? '8px' : '8px 10px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+                justifyContent: isCollapsed ? 'center' : 'flex-start',
+                cursor: 'pointer',
+                transition: 'background 0.2s',
+                outline: 'none'
+              }}
+              onMouseEnter={e => { if(!isProfileMenuOpen) e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)' }}
+              onMouseLeave={e => { if(!isProfileMenuOpen) e.currentTarget.style.background = 'transparent' }}
+            >
+              <UserAvatar address={address} size={36} />
+              {!isCollapsed && (
+                <div style={{ flex: 1, minWidth: 0, textAlign: 'left' }}>
+                  <div style={{
+                    fontSize: 13,
+                    fontWeight: 700,
+                    color: '#FFFFFF',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                  }}>
+                    {displayName || short(address)}
+                  </div>
+                  <div style={{
+                    fontSize: 10.5,
+                    fontWeight: 650,
+                    color: isClubMember ? '#0000FF' : '#64748B',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    marginTop: 2
+                  }}>
+                    {isClubMember ? (
+                      <>
+                        <img src="/logo_200.png" alt="HH" style={{ width: 14, height: 14, borderRadius: '50%' }} />
+                        <span>Happy Club Member</span>
+                      </>
+                    ) : (
+                      <span>Standard User</span>
+                    )}
+                  </div>
                 </div>
-                <div style={{
-                  fontSize: 10.5,
-                  fontWeight: 650,
-                  color: isClubMember ? '#0000FF' : '#64748B',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 4,
-                  marginTop: 2
-                }}>
-                  {isClubMember ? (
-                    <>
-                      <img src="/logo_200.png" alt="HH" style={{ width: 14, height: 14, borderRadius: '50%' }} />
-                      <span>Happy Club Member</span>
-                    </>
-                  ) : (
-                    <span>Standard User</span>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Logout Trigger */}
-            {!isCollapsed && (
-              <button
-                onClick={() => disconnect()}
-                title="Logout Wallet"
-                style={{
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  border: 'none',
-                  borderRadius: 8,
-                  width: 28,
-                  height: 28,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#EF4444',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease',
-                  flexShrink: 0
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.background = 'rgba(239, 68, 68, 0.15)';
-                  e.currentTarget.style.transform = 'scale(1.05)';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
-                  e.currentTarget.style.transform = 'none';
-                }}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                  <polyline points="16 17 21 12 16 7"></polyline>
-                  <line x1="21" y1="12" x2="9" y2="12"></line>
+              )}
+              {!isCollapsed && (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isProfileMenuOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                  <polyline points="6 9 12 15 18 9"></polyline>
                 </svg>
-              </button>
+              )}
+            </button>
+
+            {isProfileMenuOpen && (
+              <div style={{
+                position: 'absolute',
+                bottom: 'calc(100% + 8px)',
+                left: 0,
+                width: isCollapsed ? 200 : '100%',
+                background: '#1A1F2E',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 12,
+                padding: 6,
+                boxShadow: '0 10px 40px rgba(0,0,0,0.5)',
+                zIndex: 100,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 4
+              }}>
+                <button
+                  onClick={() => {
+                    setIsProfileMenuOpen(false)
+                    setIsLinkXModalOpen(true)
+                  }}
+                  style={{
+                    width: '100%',
+                    background: 'transparent',
+                    border: 'none',
+                    borderRadius: 8,
+                    padding: '10px 12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    color: '#FFFFFF',
+                    fontSize: 12.5,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    transition: 'background 0.15s'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  </svg>
+                  Linked Accounts
+                </button>
+                <button
+                  onClick={() => {
+                    setIsProfileMenuOpen(false)
+                    disconnect()
+                  }}
+                  style={{
+                    width: '100%',
+                    background: 'transparent',
+                    border: 'none',
+                    borderRadius: 8,
+                    padding: '10px 12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    color: '#EF4444',
+                    fontSize: 12.5,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    transition: 'background 0.15s'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                  </svg>
+                  Logout
+                </button>
+              </div>
             )}
           </div>
         ) : (
@@ -434,6 +503,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
           </button>
         )}
       </div>
+      {isLinkXModalOpen && <LinkXModal onClose={() => setIsLinkXModalOpen(false)} />}
     </aside>
   )
 }

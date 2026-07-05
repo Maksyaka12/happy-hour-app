@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useDisconnect, useWriteContract, useBalance, useReadContract, useChainId, useSwitchChain } from 'wagmi'
 import { formatUnits, parseUnits } from 'viem'
 import { base } from 'wagmi/chains'
-import { APP_URL, FOUNDATION, CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI, HH_MANAGER_ADDRESS, STAKING_ADDRESS, MEMBERSHIP_ADDRESS, MEMBERSHIP_ABI } from '../config/constants'
+import { APP_URL, FOUNDATION, CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI, HH_MANAGER_ADDRESS, STAKING_ADDRESS, STAKING_ABI, MEMBERSHIP_ADDRESS, MEMBERSHIP_ABI } from '../config/constants'
 import { db } from '../config/supabase'
 import { UserAvatar } from './UserAvatar'
 import { HistorySection } from './HistorySection'
@@ -195,6 +195,20 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
   const walletBalance = hhBalanceRaw !== undefined
     ? parseFloat(formatUnits(hhBalanceRaw, 18))
     : simulatedWalletBalance
+
+  // Read staked balance for badges
+  const { data: stakedBalanceRaw } = useReadContract({
+    address: STAKING_ADDRESS,
+    abi: STAKING_ABI,
+    functionName: 'totalActiveStaked',
+    args: address ? [address] : undefined,
+    query: { enabled: !!address, refetchInterval: 15000 }
+  })
+  
+  const stakedBalance = stakedBalanceRaw !== undefined ? parseFloat(formatUnits(stakedBalanceRaw, 18)) : 0
+  
+  const isHolder = walletBalance >= 100_000_000
+  const isStaker = stakedBalance >= 100_000_000
 
   // Happy Club Membership Hooks
   const { data: isClubMemberRaw, refetch: refetchMembership } = useReadContract({
@@ -1091,6 +1105,52 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
             </div>
           </div>
         </div>
+
+        {/* My Badges */}
+        {(isHolder || isStaker) && (
+          <div style={{
+            position: 'relative',
+            zIndex: 1,
+            marginTop: 16,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 8
+          }}>
+            <div style={{ fontSize: 11, fontWeight: 900, color: 'rgba(255,255,255,0.6)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+              My Badges
+            </div>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {isHolder && (
+                <div style={{
+                  background: 'rgba(16, 185, 129, 0.15)',
+                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                  padding: '6px 12px',
+                  borderRadius: 12,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6
+                }}>
+                  <span style={{ fontSize: 14 }}>✨</span>
+                  <span style={{ fontSize: 12, fontWeight: 900, color: '#10B981', fontFamily: "'Outfit', 'Inter', sans-serif" }}>Happy Holder</span>
+                </div>
+              )}
+              {isStaker && (
+                <div style={{
+                  background: 'rgba(16, 185, 129, 0.15)',
+                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                  padding: '6px 12px',
+                  borderRadius: 12,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6
+                }}>
+                  <span style={{ fontSize: 14 }}>✨</span>
+                  <span style={{ fontSize: 12, fontWeight: 900, color: '#10B981', fontFamily: "'Outfit', 'Inter', sans-serif" }}>Happy Staker</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Premium Base App Style Swap Widget — Compact & Elegant */}

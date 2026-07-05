@@ -247,14 +247,20 @@ export function StakingSection({ setTab, onRequireWallet }) {
   const walletUsdValue = walletBalance * hhPrice
   const stakedUsdValue = stakedBalance * hhPrice
 
-  // Daily HP Earnings Calculations (10% of USD value for hold, 20% for stake - ceiling at 100$ hold / 100$ stake)
-  const holdHpEarned = Math.min(10.0, walletUsdValue * 0.10)
-  const stakeHpEarned = Math.min(20.0, stakedUsdValue * 0.20)
+  // Daily HP Earnings Calculations (Badges)
+  const isHolder = walletBalance >= 100_000_000
+  const isStaker = stakedBalance >= 100_000_000
+
+  const holdHpEarned = isHolder ? 5 : 0
+  const stakeHpEarned = isStaker ? 10 : 0
   const totalDailyPassiveHp = holdHpEarned + stakeHpEarned
 
-  // Progress to caps ($100 USD holds/stakes)
-  const holdCapPercent = Math.min(100, (walletUsdValue / 100) * 100)
-  const stakeCapPercent = Math.min(100, (stakedUsdValue / 100) * 100)
+  // Win Chance Boost
+  const winChanceBoost = isStaker ? 5 : (isHolder ? 2 : 0)
+
+  // Progress to badges (100M HH)
+  const holdCapPercent = Math.min(100, (walletBalance / 100_000_000) * 100)
+  const stakeCapPercent = Math.min(100, (stakedBalance / 100_000_000) * 100)
 
   // Stake Action
   const handleStake = async () => {
@@ -460,17 +466,34 @@ export function StakingSection({ setTab, onRequireWallet }) {
           <div style={{ fontSize: 14.5, fontWeight: 900, color: '#FFFFFF', letterSpacing: '0.2px' }}>
             Holding Rewards
           </div>
-          <span style={{
-            background: 'rgba(255, 255, 255, 0.08)',
-            color: '#A0AEC0',
-            padding: '3px 8px',
-            borderRadius: 8,
-            fontSize: 10,
-            fontWeight: 800,
-            border: '1px solid rgba(255, 255, 255, 0.1)'
-          }}>
-            Passive
-          </span>
+          {isHolder ? (
+            <span style={{
+              background: 'rgba(16, 185, 129, 0.15)',
+              color: '#10B981',
+              padding: '3px 8px',
+              borderRadius: 8,
+              fontSize: 10,
+              fontWeight: 900,
+              border: '1px solid rgba(16, 185, 129, 0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4
+            }}>
+              ✨ Happy Holder
+            </span>
+          ) : (
+            <span style={{
+              background: 'rgba(255, 255, 255, 0.08)',
+              color: '#A0AEC0',
+              padding: '3px 8px',
+              borderRadius: 8,
+              fontSize: 10,
+              fontWeight: 800,
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}>
+              Passive
+            </span>
+          )}
         </div>
 
         {/* Two Plates Layout (Mockup-inspired side-by-side design) */}
@@ -541,8 +564,8 @@ export function StakingSection({ setTab, onRequireWallet }) {
 
           {/* Right Plate: Holder HP Earnings */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-            <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.5px', textAlign: 'center' }}>
-              Holder HP Earnings
+            <span style={{ fontSize: 10, fontWeight: 800, color: isHolder ? '#10B981' : '#A0AEC0', letterSpacing: '0.5px', textAlign: 'center' }}>
+              Happy Holder Badge
             </span>
             <div style={{
               background: 'rgba(16, 185, 129, 0.08)',
@@ -557,8 +580,8 @@ export function StakingSection({ setTab, onRequireWallet }) {
             }}>
               <span style={{ fontSize: 16 }}>⚡</span>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ fontSize: 13, fontWeight: 900, color: '#10B981', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-                  +{formatNumber(holdHpEarned, 2)} HP
+                <span style={{ fontSize: 13, fontWeight: 900, color: isHolder ? '#10B981' : '#64748B', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                  +{formatNumber(holdHpEarned, 0)} HP
                 </span>
                 <span style={{ fontSize: 9, color: 'rgba(16, 185, 129, 0.7)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2px' }}>
                   per day
@@ -596,17 +619,34 @@ export function StakingSection({ setTab, onRequireWallet }) {
           <div>
             <div style={{ fontSize: 14.5, fontWeight: 900, color: '#FFFFFF', letterSpacing: '0.2px' }}>Staking Rewards</div>
           </div>
-          <span style={{
-            background: 'rgba(255,255,255,0.08)',
-            color: '#A0AEC0',
-            padding: '3px 8px',
-            borderRadius: 8,
-            fontSize: 10,
-            fontWeight: 800,
-            border: '1px solid rgba(255,255,255,0.1)'
-          }}>
-            Active Pool
-          </span>
+          {isStaker ? (
+            <span style={{
+              background: 'rgba(16, 185, 129, 0.15)',
+              color: '#10B981',
+              padding: '3px 8px',
+              borderRadius: 8,
+              fontSize: 10,
+              fontWeight: 900,
+              border: '1px solid rgba(16, 185, 129, 0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4
+            }}>
+              ✨ Happy Staker
+            </span>
+          ) : (
+            <span style={{
+              background: 'rgba(255,255,255,0.08)',
+              color: '#A0AEC0',
+              padding: '3px 8px',
+              borderRadius: 8,
+              fontSize: 10,
+              fontWeight: 800,
+              border: '1px solid rgba(255,255,255,0.1)'
+            }}>
+              Active Pool
+            </span>
+          )}
         </div>
 
         {/* Three Plates Layout (Staked, Period, HP Earnings) */}
@@ -671,8 +711,8 @@ export function StakingSection({ setTab, onRequireWallet }) {
 
           {/* Column 3: HP Earnings */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-            <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.3px', textAlign: 'center' }}>
-              HP Earnings
+            <span style={{ fontSize: 10, fontWeight: 800, color: isStaker ? '#10B981' : '#A0AEC0', letterSpacing: '0.3px', textAlign: 'center' }}>
+              Staker Badge
             </span>
             <div style={{
               background: 'rgba(16, 185, 129, 0.08)',
@@ -687,8 +727,8 @@ export function StakingSection({ setTab, onRequireWallet }) {
             }}>
               <span style={{ fontSize: 13 }}>⚡</span>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ fontSize: 11.5, fontWeight: 900, color: '#10B981', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-                  +{formatNumber(stakeHpEarned, 2)} HP
+                <span style={{ fontSize: 11.5, fontWeight: 900, color: isStaker ? '#10B981' : '#64748B', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                  +{formatNumber(stakeHpEarned, 0)} HP
                 </span>
                 <span style={{ fontSize: 8.5, color: 'rgba(16, 185, 129, 0.7)', fontWeight: 700, textTransform: 'uppercase' }}>
                   per day

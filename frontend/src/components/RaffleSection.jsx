@@ -13,7 +13,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useWaitForTransactionReceipt, useChainId, useSwitchChain, useReadContract } from 'wagmi'
 import { parseUnits, formatUnits } from 'viem'
 import { base } from 'wagmi/chains'
-import { FOUNDATION, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI, BET_OPTS, TICKET_UNIT, CLOSE_BEFORE_MS, WINNER_SHARE, HH_RAFFLE_VAULT_ADDRESS, DAILY_ADDRESS, DAILY_ABI } from '../config/constants'
+import { FOUNDATION, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI, STAKING_ADDRESS, STAKING_ABI, BET_OPTS, TICKET_UNIT, CLOSE_BEFORE_MS, WINNER_SHARE, HH_RAFFLE_VAULT_ADDRESS, DAILY_ADDRESS, DAILY_ABI } from '../config/constants'
 import { db } from '../config/supabase'
 import { useRoundState } from '../hooks/useRoundState'
 import { useBuilderWrite } from '../hooks/useBuilderWrite'
@@ -90,6 +90,39 @@ export function RaffleSection({ address, basename, onRequireWallet }) {
     query: { enabled: !!address && raffleType === 'hh', refetchInterval: 10000 }
   })
   const hhAllowance = hhAllowanceRaw !== undefined ? parseFloat(formatUnits(hhAllowanceRaw, 18)) : 0
+
+  // User balances for Win Chance Boost
+  const { data: hhBalanceRaw } = useReadContract({
+    address: HH_ADDRESS,
+    abi: HH_ABI,
+    functionName: 'balanceOf',
+    args: address ? [address] : undefined,
+    query: { enabled: !!address, refetchInterval: 15000 }
+  })
+  
+  const { data: stakedBalanceRaw } = useReadContract({
+    address: STAKING_ADDRESS,
+    abi: STAKING_ABI,
+    functionName: 'totalActiveStaked',
+    args: address ? [address] : undefined,
+    query: { enabled: !!address, refetchInterval: 15000 }
+  })
+
+  const walletBalance = hhBalanceRaw !== undefined ? parseFloat(formatUnits(hhBalanceRaw, 18)) : 0
+  const stakedBalance = stakedBalanceRaw !== undefined ? parseFloat(formatUnits(stakedBalanceRaw, 18)) : 0
+
+  const isHolder = walletBalance >= 100_000_000
+  const isStaker = stakedBalance >= 100_000_000
+  const winChanceBoost = isStaker ? 5 : (isHolder ? 2 : 0)
+
+  // HP Bonus for deposits
+  const getDepositHpBonus = (usdAmount) => {
+    if (usdAmount < 0.1) return 0
+    if (usdAmount <= 10) return 1
+    if (usdAmount <= 50) return 2
+    if (usdAmount <= 100) return 3
+    return 5
+  }
 
   // Daily Raffle Hooks
   const { data: isDailyEligibleRaw } = useReadContract({
@@ -600,12 +633,23 @@ export function RaffleSection({ address, basename, onRequireWallet }) {
                 </div>
               </div>
               <div style={{
-                fontFamily: "'Barlow Condensed', sans-serif",
-                fontSize: 26,
-                fontWeight: 900,
-                color: '#FFFFFF'
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-end',
               }}>
-                {displayMyChance}%
+                {winChanceBoost > 0 && (
+                  <div style={{ fontSize: 10, fontWeight: 900, color: '#10B981', backgroundColor: 'rgba(16, 185, 129, 0.15)', padding: '2px 6px', borderRadius: 6, marginBottom: 4 }}>
+                    +{winChanceBoost}% Boost
+                  </div>
+                )}
+                <div style={{
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: 26,
+                  fontWeight: 900,
+                  color: '#FFFFFF'
+                }}>
+                  {displayMyChance}%
+                </div>
               </div>
             </div>
           )}
@@ -1075,9 +1119,9 @@ export function RaffleSection({ address, basename, onRequireWallet }) {
             isHH
               ? (hhAllowance < txModal.amount / hhPrice 
                   ? "Approve unlimited $HH spending to buy tickets" 
-                  : `+${Math.round(txModal.amount / TICKET_UNIT)} ${Math.round(txModal.amount / TICKET_UNIT) === 1 ? 'ticket' : 'tickets'} · Simulated Entry`
+                  : `+${Math.round(txModal.amount / TICKET_UNIT)} ${Math.round(txModal.amount / TICKET_UNIT) === 1 ? 'ticket' : 'tickets'} · +${getDepositHpBonus(parseFloat(txModal.amount))} HP Bonus`
                 )
-              : `+${Math.round(txModal.amount / TICKET_UNIT)} ${Math.round(txModal.amount / TICKET_UNIT) === 1 ? 'ticket' : 'tickets'} · + HP Points`
+              : `+${Math.round(txModal.amount / TICKET_UNIT)} ${Math.round(txModal.amount / TICKET_UNIT) === 1 ? 'ticket' : 'tickets'} · +${getDepositHpBonus(parseFloat(txModal.amount))} HP Bonus`
           }
           amount={isHH ? (hhAllowance < txModal.amount / hhPrice ? "0.00" : Math.round(txModal.amount / hhPrice).toString()) : txModal.amount.toString()}
           currency={isHH ? (hhAllowance < txModal.amount / hhPrice ? "Approve" : "$HH") : "USDC"}
