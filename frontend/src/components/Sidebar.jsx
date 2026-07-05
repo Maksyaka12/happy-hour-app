@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useDisconnect } from 'wagmi'
 import { UserAvatar } from './UserAvatar'
 import { HappyHourLogo } from './HappyHourLogo'
-import { LinkXModal } from './LinkXModal'
 
 const short = (a) => (a ? `${a.slice(0, 6)}...${a.slice(-4)}` : '')
 
@@ -10,7 +9,6 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
   const { disconnect } = useDisconnect()
 
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
-  const [isLinkXModalOpen, setIsLinkXModalOpen] = useState(false)
 
   const [isCollapsed, setIsCollapsed] = useState(() => {
     try {
@@ -406,7 +404,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                 <button
                   onClick={() => {
                     setIsProfileMenuOpen(false)
-                    setIsLinkXModalOpen(true)
+                    setTab('account')
                   }}
                   style={{
                     width: '100%',
@@ -503,7 +501,6 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
           </button>
         )}
       </div>
-      {isLinkXModalOpen && <LinkXModal onClose={() => setIsLinkXModalOpen(false)} />}
     </aside>
   )
 }

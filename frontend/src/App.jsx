@@ -9,6 +9,7 @@ import { RaffleSection } from './components/RaffleSection'
 import { EarnSection } from './components/EarnSection'
 import { ContestsSection } from './components/ContestsSection'
 import { ProfileSection } from './components/ProfileSection'
+import { AccountSection } from './components/AccountSection'
 import { BottomNav } from './components/BottomNav'
 import { HappyHourLogo } from './components/HappyHourLogo'
 import { HappyBotChat } from './components/HappyBotChat'
@@ -320,6 +321,7 @@ export default function App({ onLogin }) {
                       onRequireWallet={handleRequireWallet}
                     />
                   )}
+                  {tab === 'account' && <AccountSection address={address} onRequireWallet={handleRequireWallet} />}
                 </div>
               </div>
             </div>
@@ -542,6 +544,7 @@ export default function App({ onLogin }) {
                 onRequireWallet={handleRequireWallet}
               />
             )}
+            {tab === 'account' && <AccountSection address={address} onRequireWallet={handleRequireWallet} />}
           </div>
 
           <footer style={{
