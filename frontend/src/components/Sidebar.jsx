@@ -148,10 +148,9 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
         {/* Platform Section */}
         <div>
           <div style={{
-            fontSize: 12,
-            fontWeight: 700,
+            fontSize: 13,
+            fontWeight: 500,
             color: 'var(--text2)',
-            letterSpacing: '0.5px',
             paddingLeft: 12,
             marginBottom: 8
           }}>
@@ -173,9 +172,9 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                     borderRadius: 12,
                     border: 'none',
                     background: active ? 'rgba(59, 130, 246, 0.08)' : 'transparent',
-                    color: active ? 'var(--text)' : 'var(--text2)',
-                    fontSize: 13.5,
-                    fontWeight: active ? 700 : 550,
+                    color: 'var(--text)',
+                    fontSize: 13,
+                    fontWeight: 500,
                     cursor: 'pointer',
                     transition: 'all 0.15s ease'
                   }}
@@ -188,7 +187,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                   onMouseLeave={e => {
                     if (!active) {
                       e.currentTarget.style.background = 'transparent';
-                      e.currentTarget.style.color = 'var(--text2)';
+                      e.currentTarget.style.color = 'var(--text)';
                     }
                   }}
                 >
@@ -209,10 +208,9 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
         {/* Resources Section */}
         <div>
           <div style={{
-            fontSize: 12,
-            fontWeight: 700,
+            fontSize: 13,
+            fontWeight: 500,
             color: 'var(--text2)',
-            letterSpacing: '0.5px',
             paddingLeft: 12,
             marginBottom: 8
           }}>
@@ -232,7 +230,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                   width: '100%',
                   padding: '9px 12px',
                   borderRadius: 12,
-                  color: 'var(--text2)',
+                  color: 'var(--text)',
                   fontSize: 13,
                   fontWeight: 500,
                   textDecoration: 'none',
@@ -245,7 +243,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.color = 'var(--text2)';
+                  e.currentTarget.style.color = 'var(--text)';
                 }}
               >
                 <div style={{

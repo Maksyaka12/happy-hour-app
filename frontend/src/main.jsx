@@ -49,7 +49,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <PrivyProvider
         appId="cmr71ywhn007f0cl16cnybewf"
         config={{
-          loginMethods: ['wallet', 'telegram', 'twitter'],
           appearance: {
             theme: 'dark',
             accentColor: '#3B82F6',
