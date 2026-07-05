@@ -88,7 +88,7 @@ export function LeaderboardSection({ address }) {
     loadLeaders()
 
     const channel = db
-      .channel('leaderboard-users-season')
+      .channel(`leaderboard-users-season-${Date.now()}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, loadLeaders)
       .subscribe()
 

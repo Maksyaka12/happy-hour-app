@@ -155,7 +155,7 @@ export default function App() {
       setTotalUsers(count || 0)
     }
     fetchTotal()
-    const sub = db.channel('admin-stats').on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, fetchTotal).subscribe()
+    const sub = db.channel(`admin-stats-${Date.now()}`).on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, fetchTotal).subscribe()
     return () => { db.removeChannel(sub) }
   }, [address, isAdmin])
 

@@ -149,15 +149,15 @@ export function RaidMode({ address }) {
     fetchRaidStatus()
     fetchHistory()
 
-    const sub = db
-      .channel('raid-history-realtime')
+    const channel = db
+      .channel(`raid-history-realtime-${Date.now()}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'raid_attempts' }, () => {
         fetchHistory()
       })
       .subscribe()
 
     return () => {
-      db.removeChannel(sub)
+      db.removeChannel(channel)
       if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current)
     }
   }, [address])

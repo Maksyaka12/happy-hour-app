@@ -75,7 +75,7 @@ export function DailyRewardsSection({ address }) {
     loadDailyLeaders()
 
     const channel = db
-      .channel('daily-leaderboard-users')
+      .channel(`daily-leaderboard-users-${Date.now()}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_stats' }, loadDailyLeaders)
       .subscribe()
 
