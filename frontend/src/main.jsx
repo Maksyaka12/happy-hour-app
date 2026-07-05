@@ -4,6 +4,7 @@ import { PrivyProvider } from '@privy-io/react-auth'
 import { WagmiProvider } from 'wagmi'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { config } from './config/wagmi'
+import './styles.js'
 import App from './App'
 
 const queryClient = new QueryClient()
