@@ -66,24 +66,12 @@ export const CSS = `
     background: linear-gradient(160deg, #EBF0FF 0%, #DDEAFF 40%, #E8EEFF 100%);
   }
 
-  /* Web layout adaptive styling */
+  /* Web layout adaptive styling (always desktop view) */
   .web-mode .desktop-only {
-    display: none !important;
+    display: flex !important;
   }
   .web-mode .mobile-only {
-    display: block;
-  }
-
-  @media (min-width: 768px) {
-    .web-mode .desktop-only {
-      display: flex !important;
-    }
-    .web-mode.sidebar-layout .desktop-only {
-      display: flex !important;
-    }
-    .web-mode .mobile-only {
-      display: none !important;
-    }
+    display: none !important;
   }
 
   .miniapp-mode .desktop-only {

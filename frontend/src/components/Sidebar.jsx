@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { useDisconnect } from 'wagmi'
 import { UserAvatar } from './UserAvatar'
 import { HappyHourLogo } from './HappyHourLogo'
@@ -6,6 +7,19 @@ const short = (a) => (a ? `${a.slice(0, 6)}...${a.slice(-4)}` : '')
 
 export function Sidebar({ tab, setTab, address, isConnected, displayName, isClubMember, onRequireWallet }) {
   const { disconnect } = useDisconnect()
+
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    try {
+      const saved = localStorage.getItem('sidebar_collapsed')
+      if (saved !== null) return saved === 'true'
+      if (typeof window !== 'undefined' && window.innerWidth < 768) return true
+      return false
+    } catch { return false }
+  })
+
+  useEffect(() => {
+    try { localStorage.setItem('sidebar_collapsed', isCollapsed) } catch {}
+  }, [isCollapsed])
 
   const tabs = [
     {
@@ -102,7 +116,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
 
   return (
     <aside style={{
-      width: 260,
+      width: isCollapsed ? 68 : 260,
       background: 'var(--bg2)',
       borderRight: '1px solid var(--border)',
       display: 'flex',
@@ -119,23 +133,57 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
       {/* Brand Header */}
       <div style={{
         height: 72,
-        padding: '0 20px',
+        padding: isCollapsed ? '0' : '0 20px',
         display: 'flex',
         alignItems: 'center',
-        gap: 10,
+        justifyContent: isCollapsed ? 'center' : 'space-between',
         borderBottom: '1px solid var(--border)',
-        boxSizing: 'border-box',
-        cursor: 'pointer'
-      }} onClick={() => setTab('raffle')}>
-        <HappyHourLogo size={28} />
-        <span style={{
-          fontSize: 18,
-          fontWeight: 800,
-          color: '#FFFFFF',
-          letterSpacing: '-0.5px'
+        boxSizing: 'border-box'
+      }}>
+        <div onClick={() => setTab('raffle')} style={{ 
+          display: isCollapsed ? 'none' : 'flex', 
+          alignItems: 'center', 
+          gap: 10, 
+          cursor: 'pointer' 
         }}>
-          happy <span style={{ color: '#3B82F6' }}>hour</span>
-        </span>
+          <HappyHourLogo size={28} />
+          <span style={{
+            fontSize: 18,
+            fontWeight: 800,
+            color: '#FFFFFF',
+            letterSpacing: '-0.5px'
+          }}>
+            happy <span style={{ color: '#3B82F6' }}>hour</span>
+          </span>
+        </div>
+        
+        {isCollapsed && (
+          <div onClick={() => setTab('raffle')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+            <HappyHourLogo size={28} />
+          </div>
+        )}
+
+        <button 
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: 'var(--text2)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 4,
+            borderRadius: 6,
+            marginLeft: isCollapsed ? 0 : 8
+          }}
+        >
+          {isCollapsed ? (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+          ) : (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+          )}
+        </button>
       </div>
 
       {/* Main navigation scroll area */}
@@ -149,15 +197,17 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
       }}>
         {/* Platform Section */}
         <div>
-          <div style={{
-            fontSize: 13,
-            fontWeight: 500,
-            color: 'var(--text2)',
-            paddingLeft: 12,
-            marginBottom: 8
-          }}>
-            Platform
-          </div>
+          {!isCollapsed && (
+            <div style={{
+              fontSize: 13,
+              fontWeight: 500,
+              color: 'var(--text2)',
+              paddingLeft: 12,
+              marginBottom: 8
+            }}>
+              Platform
+            </div>
+          )}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {tabs.map(t => {
               const active = tab === t.id
@@ -168,9 +218,10 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 12,
+                    justifyContent: isCollapsed ? 'center' : 'flex-start',
+                    gap: isCollapsed ? 0 : 12,
                     width: '100%',
-                    padding: '10px 12px',
+                    padding: isCollapsed ? '10px 0' : '10px 12px',
                     borderRadius: 12,
                     border: 'none',
                     background: active ? 'rgba(59, 130, 246, 0.08)' : 'transparent',
@@ -200,7 +251,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                   }}>
                     {t.icon}
                   </div>
-                  <span>{t.name}</span>
+                  {!isCollapsed && <span>{t.name}</span>}
                 </button>
               )
             })}
@@ -209,15 +260,17 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
 
         {/* Resources Section */}
         <div>
-          <div style={{
-            fontSize: 13,
-            fontWeight: 500,
-            color: 'var(--text2)',
-            paddingLeft: 12,
-            marginBottom: 8
-          }}>
-            Resources
-          </div>
+          {!isCollapsed && (
+            <div style={{
+              fontSize: 13,
+              fontWeight: 500,
+              color: 'var(--text2)',
+              paddingLeft: 12,
+              marginBottom: 8
+            }}>
+              Resources
+            </div>
+          )}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {resources.map((r, i) => (
               <a
@@ -228,9 +281,10 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 12,
+                  justifyContent: isCollapsed ? 'center' : 'flex-start',
+                  gap: isCollapsed ? 0 : 12,
                   width: '100%',
-                  padding: '9px 12px',
+                  padding: isCollapsed ? '9px 0' : '9px 12px',
                   borderRadius: 12,
                   color: 'var(--text)',
                   fontSize: 13,
@@ -248,23 +302,14 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                   e.currentTarget.style.color = 'var(--text)';
                 }}
               >
-                <div style={{
-                  color: '#64748B',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: 18,
-                  height: 18,
-                  borderRadius: r.logo ? '50%' : 'none',
-                  overflow: r.logo ? 'hidden' : 'visible'
-                }}>
-                  {r.logo ? (
-                    <img src={r.logo} alt={r.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  ) : (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 20, color: '#64748B' }}>
+                  {r.icon ? (
                     r.icon
+                  ) : (
+                    <img src={r.logo} alt="" style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover' }} />
                   )}
                 </div>
-                <span>{r.name}</span>
+                {!isCollapsed && <span>{r.name}</span>}
               </a>
             ))}
           </div>
@@ -278,75 +323,79 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
         background: '#090D16'
       }}>
         {isConnected && address ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: isCollapsed ? 'center' : 'flex-start' }}>
             {/* User Avatar */}
             <UserAvatar address={address} size={36} />
 
             {/* User Meta */}
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{
-                fontSize: 13,
-                fontWeight: 700,
-                color: '#FFFFFF',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis'
-              }}>
-                {displayName || short(address)}
+            {!isCollapsed && (
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: '#FFFFFF',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}>
+                  {displayName || short(address)}
+                </div>
+                <div style={{
+                  fontSize: 10.5,
+                  fontWeight: 650,
+                  color: isClubMember ? '#0000FF' : '#64748B',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  marginTop: 2
+                }}>
+                  {isClubMember ? (
+                    <>
+                      <img src="/logo_200.png" alt="HH" style={{ width: 14, height: 14, borderRadius: '50%' }} />
+                      <span>Happy Club Member</span>
+                    </>
+                  ) : (
+                    <span>Standard User</span>
+                  )}
+                </div>
               </div>
-              <div style={{
-                fontSize: 10.5,
-                fontWeight: 650,
-                color: isClubMember ? '#0000FF' : '#64748B',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4,
-                marginTop: 2
-              }}>
-                {isClubMember ? (
-                  <>
-                    <img src="/logo_200.png" alt="HH" style={{ width: 14, height: 14, borderRadius: '50%' }} />
-                    <span>Happy Club Member</span>
-                  </>
-                ) : (
-                  <span>Standard User</span>
-                )}
-              </div>
-            </div>
+            )}
 
             {/* Logout Trigger */}
-            <button
-              onClick={() => disconnect()}
-              title="Logout Wallet"
-              style={{
-                background: 'rgba(255, 255, 255, 0.05)',
-                border: 'none',
-                borderRadius: 8,
-                width: 28,
-                height: 28,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#EF4444',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-                flexShrink: 0
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.15)';
-                e.currentTarget.style.transform = 'scale(1.05)';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
-                e.currentTarget.style.transform = 'none';
-              }}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                <polyline points="16 17 21 12 16 7"></polyline>
-                <line x1="21" y1="12" x2="9" y2="12"></line>
-              </svg>
-            </button>
+            {!isCollapsed && (
+              <button
+                onClick={() => disconnect()}
+                title="Logout Wallet"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  border: 'none',
+                  borderRadius: 8,
+                  width: 28,
+                  height: 28,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#EF4444',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                  flexShrink: 0
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = 'rgba(239, 68, 68, 0.15)';
+                  e.currentTarget.style.transform = 'scale(1.05)';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                  e.currentTarget.style.transform = 'none';
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+              </button>
+            )}
           </div>
         ) : (
           <button
@@ -381,7 +430,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
               <path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2h-3"></path>
               <circle cx="18" cy="12" r="1"></circle>
             </svg>
-            <span>Connect Wallet</span>
+            {!isCollapsed && <span>Connect Wallet</span>}
           </button>
         )}
       </div>
