@@ -53,8 +53,9 @@ const formatConcise = (num) => {
 }
 
 export function RaffleSection({ address, basename, onRequireWallet }) {
-  const isHH = true
-  const { round, participants, lastWinner, myTickets, myAmount, refetch } = useRoundState(address, 'HH')
+  const [raffleType] = useState('hh') // 'hh' | 'usdc'
+  const isHH = raffleType === 'hh'
+  const { round, participants, lastWinner, myTickets, myAmount, refetch } = useRoundState(address, raffleType.toUpperCase())
   const [msLeft,       setMsLeft]       = useState(0)
   const [txModal,      setTxModal]      = useState(null) // { amount }
   const [spinData, setSpinData] = useState(null)
@@ -86,9 +87,73 @@ export function RaffleSection({ address, basename, onRequireWallet }) {
     abi: HH_ABI,
     functionName: 'allowance',
     args: address && HH_RAFFLE_VAULT_ADDRESS ? [address, HH_RAFFLE_VAULT_ADDRESS] : undefined,
-    query: { enabled: !!address && isHH, refetchInterval: 10000 }
+    query: { enabled: !!address && raffleType === 'hh', refetchInterval: 10000 }
   })
   const hhAllowance = hhAllowanceRaw !== undefined ? parseFloat(formatUnits(hhAllowanceRaw, 18)) : 0
+
+  // Daily Raffle Hooks
+  const { data: isDailyEligibleRaw } = useReadContract({
+    address: DAILY_ADDRESS,
+    abi: DAILY_ABI,
+    functionName: 'isUserEligible',
+    args: address ? [address] : undefined,
+    query: { enabled: !!address, refetchInterval: 15000 }
+  })
+
+  const { data: dailyUserTicketsRaw } = useReadContract({
+    address: DAILY_ADDRESS,
+    abi: DAILY_ABI,
+    functionName: 'getUserTickets',
+    args: address ? [address] : undefined,
+    query: { enabled: !!address, refetchInterval: 15000 }
+  })
+
+  const { data: dailyPoolRaw } = useReadContract({
+    address: DAILY_ADDRESS,
+    abi: DAILY_ABI,
+    functionName: 'getPoolBalance',
+    query: { enabled: !!address, refetchInterval: 15000 }
+  })
+
+  const { data: dailyTimeRemainingRaw } = useReadContract({
+    address: DAILY_ADDRESS,
+    abi: DAILY_ABI,
+    functionName: 'getTimeRemaining',
+    query: { enabled: !!address, refetchInterval: 15000 }
+  })
+
+  const { data: dailySponsorRaw } = useReadContract({
+    address: DAILY_ADDRESS,
+    abi: DAILY_ABI,
+    functionName: 'sponsorName',
+    query: { enabled: !!address }
+  })
+
+  const { data: dailyRoundRaw } = useReadContract({
+    address: DAILY_ADDRESS,
+    abi: DAILY_ABI,
+    functionName: 'getCurrentRound',
+    query: { enabled: !!address }
+  })
+
+  // Simulated fallback values for development/testing
+  const [simulatedDailyEligible, setSimulatedDailyEligible] = useState(() => {
+    try {
+      return localStorage.getItem('hh_simulated_daily_eligible') === 'true'
+    } catch { return false }
+  })
+  const [simulatedDailyTickets, setSimulatedDailyTickets] = useState(() => {
+    try {
+      return parseInt(localStorage.getItem('hh_simulated_daily_tickets') || '0')
+    } catch { return 0 }
+  })
+
+  const isDailyEligible = isDailyEligibleRaw !== undefined ? isDailyEligibleRaw : simulatedDailyEligible
+  const dailyUserTickets = dailyUserTicketsRaw !== undefined ? Number(dailyUserTicketsRaw) : simulatedDailyTickets
+  const dailyPool = dailyPoolRaw !== undefined ? Number(formatUnits(dailyPoolRaw, 18)) : 10000000 // default 10M HH
+  const dailyTimeRemaining = dailyTimeRemainingRaw !== undefined ? Number(dailyTimeRemainingRaw) : 0
+  const dailySponsor = dailySponsorRaw || 'Happy Hour'
+  const dailyRound = dailyRoundRaw !== undefined ? Number(dailyRoundRaw) : 1
 
   // ── Chain check ──────────────────────────────────────────
   const chainId = useChainId()
@@ -125,7 +190,7 @@ export function RaffleSection({ address, basename, onRequireWallet }) {
           // pg_cron missed - browser fallback
           console.warn('[raffle] pg_cron missed the round, browser fallback triggered')
           fallbackRef.current = true
-          const functionName = 'draw-round-hh'
+          const functionName = isHH ? 'draw-round-hh' : 'draw-round-usdc'
           db.functions.invoke(functionName).catch(console.error)
         }
       }
@@ -154,7 +219,7 @@ export function RaffleSection({ address, basename, onRequireWallet }) {
   useEffect(() => {
     if (isSuccess && txHash && lastProcessedTx !== txHash) {
       setLastProcessedTx(txHash)
-      if (isHH && txModal) {
+      if (raffleType === 'hh' && txModal) {
         const amountUsdc = txModal.amount
         const hhCost = amountUsdc / hhPrice
         
@@ -170,7 +235,7 @@ export function RaffleSection({ address, basename, onRequireWallet }) {
       reset()
       setTimeout(() => refetch(), 3000) // Alchemy webhook ~2-3s
     }
-  }, [isSuccess, txHash, isHH, txModal, hhPrice, hhAllowance, address, basename, round?.id])
+  }, [isSuccess, txHash, raffleType, txModal, hhPrice, hhAllowance, address, basename, round?.id])
 
   const displayRound = useMemo(() => {
     if (spinData) return spinData.round
@@ -207,50 +272,97 @@ export function RaffleSection({ address, basename, onRequireWallet }) {
     return myAmount || 0
   }, [myAmount, spinData])
 
-  const accentColor = '#3B82F6'
-  const timerColor = isClosed ? '#FC401F' : '#FFFFFF'
-  const glowColor = 'rgba(59, 130, 246, 0.25)'
+  const triggerDailyDraw = () => {
+    if (!address) {
+      if (onRequireWallet) onRequireWallet()
+      return
+    }
+    if (wrongChain) { switchChain({ chainId: base.id }); return }
+    writeContract({
+      address: DAILY_ADDRESS,
+      abi: DAILY_ABI,
+      functionName: 'requestDailyDraw',
+      chainId: base.id
+    })
+  }
 
+  const simulateDailyEligibility = () => {
+    try {
+      localStorage.setItem('hh_simulated_daily_eligible', 'true')
+      localStorage.setItem('hh_simulated_daily_tickets', '10')
+      setSimulatedDailyEligible(true)
+      setSimulatedDailyTickets(10)
+    } catch (e) { console.error(e) }
+  }
+
+
+  const accentColor = isHH ? '#3B82F6' : '#10B981'
+  const lightAccentColor = isHH ? '#60A5FA' : '#34D399'
+  const timerColor = isClosed ? '#FC401F' : '#FFFFFF'
+  const gradientColor = isHH 
+    ? 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)' 
+    : 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
+  const glowColor = isHH ? 'rgba(59, 130, 246, 0.25)' : 'rgba(16, 185, 129, 0.25)'
+  const hueFilter = isHH
+    ? 'hue-rotate(0deg) brightness(0.4) contrast(1.15)' 
+    : 'hue-rotate(200deg) brightness(0.4) contrast(1.15)'
+
+  const heroHueFilter = isHH
+    ? 'hue-rotate(0deg) brightness(0.68) contrast(1.1)' 
+    : 'hue-rotate(200deg) brightness(0.68) contrast(1.1)'
+
+  const cardBg = 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover'
   const heroCardBg = 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover'
   const cardBorder = '1px solid var(--border)'
   const cardShadow = '0 4px 12px rgba(0,0,0,0.1)'
 
-  // ── Send HH ────────────────────────────────────────
+  // ── Send USDC or HH ────────────────────────────────────────
   const sendBet = useCallback((amount) => {
     if (isClosed || !address) return
 
     // Switch chain if needed
     if (wrongChain) { switchChain({ chainId: base.id }); return }
 
-    const hhCost = amount / hhPrice
-    if (hhAllowance < hhCost) {
-      // Trigger infinite approve
-      writeContract({
-        address: HH_ADDRESS,
-        abi: HH_ABI,
-        functionName: 'approve',
-        args: [HH_RAFFLE_VAULT_ADDRESS, 115792089237316195423570985008687907853269984665640564039457584007913129639935n], // max uint256
-        chainId: base.id,
-      })
+    if (raffleType === 'hh') {
+      const hhCost = amount / hhPrice
+      if (hhAllowance < hhCost) {
+        // Trigger infinite approve
+        writeContract({
+          address: HH_ADDRESS,
+          abi: HH_ABI,
+          functionName: 'approve',
+          args: [HH_RAFFLE_VAULT_ADDRESS, 115792089237316195423570985008687907853269984665640564039457584007913129639935n], // max uint256
+          chainId: base.id,
+        })
+      } else {
+        // Trigger deposit contract transaction
+        writeContract({
+          address: HH_RAFFLE_VAULT_ADDRESS,
+          abi: [
+            {
+              name: 'depositHH',
+              type: 'function',
+              inputs: [{ name: '_amount', type: 'uint256' }],
+              outputs: [],
+              stateMutability: 'nonpayable',
+            }
+          ],
+          functionName: 'depositHH',
+          args: [parseUnits(hhCost.toFixed(18), 18)],
+          chainId: base.id,
+        })
+      }
     } else {
-      // Trigger deposit contract transaction
+      // useWriteContract sends the USDC tx
       writeContract({
-        address: HH_RAFFLE_VAULT_ADDRESS,
-        abi: [
-          {
-            name: 'depositHH',
-            type: 'function',
-            inputs: [{ name: '_amount', type: 'uint256' }],
-            outputs: [],
-            stateMutability: 'nonpayable',
-          }
-        ],
-        functionName: 'depositHH',
-        args: [parseUnits(hhCost.toFixed(18), 18)],
-        chainId: base.id,
+        address:      USDC_ADDRESS,
+        abi:          USDC_ABI,
+        functionName: 'transfer',
+        args:         [FOUNDATION, parseUnits(amount.toFixed(6), 6)],
+        chainId:      base.id,
       })
     }
-  }, [isClosed, address, wrongChain, writeContract, switchChain, hhPrice, hhAllowance])
+  }, [isClosed, address, wrongChain, writeContract, switchChain, raffleType, hhPrice, hhAllowance])
 
   const onBetClick = (amount) => {
     if (!address) {
@@ -788,7 +900,7 @@ export function RaffleSection({ address, basename, onRequireWallet }) {
             {!isDailyEligible && (
               <button
                 type="button"
-                onClick={() => setRaffleType('hh')}
+                onClick={() => {}}
                 style={{
                   width: '100%',
                   padding: '10px 12px',
