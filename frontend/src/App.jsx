@@ -25,7 +25,7 @@ function getReferralCode() {
   return ref || null
 }
 
-export default function App() {
+export default function App({ onLogin }) {
   const isMiniapp = useMemo(() => {
     if (typeof window === 'undefined') return false
     const params = new URLSearchParams(window.location.search)
@@ -41,7 +41,13 @@ export default function App() {
   }, [])
 
   const [isConnectModalOpen, setIsConnectModalOpen] = useState(false)
-  const handleRequireWallet = () => setIsConnectModalOpen(true)
+  const handleRequireWallet = () => {
+    if (onLogin) {
+      onLogin()
+    } else {
+      setIsConnectModalOpen(true)
+    }
+  }
 
   const [tab, setTab] = useState(() => {
     try {
