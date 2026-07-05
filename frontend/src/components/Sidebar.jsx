@@ -1,4 +1,5 @@
 import { useDisconnect } from 'wagmi'
+import { UserAvatar } from './UserAvatar'
 import { HappyHourLogo } from './HappyHourLogo'
 
 const short = (a) => (a ? `${a.slice(0, 6)}...${a.slice(-4)}` : '')
@@ -280,22 +281,8 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
       }}>
         {isConnected && address ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            {/* Avatar */}
-            <div style={{
-              width: 38,
-              height: 38,
-              borderRadius: 12,
-              background: 'linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: 800,
-              color: '#FFFFFF',
-              fontSize: 14,
-              flexShrink: 0
-            }}>
-              {displayName ? displayName.slice(0, 2).toUpperCase() : 'HH'}
-            </div>
+            {/* User Avatar */}
+            <UserAvatar address={address} size={36} />
 
             {/* User Meta */}
             <div style={{ flex: 1, minWidth: 0 }}>
@@ -312,7 +299,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
               <div style={{
                 fontSize: 10.5,
                 fontWeight: 650,
-                color: isClubMember ? '#F59E0B' : '#64748B',
+                color: isClubMember ? '#0000FF' : '#64748B',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 4,
@@ -320,8 +307,8 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
               }}>
                 {isClubMember ? (
                   <>
-                    <span style={{ fontSize: 10 }}>👑</span>
-                    <span>Club Member</span>
+                    <img src="/logo_200.png" alt="HH" style={{ width: 14, height: 14, borderRadius: '50%' }} />
+                    <span>Happy Club Member</span>
                   </>
                 ) : (
                   <span>Standard User</span>

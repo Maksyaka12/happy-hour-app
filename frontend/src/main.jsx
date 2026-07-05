@@ -53,6 +53,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           appearance: {
             theme: 'dark',
             accentColor: '#3B82F6',
+            landingHeader: 'Connect your wallet',
+            loginMessage: 'Login to continue',
             showWalletLoginFirst: true,
           },
           embeddedWallets: {
