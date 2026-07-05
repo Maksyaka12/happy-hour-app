@@ -1,46 +1,86 @@
 import { useEffect, useMemo, useState } from 'react'
+import { usePrivy } from '@privy-io/react-auth'
 import { useAccount, useReadContract, useSwitchChain } from 'wagmi'
 import { base } from 'wagmi/chains'
 import { formatUnits } from 'viem'
 import { db } from './config/supabase'
 import { useBasename } from './hooks/useBasename'
-import { ConnectScreen } from './components/ConnectScreen'
+import { PrivyLogin } from './components/PrivyLogin'
+import { PrivyBadge } from './components/PrivyBadge'
 import { RaffleSection } from './components/RaffleSection'
+import { TasksSection } from './components/TasksSection'
+import { HappyBoxesSection } from './components/HappyBoxesSection'
+import { LeaderboardSection } from './components/LeaderboardSection'
 import { EarnSection } from './components/EarnSection'
+import { RaidMode } from './components/RaidMode'
+import { AirdropChecklist } from './components/AirdropChecklist'
 import { ContestsSection } from './components/ContestsSection'
 import { ProfileSection } from './components/ProfileSection'
 import { BottomNav } from './components/BottomNav'
 import { HappyHourLogo } from './components/HappyHourLogo'
-import { HappyBotChat } from './components/HappyBotChat'
+import { EventBanner } from './components/EventBanner'
+import { UnderConstructionSection } from './components/UnderConstruction'
 import { CSS } from './styles'
-import { HAS_SUPABASE_CONFIG, USDC_ADDRESS, USDC_ABI, MEMBERSHIP_ADDRESS, MEMBERSHIP_ABI } from './config/constants'
+import { HAS_SUPABASE_CONFIG, USDC_ADDRESS, USDC_ABI } from './config/constants'
 
-const short = (a) => (a ? `${a.slice(0, 6)}\u2026${a.slice(-4)}` : '\u2014')
+const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
 
 function getReferralCode() {
   const ref = new URLSearchParams(window.location.search).get('ref')?.trim()
   return ref || null
 }
 
+const TRADING_CONTEST_TARGET_DATE = new Date(Date.UTC(2026, 6, 4, 15, 0, 0))
+
+const calculateTradingContestTimeLeft = () => {
+  const now = new Date()
+  const diff = TRADING_CONTEST_TARGET_DATE.getTime() - now.getTime()
+  if (isNaN(diff) || diff <= 0) return '00d 00h 00m 00s'
+  const d = Math.floor(diff / 86400000)
+  const h = Math.floor((diff % 86400000) / 3600000)
+  const m = Math.floor((diff % 3600000) / 60000)
+  const s = Math.floor((diff % 60000) / 1000)
+  return `${d}d ${h.toString().padStart(2, '0')}h ${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`
+}
+
 export default function App() {
+  const { authenticated, user, ready: privyReady } = usePrivy()
   const [tab, setTab] = useState(() => {
     try {
       let saved = localStorage.getItem('happy_tab') || 'raffle'
       if (saved === 'profile') saved = 'home'
       if (saved === 'staking' || saved === 'raid') saved = 'earn'
-      if (saved === 'tasks' || saved === 'leaderboard' || saved === 'boxes') saved = 'raffle'
       return saved
     } catch { return 'raffle' }
   })
+  const [leaderboardSubTab, setLeaderboardSubTab] = useState(() => {
+    try {
+      let saved = localStorage.getItem('happy_leaderboard_subtab') || 'usdc'
+      if (saved === 'hp' || saved === 'contests') saved = 'usdc'
+      return saved
+    } catch { return 'usdc' }
+  })
   const [caCopied, setCaCopied] = useState(false)
   const [initialContest, setInitialContest] = useState(null)
+  const [tradingContestTimeLeft, setTradingContestTimeLeft] = useState(calculateTradingContestTimeLeft())
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTradingContestTimeLeft(calculateTradingContestTimeLeft())
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [])
+
+  useEffect(() => {
+    try { localStorage.setItem('happy_leaderboard_subtab', leaderboardSubTab) } catch { }
+  }, [leaderboardSubTab])
 
   useEffect(() => {
     try { localStorage.setItem('happy_tab', tab) } catch { }
   }, [tab])
-  // useAccount().chainId returns the REAL wallet chain (even if unsupported)
-  // useChainId() returns base.id by default when chain is not in wagmi config — can't use it here
-  const { address, isConnected, isConnecting, isReconnecting, chainId: accountChainId } = useAccount()
+
+  const { address: wagmiAddress, isConnected, isConnecting, isReconnecting, chainId: accountChainId } = useAccount()
+  const address = user?.wallet?.address || wagmiAddress
   const { switchChain, isPending: isSwitching } = useSwitchChain()
   const basename = useBasename(address)
   const onWrongChain = isConnected && !!accountChainId && accountChainId !== base.id
@@ -78,44 +118,18 @@ export default function App() {
 
   const referralCode = useMemo(() => getReferralCode(), [])
 
-  const { data: isClubMemberRaw } = useReadContract({
-    address: MEMBERSHIP_ADDRESS,
-    abi: MEMBERSHIP_ABI,
-    functionName: 'isMember',
-    args: address ? [address] : undefined,
-    query: { enabled: !!address, refetchInterval: 15000 }
-  })
-
-  const [simulatedMember, setSimulatedMember] = useState(() => {
-    try {
-      return localStorage.getItem('hh_simulated_member') === 'true'
-    } catch { return false }
-  })
-
-  // Keep simulatedMember synced with localStorage changes
-  useEffect(() => {
-    const checkSim = () => {
-      try {
-        const val = localStorage.getItem('hh_simulated_member') === 'true'
-        setSimulatedMember(val)
-      } catch {}
-    }
-    const interval = setInterval(checkSim, 2000)
-    return () => clearInterval(interval)
-  }, [])
-
-  const isClubMember = isClubMemberRaw !== undefined ? isClubMemberRaw : simulatedMember
-
   const tabLabels = {
-    home: 'Profile',
+    home: 'Home',
     raffle: 'Happy Raffle',
-    earn: 'Staking',
-    contests: 'Campaigns',
+    earn: 'Earn',
+    boxes: 'Happy Boxes',
+    tasks: 'Tasks',
+    leaderboard: 'Rewards',
+    contests: 'Contests',
   }
 
   useEffect(() => {
-    if (!isConnected || !address) return
-
+    if (!authenticated || !address) return
     db.rpc('sync_user_profile', {
       p_address: address.toLowerCase(),
       p_basename: basename ?? null,
@@ -123,7 +137,7 @@ export default function App() {
     }).then(({ error }) => {
       if (error) console.error('sync_user_profile:', error)
     })
-  }, [isConnected, address, basename, referralCode])
+  }, [authenticated, address, basename, referralCode])
 
   const [totalUsers, setTotalUsers] = useState(0)
   const isAdmin = address && atob('MHg0YzkxZDNiZWQzNzJjMTE3OTViOWNlOWE5MDE3ZGZlNDQ3YmYwNTBh') === address.toLowerCase()
@@ -139,7 +153,8 @@ export default function App() {
     return () => { db.removeChannel(sub) }
   }, [address, isAdmin])
 
-  if (isConnecting || isReconnecting) {
+  // Loading state while Privy initializes
+  if (!privyReady || isConnecting || isReconnecting) {
     return (
       <>
         <style dangerouslySetInnerHTML={{ __html: CSS }} />
@@ -155,11 +170,26 @@ export default function App() {
     )
   }
 
-  if (!isConnected) {
+  // Auth overlay for non-authenticated users (Privy)
+  if (!authenticated) {
     return (
       <>
         <style dangerouslySetInnerHTML={{ __html: CSS }} />
-        <ConnectScreen />
+        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#F8F9FC', padding: 24 }}>
+          <div style={{ textAlign: 'center', maxWidth: 360 }}>
+            <HappyHourLogo size={64} />
+            <h1 style={{ marginTop: 24, fontSize: 28, fontWeight: 900, color: '#0A0B0D', letterSpacing: '-0.5px' }}>
+              happy <span style={{ color: '#0052FF' }}>hour</span>
+            </h1>
+            <p style={{ marginTop: 8, fontSize: 14, color: '#717886' }}>
+              AI Consumer Platform
+            </p>
+            <div style={{ marginTop: 32 }}>
+              <PrivyLogin />
+              <PrivyBadge />
+            </div>
+          </div>
+        </div>
       </>
     )
   }
@@ -201,7 +231,6 @@ export default function App() {
 
   const displayName = basename || short(address)
 
-  // Maintenance Mode Toggle
   const IS_MAINTENANCE_MODE = false;
 
   if (IS_MAINTENANCE_MODE && !isAdmin) {
@@ -227,7 +256,6 @@ export default function App() {
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
       <div className="app-bg" style={{ minHeight: '100vh', color: 'var(--text)', position: 'relative' }}>
 
-        {/* Wrong Network Banner */}
         {onWrongChain && (
           <div style={{
             position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
@@ -277,7 +305,6 @@ export default function App() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-            {/* Telegram Link */}
             <a 
               href="https://t.me/happyhourapp" 
               target="_blank" 
@@ -304,7 +331,6 @@ export default function App() {
               </svg>
             </a>
 
-            {/* X (Twitter) Link */}
             <a 
               href="https://x.com/happyhour_base" 
               target="_blank" 
@@ -331,7 +357,6 @@ export default function App() {
               </svg>
             </a>
 
-            {/* Docs Link */}
             <a 
               href="/docs" 
               target="_blank" 
@@ -367,7 +392,6 @@ export default function App() {
               </span>
             </a>
 
-            {/* DexScreener Link */}
             <a 
               href="https://dexscreener.com/base/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9" 
               target="_blank" 
@@ -391,7 +415,6 @@ export default function App() {
               <img src="/dexscreener.jpg" alt="DexScreener" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </a>
 
-            {/* GeckoTerminal Link */}
             <a 
               href="https://www.geckoterminal.com/uk/base/pools/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9" 
               target="_blank" 
@@ -415,7 +438,6 @@ export default function App() {
               <img src="/geckoterminal.jpg" alt="GeckoTerminal" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </a>
 
-            {/* CoinGecko Link */}
             <a 
               href="https://www.coingecko.com/en/coins/happy-hour" 
               target="_blank" 
@@ -454,35 +476,155 @@ export default function App() {
           </div>
         </div>
 
-        <div style={{ height: 12 }} />
-
+        
         <div style={{ position: 'relative', zIndex: 1, maxWidth: 640, margin: '0 auto' }}>
           {tab === 'home' && <ProfileSection address={address} basename={basename} totalUsers={totalUsers} setTab={setTab} />}
           {tab === 'raffle' && <RaffleSection address={address} basename={basename} />}
           {tab === 'earn' && <EarnSection setTab={setTab} address={address} />}
+          {tab === 'boxes' && (
+            <UnderConstructionSection style={{ padding: '12px 12px 120px' }}>
+              <HappyBoxesSection address={address} setTab={setTab} />
+            </UnderConstructionSection>
+          )}
+          {tab === 'tasks' && (
+            <UnderConstructionSection style={{ padding: '12px 12px 120px' }}>
+              <TasksSection address={address} />
+            </UnderConstructionSection>
+          )}
+          {tab === 'raid' && (
+            <UnderConstructionSection style={{ padding: '0 0 100px' }}>
+              <div style={{ padding: '0 12px', marginBottom: 12 }}>
+                <button
+                  onClick={() => setTab('earn')}
+                  style={{
+                    background: '#FFFFFF',
+                    border: '1px solid rgba(226, 232, 240, 0.8)',
+                    borderRadius: 100,
+                    padding: '6px 14px',
+                    fontSize: 11,
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    outline: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.01)',
+                    color: '#0A0B0D',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-0.5px)'}
+                  onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+                >
+                  ← Back to Earn
+                </button>
+              </div>
+              <RaidMode address={address} />
+            </UnderConstructionSection>
+          )}
           {tab === 'contests' && (
-            <ContestsSection 
-              setTab={setTab} 
-              address={address} 
-              initialContest={initialContest} 
-              onClearInitialContest={() => setInitialContest(null)} 
-            />
+            <UnderConstructionSection style={{ minHeight: '80vh' }}>
+              <ContestsSection
+                setTab={setTab}
+                address={address}
+                initialContest={initialContest}
+                onClearInitialContest={() => setInitialContest(null)}
+              />
+            </UnderConstructionSection>
+          )}
+          {tab === 'leaderboard' && (
+            <UnderConstructionSection style={{ minHeight: '80vh', padding: '0 0 100px' }}>
+              <>
+                <div style={{ padding: '0 16px' }}>
+                  <div style={{
+                    display: 'flex',
+                    background: '#EEF0F3',
+                    border: '1px solid #DEE1E7',
+                    borderRadius: 16,
+                    padding: 4,
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    margin: '0 0 20px',
+                    boxShadow: 'inset 0 2px 4px rgba(10,11,13,0.05)',
+                    gap: 6
+                  }}>
+                    <button
+                      onClick={() => setLeaderboardSubTab('usdc')}
+                      style={{
+                        flex: 1,
+                        padding: '8px 10px',
+                        borderRadius: 12,
+                        border: leaderboardSubTab === 'usdc' ? 'none' : '1px solid rgba(255,255,255,0.8)',
+                        background: leaderboardSubTab === 'usdc'
+                          ? 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)'
+                          : 'rgba(255, 255, 255, 0.6)',
+                        color: leaderboardSubTab === 'usdc' ? '#fff' : '#717886',
+                        fontWeight: 850,
+                        fontSize: 10,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        boxShadow: leaderboardSubTab === 'usdc'
+                          ? '0 4px 12px rgba(0,82,255,0.2)'
+                          : '0 2px 4px rgba(10,11,13,0.02)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 4
+                      }}
+                    >
+                      <img src="/usdc-logo.png" alt="USDC" style={{ width: 12, height: 12 }} />
+                      USDC Rewards
+                    </button>
+                    <button
+                      onClick={() => setLeaderboardSubTab('hh')}
+                      style={{
+                        flex: 1,
+                        padding: '8px 10px',
+                        borderRadius: 12,
+                        border: leaderboardSubTab === 'hh' ? 'none' : '1px solid rgba(255,255,255,0.8)',
+                        background: leaderboardSubTab === 'hh'
+                          ? 'linear-gradient(135deg, #0052FF 0%, #3B82F6 100%)'
+                          : 'rgba(255, 255, 255, 0.6)',
+                        color: leaderboardSubTab === 'hh' ? '#fff' : '#717886',
+                        fontWeight: 850,
+                        fontSize: 10,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        boxShadow: leaderboardSubTab === 'hh'
+                          ? '0 4px 12px rgba(0,82,255,0.2)'
+                          : '0 2px 4px rgba(10,11,13,0.02)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 4
+                      }}
+                    >
+                      <img src="/logo.jfif" alt="$HH" style={{ width: 12, height: 12, borderRadius: '50%', objectFit: 'cover' }} />
+                      $HH Rewards
+                    </button>
+                  </div>
+                </div>
+                {leaderboardSubTab === 'usdc' ? (
+                  <LeaderboardSection address={address} />
+                ) : (
+                  <AirdropChecklist address={address} setTab={setTab} />
+                )}
+              </>
+            </UnderConstructionSection>
           )}
         </div>
         <footer style={{
           width: '100%',
-          background: '#1D1F23', // Moderately dark grey tone
+          background: '#1D1F23',
           borderTop: '1px solid rgba(255, 255, 255, 0.12)',
           textAlign: 'center',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           gap: 16,
-          padding: '32px 16px 140px', // Bottom padding to clear BottomNav
+          padding: '32px 16px 140px',
           boxSizing: 'border-box',
           color: '#FFFFFF'
         }}>
-          {/* Logo / Branding Row */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
             <img src="/logo.jfif" alt="$HH Logo" style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover' }} />
             <span style={{ fontSize: 12, fontWeight: 800, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -508,7 +650,6 @@ export default function App() {
             </span>
           </div>
 
-          {/* CA / Token Contract block */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -565,11 +706,8 @@ export default function App() {
             </button>
           </div>
 
-          {/* Links Grid */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, width: '100%', margin: '8px 0' }}>
-            {/* Row 1: TG & X */}
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px 20px' }}>
-              {/* Official TG */}
               <a 
                 href="https://t.me/happyhourapp" 
                 target="_blank" 
@@ -589,7 +727,6 @@ export default function App() {
                 <span>Official TG</span>
               </a>
 
-              {/* Official X */}
               <a 
                 href="https://x.com/happyhour_base" 
                 target="_blank" 
@@ -609,7 +746,6 @@ export default function App() {
                 <span>Official X</span>
               </a>
 
-              {/* Devs X */}
               <a 
                 href="https://x.com/mksvibe" 
                 target="_blank" 
@@ -628,9 +764,7 @@ export default function App() {
               </a>
             </div>
 
-            {/* Row 2: Charts */}
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px 20px' }}>
-              {/* Dexscreener */}
               <a 
                 href="https://dexscreener.com/base/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9" 
                 target="_blank" 
@@ -648,7 +782,6 @@ export default function App() {
                 <span>Dexscreener</span>
               </a>
 
-              {/* GeckoTerminal */}
               <a 
                 href="https://www.geckoterminal.com/uk/base/pools/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9" 
                 target="_blank" 
@@ -666,7 +799,6 @@ export default function App() {
                 <span>GeckoTerminal</span>
               </a>
 
-              {/* CoinGecko */}
               <a 
                 href="https://www.coingecko.com/en/coins/happy-hour" 
                 target="_blank" 
@@ -685,9 +817,7 @@ export default function App() {
               </a>
             </div>
 
-            {/* Row 3: Docs & Utility */}
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px 20px' }}>
-              {/* Docs */}
               <a 
                 href="/docs"
                 target="_blank"
@@ -708,7 +838,6 @@ export default function App() {
                 <span>Docs</span>
               </a>
 
-              {/* $HH Utility */}
               <a 
                 href="/docs/utility"
                 target="_blank"
@@ -728,7 +857,6 @@ export default function App() {
                 <span>$HH Utility</span>
               </a>
 
-              {/* $HH Economy */}
               <a 
                 href="/docs/economy"
                 target="_blank"
@@ -752,16 +880,12 @@ export default function App() {
             </div>
           </div>
 
-          {/* Copyright */}
           <div style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.5)', fontWeight: 650 }}>
             &copy; {new Date().getFullYear()} Happy Hour. All rights reserved.
           </div>
         </footer>
 
         <BottomNav tab={tab} setTab={setTab} />
-        
-        {/* Floating AI Chat assistant */}
-        {isConnected && <HappyBotChat address={address} isClubMember={isClubMember} />}
       </div>
 
     </>
