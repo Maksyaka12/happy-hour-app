@@ -14,6 +14,9 @@ import { HappyHourLogo } from './components/HappyHourLogo'
 import { HappyBotChat } from './components/HappyBotChat'
 import { CSS } from './styles'
 import { HAS_SUPABASE_CONFIG, USDC_ADDRESS, USDC_ABI, MEMBERSHIP_ADDRESS, MEMBERSHIP_ABI } from './config/constants'
+import { WalletConnectModal } from './components/WalletConnectModal'
+import { Sidebar } from './components/Sidebar'
+import { Header } from './components/Header'
 
 const short = (a) => (a ? `${a.slice(0, 6)}\u2026${a.slice(-4)}` : '\u2014')
 
@@ -23,6 +26,23 @@ function getReferralCode() {
 }
 
 export default function App() {
+  const isMiniapp = useMemo(() => {
+    if (typeof window === 'undefined') return false
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('platform') === 'base' || params.get('miniapp') === 'true') {
+      return true
+    }
+    try {
+      if (window.self !== window.top) return true
+    } catch (e) {
+      return true
+    }
+    return false
+  }, [])
+
+  const [isConnectModalOpen, setIsConnectModalOpen] = useState(false)
+  const handleRequireWallet = () => setIsConnectModalOpen(true)
+
   const [tab, setTab] = useState(() => {
     try {
       let saved = localStorage.getItem('happy_tab') || 'raffle'
@@ -155,7 +175,7 @@ export default function App() {
     )
   }
 
-  if (!isConnected) {
+  if (!isConnected && isMiniapp) {
     return (
       <>
         <style dangerouslySetInnerHTML={{ __html: CSS }} />
@@ -225,7 +245,10 @@ export default function App() {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
-      <div className="app-bg" style={{ minHeight: '100vh', color: 'var(--text)', position: 'relative' }}>
+      <div 
+        className={isMiniapp ? "miniapp-mode" : "web-mode sidebar-layout"} 
+        style={{ minHeight: '100vh', color: 'var(--text)', position: 'relative' }}
+      >
 
         {/* Wrong Network Banner */}
         {onWrongChain && (
@@ -255,515 +278,552 @@ export default function App() {
           </div>
         )}
 
-        <div
-          style={{
-            position: 'sticky',
-            top: onWrongChain ? 44 : 0,
-            zIndex: 40,
-            background: 'var(--bg)',
-            borderBottom: '1px solid var(--border2)',
-            padding: '10px 16px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            boxShadow: '0 1px 8px rgba(10,11,13,0.06)',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <HappyHourLogo size={26} />
-            <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--text)', letterSpacing: -0.5 }}>
-              happy <span style={{ color: '#0052FF' }}>hour</span>
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-            {/* Telegram Link */}
-            <a 
-              href="https://t.me/happyhourapp" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              title="Telegram Channel"
-              style={{
-                width: 24,
-                height: 24,
-                borderRadius: '50%',
-                background: 'rgba(0, 136, 204, 0.08)',
-                border: '1px solid rgba(0, 136, 204, 0.2)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                textDecoration: 'none'
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(0, 136, 204, 0.16)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'rgba(0, 136, 204, 0.08)'}
-            >
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#0088cc' }}>
-                <path d="M21.9 2.19a1 1 0 0 0-.99-.08l-19 8a1 1 0 0 0-.1 1.82l4.9 2.2 3.1 7.1a1 1 0 0 0 1.77.16l2.9-3.8 4.7 3.3a1 1 0 0 0 1.51-.55l4-17a1 1 0 0 0-.39-.85zM8.62 13.12l8.28-5.28-6.4 6.72-.4 2.88z"/>
-              </svg>
-            </a>
-
-            {/* X (Twitter) Link */}
-            <a 
-              href="https://x.com/happyhour_base" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              title="Follow us on X"
-              style={{
-                width: 24,
-                height: 24,
-                borderRadius: '50%',
-                background: 'rgba(0, 0, 0, 0.05)',
-                border: '1px solid var(--border2)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                textDecoration: 'none'
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(0, 0, 0, 0.1)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'rgba(0, 0, 0, 0.05)'}
-            >
-              <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" style={{ color: 'var(--text)' }}>
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-              </svg>
-            </a>
-
-            {/* Docs Link */}
-            <a 
-              href="/docs" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              title="Documentation"
-              style={{
-                width: 24,
-                height: 24,
-                borderRadius: '50%',
-                background: 'rgba(0, 82, 255, 0.08)',
-                border: '1px solid rgba(0, 82, 255, 0.2)',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                textDecoration: 'none',
-                gap: 1
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(0, 82, 255, 0.16)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'rgba(0, 82, 255, 0.08)'}
-            >
-              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#0052ff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-                <line x1="16" y1="13" x2="8" y2="13"/>
-                <line x1="16" y1="17" x2="8" y2="17"/>
-                <polyline points="10 9 9 9 8 9"/>
-              </svg>
-              <span style={{ fontSize: 6, fontWeight: 800, color: '#0052ff', lineHeight: 1, letterSpacing: '-0.1px' }}>
-                docs
-              </span>
-            </a>
-
-            {/* DexScreener Link */}
-            <a 
-              href="https://dexscreener.com/base/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              title="DexScreener Chart"
-              style={{
-                width: 24,
-                height: 24,
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                textDecoration: 'none',
-                overflow: 'hidden'
-              }}
-              onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
-              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-            >
-              <img src="/dexscreener.jpg" alt="DexScreener" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            </a>
-
-            {/* GeckoTerminal Link */}
-            <a 
-              href="https://www.geckoterminal.com/uk/base/pools/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              title="GeckoTerminal Chart"
-              style={{
-                width: 24,
-                height: 24,
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                textDecoration: 'none',
-                overflow: 'hidden'
-              }}
-              onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
-              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-            >
-              <img src="/geckoterminal.jpg" alt="GeckoTerminal" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            </a>
-
-            {/* CoinGecko Link */}
-            <a 
-              href="https://www.coingecko.com/en/coins/happy-hour" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              title="CoinGecko"
-              style={{
-                width: 24,
-                height: 24,
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                textDecoration: 'none',
-                overflow: 'hidden'
-              }}
-              onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
-              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-            >
-              <img src="/CoinGecko-logo.png" alt="CoinGecko" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            </a>
-
-            <div style={{
-              background: 'var(--blue-bg)',
-              border: '1px solid rgba(0,0,255,0.15)',
-              borderRadius: 20,
-              padding: '4px 10px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4
-            }}>
-              <span style={{ fontSize: 11, fontWeight: 800, color: '#0A0B0D' }}>{usdcBalance}</span>
-              <img src="/usdc-logo.png" alt="USDC" style={{ width: 11, height: 11, display: 'block' }} />
-            </div>
-          </div>
-        </div>
-
-        <div style={{ height: 12 }} />
-
-        <div style={{ position: 'relative', zIndex: 1, maxWidth: 640, margin: '0 auto' }}>
-          {tab === 'home' && <ProfileSection address={address} basename={basename} totalUsers={totalUsers} setTab={setTab} />}
-          {tab === 'raffle' && <RaffleSection address={address} basename={basename} />}
-          {tab === 'earn' && <EarnSection setTab={setTab} address={address} />}
-          {tab === 'contests' && (
-            <ContestsSection 
+        {/* WEB DESKTOP SIDEBAR + HEADER LAYOUT */}
+        {!isMiniapp && (
+          <div className="desktop-only" style={{ display: 'flex', minHeight: '100vh', width: '100%', background: '#0B0F19' }}>
+            <Sidebar 
+              tab={tab} 
               setTab={setTab} 
               address={address} 
-              initialContest={initialContest} 
-              onClearInitialContest={() => setInitialContest(null)} 
+              isConnected={isConnected} 
+              displayName={displayName} 
+              isClubMember={isClubMember} 
+              onRequireWallet={handleRequireWallet} 
             />
-          )}
-        </div>
-        <footer style={{
-          width: '100%',
-          background: '#1D1F23', // Moderately dark grey tone
-          borderTop: '1px solid rgba(255, 255, 255, 0.12)',
-          textAlign: 'center',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: 16,
-          padding: '32px 16px 140px', // Bottom padding to clear BottomNav
-          boxSizing: 'border-box',
-          color: '#FFFFFF'
-        }}>
-          {/* Logo / Branding Row */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
-            <img src="/logo.jfif" alt="$HH Logo" style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover' }} />
-            <span style={{ fontSize: 12, fontWeight: 800, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: 6 }}>
-              $HH <span style={{ color: 'rgba(255, 255, 255, 0.6)', fontWeight: 650 }}>powered by</span>
-              <a 
-                href="https://x.com/bankrbot" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: 6, 
-                  textDecoration: 'none', 
-                  color: '#FFFFFF',
-                  transition: 'opacity 0.2s'
-                }}
-                onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
-                onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-              >
-                <img src="/bankr-logo.jpg" alt="Bankr Logo" style={{ width: 22, height: 22, borderRadius: 6, objectFit: 'cover' }} />
-                <span>Bankr</span>
-              </a>
-            </span>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, background: 'var(--bg2)' }}>
+              <Header 
+                tab={tab} 
+                address={address} 
+                isConnected={isConnected} 
+                displayName={displayName} 
+                isClubMember={isClubMember} 
+                usdcBalance={usdcBalance} 
+                onRequireWallet={handleRequireWallet} 
+              />
+              <div className="dark-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '32px 16px 64px', boxSizing: 'border-box' }}>
+                <div style={{ maxWidth: 640, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+                  {tab === 'home' && <ProfileSection address={address} basename={basename} totalUsers={totalUsers} setTab={setTab} onRequireWallet={handleRequireWallet} />}
+                  {tab === 'raffle' && <RaffleSection address={address} basename={basename} onRequireWallet={handleRequireWallet} />}
+                  {tab === 'earn' && <EarnSection setTab={setTab} address={address} onRequireWallet={handleRequireWallet} />}
+                  {tab === 'contests' && (
+                    <ContestsSection 
+                      setTab={setTab} 
+                      address={address} 
+                      initialContest={initialContest} 
+                      onClearInitialContest={() => setInitialContest(null)} 
+                      onRequireWallet={handleRequireWallet}
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
+        )}
 
-          {/* CA / Token Contract block */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            background: 'rgba(255, 255, 255, 0.05)',
-            border: '1px solid rgba(255, 255, 255, 0.12)',
-            borderRadius: 10,
-            padding: '6px 10px',
-            width: '100%',
-            maxWidth: 350,
-            justifyContent: 'space-between',
-            boxSizing: 'border-box'
-          }}>
-            <span style={{ fontSize: 9.5, fontWeight: 900, color: '#3B82F6', letterSpacing: '0.5px', flexShrink: 0 }}>$HH CA:</span>
-            <span style={{ 
-              fontSize: 8.5, 
-              fontWeight: 800, 
-              fontFamily: "sf mono, consolas, 'Fira Code', monospace", 
-              color: '#FFFFFF', 
-              letterSpacing: '-0.1px',
-              wordBreak: 'break-all',
-              textAlign: 'center',
-              flex: 1,
-              padding: '0 4px'
-            }}>
-              {caCopied ? 'Copied! ✅' : '0x8235EdF32a1e10Bd1867ad622915AB613664cbA3'}
-            </span>
-            <button 
-              onClick={() => {
-                navigator.clipboard.writeText('0x8235EdF32a1e10Bd1867ad622915AB613664cbA3');
-                setCaCopied(true);
-                setTimeout(() => setCaCopied(false), 2000);
-              }}
-              title="Copy Contract Address"
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                padding: 0,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#3B82F6',
-                transition: 'all 0.2s',
-                flexShrink: 0
-              }}
-              onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.15)'}
-              onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-              </svg>
-            </button>
-          </div>
+        {/* MOBILE OR MINIAPP LAYOUT */}
+        <div className={isMiniapp ? "" : "mobile-only"}>
+          <div
+            style={{
+              position: 'sticky',
+              top: onWrongChain ? 44 : 0,
+              zIndex: 40,
+              background: 'var(--bg)',
+              borderBottom: '1px solid var(--border2)',
+              padding: '10px 16px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              boxShadow: '0 1px 8px rgba(10,11,13,0.06)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <HappyHourLogo size={26} />
+              <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--text)', letterSpacing: -0.5 }}>
+                happy <span style={{ color: '#0052FF' }}>hour</span>
+              </span>
+            </div>
 
-          {/* Links Grid */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, width: '100%', margin: '8px 0' }}>
-            {/* Row 1: TG & X */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px 20px' }}>
-              {/* Official TG */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              {/* Telegram Link */}
               <a 
                 href="https://t.me/happyhourapp" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
-                onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
-                onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
+                title="Telegram Channel"
+                style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: '50%',
+                  background: 'rgba(0, 136, 204, 0.08)',
+                  border: '1px solid rgba(0, 136, 204, 0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  textDecoration: 'none'
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(0, 136, 204, 0.16)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'rgba(0, 136, 204, 0.08)'}
               >
-                <div style={{
-                  width: 20, height: 20, borderRadius: '50%', background: 'rgba(0, 136, 204, 0.15)',
-                  border: '1px solid rgba(0, 136, 204, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}>
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#3B82F6' }}>
-                    <path d="M21.9 2.19a1 1 0 0 0-.99-.08l-19 8a1 1 0 0 0-.1 1.82l4.9 2.2 3.1 7.1a1 1 0 0 0 1.77.16l2.9-3.8 4.7 3.3a1 1 0 0 0 1.51-.55l4-17a1 1 0 0 0-.39-.85zM8.62 13.12l8.28-5.28-6.4 6.72-.4 2.88z"/>
-                  </svg>
-                </div>
-                <span>Official TG</span>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#0088cc' }}>
+                  <path d="M21.9 2.19a1 1 0 0 0-.99-.08l-19 8a1 1 0 0 0-.1 1.82l4.9 2.2 3.1 7.1a1 1 0 0 0 1.77.16l2.9-3.8 4.7 3.3a1 1 0 0 0 1.51-.55l4-17a1 1 0 0 0-.39-.85zM8.62 13.12l8.28-5.28-6.4 6.72-.4 2.88z"/>
+                </svg>
               </a>
 
-              {/* Official X */}
+              {/* X (Twitter) Link */}
               <a 
                 href="https://x.com/happyhour_base" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
-                onMouseEnter={e => { e.currentTarget.style.color = '#FFFFFF'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
-                onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
+                title="Follow us on X"
+                style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: '50%',
+                  background: 'rgba(0, 0, 0, 0.05)',
+                  border: '1px solid var(--border2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  textDecoration: 'none'
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(0, 0, 0, 0.1)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'rgba(0, 0, 0, 0.05)'}
               >
-                <div style={{
-                  width: 20, height: 20, borderRadius: '50%', background: 'rgba(255, 255, 255, 0.08)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}>
-                  <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#FFFFFF' }}>
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                  </svg>
-                </div>
-                <span>Official X</span>
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" style={{ color: 'var(--text)' }}>
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
               </a>
 
-              {/* Devs X */}
+              {/* Docs Link */}
               <a 
-                href="https://x.com/mksvibe" 
+                href="/docs" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
-                onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
-                onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
+                title="Documentation"
+                style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: '50%',
+                  background: 'rgba(0, 82, 255, 0.08)',
+                  border: '1px solid rgba(0, 82, 255, 0.2)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  textDecoration: 'none',
+                  gap: 1
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(0, 82, 255, 0.16)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'rgba(0, 82, 255, 0.08)'}
               >
-                <div style={{
-                  width: 20, height: 20, borderRadius: '50%', overflow: 'hidden',
-                  border: '1.5px solid #3B82F6', display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}>
-                  <img src="/mksvibe.jpg" alt="mksvibe" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </div>
-                <span>Devs X</span>
+                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#0052ff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/>
+                  <line x1="16" y1="17" x2="8" y2="17"/>
+                  <polyline points="10 9 9 9 8 9"/>
+                </svg>
+                <span style={{ fontSize: 6, fontWeight: 800, color: '#0052ff', lineHeight: 1, letterSpacing: '-0.1px' }}>
+                  docs
+                </span>
               </a>
-            </div>
 
-            {/* Row 2: Charts */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px 20px' }}>
-              {/* Dexscreener */}
+              {/* DexScreener Link */}
               <a 
                 href="https://dexscreener.com/base/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
-                onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
-                onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'none'; }}
+                title="DexScreener Chart"
+                style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  textDecoration: 'none',
+                  overflow: 'hidden'
+                }}
+                onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
+                onMouseLeave={e => e.currentTarget.style.opacity = '1'}
               >
-                <div style={{
-                  width: 20, height: 20, borderRadius: '50%', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.15)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}>
-                  <img src="/dexscreener.jpg" alt="DexScreener" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </div>
-                <span>Dexscreener</span>
+                <img src="/dexscreener.jpg" alt="DexScreener" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </a>
 
-              {/* GeckoTerminal */}
+              {/* GeckoTerminal Link */}
               <a 
                 href="https://www.geckoterminal.com/uk/base/pools/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
-                onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
-                onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'none'; }}
+                title="GeckoTerminal Chart"
+                style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  textDecoration: 'none',
+                  overflow: 'hidden'
+                }}
+                onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
+                onMouseLeave={e => e.currentTarget.style.opacity = '1'}
               >
-                <div style={{
-                  width: 20, height: 20, borderRadius: '50%', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.15)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}>
-                  <img src="/geckoterminal.jpg" alt="GeckoTerminal" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </div>
-                <span>GeckoTerminal</span>
+                <img src="/geckoterminal.jpg" alt="GeckoTerminal" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </a>
 
-              {/* CoinGecko */}
+              {/* CoinGecko Link */}
               <a 
                 href="https://www.coingecko.com/en/coins/happy-hour" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
-                onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
-                onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'none'; }}
+                title="CoinGecko"
+                style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  textDecoration: 'none',
+                  overflow: 'hidden'
+                }}
+                onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
+                onMouseLeave={e => e.currentTarget.style.opacity = '1'}
               >
-                <div style={{
-                  width: 20, height: 20, borderRadius: '50%', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.15)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}>
-                  <img src="/CoinGecko-logo.png" alt="CoinGecko" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </div>
-                <span>CoinGecko</span>
-              </a>
-            </div>
-
-            {/* Row 3: Docs & Utility */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px 20px' }}>
-              {/* Docs */}
-              <a 
-                href="/docs"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
-                onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
-                onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
-              >
-                <div style={{
-                  width: 20, height: 20, borderRadius: '50%', background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.15)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}>
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-                  </svg>
-                </div>
-                <span>Docs</span>
+                <img src="/CoinGecko-logo.png" alt="CoinGecko" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </a>
 
-              {/* $HH Utility */}
-              <a 
-                href="/docs/utility"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
-                onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
-                onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
-              >
-                <div style={{
-                  width: 20, height: 20, borderRadius: '50%', background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.15)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}>
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-                  </svg>
-                </div>
-                <span>$HH Utility</span>
-              </a>
-
-              {/* $HH Economy */}
-              <a 
-                href="/docs/economy"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
-                onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
-                onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
-              >
-                <div style={{
-                  width: 20, height: 20, borderRadius: '50%', background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.15)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}>
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="18" y1="20" x2="18" y2="10"/>
-                    <line x1="12" y1="20" x2="12" y2="4"/>
-                    <line x1="6" y1="20" x2="6" y2="14"/>
-                  </svg>
-                </div>
-                <span>$HH Economy</span>
-              </a>
+              <div style={{
+                background: 'var(--blue-bg)',
+                border: '1px solid rgba(0,0,255,0.15)',
+                borderRadius: 20,
+                padding: '4px 10px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4
+              }}>
+                <span style={{ fontSize: 11, fontWeight: 800, color: '#0A0B0D' }}>{usdcBalance}</span>
+                <img src="/usdc-logo.png" alt="USDC" style={{ width: 11, height: 11, display: 'block' }} />
+              </div>
             </div>
           </div>
 
-          {/* Copyright */}
-          <div style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.5)', fontWeight: 650 }}>
-            &copy; {new Date().getFullYear()} Happy Hour. All rights reserved.
+          <div style={{ height: 12 }} />
+
+          <div style={{ position: 'relative', zIndex: 1, maxWidth: 640, margin: '0 auto' }}>
+            {tab === 'home' && <ProfileSection address={address} basename={basename} totalUsers={totalUsers} setTab={setTab} onRequireWallet={handleRequireWallet} />}
+            {tab === 'raffle' && <RaffleSection address={address} basename={basename} onRequireWallet={handleRequireWallet} />}
+            {tab === 'earn' && <EarnSection setTab={setTab} address={address} onRequireWallet={handleRequireWallet} />}
+            {tab === 'contests' && (
+              <ContestsSection 
+                setTab={setTab} 
+                address={address} 
+                initialContest={initialContest} 
+                onClearInitialContest={() => setInitialContest(null)} 
+                onRequireWallet={handleRequireWallet}
+              />
+            )}
           </div>
+
+          <footer style={{
+            width: '100%',
+            background: '#1D1F23',
+            borderTop: '1px solid rgba(255, 255, 255, 0.12)',
+            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 16,
+            padding: '32px 16px 140px',
+            boxSizing: 'border-box',
+            color: '#FFFFFF'
+          }}>
+            {/* Logo / Branding Row */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
+              <img src="/logo.jfif" alt="$HH Logo" style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover' }} />
+              <span style={{ fontSize: 12, fontWeight: 800, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: 6 }}>
+                $HH <span style={{ color: 'rgba(255, 255, 255, 0.6)', fontWeight: 650 }}>powered by</span>
+                <a 
+                  href="https://x.com/bankrbot" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: 6, 
+                    textDecoration: 'none', 
+                    color: '#FFFFFF',
+                    transition: 'opacity 0.2s'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
+                  onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+                >
+                  <img src="/bankr-logo.jpg" alt="Bankr Logo" style={{ width: 22, height: 22, borderRadius: 6, objectFit: 'cover' }} />
+                  <span>Bankr</span>
+                </a>
+              </span>
+            </div>
+
+            {/* CA / Token Contract block */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              background: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              borderRadius: 10,
+              padding: '6px 10px',
+              width: '100%',
+              maxWidth: 350,
+              justifyContent: 'space-between',
+              boxSizing: 'border-box'
+            }}>
+              <span style={{ fontSize: 9.5, fontWeight: 900, color: '#3B82F6', letterSpacing: '0.5px', flexShrink: 0 }}>$HH CA:</span>
+              <span style={{ 
+                fontSize: 8.5, 
+                fontWeight: 800, 
+                fontFamily: "sf mono, consolas, 'Fira Code', monospace", 
+                color: '#FFFFFF', 
+                letterSpacing: '-0.1px',
+                wordBreak: 'break-all',
+                textAlign: 'center',
+                flex: 1,
+                padding: '0 4px'
+              }}>
+                {caCopied ? 'Copied! ✅' : '0x8235EdF32a1e10Bd1867ad622915AB613664cbA3'}
+              </span>
+              <button 
+                onClick={() => {
+                  navigator.clipboard.writeText('0x8235EdF32a1e10Bd1867ad622915AB613664cbA3');
+                  setCaCopied(true);
+                  setTimeout(() => setCaCopied(false), 2000);
+                }}
+                title="Copy Contract Address"
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#3B82F6',
+                  transition: 'all 0.2s',
+                  flexShrink: 0
+                }}
+                onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.15)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              </button>
+            </div>
+
+            {/* Links Grid */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, width: '100%', margin: '8px 0' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px 20px' }}>
+                <a 
+                  href="https://t.me/happyhourapp" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
+                  onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
+                >
+                  <div style={{
+                    width: 20, height: 20, borderRadius: '50%', background: 'rgba(0, 136, 204, 0.15)',
+                    border: '1px solid rgba(0, 136, 204, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#3B82F6' }}>
+                      <path d="M21.9 2.19a1 1 0 0 0-.99-.08l-19 8a1 1 0 0 0-.1 1.82l4.9 2.2 3.1 7.1a1 1 0 0 0 1.77.16l2.9-3.8 4.7 3.3a1 1 0 0 0 1.51-.55l4-17a1 1 0 0 0-.39-.85zM8.62 13.12l8.28-5.28-6.4 6.72-.4 2.88z"/>
+                    </svg>
+                  </div>
+                  <span>Official TG</span>
+                </a>
+
+                <a 
+                  href="https://x.com/happyhour_base" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
+                  onMouseEnter={e => { e.currentTarget.style.color = '#FFFFFF'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
+                >
+                  <div style={{
+                    width: 20, height: 20, borderRadius: '50%', background: 'rgba(255, 255, 255, 0.08)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}>
+                    <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#FFFFFF' }}>
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                  </div>
+                  <span>Official X</span>
+                </a>
+
+                <a 
+                  href="https://x.com/mksvibe" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
+                  onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
+                >
+                  <div style={{
+                    width: 20, height: 20, borderRadius: '50%', overflow: 'hidden',
+                    border: '1.5px solid #3B82F6', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}>
+                    <img src="/mksvibe.jpg" alt="mksvibe" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                  <span>Devs X</span>
+                </a>
+              </div>
+
+              <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px 20px' }}>
+                <a 
+                  href="https://dexscreener.com/base/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
+                  onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'none'; }}
+                >
+                  <div style={{
+                    width: 20, height: 20, borderRadius: '50%', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.15)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}>
+                    <img src="/dexscreener.jpg" alt="DexScreener" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                  <span>Dexscreener</span>
+                </a>
+
+                <a 
+                  href="https://www.geckoterminal.com/uk/base/pools/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
+                  onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'none'; }}
+                >
+                  <div style={{
+                    width: 20, height: 20, borderRadius: '50%', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.15)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}>
+                    <img src="/geckoterminal.jpg" alt="GeckoTerminal" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                  <span>GeckoTerminal</span>
+                </a>
+
+                <a 
+                  href="https://www.coingecko.com/en/coins/happy-hour" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
+                  onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'none'; }}
+                >
+                  <div style={{
+                    width: 20, height: 20, borderRadius: '50%', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.15)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}>
+                    <img src="/CoinGecko-logo.png" alt="CoinGecko" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                  <span>CoinGecko</span>
+                </a>
+              </div>
+
+              <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px 20px' }}>
+                <a 
+                  href="/docs"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
+                  onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
+                >
+                  <div style={{
+                    width: 20, height: 20, borderRadius: '50%', background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.15)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                    </svg>
+                  </div>
+                  <span>Docs</span>
+                </a>
+
+                <a 
+                  href="/docs/utility"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
+                  onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
+                >
+                  <div style={{
+                    width: 20, height: 20, borderRadius: '50%', background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.15)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                    </svg>
+                  </div>
+                  <span>$HH Utility</span>
+                </a>
+
+                <a 
+                  href="/docs/economy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
+                  onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
+                >
+                  <div style={{
+                    width: 20, height: 20, borderRadius: '50%', background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.15)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="18" y1="20" x2="18" y2="10"/>
+                      <line x1="12" y1="20" x2="12" y2="4"/>
+                      <line x1="6" y1="20" x2="6" y2="14"/>
+                    </svg>
+                  </div>
+                  <span>$HH Economy</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Copyright */}
+            <div style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.5)', fontWeight: 650 }}>
+              &copy; {new Date().getFullYear()} Happy Hour. All rights reserved.
+            </div>
         </footer>
 
         <BottomNav tab={tab} setTab={setTab} />
-        
-        {/* Floating AI Chat assistant */}
-        {isConnected && <HappyBotChat address={address} isClubMember={isClubMember} />}
       </div>
 
-    </>
+      {/* Floating AI Chat assistant */}
+      {isConnected && <HappyBotChat address={address} isClubMember={isClubMember} />}
+
+      {/* Wallet Connect Modal */}
+      <WalletConnectModal isOpen={isConnectModalOpen} onClose={() => setIsConnectModalOpen(false)} />
+    </div>
+  </>
   )
 }

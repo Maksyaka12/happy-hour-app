@@ -18,7 +18,7 @@ const formatConcise = (num) => {
   return Math.round(n).toString()
 }
 
-export function EarnSection({ setTab, address: propAddress }) {
+export function EarnSection({ setTab, address: propAddress, onRequireWallet }) {
   const { address: accountAddress } = useAccount()
   const address = propAddress || accountAddress
   const chainId = useChainId()
@@ -292,7 +292,7 @@ export function EarnSection({ setTab, address: propAddress }) {
 
 
       {/* Yield & Staking details */}
-      <StakingSection setTab={setTab} />
+      <StakingSection setTab={setTab} onRequireWallet={onRequireWallet} />
 
 
 

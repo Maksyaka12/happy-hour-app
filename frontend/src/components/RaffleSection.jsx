@@ -52,7 +52,7 @@ const formatConcise = (num) => {
   return n.toFixed(2).replace(/\.00$/, '')
 }
 
-export function RaffleSection({ address, basename }) {
+export function RaffleSection({ address, basename, onRequireWallet }) {
   const [raffleType, setRaffleType] = useState('hh') // 'hh' | 'usdc'
   const { round, participants, lastWinner, myTickets, myAmount, refetch } = useRoundState(address, raffleType.toUpperCase())
   const [msLeft,       setMsLeft]       = useState(0)
@@ -272,6 +272,10 @@ export function RaffleSection({ address, basename }) {
   }, [myAmount, spinData])
 
   const triggerDailyDraw = () => {
+    if (!address) {
+      if (onRequireWallet) onRequireWallet()
+      return
+    }
     if (wrongChain) { switchChain({ chainId: base.id }); return }
     writeContract({
       address: DAILY_ADDRESS,
@@ -370,6 +374,10 @@ export function RaffleSection({ address, basename }) {
   }, [isClosed, address, wrongChain, writeContract, switchChain, raffleType, hhPrice, hhAllowance])
 
   const onBetClick = (amount) => {
+    if (!address) {
+      if (onRequireWallet) onRequireWallet()
+      return
+    }
     setTxModal({ amount })
   }
 

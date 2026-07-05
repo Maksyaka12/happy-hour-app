@@ -66,6 +66,33 @@ export const CSS = `
     background: linear-gradient(160deg, #EBF0FF 0%, #DDEAFF 40%, #E8EEFF 100%);
   }
 
+  /* Web layout adaptive styling */
+  .web-mode .desktop-only {
+    display: none !important;
+  }
+  .web-mode .mobile-only {
+    display: block;
+  }
+
+  @media (min-width: 768px) {
+    .web-mode .desktop-only {
+      display: flex !important;
+    }
+    .web-mode.sidebar-layout .desktop-only {
+      display: flex !important;
+    }
+    .web-mode .mobile-only {
+      display: none !important;
+    }
+  }
+
+  .miniapp-mode .desktop-only {
+    display: none !important;
+  }
+  .miniapp-mode .mobile-only {
+    display: block;
+  }
+
   @keyframes fadeIn    { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:none } }
   @keyframes slideUp   { from { opacity:0; transform:translateY(100%) } to { opacity:1; transform:translateY(0) } }
   @keyframes spin      { to { transform:rotate(360deg) } }

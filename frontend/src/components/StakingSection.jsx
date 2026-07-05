@@ -44,7 +44,7 @@ const getPositionApr = (pos) => {
   return 103
 }
 
-export function StakingSection({ setTab }) {
+export function StakingSection({ setTab, onRequireWallet }) {
   const { address, isConnected } = useAccount()
   const [hhPrice, setHhPrice] = useState(0.00025) // Fallback price
   const [priceChange, setPriceChange] = useState(8.4) // 24h price change mock %
@@ -258,6 +258,10 @@ export function StakingSection({ setTab }) {
 
   // Stake Action
   const handleStake = async () => {
+    if (!address) {
+      if (onRequireWallet) onRequireWallet()
+      return
+    }
     const amount = parseFloat(stakingAmount)
     if (isNaN(amount) || amount <= 0) {
       setTxError('Please enter a valid amount to stake.')
@@ -318,6 +322,10 @@ export function StakingSection({ setTab }) {
 
   // Unstake position
   const handleUnstakePosition = (positionIndex, amount) => {
+    if (!address) {
+      if (onRequireWallet) onRequireWallet()
+      return
+    }
     setTxError('')
     
     const isSimulated = contractPositionsRaw === undefined

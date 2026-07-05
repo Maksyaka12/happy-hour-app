@@ -60,7 +60,7 @@ const safeParseUnits = (amountStr, decimals = 18) => {
 }
 
 
-export function ProfileSection({ address, basename, totalUsers, setTab }) {
+export function ProfileSection({ address, basename, totalUsers, setTab, onRequireWallet }) {
   const { disconnect } = useDisconnect()
   const { writeContract: wagmiWriteContract } = useWriteContract()
 
@@ -72,7 +72,10 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
   const [duration, setDuration] = useState(30)
 
   const buyMembership = (tokenType) => {
-    if (!address) return
+    if (!address) {
+      if (onRequireWallet) onRequireWallet()
+      return
+    }
     
     if (tokenType === 'hh') {
       const cost = (hhPriceMember * duration) / 30
@@ -650,6 +653,10 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
   }
 
   const handleSwapExecute = () => {
+    if (!address) {
+      if (onRequireWallet) onRequireWallet()
+      return
+    }
     setSwapError('')
     const pay = parseFloat(payAmount)
     const recv = parseFloat(receiveAmount)
@@ -933,6 +940,10 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
   const [refError, setRefError] = useState('')
 
   const handleApplyRef = async () => {
+    if (!address) {
+      if (onRequireWallet) onRequireWallet()
+      return
+    }
     if (!refInput.trim()) return
     setRefLoading(true)
     setRefError('')
@@ -1549,7 +1560,13 @@ export function ProfileSection({ address, basename, totalUsers, setTab }) {
 
         {/* Claim Button */}
         <button
-          onClick={() => setCheckinTxModal(true)}
+          onClick={() => {
+            if (!address) {
+              if (onRequireWallet) onRequireWallet()
+              return
+            }
+            setCheckinTxModal(true)
+          }}
           disabled={checkedToday}
           style={{
             position: 'relative',

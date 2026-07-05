@@ -32,7 +32,7 @@ const calculateTradingContestTimeLeft = () => {
   return `${d}d ${h.toString().padStart(2, '0')}h ${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`
 }
 
-export function ContestsSection({ setTab, address, initialContest = null, onClearInitialContest }) {
+export function ContestsSection({ setTab, address, initialContest = null, onClearInitialContest, onRequireWallet }) {
   const [activeContest, setActiveContest] = useState(initialContest)
 
   useEffect(() => {
@@ -70,7 +70,10 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
   const [loadingSubmissions, setLoadingSubmissions] = useState(false)
 
   const handleSubmitPost = async () => {
-    if (!address) return
+    if (!address) {
+      if (onRequireWallet) onRequireWallet()
+      return
+    }
     if (!postUrl.startsWith('http://') && !postUrl.startsWith('https://')) {
       setPostMsg('Link must start with http:// or https://')
       setPostStatus('error')
@@ -731,12 +734,12 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
                 />
                 <button
                   onClick={handleSubmitPost}
-                  disabled={postStatus === 'submitting' || !postUrl || !address}
+                  disabled={postStatus === 'submitting' || !postUrl}
                   style={{
                     background: '#fff', color: '#2A1A06', borderRadius: 50,
                     padding: '10px 20px', fontSize: 12, fontWeight: 800,
-                    border: 'none', cursor: postStatus === 'submitting' || !postUrl || !address ? 'not-allowed' : 'pointer',
-                    opacity: postStatus === 'submitting' || !postUrl || !address ? 0.6 : 1,
+                    border: 'none', cursor: postStatus === 'submitting' || !postUrl ? 'not-allowed' : 'pointer',
+                    opacity: postStatus === 'submitting' || !postUrl ? 0.6 : 1,
                     whiteSpace: 'nowrap',
                   }}
                 >
@@ -748,7 +751,12 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
               <div style={{ fontSize: 10, color: '#FCA5A5', marginTop: 6, fontWeight: 600 }}>{postMsg}</div>
             )}
             {!address && (
-              <div style={{ fontSize: 10, color: '#FCA5A5', marginTop: 6, fontWeight: 600 }}>Please connect your wallet to submit a post.</div>
+              <div 
+                onClick={onRequireWallet}
+                style={{ fontSize: 10, color: '#FCA5A5', marginTop: 6, fontWeight: 600, cursor: 'pointer', textDecoration: 'underline' }}
+              >
+                Please connect your wallet to submit a post.
+              </div>
             )}
           </div>
         </div>
