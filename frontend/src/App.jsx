@@ -54,7 +54,7 @@ export default function App({ onLogin }) {
       let saved = localStorage.getItem('happy_tab') || 'raffle'
       if (saved === 'profile') saved = 'home'
       if (saved === 'staking' || saved === 'raid') saved = 'earn'
-      if (saved === 'tasks' || saved === 'leaderboard' || saved === 'boxes') saved = 'raffle'
+      if (['tasks', 'leaderboard', 'boxes'].includes(saved)) saved = 'raffle'
       return saved
     } catch { return 'raffle' }
   })
