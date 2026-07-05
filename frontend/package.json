@@ -13,6 +13,7 @@
     "@coinbase/onchainkit": "^1.1.2",
     "@supabase/supabase-js": "^2.39.0",
     "@tanstack/react-query": "^5.0.0",
+    "@privy-io/react-auth": "^1.0.0",
     "boring-avatars": "^2.0.4",
     "ox": "latest",
     "react": "^18.3.0",
