@@ -220,10 +220,7 @@ export function EarnSection({ setTab, address: propAddress, onRequireWallet }) {
 
       {/* Section Banner */}
       <div style={{
-        backgroundImage: 'url(/banner.jpg)',
-        backgroundColor: '#0000FF',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover',
         borderRadius: 24,
         padding: '36px 20px',
         marginBottom: 4,
@@ -233,12 +230,11 @@ export function EarnSection({ setTab, address: propAddress, onRequireWallet }) {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
         overflow: 'hidden',
-        border: '1px solid rgba(255,255,255,0.1)',
+        border: '1px solid var(--border)',
         boxSizing: 'border-box'
       }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.25)', zIndex: 0 }} />
         
         {/* Floating $HH Logos */}
         {[

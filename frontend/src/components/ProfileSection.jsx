@@ -978,21 +978,16 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
       {/* Crystal Clear Player Passport */}
       <div
         style={{
-          backgroundImage: 'url(/banner.jpg)',
-          backgroundColor: '#0052FF',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover',
           borderRadius: 24,
           padding: '24px 20px',
           marginBottom: 16,
           position: 'relative',
           overflow: 'hidden',
-          boxShadow: '0 12px 40px rgba(0,82,255,0.25)',
-          border: '1px solid rgba(255,255,255,0.15)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          border: '1px solid var(--border)',
         }}
       >
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0, 0, 80, 0.35)', zIndex: 0 }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,82,255,0.1) 100%)', zIndex: 0 }} />
 
         {/* Top Bar: Player Identity Passport */}
         <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
@@ -1103,32 +1098,12 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
         borderRadius: 24,
         padding: '16px 16px 14px',
         marginBottom: 16,
-        boxShadow: '0 8px 32px rgba(236, 72, 153, 0.15)',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
         position: 'relative',
         overflow: 'hidden',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
-        background: '#1A0815'
+        border: '1px solid var(--border)',
+        background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover'
       }}>
-        {/* Grayscaled background image overlay */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: 'url(/banner.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          filter: 'grayscale(100%) brightness(0.25) contrast(1.2)',
-          zIndex: 0,
-          pointerEvents: 'none'
-        }} />
-
-        {/* Pink/plum gradient overlay */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.22) 0%, rgba(147, 51, 234, 0.22) 100%)',
-          zIndex: 1,
-          pointerEvents: 'none'
-        }} />
 
         {/* Content Container */}
         <div style={{ position: 'relative', zIndex: 2 }}>
@@ -1425,14 +1400,14 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
             style={{
               width: '100%',
               padding: '11px',
-              background: 'linear-gradient(135deg, #EC4899 0%, #C084FC 100%)',
-              color: '#FFFFFF',
+              background: '#3B82F6',
+              color: '#13141F',
               border: 'none',
               borderRadius: 10,
               fontSize: 13,
               fontWeight: 800,
               cursor: 'pointer',
-              boxShadow: '0 4px 12px rgba(236, 72, 153, 0.25)',
+              boxShadow: '0 4px 12px rgba(59, 130, 246, 0.25)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -1599,29 +1574,18 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
 
       {/* Happy Club Membership Card */}
       <div id="happy-club-card" style={{
-        background: isClubMember ? 'linear-gradient(135deg, #0D1B2A 0%, #1B263B 100%)' : 'linear-gradient(135deg, #1B0F2A 0%, #2D1B4E 100%)',
+        background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover',
         borderRadius: 20,
         padding: '18px 20px',
         marginBottom: 16,
-        boxShadow: isClubMember ? '0 8px 32px rgba(59,130,246,0.2)' : '0 8px 32px rgba(139,92,246,0.25)',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
         display: 'flex',
         flexDirection: 'column',
         gap: 12,
         position: 'relative',
         overflow: 'hidden',
-        border: isClubMember ? '1px solid rgba(59,130,246,0.35)' : '1px solid rgba(139,92,246,0.35)'
+        border: '1px solid var(--border)'
       }}>
-        {/* Background image overlay */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: 'url(/banner.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          filter: isClubMember ? 'hue-rotate(200deg) brightness(0.25) contrast(1.2)' : 'hue-rotate(280deg) brightness(0.25) contrast(1.2)',
-          zIndex: 0,
-          pointerEvents: 'none'
-        }} />
 
         {/* Shine glow */}
         <div style={{
@@ -1813,35 +1777,15 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
 
       {/* Referral Program: Senior Hub */}
       <div id="referrals-card" style={{
+        background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover',
         borderRadius: 20,
         padding: '16px 18px',
         marginBottom: 16,
-        boxShadow: '0 8px 32px rgba(245, 158, 11, 0.15)',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
         position: 'relative',
         overflow: 'hidden',
-        border: '1px solid rgba(245, 158, 11, 0.25)',
-        background: '#1D0F02'
+        border: '1px solid var(--border)',
       }}>
-        {/* Grayscaled background image overlay */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: 'url(/banner.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          filter: 'grayscale(100%) brightness(0.22) contrast(1.2)',
-          zIndex: 0,
-          pointerEvents: 'none'
-        }} />
-
-        {/* Orange/Amber gradient overlay */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.22) 0%, rgba(239, 68, 68, 0.18) 100%)',
-          zIndex: 1,
-          pointerEvents: 'none'
-        }} />
 
         {/* Content Container */}
         <div style={{ position: 'relative', zIndex: 2 }}>
@@ -1880,8 +1824,8 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
                 }}
                 style={{
                   flex: 1,
-                  background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
-                  color: '#FFFFFF',
+                  background: '#3B82F6',
+                  color: '#13141F',
                   border: 'none',
                   borderRadius: 10,
                   fontSize: 10,
@@ -1992,8 +1936,8 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
                 disabled={refLoading || !refInput.trim()}
                 style={{
                   flex: 1,
-                  background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
-                  color: '#FFFFFF',
+                  background: '#3B82F6',
+                  color: '#13141F',
                   border: 'none',
                   borderRadius: 10,
                   padding: '0 16px',

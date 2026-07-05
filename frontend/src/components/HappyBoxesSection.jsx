@@ -616,7 +616,7 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
       {wrongChain && (
         <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 14, padding: '10px 16px', marginBottom: 14, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span style={{ fontSize: 12, color: '#D97706', fontWeight: 700 }}>⚠ Switch to Base Mainnet</span>
-          <button onClick={() => switchChain({ chainId: base.id })} style={{ background: '#D97706', color: '#fff', borderRadius: 50, padding: '5px 14px', fontSize: 11, fontWeight: 800, border: 'none', cursor: 'pointer' }}>
+          <button onClick={() => switchChain({ chainId: base.id })} style={{ background: '#3B82F6', color: '#13141F', borderRadius: 50, padding: '5px 14px', fontSize: 11, fontWeight: 800, border: 'none', cursor: 'pointer' }}>
             {isSwitching ? 'Switching…' : 'Switch'}
           </button>
         </div>
@@ -624,38 +624,19 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
 
       {/* ═══ HERO BANNER ═══ */}
       <div style={{
-        background: '#090514',
+        background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover',
         borderRadius: 24,
-        padding: '22px 20px',
+        padding: '32px 20px',
         marginBottom: 16,
         position: 'relative',
         minHeight: 144,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        boxShadow: '0 8px 32px rgba(32,10,60,0.4)',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
         overflow: 'hidden',
-        border: '1px solid rgba(139,92,246,0.2)'
+        border: '1px solid var(--border)'
       }}>
-        {/* Branded background banner in purple tones */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: 'url(/banner.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          filter: 'hue-rotate(50deg) brightness(0.6) contrast(1.15)',
-          zIndex: 0,
-          pointerEvents: 'none'
-        }} />
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'linear-gradient(135deg, rgba(9, 5, 20, 0.25) 0%, rgba(46, 16, 101, 0.75) 100%)',
-          zIndex: 0,
-          pointerEvents: 'none'
-        }} />
-
         {/* Glow overlay */}
         <div style={{
           position: 'absolute',
@@ -667,35 +648,6 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
           zIndex: 0,
           pointerEvents: 'none'
         }} />
-
-        {/* Floating gift background decorations */}
-        {[
-          { top: '-5px', left: '5%', size: 54, opacity: 0.14, r: '-12deg', blur: 0.5, dur: 4.2 },
-          { top: '10px', right: '25%', size: 40, opacity: 0.11, r: '14deg', blur: 0, dur: 4.8 },
-          { bottom: '5px', left: '40%', size: 48, opacity: 0.12, r: '22deg', blur: 1, dur: 5.4 },
-          { bottom: '15px', right: '5%', size: 62, opacity: 0.16, r: '8deg', blur: 1.2, dur: 4.6 }
-        ].map((s, i) => (
-          <div key={i} style={{
-            position: 'absolute',
-            top: s.top,
-            right: s.right,
-            left: s.left,
-            bottom: s.bottom,
-            zIndex: 1,
-            pointerEvents: 'none',
-            userSelect: 'none',
-            animation: `hbGiftFloat ${s.dur}s ease-in-out infinite`,
-          }}>
-            <div style={{
-              fontSize: `${s.size}px`,
-              opacity: s.opacity,
-              filter: s.blur > 0 ? `blur(${s.blur}px) drop-shadow(0 0 10px rgba(139,92,246,0.25))` : 'drop-shadow(0 0 10px rgba(139,92,246,0.25))',
-              transform: `rotate(${s.r})`,
-            }}>
-              🎁
-            </div>
-          </div>
-        ))}
 
         <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'flex-start' }}>
           <div style={{
@@ -737,23 +689,13 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
 
       {/* ═══ CARD 1: DAILY LIMITS ═══ */}
       <div style={{
-        background: 'linear-gradient(145deg, rgba(20, 10, 40, 0.94) 0%, rgba(35, 15, 70, 0.90) 50%, rgba(10, 5, 25, 0.96) 100%)',
+        background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover',
         borderRadius: 20,
         padding: 16,
         marginBottom: 16,
-        border: '1px solid rgba(139, 92, 246, 0.25)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        boxShadow: '0 8px 32px rgba(20, 6, 40, 0.5), inset 0 1px 0 rgba(139, 92, 246, 0.10)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 12,
-        position: 'relative',
-        overflow: 'hidden'
+        border: '1px solid var(--border)',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
       }}>
-        {/* Shimmer accent */}
-        <div style={{ position: 'absolute', top: -30, right: -30, width: 120, height: 120, borderRadius: '50%', background: 'radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
-
         {/* Title + Indicator Row */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
@@ -773,7 +715,7 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
         </div>
 
         {/* Progress Bar */}
-        <div style={{ background: 'rgba(255,255,255,0.06)', height: 4, borderRadius: 2, overflow: 'hidden', position: 'relative' }}>
+        <div style={{ background: 'rgba(255,255,255,0.06)', height: 4, borderRadius: 2, overflow: 'hidden', position: 'relative', marginTop: 12 }}>
           <div style={{
             background: remainingOpens === 0 
               ? '#EF4444' 
@@ -785,89 +727,32 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
         </div>
 
         {/* Info & Buy Button Row */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 4, paddingTop: 4 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 12 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.95)', fontWeight: 500 }}>
-              Burn <span style={{ color: '#FFD700', fontWeight: 900, textShadow: '0 0 8px rgba(255, 215, 0, 0.5)' }}>$HH</span> for extra attempts
+              Burn <span style={{ color: '#FFD700', fontWeight: 900 }}>$HH</span>
             </span>
-            <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.65)', fontWeight: 650 }}>Each burn grants +1 box opening</span>
           </div>
 
-          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            {/* Floating fire emoji behind the button */}
-            <div style={{
-              position: 'absolute',
-              bottom: '-12px', // aligns nicely with the bottom area
-              left: '50%',
-              transform: 'translateX(-50%)',
-              pointerEvents: 'none',
-              zIndex: 0,
-              fontSize: '54px',
-              lineHeight: 1,
-              opacity: 0.65,
-              filter: 'blur(1.2px) drop-shadow(0 0 10px rgba(245, 158, 11, 0.45))',
-              animation: 'flame-float 2.4s ease-in-out infinite',
-              userSelect: 'none'
-            }}>
-              🔥
-            </div>
-
-            <button
-              onClick={handleBuyAttempt}
-              disabled={isBuyingAttemptLoading}
-              style={{
-                position: 'relative',
-                zIndex: 1,
-                background: isBuyingAttemptLoading 
-                  ? 'rgba(255, 255, 255, 0.08)' 
-                  : 'rgba(255, 255, 255, 0.18)',
-                backdropFilter: 'blur(12px)',
-                WebkitBackdropFilter: 'blur(12px)',
-                border: '1px solid rgba(255, 255, 255, 0.42)',
-                color: '#FFF',
-                borderRadius: 12,
-                padding: '6px 14px',
-                cursor: isBuyingAttemptLoading ? 'not-allowed' : 'pointer',
-                boxShadow: '0 0 15px rgba(255, 61, 0, 0.45), inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                minWidth: 110,
-                outline: 'none',
-                animation: isBuyingAttemptLoading ? 'none' : 'hbBurnFlame 1.8s infinite ease-in-out',
-                transition: 'all 0.2s'
-              }}
-              onMouseEnter={e => {
-                if (!isBuyingAttemptLoading) {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.28)'
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.60)'
-                  e.currentTarget.style.boxShadow = '0 0 25px rgba(255, 61, 0, 0.8), inset 0 1px 0 rgba(255,255,255,0.40), inset 0 -1px 0 rgba(0,0,0,0.15)'
-                }
-              }}
-              onMouseLeave={e => {
-                if (!isBuyingAttemptLoading) {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.18)'
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.42)'
-                  e.currentTarget.style.boxShadow = '0 0 15px rgba(255, 61, 0, 0.45), inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)'
-                }
-              }}
-            >
-              {isBuyingAttemptLoading ? (
-                <span style={{ fontSize: 10, fontWeight: 800 }}>Processing...</span>
-              ) : (
-                <>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'center' }}>
-                    <span style={{ fontSize: 11, fontWeight: 900 }}>{formatConcise(0.10 / hhPrice)}</span>
-                    <img src="/logo.jfif" alt="HH" style={{ width: 10, height: 10, borderRadius: '50%', objectFit: 'cover' }} />
-                  </div>
-                  <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.7)', marginTop: 1 }}>
-                    (≈$0.10)
-                  </span>
-                </>
-              )}
-            </button>
-          </div>
+          <button
+            onClick={handleBuyAttempt}
+            disabled={isBuyingAttemptLoading}
+            style={{
+              background: '#1A1B2E',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              color: '#FFF',
+              borderRadius: 12,
+              padding: '8px 16px',
+              cursor: isBuyingAttemptLoading ? 'not-allowed' : 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              fontSize: 12,
+              fontWeight: 800
+            }}
+          >
+            {isBuyingAttemptLoading ? 'Processing...' : 'Buy +1'}
+          </button>
         </div>
       </div>
 
@@ -900,8 +785,8 @@ export function HappyBoxesSection({ address, onUpdate, setTab }) {
         {/* Paid Active / State Banners */}
         {hasActiveChoice && (
           <div style={{
-            background: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
-            color: '#fff',
+            background: '#3B82F6',
+            color: '#13141F',
             borderRadius: 14,
             padding: '10px 14px',
             textAlign: 'center',

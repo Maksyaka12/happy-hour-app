@@ -446,10 +446,7 @@ export function AirdropChecklist({ setTab }) {
 
       {/* Season 2 Airdrop Eligibility Banner */}
       <div style={{
-        backgroundImage: 'url(/banner.jpg)',
-        backgroundColor: '#0052FF', // Fallback
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover',
         borderRadius: 24,
         padding: '32px 20px',
         marginBottom: 16,
@@ -459,14 +456,11 @@ export function AirdropChecklist({ setTab }) {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        boxShadow: '0 8px 32px rgba(0,82,255,0.15)',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
         overflow: 'hidden',
-        border: '1px solid rgba(255,255,255,0.1)',
+        border: '1px solid var(--border)',
         boxSizing: 'border-box'
       }}>
-        {/* Background overlays */}
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0, 0, 80, 0.3)', zIndex: 0 }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,82,255,0.1) 100%)', zIndex: 0 }} />
 
         {/* Floating $HH Logos & Parachutes */}
         {[
@@ -654,8 +648,8 @@ export function AirdropChecklist({ setTab }) {
             Eligibility Criteria
           </h3>
           <span style={{
-            background: '#0052FF',
-            color: '#FFFFFF',
+            background: '#3B82F6',
+            color: '#13141F',
             fontSize: 9,
             fontWeight: 900,
             padding: '2.5px 6px',
@@ -713,11 +707,11 @@ export function AirdropChecklist({ setTab }) {
                 }
               }}
               style={{
-                background: item.style.background,
-                border: item.style.border,
+                background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover',
+                border: '1px solid var(--border)',
                 borderRadius: 20,
                 padding: '16px 18px',
-                boxShadow: '0 8px 32px rgba(10, 10, 15, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                 position: 'relative',
                 overflow: 'hidden',
                 display: 'flex',
@@ -729,35 +723,13 @@ export function AirdropChecklist({ setTab }) {
               }}
               onMouseEnter={e => {
                 e.currentTarget.style.transform = 'translateY(-2px)'
-                e.currentTarget.style.boxShadow = '0 12px 36px rgba(10, 10, 15, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12)'
+                e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.15)'
               }}
               onMouseLeave={e => {
                 e.currentTarget.style.transform = 'none'
-                e.currentTarget.style.boxShadow = '0 8px 32px rgba(10, 10, 15, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08)'
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'
               }}
             >
-              {/* Background image overlay */}
-              <div style={{
-                position: 'absolute',
-                inset: 0,
-                backgroundImage: 'url(/banner.jpg)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                filter: item.style.imageFilter,
-                zIndex: 0,
-                pointerEvents: 'none'
-              }} />
-
-              {/* Optional gradient overlay */}
-              {item.style.gradientOverlay && (
-                <div style={{
-                  position: 'absolute',
-                  inset: 0,
-                  background: item.style.gradientOverlay,
-                  zIndex: 1,
-                  pointerEvents: 'none'
-                }} />
-              )}
 
               {/* Foreground content wrapper */}
               <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -918,11 +890,11 @@ export function AirdropChecklist({ setTab }) {
                 }
               }}
               style={{
-                background: item.style.background,
-                border: item.style.border,
+                background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover',
+                border: '1px solid var(--border)',
                 borderRadius: 20,
                 padding: '16px 18px',
-                boxShadow: '0 8px 32px rgba(10, 10, 15, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                 position: 'relative',
                 overflow: 'hidden',
                 display: 'flex',
@@ -934,35 +906,13 @@ export function AirdropChecklist({ setTab }) {
               }}
               onMouseEnter={e => {
                 e.currentTarget.style.transform = 'translateY(-2px)'
-                e.currentTarget.style.boxShadow = '0 12px 36px rgba(10, 10, 15, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12)'
+                e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.15)'
               }}
               onMouseLeave={e => {
                 e.currentTarget.style.transform = 'none'
-                e.currentTarget.style.boxShadow = '0 8px 32px rgba(10, 10, 15, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08)'
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'
               }}
             >
-              {/* Background image overlay */}
-              <div style={{
-                position: 'absolute',
-                inset: 0,
-                backgroundImage: 'url(/banner.jpg)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                filter: item.style.imageFilter,
-                zIndex: 0,
-                pointerEvents: 'none'
-              }} />
-
-              {/* Optional gradient overlay */}
-              {item.style.gradientOverlay && (
-                <div style={{
-                  position: 'absolute',
-                  inset: 0,
-                  background: item.style.gradientOverlay,
-                  zIndex: 1,
-                  pointerEvents: 'none'
-                }} />
-              )}
 
               {/* Foreground content wrapper */}
               <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -1049,14 +999,12 @@ export function AirdropChecklist({ setTab }) {
         </h3>
       </div>
       <div style={{
-        background: 'linear-gradient(135deg, rgba(0, 82, 255, 0.08) 0%, rgba(0, 82, 255, 0.03) 100%)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        border: '1px solid rgba(0, 82, 255, 0.22)',
-        borderRadius: 16,
-        padding: '12px 16px',
-        marginBottom: 24,
-        boxShadow: '0 8px 32px rgba(0, 82, 255, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
+        background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover',
+        borderRadius: 20,
+        padding: '24px 20px',
+        marginBottom: 20,
+        border: '1px solid var(--border)',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
         boxSizing: 'border-box'
       }}>
         <div style={{

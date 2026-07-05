@@ -310,20 +310,10 @@ export function RaffleSection({ address, basename, onRequireWallet }) {
     ? 'hue-rotate(0deg) brightness(0.68) contrast(1.1)' 
     : 'hue-rotate(200deg) brightness(0.68) contrast(1.1)'
 
-  const cardBg = isHH
-    ? 'linear-gradient(145deg, #051329 0%, #0A224A 100%)'
-    : 'linear-gradient(145deg, #041B13 0%, #083827 100%)'
-
-  const heroCardBg = isHH
-    ? 'linear-gradient(145deg, #0A2C5C 0%, #164E9C 100%)'
-    : 'linear-gradient(145deg, #083B28 0%, #106648 100%)'
-
-  const cardBorder = isHH
-    ? '1px solid rgba(59, 130, 246, 0.25)'
-    : '1px solid rgba(16, 185, 129, 0.25)'
-  const cardShadow = isHH
-    ? '0 8px 32px rgba(30, 58, 138, 0.3)'
-    : '0 8px 32px rgba(16, 185, 129, 0.3)'
+  const cardBg = 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover'
+  const heroCardBg = 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover'
+  const cardBorder = '1px solid var(--border)'
+  const cardShadow = '0 4px 12px rgba(0,0,0,0.1)'
 
   // ── Send USDC or HH ────────────────────────────────────────
   const sendBet = useCallback((amount) => {
@@ -404,14 +394,13 @@ export function RaffleSection({ address, basename, onRequireWallet }) {
               flex: 1,
               padding: '8px 10px',
               borderRadius: 12,
-              border: isHH ? 'none' : '1px solid rgba(255, 255, 255, 0.8)',
-              background: isHH ? gradientColor : 'rgba(255, 255, 255, 0.6)',
+              background: isHH ? '#3B82F6' : 'transparent',
               color: isHH ? '#fff' : '#717886',
               fontWeight: 850,
               fontSize: 11.5,
               cursor: 'pointer',
               transition: 'all 0.2s',
-              boxShadow: isHH ? `0 4px 12px ${glowColor}` : '0 2px 4px rgba(10,11,13,0.02)',
+              border: 'none',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -429,14 +418,13 @@ export function RaffleSection({ address, basename, onRequireWallet }) {
               flex: 1,
               padding: '8px 10px',
               borderRadius: 12,
-              border: !isHH ? 'none' : '1px solid rgba(255, 255, 255, 0.8)',
-              background: !isHH ? gradientColor : 'rgba(255, 255, 255, 0.6)',
+              background: !isHH ? '#3B82F6' : 'transparent',
               color: !isHH ? '#fff' : '#717886',
               fontWeight: 850,
               fontSize: 11.5,
               cursor: 'pointer',
               transition: 'all 0.2s',
-              boxShadow: !isHH ? `0 4px 12px ${glowColor}` : '0 2px 4px rgba(10,11,13,0.02)',
+              border: 'none',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -462,31 +450,14 @@ export function RaffleSection({ address, basename, onRequireWallet }) {
           {/* Hero card */}
           <div style={{
             background: heroCardBg,
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
             border: cardBorder,
             borderRadius: 20,
             padding: '20px 18px 16px',
             marginBottom: 12,
-            boxShadow: `${cardShadow}, inset 0 1px 0 rgba(255, 255, 255, 0.08)`,
+            boxShadow: cardShadow,
             position: 'relative',
             overflow: 'hidden'
           }}>
-            {/* Background image overlay */}
-            <div style={{
-              position: 'absolute',
-              inset: 0,
-              backgroundImage: 'url(/banner.jpg)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              filter: heroHueFilter,
-              zIndex: 0,
-              pointerEvents: 'none'
-            }} />
-
-            {/* Shimmer glow */}
-            <div style={{
-              position: 'absolute',
               top: -30,
               right: -30,
               width: 120,
@@ -835,28 +806,17 @@ export function RaffleSection({ address, basename, onRequireWallet }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, animation: 'fadeIn 0.3s ease-out' }}>
           {/* Daily Raffle Hero Card */}
           <div style={{
-            background: 'linear-gradient(145deg, #021B13 0%, #063C2A 100%)',
+            background: heroCardBg,
             backdropFilter: 'blur(12px)',
             WebkitBackdropFilter: 'blur(12px)',
-            border: '1px solid rgba(16, 185, 129, 0.25)',
+            border: cardBorder,
             borderRadius: 20,
             padding: '20px 18px 16px',
             marginBottom: 12,
-            boxShadow: '0 8px 32px rgba(6, 60, 42, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+            boxShadow: cardShadow,
             position: 'relative',
             overflow: 'hidden'
           }}>
-            {/* Background image overlay */}
-            <div style={{
-              position: 'absolute',
-              inset: 0,
-              backgroundImage: 'url(/banner.jpg)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              filter: 'hue-rotate(120deg) brightness(0.25) contrast(1.15)',
-              zIndex: 0,
-              pointerEvents: 'none'
-            }} />
 
             {/* Colored radial gradient glow */}
             <div style={{
@@ -969,7 +929,7 @@ export function RaffleSection({ address, basename, onRequireWallet }) {
 
           {/* Eligibility Card */}
           <div style={{
-            background: isDailyEligible ? '#0B291B' : '#1C1D21',
+            background: 'rgba(255, 255, 255, 0.04)',
             borderRadius: 20,
             padding: '16px 18px 14px',
             marginBottom: 12,
@@ -1012,8 +972,8 @@ export function RaffleSection({ address, basename, onRequireWallet }) {
                   padding: '10px 12px',
                   borderRadius: 12,
                   border: 'none',
-                  background: 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)',
-                  color: '#FFFFFF',
+                  background: '#3B82F6',
+                  color: '#13141F',
                   fontSize: 12.5,
                   fontWeight: 800,
                   cursor: 'pointer',

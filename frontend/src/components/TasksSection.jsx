@@ -592,10 +592,11 @@ export function TasksSection({ address }) {
 
       {/* Promo Banner — Post about us */}
       <div style={{
-        background: 'linear-gradient(135deg, #0000FF 0%, #4F46E5 100%)',
+        background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover',
         borderRadius: 24, padding: '22px 20px', marginBottom: 16,
         position: 'relative', overflow: 'hidden',
-        boxShadow: '0 8px 32px rgba(0,0,255,0.2)',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+        border: '1px solid var(--border)'
       }}>
         <div style={{
           position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.1,
@@ -606,8 +607,8 @@ export function TasksSection({ address }) {
           <div style={{ fontSize: 16, fontWeight: 800, color: '#fff', marginBottom: 6, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
             <span>✍️ Post about us and get</span>
             <span style={{
-              background: 'linear-gradient(135deg, #FFFFFF 0%, #EEF2FF 100%)',
-              color: '#0000FF',
+              background: '#3B82F6',
+              color: '#13141F',
               padding: '2px 8px',
               borderRadius: 8,
               fontSize: 12,
@@ -630,7 +631,7 @@ export function TasksSection({ address }) {
             </div>
           ) : hasSubmittedToday ? (
             <div style={{ 
-              background: 'rgba(255,255,255,0.1)', 
+              background: 'rgba(255,255,255,0.05)', 
               borderRadius: 14, 
               padding: '10px 16px', 
               fontSize: 12, 
@@ -639,7 +640,7 @@ export function TasksSection({ address }) {
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
-              border: '1px solid rgba(255,255,255,0.1)'
+              border: '1px solid var(--border)'
             }}>
               Next post submission available in {getWaitTime()}h
             </div>
@@ -655,8 +656,8 @@ export function TasksSection({ address }) {
                 placeholder="Paste your link here…"
                 style={{
                   flex: 1, padding: '10px 16px', borderRadius: 50,
-                  border: postStatus === 'error' ? '1.5px solid #FCA5A5' : '1.5px solid rgba(255,255,255,0.2)',
-                  background: 'rgba(255,255,255,0.1)', color: '#fff',
+                  border: postStatus === 'error' ? '1.5px solid #FCA5A5' : '1px solid var(--border)',
+                  background: 'rgba(255,255,255,0.05)', color: '#fff',
                   fontSize: 12, outline: 'none', fontFamily: 'inherit',
                   fontWeight: 600
                 }}
@@ -665,7 +666,7 @@ export function TasksSection({ address }) {
                 onClick={handleSubmitPost}
                 disabled={postStatus === 'submitting' || !postUrl}
                 style={{
-                  background: '#fff', color: '#0000FF', borderRadius: 50,
+                  background: '#3B82F6', color: '#13141F', borderRadius: 50,
                   padding: '10px 20px', fontSize: 12, fontWeight: 800,
                   border: 'none', cursor: postStatus === 'submitting' || !postUrl ? 'not-allowed' : 'pointer',
                   opacity: postStatus === 'submitting' || !postUrl ? 0.6 : 1,

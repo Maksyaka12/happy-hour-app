@@ -430,32 +430,19 @@ export function StakingSection({ setTab, onRequireWallet }) {
   return (
     <div style={{ animation: 'fadeIn 0.3s ease-out', width: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
       
-      {/* Card 1: Holding Rewards (Premium Slate/Graphite Theme - Slightly Lighter than Staking) */}
+      {/* Card 1: Holding Rewards */}
       <div id="holding-card" style={{
-        background: 'linear-gradient(145deg, rgba(36, 36, 44, 0.95) 0%, rgba(56, 58, 68, 0.90) 50%, rgba(24, 24, 30, 0.98) 100%)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
+        background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover',
         borderRadius: 20,
         padding: '16px 18px',
-        boxShadow: '0 8px 32px rgba(10, 10, 15, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
         display: 'flex',
         flexDirection: 'column',
         gap: 12,
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        border: '1px solid var(--border)'
       }}>
-        {/* Grayscaled background image overlay */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: 'url(/banner.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          filter: 'grayscale(100%) brightness(0.40) contrast(1.1)',
-          zIndex: 0,
-          pointerEvents: 'none'
-        }} />
 
         {/* Shimmer glow */}
         <div style={{
@@ -522,8 +509,8 @@ export function StakingSection({ setTab, onRequireWallet }) {
                       <button
                         onClick={() => setTab('home')}
                         style={{
-                          background: 'linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%)',
-                          color: '#FFFFFF',
+                          background: '#3B82F6',
+                          color: '#13141F',
                           border: 'none',
                           borderRadius: 6,
                           padding: '2px 6px',
@@ -582,29 +569,16 @@ export function StakingSection({ setTab, onRequireWallet }) {
         </div>
       </div>
 
-      {/* Card 2: Staking Rewards (Premium Slate/Graphite Dark Grey Theme) */}
+      {/* Card 2: Staking Rewards */}
       <div id="staking-card" style={{
-        background: 'linear-gradient(145deg, rgba(20, 20, 25, 0.95) 0%, rgba(38, 39, 48, 0.90) 50%, rgba(12, 12, 16, 0.98) 100%)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
+        background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover',
         borderRadius: 20,
         padding: 16,
-        boxShadow: '0 8px 32px rgba(10, 10, 15, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        border: '1px solid var(--border)'
       }}>
-        {/* Grayscaled background image overlay */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: 'url(/banner.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          filter: 'grayscale(100%) brightness(0.28) contrast(1.1)',
-          zIndex: 0,
-          pointerEvents: 'none'
-        }} />
 
         {/* Shimmer glow */}
         <div style={{
@@ -884,8 +858,8 @@ export function StakingSection({ setTab, onRequireWallet }) {
               disabled={!!txStep}
               style={{
                 width: '100%', padding: '11px', border: 'none', borderRadius: 10,
-                background: '#FFFFFF',
-                color: '#090514', fontSize: 13, fontWeight: 800, cursor: 'pointer',
+                background: '#3B82F6',
+                color: '#13141F', fontSize: 13, fontWeight: 800, cursor: 'pointer',
                 boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
                 outline: 'none'
               }}
@@ -1017,8 +991,8 @@ export function StakingSection({ setTab, onRequireWallet }) {
                               onClick={() => handleUnstakePosition(s.id, s.amount)}
                               disabled={unstakePending}
                               style={{
-                                background: '#FFFFFF',
-                                color: '#090514',
+                                background: '#3B82F6',
+                                color: '#13141F',
                                 border: 'none',
                                 borderRadius: 8,
                                 padding: '6px 12px',
@@ -1224,8 +1198,8 @@ export function StakingSection({ setTab, onRequireWallet }) {
                   setStakingAmount('')
                 }}
                 style={{
-                  background: 'linear-gradient(135deg, #0052FF 0%, #0043D0 100%)',
-                  color: '#FFFFFF', border: 'none', borderRadius: 12, padding: '10px 24px',
+                  background: '#3B82F6',
+                  color: '#13141F', border: 'none', borderRadius: 12, padding: '10px 24px',
                   fontSize: 13, fontWeight: 800, cursor: 'pointer',
                   width: '100%'
                 }}

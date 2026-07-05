@@ -14,13 +14,13 @@ export function ContestBanner() {
         borderRadius: '20px',
         overflow: 'hidden',
         position: 'relative',
-        background: '#000',
-        boxShadow: '0 8px 30px rgba(0,0,0,0.2)',
+        background: 'var(--bg2)',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         padding: '0 24px',
-        border: '1px solid rgba(255,255,255,0.12)',
+        border: '1px solid var(--border)',
         cursor: 'pointer',
         transition: 'all 0.3s ease',
         userSelect: 'none',
@@ -43,7 +43,7 @@ export function ContestBanner() {
       <div style={{
         position: 'absolute',
         top: 0, left: 0, right: 0, bottom: 0,
-        background: 'linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 100%)',
+        background: 'linear-gradient(90deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%)',
         zIndex: 1
       }} />
 
@@ -158,7 +158,7 @@ export function ContestBanner() {
         left: '-100%',
         width: '50%',
         height: '100%',
-        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent)',
+        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent)',
         transform: 'skewX(-25deg)',
         animation: 'shine 8s infinite',
         zIndex: 1

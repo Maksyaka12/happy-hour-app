@@ -115,7 +115,7 @@ export function DailyRewardsSection({ address }) {
     <div style={{ paddingBottom: 120, padding: '0 16px 120px' }}>
       {/* Premium Glassmorphic Daily Rewards Banner */}
       <div style={{
-        background: '#0D1527',
+        background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover',
         borderRadius: 24,
         padding: '32px 20px',
         marginBottom: 16,
@@ -125,28 +125,10 @@ export function DailyRewardsSection({ address }) {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        boxShadow: '0 12px 40px rgba(5,46,22,0.3)',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
         overflow: 'hidden',
-        border: '1px solid rgba(16,185,129,0.2)'
+        border: '1px solid var(--border)'
       }}>
-        {/* Branded background banner in green tones */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: 'url(/banner.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          filter: 'hue-rotate(-120deg) brightness(0.65) contrast(1.15)',
-          zIndex: 0,
-          pointerEvents: 'none'
-        }} />
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.5) 100%)',
-          zIndex: 0,
-          pointerEvents: 'none'
-        }} />
 
         {/* Glow overlay */}
         <div style={{
@@ -273,7 +255,8 @@ export function DailyRewardsSection({ address }) {
       {address && (
         <div
           style={{
-            background: displayDailyRank > 0 ? 'linear-gradient(135deg, #059669, #10B981)' : 'linear-gradient(135deg, #374151, #1F2937)',
+            background: displayDailyRank > 0 ? '#3B82F6' : 'linear-gradient(135deg, #374151, #1F2937)',
+            color: displayDailyRank > 0 ? '#FFFFFF' : '#FFFFFF',
             borderRadius: 18,
             padding: '12px 16px',
             marginBottom: 16,
@@ -382,9 +365,9 @@ export function DailyRewardsSection({ address }) {
       {/* Leaderboard List */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         {dailyLeaders.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px 20px', background: '#EEF0F3', borderRadius: 20 }}>
+          <div style={{ textAlign: 'center', padding: '40px 20px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: 20 }}>
             <div style={{ fontSize: 30, marginBottom: 8 }}>⚡</div>
-            <div style={{ fontWeight: 700, color: '#0A0B0D' }}>Activity starts now!</div>
+            <div style={{ fontWeight: 700, color: '#FFFFFF' }}>Activity starts now!</div>
             <div style={{ fontSize: 12, color: '#717886' }}>Be the most active user today</div>
           </div>
         ) : (
@@ -403,8 +386,8 @@ export function DailyRewardsSection({ address }) {
               <div
                 key={u.address}
                 style={{
-                  background: '#fff',
-                  border: '1px solid #DEE1E7',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid var(--border)',
                   borderRadius: 14,
                   padding: '8px 12px',
                   display: 'flex',
@@ -474,7 +457,7 @@ export function DailyRewardsSection({ address }) {
                     fontFamily: "'Montserrat', sans-serif",
                     fontSize: 13,
                     fontWeight: 600,
-                    color: '#0A0B0D',
+                    color: '#FFFFFF',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
@@ -503,8 +486,8 @@ export function DailyRewardsSection({ address }) {
 
                 {/* Right: Activity Points Badge */}
                 <div style={{
-                  background: '#F8F9FC',
-                  border: '1px solid #DEE1E7',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid var(--border)',
                   borderRadius: 10,
                   width: 70, 
                   height: 28,
@@ -530,8 +513,8 @@ export function DailyRewardsSection({ address }) {
 
       {/* Interactive Accordion / How it works */}
       <div style={{ 
-        background: '#EEF0F3', 
-        border: '1px solid #DEE1E7', 
+        background: 'rgba(255, 255, 255, 0.05)', 
+        border: '1px solid var(--border)', 
         borderRadius: 16, 
         padding: '16px', 
         marginTop: 24 

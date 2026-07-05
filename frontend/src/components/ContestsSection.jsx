@@ -474,7 +474,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
 
         {/* Contest Banner - Themed to match the Contest Card */}
         <div style={{
-          backgroundColor: '#2A1A06',
+          background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover',
           borderRadius: 24,
           padding: '36px 20px',
           marginBottom: 20,
@@ -484,9 +484,9 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 8px 32px rgba(245, 158, 11, 0.15)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
           overflow: 'hidden',
-          border: '1px solid rgba(245, 158, 11, 0.3)',
+          border: '1px solid var(--border)',
           boxSizing: 'border-box'
         }}>
           {/* Style block for keyframes in case we are in detail view */}
@@ -497,19 +497,6 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
               100% { transform: translateY(0px); }
             }
           ` }} />
-
-          {/* Graded background image with amber/warm gold hue filter */}
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundImage: 'url(/banner.jpg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            filter: 'hue-rotate(25deg) brightness(0.5) contrast(1.15)',
-            zIndex: 0,
-            pointerEvents: 'none'
-          }} />
-          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.15)', zIndex: 0 }} />
           
           {/* Floating creative emojis */}
           {[
@@ -874,9 +861,9 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
           ← Back to Campaigns
         </button>
 
-        {/* Contest Banner - Red themed */}
+        {/* Contest Banner */}
         <div style={{
-          backgroundColor: '#140505',
+          background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover',
           borderRadius: 24,
           padding: '36px 20px',
           marginBottom: 20,
@@ -886,23 +873,11 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 8px 32px rgba(239, 68, 68, 0.15)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
           overflow: 'hidden',
-          border: '1px solid rgba(239, 68, 68, 0.2)',
+          border: '1px solid var(--border)',
           boxSizing: 'border-box'
         }}>
-          {/* Graded background image with red hue filter */}
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundImage: 'url(/banner.jpg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            filter: 'hue-rotate(330deg) brightness(0.4) contrast(1.15)',
-            zIndex: 0,
-            pointerEvents: 'none'
-          }} />
-          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.15)', zIndex: 0 }} />
           
           {/* Floating financial emojis */}
           {[
@@ -1063,30 +1038,17 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
 
         {/* User Trading Status Card (Premium Staking-inspired style) */}
         <div style={{
-          background: 'linear-gradient(145deg, rgba(20, 10, 10, 0.95) 0%, rgba(35, 18, 18, 0.90) 50%, rgba(14, 5, 5, 0.98) 100%)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          border: '1px solid rgba(255, 255, 255, 0.15)',
+          background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover',
           borderRadius: 20,
           padding: '16px 18px',
-          boxShadow: '0 8px 32px rgba(10, 5, 5, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
           boxSizing: 'border-box',
           fontFamily: "'Outfit', 'Inter', sans-serif",
           position: 'relative',
           overflow: 'hidden',
-          marginTop: 16
+          marginTop: 16,
+          border: '1px solid var(--border)',
         }}>
-          {/* Background image overlay */}
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundImage: 'url(/banner.jpg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            filter: 'hue-rotate(330deg) brightness(0.25) contrast(1.2)',
-            zIndex: 0,
-            pointerEvents: 'none'
-          }} />
 
           {/* Shimmer glow */}
           <div style={{
@@ -1496,10 +1458,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
 
       {/* Section Banner - Identical to Earn, but with USDC + HH logos */}
       <div style={{
-        backgroundImage: 'url(/banner.jpg)',
-        backgroundColor: '#0000FF',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover',
         borderRadius: 24,
         padding: '36px 20px',
         marginBottom: 16,
@@ -1509,12 +1468,11 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
         overflow: 'hidden',
-        border: '1px solid rgba(255,255,255,0.1)',
+        border: '1px solid var(--border)',
         boxSizing: 'border-box'
       }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.25)', zIndex: 0 }} />
         
         {/* Floating $HH & USDC Logos */}
         {[
@@ -1652,12 +1610,12 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
           <div
             onClick={() => setActiveContest('trader')}
             style={{
-              background: '#140505',
+              background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover',
               borderRadius: 20,
               padding: '12px 18px',
               cursor: 'pointer',
               transition: 'all 0.2s',
-              boxShadow: '0 8px 32px rgba(239, 68, 68, 0.15)',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
               minHeight: 96,
               boxSizing: 'border-box',
               display: 'flex',
@@ -1665,30 +1623,19 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
               justifyContent: 'space-between',
               position: 'relative',
               overflow: 'hidden',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
+              border: '1px solid var(--border)',
               width: '100%',
               gap: 16
             }}
             onMouseEnter={e => {
               e.currentTarget.style.transform = 'translateY(-1.5px)'
-              e.currentTarget.style.boxShadow = '0 12px 36px rgba(239, 68, 68, 0.25)'
+              e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.15)'
             }}
             onMouseLeave={e => {
               e.currentTarget.style.transform = 'none'
-              e.currentTarget.style.boxShadow = '0 8px 32px rgba(239, 68, 68, 0.15)'
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'
             }}
           >
-            {/* Graded background image */}
-            <div style={{
-              position: 'absolute',
-              inset: 0,
-              backgroundImage: 'url(/banner.jpg)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              filter: 'hue-rotate(330deg) brightness(0.4) contrast(1.15)',
-              zIndex: 0,
-              pointerEvents: 'none'
-            }} />
             
             {/* Left side */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, position: 'relative', zIndex: 1 }}>
@@ -1776,12 +1723,12 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
           <div
             onClick={() => setActiveContest('creator')}
             style={{
-              background: '#2A1A06',
+              background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover',
               borderRadius: 20,
               padding: '12px 18px',
               cursor: 'pointer',
               transition: 'all 0.2s',
-              boxShadow: '0 8px 32px rgba(245, 158, 11, 0.15)',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
               minHeight: 96,
               boxSizing: 'border-box',
               display: 'flex',
@@ -1789,30 +1736,19 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
               justifyContent: 'space-between',
               position: 'relative',
               overflow: 'hidden',
-              border: '1px solid rgba(245, 158, 11, 0.3)',
+              border: '1px solid var(--border)',
               width: '100%',
               gap: 16
             }}
             onMouseEnter={e => {
               e.currentTarget.style.transform = 'translateY(-1.5px)'
-              e.currentTarget.style.boxShadow = '0 12px 36px rgba(245, 158, 11, 0.25)'
+              e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.15)'
             }}
             onMouseLeave={e => {
               e.currentTarget.style.transform = 'none'
-              e.currentTarget.style.boxShadow = '0 8px 32px rgba(245, 158, 11, 0.15)'
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'
             }}
           >
-            {/* Graded background image */}
-            <div style={{
-              position: 'absolute',
-              inset: 0,
-              backgroundImage: 'url(/banner.jpg)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              filter: 'hue-rotate(25deg) brightness(0.4) contrast(1.15)',
-              zIndex: 0,
-              pointerEvents: 'none'
-            }} />
 
             {/* Left side */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, position: 'relative', zIndex: 1 }}>
