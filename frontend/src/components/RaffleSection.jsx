@@ -263,11 +263,6 @@ export function RaffleSection({ address, basename, onRequireWallet }) {
   return (
     <div style={{ maxWidth: 640, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 12, padding: '12px 12px 120px', animation: 'fadeIn 0.3s ease-out' }}>
 
-            Daily Raffle
-          </button>
-        </div>
-      </div>
-
       {/* Raffle View Split */}
       {isHH ? (
         <>
