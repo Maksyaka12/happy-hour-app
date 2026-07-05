@@ -1,4 +1,4 @@
-export default function PrivyBadge() {
+export function PrivyBadge() {
   return (
     <div
       style={{
