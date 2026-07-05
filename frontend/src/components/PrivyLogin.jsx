@@ -1,6 +1,6 @@
 import { usePrivy } from '@privy-io/react-auth'
 
-export default function PrivyLogin() {
+export function PrivyLogin() {
   const { login, logout, authenticated, user, ready } = usePrivy()
 
   if (!ready) {
