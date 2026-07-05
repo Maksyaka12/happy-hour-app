@@ -13,8 +13,8 @@ export function Header({ tab, address, isConnected, displayName, isClubMember, u
   return (
     <header style={{
       height: 72,
-      background: '#0B0F19',
-      borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+      background: 'var(--bg2)',
+      borderBottom: '1px solid var(--border)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',

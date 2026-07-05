@@ -14,18 +14,18 @@ export const CSS = `
     --red:       #FC401F;
     --green:     #059669;
     --gold:      #D97706;
-    --bg:        #FFFFFF;
-    --bg2:       #F8F9FC;
-    --bg3:       #EEF0F3;
-    --text:      #0A0B0D;
-    --text2:     #32353D;
-    --muted:     #717886;
-    --border:    #DEE1E7;
-    --border2:   #EEF0F3;
-    --blue-bg:   #EEF0F3;
-    --blue-bg2:  #F0F5FF;
-    --green-bg:  #D1FAE5;
-    --red-bg:    #FEE2E2;
+    --bg:        #1C1D2C;
+    --bg2:       #13141F;
+    --bg3:       #28293D;
+    --text:      #FFFFFF;
+    --text2:     #A0A5B5;
+    --muted:     #8F95B2;
+    --border:    #2E2F3A;
+    --border2:   #3B3D4F;
+    --blue-bg:   #1E2030;
+    --blue-bg2:  #25273C;
+    --green-bg:  rgba(5, 150, 105, 0.15);
+    --red-bg:    rgba(252, 64, 31, 0.15);
     --shadow:    0 1px 4px rgba(10,11,13,0.07), 0 4px 12px rgba(10,11,13,0.04);
   }
 

@@ -103,8 +103,8 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
   return (
     <aside style={{
       width: 260,
-      background: '#0B0F19',
-      borderRight: '1px solid rgba(255, 255, 255, 0.08)',
+      background: 'var(--bg2)',
+      borderRight: '1px solid var(--border)',
       display: 'flex',
       flexDirection: 'column',
       height: '100vh',
@@ -122,7 +122,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
         display: 'flex',
         alignItems: 'center',
         gap: 10,
-        borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
+        borderBottom: '1px solid var(--border)',
         cursor: 'pointer'
       }} onClick={() => setTab('raffle')}>
         <HappyHourLogo size={28} />
@@ -148,11 +148,10 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
         {/* Platform Section */}
         <div>
           <div style={{
-            fontSize: 10.5,
-            fontWeight: 800,
-            color: '#475569',
-            textTransform: 'uppercase',
-            letterSpacing: '1px',
+            fontSize: 12,
+            fontWeight: 700,
+            color: 'var(--text2)',
+            letterSpacing: '0.5px',
             paddingLeft: 12,
             marginBottom: 8
           }}>
@@ -174,7 +173,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                     borderRadius: 12,
                     border: 'none',
                     background: active ? 'rgba(59, 130, 246, 0.08)' : 'transparent',
-                    color: active ? '#FFFFFF' : '#94A3B8',
+                    color: active ? 'var(--text)' : 'var(--text2)',
                     fontSize: 13.5,
                     fontWeight: active ? 700 : 550,
                     cursor: 'pointer',
@@ -183,13 +182,13 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                   onMouseEnter={e => {
                     if (!active) {
                       e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
-                      e.currentTarget.style.color = '#E2E8F0';
+                      e.currentTarget.style.color = 'var(--text)';
                     }
                   }}
                   onMouseLeave={e => {
                     if (!active) {
                       e.currentTarget.style.background = 'transparent';
-                      e.currentTarget.style.color = '#94A3B8';
+                      e.currentTarget.style.color = 'var(--text2)';
                     }
                   }}
                 >
@@ -210,11 +209,10 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
         {/* Resources Section */}
         <div>
           <div style={{
-            fontSize: 10.5,
-            fontWeight: 800,
-            color: '#475569',
-            textTransform: 'uppercase',
-            letterSpacing: '1px',
+            fontSize: 12,
+            fontWeight: 700,
+            color: 'var(--text2)',
+            letterSpacing: '0.5px',
             paddingLeft: 12,
             marginBottom: 8
           }}>
@@ -234,7 +232,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                   width: '100%',
                   padding: '9px 12px',
                   borderRadius: 12,
-                  color: '#94A3B8',
+                  color: 'var(--text2)',
                   fontSize: 13,
                   fontWeight: 500,
                   textDecoration: 'none',
@@ -243,11 +241,11 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                 }}
                 onMouseEnter={e => {
                   e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
-                  e.currentTarget.style.color = '#E2E8F0';
+                  e.currentTarget.style.color = 'var(--text)';
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.color = '#94A3B8';
+                  e.currentTarget.style.color = 'var(--text2)';
                 }}
               >
                 <div style={{

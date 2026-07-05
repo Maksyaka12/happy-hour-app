@@ -286,7 +286,7 @@ export default function App({ onLogin }) {
 
         {/* WEB DESKTOP SIDEBAR + HEADER LAYOUT */}
         {!isMiniapp && (
-          <div className="desktop-only" style={{ display: 'flex', minHeight: '100vh', width: '100%', background: '#0B0F19' }}>
+          <div className="desktop-only" style={{ display: 'flex', minHeight: '100vh', width: '100%', background: 'var(--bg2)' }}>
             <Sidebar 
               tab={tab} 
               setTab={setTab} 
