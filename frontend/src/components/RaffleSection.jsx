@@ -760,27 +760,7 @@ export function RaffleSection({ address, basename, onRequireWallet }) {
               </div>
             </div>
           )}
-            >
-              🎯 Trigger Daily Draw (VRF)
-            </button>
-          )}
-
-          {/* Local simulation button for dev testing */}
-          <div style={{ textAlign: 'center', marginTop: 4 }}>
-            <span 
-              onClick={simulateDailyEligibility}
-              style={{ 
-                fontSize: 8.5, 
-                fontWeight: 800, 
-                color: 'rgba(255,255,255,0.3)', 
-                cursor: 'pointer',
-                textDecoration: 'underline'
-              }}
-            >
-              [Dev] Simulate eligibility (10 tickets)
-            </span>
-          </div>
-        </div>
+        </>
       )}
 
       {/* Last winner */}
