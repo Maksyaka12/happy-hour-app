@@ -1465,11 +1465,11 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
               key={tab.id}
               onClick={() => setSelectedFilter(tab.id)}
               style={{
-                background: isActive ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
-                border: isActive ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid transparent',
+                background: isActive ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.04)',
+                border: isActive ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(255, 255, 255, 0.05)',
                 borderRadius: 8,
                 padding: '6px 14px',
-                color: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.5)',
+                color: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.6)',
                 fontSize: 13,
                 fontFamily: "'Inter', sans-serif",
                 fontWeight: 500,
@@ -1482,13 +1482,13 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
               onMouseEnter={e => {
                 if (!isActive) {
                   e.currentTarget.style.color = '#FFFFFF'
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'
                 }
               }}
               onMouseLeave={e => {
                 if (!isActive) {
-                  e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)'
-                  e.currentTarget.style.background = 'transparent'
+                  e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)'
                 }
               }}
             >
@@ -1536,24 +1536,44 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
             {/* Top row: Icon + Title vs Tags */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
               <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                <div style={{ width: 40, height: 40, borderRadius: 10, background: 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <img src="/logo.jfif" alt="Trading" style={{ width: 24, height: 24, borderRadius: '50%' }} />
+                <div style={{ width: 64, height: 64, borderRadius: 16, overflow: 'hidden', flexShrink: 0 }}>
+                  <img src="/logo.jfif" alt="Trading" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
-                <div>
-                  <div style={{ fontSize: 16, fontWeight: 600, color: '#FFFFFF', lineHeight: 1.2 }}>Trading</div>
-                  <div style={{ fontSize: 13, color: '#94A3B8', marginTop: 2 }}>$HH Contest</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <div style={{ fontSize: 16, fontWeight: 600, color: '#FFFFFF', lineHeight: 1.2 }}>Onchain Campaign: Trading</div>
+                  <div style={{ fontSize: 13, color: '#94A3B8', fontWeight: 500 }}>$HH Rewards</div>
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: 6, alignItems: 'center', fontSize: 11, fontWeight: 600, color: '#F59E0B' }}>
-                <span>🏆 Top</span>
-                <span>📈 Volume</span>
+              <div style={{
+                background: 'rgba(16, 185, 129, 0.1)',
+                border: '1px solid rgba(16, 185, 129, 0.3)',
+                borderRadius: 100,
+                padding: '4px 12px',
+                color: '#10B981',
+                fontSize: 12,
+                fontWeight: 600,
+                flexShrink: 0
+              }}>
+                Ongoing
               </div>
             </div>
 
             {/* Middle: Description */}
-            <div style={{ fontSize: 13, color: '#94A3B8', lineHeight: 1.5, marginBottom: 24, minHeight: 40 }}>
+            <div style={{ 
+              fontSize: 13, 
+              color: '#94A3B8', 
+              lineHeight: 1.5, 
+              marginBottom: 20, 
+              minHeight: 40,
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden'
+            }}>
               Participate in our ongoing volume contest. Trade $HH to climb the leaderboard and earn rewards.
             </div>
+
+            <div style={{ height: 1, background: 'rgba(255, 255, 255, 0.05)', marginBottom: 16 }} />
 
             {/* Bottom: Metrics */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 'auto' }}>
@@ -1604,23 +1624,44 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
             {/* Top row: Icon + Title vs Tags */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
               <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                <div style={{ width: 40, height: 40, borderRadius: 10, background: 'rgba(239, 68, 68, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ fontSize: 20 }}>🎉</span>
+                <div style={{ width: 64, height: 64, borderRadius: 16, overflow: 'hidden', flexShrink: 0 }}>
+                  <img src="/logo.jfif" alt="Launch" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
-                <div>
-                  <div style={{ fontSize: 16, fontWeight: 600, color: '#FFFFFF', lineHeight: 1.2 }}>Launch</div>
-                  <div style={{ fontSize: 13, color: '#94A3B8', marginTop: 2 }}>$HH Celebration</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <div style={{ fontSize: 16, fontWeight: 600, color: '#FFFFFF', lineHeight: 1.2 }}>Social Campaign: Launch</div>
+                  <div style={{ fontSize: 13, color: '#94A3B8', fontWeight: 500 }}>$HH Rewards</div>
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: 6, alignItems: 'center', fontSize: 11, fontWeight: 600, color: '#EF4444' }}>
-                <span>🏁 Ended</span>
+              <div style={{
+                background: 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                borderRadius: 100,
+                padding: '4px 12px',
+                color: '#EF4444',
+                fontSize: 12,
+                fontWeight: 600,
+                flexShrink: 0
+              }}>
+                Ended
               </div>
             </div>
 
             {/* Middle: Description */}
-            <div style={{ fontSize: 13, color: '#94A3B8', lineHeight: 1.5, marginBottom: 24, minHeight: 40 }}>
+            <div style={{ 
+              fontSize: 13, 
+              color: '#94A3B8', 
+              lineHeight: 1.5, 
+              marginBottom: 20, 
+              minHeight: 40,
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden'
+            }}>
               Our token launch celebration. Create content about $HH to win a share of the massive prize pool.
             </div>
+
+            <div style={{ height: 1, background: 'rgba(255, 255, 255, 0.05)', marginBottom: 16 }} />
 
             {/* Bottom: Metrics */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 'auto' }}>
@@ -1633,7 +1674,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
                 <span style={{ fontSize: 13, fontWeight: 600, color: '#EF4444' }}>Top 3</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: 12, color: '#64748B' }}>Status</span>
+                <span style={{ fontSize: 12, color: '#64748B' }}>Time Left</span>
                 <span style={{ fontSize: 13, fontWeight: 600, color: '#EF4444' }}>Ended</span>
               </div>
             </div>
