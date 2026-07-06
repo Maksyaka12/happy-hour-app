@@ -620,7 +620,7 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
             </span>
           </div>
         </div>
-      )}
+
 
       {/* Last winner */}
       {lastWinner && (

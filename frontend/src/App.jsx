@@ -527,17 +527,58 @@ export default function App({ onLogin }) {
                 <img src="/CoinGecko-logo.png" alt="CoinGecko" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </a>
 
-              <div style={{
-                background: 'var(--blue-bg)',
-                border: '1px solid rgba(0,0,255,0.15)',
-                borderRadius: 20,
-                padding: '4px 10px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4
-              }}>
-                <span style={{ fontSize: 11, fontWeight: 800, color: '#0A0B0D' }}>{usdcBalance}</span>
-                <img src="/usdc-logo.png" alt="USDC" style={{ width: 11, height: 11, display: 'block' }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                {/* Daily Streak */}
+                {streakCount > 0 && (
+                  <div style={{
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    borderRadius: 12,
+                    padding: '4px 8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4
+                  }}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#FF9800" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
+                    </svg>
+                    <span style={{ fontSize: 11, fontWeight: 750, color: '#FFFFFF', fontFamily: "'DM Mono', monospace" }}>
+                      {streakCount}
+                    </span>
+                  </div>
+                )}
+
+                {/* HP Balance */}
+                <div style={{
+                  background: 'rgba(255, 255, 255, 0.03)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  borderRadius: 12,
+                  padding: '4px 8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 4
+                }}>
+                  <span style={{ fontSize: 11, fontWeight: 750, color: '#FFFFFF', fontFamily: "'DM Mono', monospace" }}>
+                    {hpBalance}
+                  </span>
+                  <img src="/logo.jfif" alt="HP" style={{ width: 12, height: 12, borderRadius: '50%' }} />
+                </div>
+
+                {/* $HH Balance */}
+                <div style={{
+                  background: 'rgba(255, 255, 255, 0.03)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  borderRadius: 12,
+                  padding: '4px 8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 4
+                }}>
+                  <span style={{ fontSize: 11, fontWeight: 750, color: '#FFFFFF', fontFamily: "'DM Mono', monospace" }}>
+                    {hhBalanceStr}
+                  </span>
+                  <img src="/logo.jfif" alt="$HH" style={{ width: 12, height: 12, borderRadius: '50%' }} />
+                </div>
               </div>
             </div>
           </div>
@@ -840,8 +881,36 @@ export default function App({ onLogin }) {
         <BottomNav tab={tab} setTab={setTab} />
       </div>
 
-      {/* Floating AI Chat assistant */}
-      {isConnected && <HappyBotChat address={address} isClubMember={isClubMember} />}
+      {/* Floating Telegram Bot link */}
+      <a 
+        href="https://t.me/HappyHourAI_bot" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        style={{
+          position: 'fixed',
+          bottom: 24,
+          right: 24,
+          width: 56,
+          height: 56,
+          borderRadius: 16,
+          overflow: 'hidden',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          zIndex: 50,
+          transition: 'transform 0.2s, box-shadow 0.2s',
+          cursor: 'pointer'
+        }}
+        onMouseEnter={e => {
+          e.currentTarget.style.transform = 'translateY(-2px) scale(1.05)'
+          e.currentTarget.style.boxShadow = '0 12px 40px rgba(0, 0, 0, 0.4)'
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.transform = 'none'
+          e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.3)'
+        }}
+      >
+        <img src="/logo.jfif" alt="Happy Hour Bot" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+      </a>
 
       {/* Wallet Connect Modal */}
       <WalletConnectModal isOpen={isConnectModalOpen} onClose={() => setIsConnectModalOpen(false)} />
