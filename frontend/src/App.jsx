@@ -600,10 +600,13 @@ export default function App({ onLogin }) {
               />
             )}
             {tab === 'account' && <AccountSection address={address} onRequireWallet={handleRequireWallet} />}
-            {['affiliate', 'terms', 'privacy'].includes(tab) && (
+            {['affiliate', 'terms', 'privacy', 'skills', 'x402'].includes(tab) && (
               <div style={{ padding: '80px 20px', textAlign: 'center' }}>
                 <h2 style={{ color: '#FFFFFF', fontSize: 28, marginBottom: 12 }}>
-                  {tab === 'affiliate' ? 'Happy Hour Affiliate' : tab === 'terms' ? 'Terms of Service' : 'Privacy Policy'}
+                  {tab === 'affiliate' ? 'Happy Hour Affiliate' : 
+                   tab === 'terms' ? 'Terms of Service' : 
+                   tab === 'privacy' ? 'Privacy Policy' :
+                   tab === 'skills' ? 'Skills' : 'x402 Endpoints'}
                 </h2>
                 <p style={{ color: '#8A8F9E', fontSize: 16 }}>Coming Soon</p>
               </div>

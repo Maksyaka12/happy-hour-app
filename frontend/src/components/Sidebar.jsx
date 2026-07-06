@@ -19,6 +19,11 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
     } catch { return false }
   })
 
+  const [isPlatformOpen, setIsPlatformOpen] = useState(true)
+  const [isToolsOpen, setIsToolsOpen] = useState(true)
+  const [isResourcesOpen, setIsResourcesOpen] = useState(true)
+  const [isSocialsOpen, setIsSocialsOpen] = useState(true)
+
   useEffect(() => {
     try { localStorage.setItem('sidebar_collapsed', isCollapsed) } catch {}
   }, [isCollapsed])
@@ -88,8 +93,8 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
       url: '/docs',
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
         </svg>
       )
     },
@@ -98,8 +103,8 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
       name: 'Happy Hour Affiliate',
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+          <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
         </svg>
       )
     },
@@ -123,6 +128,28 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
           <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+      )
+    }
+  ]
+
+  const tools = [
+    {
+      id: 'skills',
+      name: 'Skills',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="16 18 22 12 16 6"></polyline>
+          <polyline points="8 6 2 12 8 18"></polyline>
+        </svg>
+      )
+    },
+    {
+      id: 'x402',
+      name: 'x402 Endpoints',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
         </svg>
       )
     }
@@ -253,17 +280,29 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
         {/* Platform Section */}
         <div>
           {!isCollapsed && (
-            <div style={{
-              fontSize: 14.5,
-              fontWeight: 600,
-              color: '#8A8F9E',
-              paddingLeft: 12,
-              marginBottom: 8
-            }}>
+            <div 
+              onClick={() => setIsPlatformOpen(!isPlatformOpen)}
+              style={{
+                fontSize: 14.5,
+                fontWeight: 600,
+                color: '#8A8F9E',
+                padding: '4px 12px',
+                marginBottom: 4,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                userSelect: 'none'
+              }}
+            >
               Platform
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isPlatformOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
             </div>
           )}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {(isPlatformOpen || isCollapsed) && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {tabs.map(t => {
               const active = tab === t.id
               return (
@@ -317,17 +356,30 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
         {/* Resources Section */}
         <div>
           {!isCollapsed && (
-            <div style={{
-              fontSize: 14.5,
-              fontWeight: 600,
-              color: '#717886',
-              paddingLeft: 12,
-              marginBottom: 8
-            }}>
+            <div 
+              onClick={() => setIsResourcesOpen(!isResourcesOpen)}
+              style={{
+                fontSize: 14.5,
+                fontWeight: 600,
+                color: '#717886',
+                padding: '4px 12px',
+                marginBottom: 4,
+                marginTop: 8,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                userSelect: 'none'
+              }}
+            >
               Resources
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isResourcesOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
             </div>
           )}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {(isResourcesOpen || isCollapsed) && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {resources.map((r, i) => {
               const isButton = !!r.id;
               const Component = isButton ? 'button' : 'a';
@@ -391,24 +443,37 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                 </Component>
               )
             })}
-          </div>
+            </div>
+          )}
         </div>
 
         {/* Socials Section */}
         <div>
           {!isCollapsed && (
-            <div style={{
-              fontSize: 14.5,
-              fontWeight: 600,
-              color: '#717886',
-              paddingLeft: 12,
-              marginBottom: 8,
-              marginTop: 16
-            }}>
+            <div 
+              onClick={() => setIsSocialsOpen(!isSocialsOpen)}
+              style={{
+                fontSize: 14.5,
+                fontWeight: 600,
+                color: '#717886',
+                padding: '4px 12px',
+                marginBottom: 4,
+                marginTop: 8,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                userSelect: 'none'
+              }}
+            >
               Socials
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isSocialsOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
             </div>
           )}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {(isSocialsOpen || isCollapsed) && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {socials.map((r, i) => (
               <a
                 key={i}
