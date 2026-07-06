@@ -308,7 +308,7 @@ export default function App({ onLogin }) {
                 onRequireWallet={handleRequireWallet} 
               />
               <div className="dark-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '32px 16px 64px', boxSizing: 'border-box' }}>
-                <div style={{ maxWidth: 640, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+                <div style={{ maxWidth: ['contests', 'earn'].includes(tab) ? 1200 : 640, margin: '0 auto', position: 'relative', zIndex: 1 }}>
                   {tab === 'home' && <ProfileSection address={address} basename={basename} totalUsers={totalUsers} setTab={setTab} onRequireWallet={handleRequireWallet} />}
                   {tab === 'raffle' && <RaffleSection address={address} basename={basename} onRequireWallet={handleRequireWallet} />}
                   {tab === 'earn' && <EarnSection setTab={setTab} address={address} onRequireWallet={handleRequireWallet} />}
@@ -531,7 +531,7 @@ export default function App({ onLogin }) {
 
           <div style={{ height: 12 }} />
 
-          <div style={{ position: 'relative', zIndex: 1, maxWidth: 640, margin: '0 auto' }}>
+          <div style={{ position: 'relative', zIndex: 1, maxWidth: ['contests', 'earn'].includes(tab) ? 1200 : 640, margin: '0 auto' }}>
             {tab === 'home' && <ProfileSection address={address} basename={basename} totalUsers={totalUsers} setTab={setTab} onRequireWallet={handleRequireWallet} />}
             {tab === 'raffle' && <RaffleSection address={address} basename={basename} onRequireWallet={handleRequireWallet} />}
             {tab === 'earn' && <EarnSection setTab={setTab} address={address} onRequireWallet={handleRequireWallet} />}
