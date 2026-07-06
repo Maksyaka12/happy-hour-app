@@ -588,6 +588,7 @@ export default function App({ onLogin }) {
           <div style={{ position: 'relative', zIndex: 1, maxWidth: ['contests', 'earn'].includes(tab) ? 1200 : 640, margin: '0 auto' }}>
             {tab === 'home' && <ProfileSection address={address} basename={basename} totalUsers={totalUsers} setTab={setTab} onRequireWallet={handleRequireWallet} />}
             {tab === 'raffle' && <RaffleSection address={address} basename={basename} onRequireWallet={handleRequireWallet} />}
+            {tab === 'dailyRaffle' && <DailyRaffleSection address={address} basename={basename} onRequireWallet={handleRequireWallet} />}
             {tab === 'earn' && <EarnSection setTab={setTab} address={address} onRequireWallet={handleRequireWallet} />}
             {tab === 'contests' && (
               <ContestsSection 
@@ -599,6 +600,14 @@ export default function App({ onLogin }) {
               />
             )}
             {tab === 'account' && <AccountSection address={address} onRequireWallet={handleRequireWallet} />}
+            {['affiliate', 'terms', 'privacy'].includes(tab) && (
+              <div style={{ padding: '80px 20px', textAlign: 'center' }}>
+                <h2 style={{ color: '#FFFFFF', fontSize: 28, marginBottom: 12 }}>
+                  {tab === 'affiliate' ? 'Happy Hour Affiliate' : tab === 'terms' ? 'Terms of Service' : 'Privacy Policy'}
+                </h2>
+                <p style={{ color: '#8A8F9E', fontSize: 16 }}>Coming Soon</p>
+              </div>
+            )}
           </div>
 
           <footer style={{

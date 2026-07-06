@@ -94,8 +94,8 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
       )
     },
     {
+      id: 'affiliate',
       name: 'Happy Hour Affiliate',
-      url: '#',
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
@@ -104,8 +104,8 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
       )
     },
     {
+      id: 'terms',
       name: 'Terms of Service',
-      url: '#',
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -117,8 +117,8 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
       )
     },
     {
+      id: 'privacy',
       name: 'Privacy Policy',
-      url: '#',
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
@@ -328,54 +328,69 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
             </div>
           )}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {resources.map((r, i) => (
-              <a
-                key={i}
-                href={r.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: isCollapsed ? 'center' : 'flex-start',
-                  gap: isCollapsed ? 0 : 12,
-                  width: '100%',
-                  padding: isCollapsed ? '9px 0' : '9px 12px',
-                  borderRadius: 12,
-                  color: '#C1C4CD',
-                  fontSize: 14.5,
-                  fontWeight: 500,
-                  textDecoration: 'none',
-                  boxSizing: 'border-box',
-                  transition: 'all 0.15s ease'
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
-                  e.currentTarget.style.color = '#FFFFFF';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.color = '#C1C4CD';
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 20, color: '#8A8F9E' }}>
-                  {r.icon ? (
-                    r.icon
-                  ) : (
-                    <img src={r.logo} alt="" style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover' }} />
-                  )}
-                </div>
-                {!isCollapsed && (
-                  <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span>{r.name}</span>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}>
-                      <line x1="7" y1="17" x2="17" y2="7"></line>
-                      <polyline points="7 7 17 7 17 17"></polyline>
-                    </svg>
+            {resources.map((r, i) => {
+              const isButton = !!r.id;
+              const Component = isButton ? 'button' : 'a';
+              const baseStyle = {
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: isCollapsed ? 'center' : 'flex-start',
+                gap: isCollapsed ? 0 : 12,
+                width: '100%',
+                padding: isCollapsed ? '9px 0' : '9px 12px',
+                borderRadius: 12,
+                color: '#C1C4CD',
+                fontSize: 14.5,
+                fontWeight: 500,
+                textDecoration: 'none',
+                boxSizing: 'border-box',
+                transition: 'all 0.15s ease'
+              };
+              
+              const props = isButton ? {
+                onClick: () => setTab(r.id),
+                style: { ...baseStyle, background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }
+              } : {
+                href: r.url,
+                target: "_blank",
+                rel: "noopener noreferrer",
+                style: baseStyle
+              };
+
+              return (
+                <Component
+                  key={i}
+                  {...props}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+                    e.currentTarget.style.color = '#FFFFFF';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.color = '#C1C4CD';
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 20, color: '#8A8F9E' }}>
+                    {r.icon ? (
+                      r.icon
+                    ) : (
+                      <img src={r.logo} alt="" style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover' }} />
+                    )}
                   </div>
-                )}
-              </a>
-            ))}
+                  {!isCollapsed && (
+                    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span>{r.name}</span>
+                      {!isButton && (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}>
+                          <line x1="7" y1="17" x2="17" y2="7"></line>
+                          <polyline points="7 7 17 7 17 17"></polyline>
+                        </svg>
+                      )}
+                    </div>
+                  )}
+                </Component>
+              )
+            })}
           </div>
         </div>
 
