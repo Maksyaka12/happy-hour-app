@@ -2,10 +2,11 @@ import { BaseMark } from './BaseMark'
 
 const short = (a) => (a ? `${a.slice(0, 6)}...${a.slice(-4)}` : '')
 
-export function Header({ tab, address, isConnected, displayName, isClubMember, usdcBalance, onRequireWallet }) {
+export function Header({ tab, address, isConnected, displayName, isClubMember, hhBalance, hpBalance, streakCount, onRequireWallet }) {
   const tabNames = {
     home: 'Profile',
-    raffle: 'Happy Raffle',
+    raffle: 'Hourly Lottery',
+    dailyRaffle: 'Big Daily Lottery',
     earn: 'Staking',
     contests: 'Campaigns'
   }
@@ -38,7 +39,27 @@ export function Header({ tab, address, isConnected, displayName, isClubMember, u
 
       {/* Top right actions */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-        {/* USDC Balance block */}
+        {/* Daily Streak */}
+        {streakCount > 0 && (
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.03)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            borderRadius: 14,
+            padding: '6px 12px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6
+          }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF9800" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
+            </svg>
+            <span style={{ fontSize: 13, fontWeight: 750, color: '#FFFFFF', fontFamily: "'DM Mono', monospace" }}>
+              {streakCount}
+            </span>
+          </div>
+        )}
+
+        {/* HP Balance */}
         <div style={{
           background: 'rgba(255, 255, 255, 0.03)',
           border: '1px solid rgba(255, 255, 255, 0.08)',
@@ -48,10 +69,26 @@ export function Header({ tab, address, isConnected, displayName, isClubMember, u
           alignItems: 'center',
           gap: 6
         }}>
-          <span style={{ fontSize: 12.5, fontWeight: 750, color: '#FFFFFF', fontFamily: "'DM Mono', monospace" }}>
-            {usdcBalance}
+          <span style={{ fontSize: 13, fontWeight: 750, color: '#FFFFFF', fontFamily: "'DM Mono', monospace" }}>
+            {hpBalance} HP
           </span>
-          <img src="/usdc-logo.png" alt="USDC" style={{ width: 13, height: 13, display: 'block' }} />
+          <img src="/logo.jfif" alt="HP" style={{ width: 16, height: 16, borderRadius: '50%' }} />
+        </div>
+
+        {/* $HH Balance */}
+        <div style={{
+          background: 'rgba(255, 255, 255, 0.03)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          borderRadius: 14,
+          padding: '6px 12px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6
+        }}>
+          <span style={{ fontSize: 13, fontWeight: 750, color: '#FFFFFF', fontFamily: "'DM Mono', monospace" }}>
+            {hhBalance} $HH
+          </span>
+          <img src="/logo.jfif" alt="$HH" style={{ width: 16, height: 16, borderRadius: '50%' }} />
         </div>
 
         {/* Connect Button or User Info */}

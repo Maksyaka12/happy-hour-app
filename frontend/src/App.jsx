@@ -14,12 +14,30 @@ import { BottomNav } from './components/BottomNav'
 import { HappyHourLogo } from './components/HappyHourLogo'
 import { HappyBotChat } from './components/HappyBotChat'
 import { CSS } from './styles'
-import { HAS_SUPABASE_CONFIG, USDC_ADDRESS, USDC_ABI, MEMBERSHIP_ADDRESS, MEMBERSHIP_ABI } from './config/constants'
+import { HAS_SUPABASE_CONFIG, USDC_ADDRESS, USDC_ABI, MEMBERSHIP_ADDRESS, MEMBERSHIP_ABI, HH_ADDRESS, HH_ABI, COORDINATOR_ADDRESS, COORDINATOR_ABI } from './config/constants'
 import { WalletConnectModal } from './components/WalletConnectModal'
 import { Sidebar } from './components/Sidebar'
 import { Header } from './components/Header'
+import { DailyRaffleSection } from './components/DailyRaffleSection'
 
 const short = (a) => (a ? `${a.slice(0, 6)}\u2026${a.slice(-4)}` : '\u2014')
+
+const formatConcise = (num) => {
+  const n = parseFloat(num || 0)
+  if (n >= 1e9) {
+    const val = (n / 1e9).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'b' : val.endsWith('0') ? val.slice(0, -1) + 'b' : val + 'b'
+  }
+  if (n >= 1e6) {
+    const val = (n / 1e6).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'm' : val.endsWith('0') ? val.slice(0, -1) + 'm' : val + 'm'
+  }
+  if (n >= 1e3) {
+    const val = (n / 1e3).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'k' : val.endsWith('0') ? val.slice(0, -1) + 'k' : val + 'k'
+  }
+  return n.toFixed(2).replace(/\.00$/, '')
+}
 
 function getReferralCode() {
   const ref = new URLSearchParams(window.location.search).get('ref')?.trim()
@@ -72,36 +90,28 @@ export default function App({ onLogin }) {
   const basename = useBasename(address)
   const onWrongChain = isConnected && !!accountChainId && accountChainId !== base.id
 
-  const { data: usdcBalanceRaw } = useReadContract({
-    address: USDC_ADDRESS,
-    abi: USDC_ABI,
+  const { data: hhBalanceRaw } = useReadContract({
+    address: HH_ADDRESS,
+    abi: HH_ABI,
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
-    query: { enabled: !!address, refetchInterval: 10000 },
+    query: { enabled: !!address, refetchInterval: 15000 }
   })
+  const hhBalanceRawParsed = hhBalanceRaw !== undefined ? parseFloat(formatUnits(hhBalanceRaw, 18)) : 0
+  const hhBalanceStr = formatConcise(hhBalanceRawParsed)
 
-  const [simulatedUsdcHeader, setSimulatedUsdcHeader] = useState(() => {
-    try {
-      return parseFloat(localStorage.getItem('usdc_simulated_wallet') || '500')
-    } catch {
-      return 500
-    }
+  const { data: summary } = useReadContract({
+    address: COORDINATOR_ADDRESS,
+    abi: COORDINATOR_ABI,
+    functionName: 'getUserSummary',
+    args: address ? [address] : undefined,
+    query: { enabled: !!address, refetchInterval: 15000 }
   })
+  
+  const [simulatedSummary] = useState({ hp: 1250, streak: 5 })
 
-  useEffect(() => {
-    if (usdcBalanceRaw !== undefined) return
-    const interval = setInterval(() => {
-      try {
-        const val = parseFloat(localStorage.getItem('usdc_simulated_wallet') || '500')
-        setSimulatedUsdcHeader(val)
-      } catch {}
-    }, 2000)
-    return () => clearInterval(interval)
-  }, [usdcBalanceRaw])
-
-  const usdcBalance = usdcBalanceRaw !== undefined
-    ? Number(formatUnits(usdcBalanceRaw, 6)).toFixed(2)
-    : simulatedUsdcHeader.toFixed(2)
+  const hpBalance = summary ? Number(summary[0]) : simulatedSummary.hp
+  const streakCount = summary ? Number(summary[1]) : simulatedSummary.streak
 
   const referralCode = useMemo(() => getReferralCode(), [])
 
@@ -304,13 +314,16 @@ export default function App({ onLogin }) {
                 isConnected={isConnected} 
                 displayName={displayName} 
                 isClubMember={isClubMember} 
-                usdcBalance={usdcBalance} 
+                hhBalance={hhBalanceStr}
+                hpBalance={hpBalance}
+                streakCount={streakCount}
                 onRequireWallet={handleRequireWallet} 
               />
               <div className="dark-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '32px 16px 64px', boxSizing: 'border-box' }}>
                 <div style={{ maxWidth: ['contests', 'earn'].includes(tab) ? 1200 : 640, margin: '0 auto', position: 'relative', zIndex: 1 }}>
                   {tab === 'home' && <ProfileSection address={address} basename={basename} totalUsers={totalUsers} setTab={setTab} onRequireWallet={handleRequireWallet} />}
                   {tab === 'raffle' && <RaffleSection address={address} basename={basename} onRequireWallet={handleRequireWallet} />}
+                  {tab === 'dailyRaffle' && <DailyRaffleSection address={address} basename={basename} onRequireWallet={handleRequireWallet} />}
                   {tab === 'earn' && <EarnSection setTab={setTab} address={address} onRequireWallet={handleRequireWallet} />}
                   {tab === 'contests' && (
                     <ContestsSection 

@@ -101,28 +101,28 @@ export function HappyBotChat({ address, isClubMember }) {
         onClick={() => setIsOpen(!isOpen)}
         style={{
           position: 'fixed',
-          bottom: 84,
-          right: 20,
-          width: 54,
-          height: 54,
-          borderRadius: '50%',
-          background: 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)',
-          color: '#FFFFFF',
-          border: '1px solid rgba(255, 255, 255, 0.25)',
-          boxShadow: '0 8px 24px rgba(139, 92, 246, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+          bottom: 24,
+          right: 24,
+          width: 100,
+          height: 100,
+          borderRadius: 24,
+          background: 'url(/logo.jfif) center/cover',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6)',
           cursor: 'pointer',
           zIndex: 9999,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: 22,
           outline: 'none',
           transition: 'transform 0.2s ease-in-out',
         }}
-        onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.08)'}
+        onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
         onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
       >
-        {isOpen ? '✕' : '🤖'}
+        {isOpen && (
+          <div style={{ position: 'absolute', top: -10, right: -10, background: '#111', color: '#fff', borderRadius: '50%', width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12 }}>✕</div>
+        )}
       </button>
 
       {/* Chat Drawer / Window */}
