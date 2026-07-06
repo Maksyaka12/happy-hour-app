@@ -351,6 +351,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
               )
             })}
           </div>
+        )}
         </div>
 
         {/* Resources Section */}
@@ -523,6 +524,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
               </a>
             ))}
           </div>
+        )}
         </div>
       </div>
 
