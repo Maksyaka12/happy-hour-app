@@ -434,8 +434,59 @@ export function StakingSection({ setTab, onRequireWallet }) {
   ].sort((a, b) => b.staked - a.staked).map((s, idx) => ({ ...s, rank: idx + 1 }))
 
   return (
-    <div style={{ animation: 'fadeIn 0.3s ease-out', width: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <div style={{ animation: 'fadeIn 0.3s ease-out', width: '100%', maxWidth: 1200, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 24 }}>
       
+      {/* Hero Banner (Bankr x402 Style) */}
+      <div style={{
+        width: '100%',
+        background: 'linear-gradient(135deg, rgba(16,18,27,1) 0%, rgba(20,22,35,1) 100%)',
+        borderRadius: 24,
+        position: 'relative',
+        overflow: 'hidden',
+        border: '1px solid rgba(255,255,255,0.05)',
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        minHeight: 320
+      }}>
+        {/* Glow Effects */}
+        <div style={{ position: 'absolute', top: '-20%', left: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: '-20%', right: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
+
+        {/* Content Left */}
+        <div style={{ flex: 1, padding: '40px 48px', position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ display: 'flex' }}>
+            <span style={{
+              background: 'rgba(59, 130, 246, 0.15)', color: '#3B82F6', padding: '4px 12px', borderRadius: 12, fontSize: 11, fontWeight: 700, border: '1px solid rgba(59, 130, 246, 0.3)'
+            }}>New Staking v2</span>
+          </div>
+          <h1 style={{ fontSize: 36, fontWeight: 600, color: '#FFFFFF', lineHeight: 1.1, margin: 0, fontFamily: "'Inter', sans-serif", letterSpacing: '-0.5px' }}>
+            Incentives Staking & Holding
+          </h1>
+          <p style={{ fontSize: 14, color: '#94A3B8', lineHeight: 1.6, margin: 0, fontWeight: 400, maxWidth: 480, fontFamily: "'Inter', sans-serif" }}>
+            Up to 166% APR for staking HH with 7-10 days lock. Earn passive HP (loyalty points) just for holding and staking $HH while receiving additional % chance to win in hourly/daily raffles.
+          </p>
+          <div style={{ display: 'flex', gap: 12, marginTop: 12 }}>
+            <button style={{
+              background: '#3B82F6', color: '#FFFFFF', border: 'none', borderRadius: 8, padding: '12px 24px', fontSize: 14, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Inter', sans-serif"
+            }} onMouseEnter={e => e.currentTarget.style.background = '#2563EB'} onMouseLeave={e => e.currentTarget.style.background = '#3B82F6'}>
+              Staking
+            </button>
+            <button style={{
+              background: '#FFFFFF', color: '#090514', border: 'none', borderRadius: 8, padding: '12px 24px', fontSize: 14, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Inter', sans-serif"
+            }} onMouseEnter={e => e.currentTarget.style.background = '#E2E8F0'} onMouseLeave={e => e.currentTarget.style.background = '#FFFFFF'}>
+              Holding
+            </button>
+          </div>
+        </div>
+
+        {/* Graphic Right */}
+        <div style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '50%', minHeight: 320, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', zIndex: 1 }}>
+          <img src="/staking_banner_graphic.png" alt="Web3 Staking" style={{ height: '100%', width: '100%', objectFit: 'cover', maskImage: 'linear-gradient(to left, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%)', WebkitMaskImage: 'linear-gradient(to left, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%)' }} />
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: 20 }}>
       {/* Card 1: Holding Rewards */}
       <div id="holding-card" style={{
         background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover',
@@ -1176,6 +1227,7 @@ export function StakingSection({ setTab, onRequireWallet }) {
             ⚠️ {txError || activeTxError}
           </div>
         )}
+      </div>
       </div>
 
       {/* Pending Withdrawals list has been integrated inside the Unstake positions list above */}
