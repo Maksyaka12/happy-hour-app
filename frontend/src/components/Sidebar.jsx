@@ -231,6 +231,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                     color: active ? '#FFFFFF' : '#C1C4CD',
                     fontSize: 13,
                     fontWeight: 500,
+                    fontFamily: 'inherit',
                     cursor: 'pointer',
                     transition: 'all 0.15s ease'
                   }}
