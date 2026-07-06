@@ -130,7 +130,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
     {
       name: 'BankrTerminal',
       url: 'https://bankr.bot/terminal/agents/0x8235edf32a1e10bd1867ad622915ab613664cba3',
-      logo: '/bankr.jpg'
+      logo: '/bankr-logo.jpg'
     }
   ]
 
@@ -330,7 +330,15 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                     <img src={r.logo} alt="" style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover' }} />
                   )}
                 </div>
-                {!isCollapsed && <span>{r.name}</span>}
+                {!isCollapsed && (
+                  <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span>{r.name}</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}>
+                      <line x1="7" y1="17" x2="17" y2="7"></line>
+                      <polyline points="7 7 17 7 17 17"></polyline>
+                    </svg>
+                  </div>
+                )}
               </a>
             ))}
           </div>
