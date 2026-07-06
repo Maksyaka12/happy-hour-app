@@ -202,8 +202,10 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
         <div>
           {!isCollapsed && (
             <div style={{
-              fontSize: 13,
-              fontWeight: 500,
+              fontSize: 11.5,
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
               color: '#8A8F9E',
               paddingLeft: 12,
               marginBottom: 8
@@ -229,7 +231,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                     border: 'none',
                     background: active ? 'rgba(59, 130, 246, 0.08)' : 'transparent',
                     color: active ? '#FFFFFF' : '#C1C4CD',
-                    fontSize: 13,
+                    fontSize: 14.5,
                     fontWeight: 500,
                     fontFamily: 'inherit',
                     cursor: 'pointer',
@@ -266,8 +268,10 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
         <div>
           {!isCollapsed && (
             <div style={{
-              fontSize: 13,
-              fontWeight: 500,
+              fontSize: 11.5,
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
               color: '#8A8F9E',
               paddingLeft: 12,
               marginBottom: 8
@@ -291,7 +295,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                   padding: isCollapsed ? '9px 0' : '9px 12px',
                   borderRadius: 12,
                   color: '#C1C4CD',
-                  fontSize: 13,
+                  fontSize: 14.5,
                   fontWeight: 500,
                   textDecoration: 'none',
                   boxSizing: 'border-box',
@@ -351,7 +355,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
               {!isCollapsed && (
                 <div style={{ flex: 1, minWidth: 0, textAlign: 'left' }}>
                   <div style={{
-                    fontSize: 13,
+                    fontSize: 14,
                     fontWeight: 700,
                     color: '#FFFFFF',
                     whiteSpace: 'nowrap',
@@ -361,7 +365,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                     {displayName || short(address)}
                   </div>
                   <div style={{
-                    fontSize: 10.5,
+                    fontSize: 11.5,
                     fontWeight: 650,
                     color: isClubMember ? '#0000FF' : '#64748B',
                     display: 'flex',
@@ -418,7 +422,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                     alignItems: 'center',
                     gap: 8,
                     color: '#FFFFFF',
-                    fontSize: 12.5,
+                    fontSize: 13.5,
                     fontWeight: 600,
                     cursor: 'pointer',
                     textAlign: 'left',
@@ -448,7 +452,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                     alignItems: 'center',
                     gap: 8,
                     color: '#EF4444',
-                    fontSize: 12.5,
+                    fontSize: 13.5,
                     fontWeight: 600,
                     cursor: 'pointer',
                     textAlign: 'left',
@@ -477,7 +481,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
               border: 'none',
               borderRadius: 12,
               padding: '11px 16px',
-              fontSize: 13,
+              fontSize: 14.5,
               fontWeight: 700,
               cursor: 'pointer',
               display: 'flex',
