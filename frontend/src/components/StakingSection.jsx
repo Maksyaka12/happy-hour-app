@@ -458,7 +458,7 @@ export function StakingSection({ setTab, onRequireWallet }) {
           <div style={{ display: 'flex' }}>
             <span style={{
               background: 'rgba(59, 130, 246, 0.15)', color: '#3B82F6', padding: '4px 12px', borderRadius: 12, fontSize: 11, fontWeight: 700, border: '1px solid rgba(59, 130, 246, 0.3)'
-            }}>New Staking v2</span>
+            }}>Happy Hour: Incentives</span>
           </div>
           <h1 style={{ fontSize: 36, fontWeight: 600, color: '#FFFFFF', lineHeight: 1.1, margin: 0, fontFamily: "'Inter', sans-serif", letterSpacing: '-0.5px' }}>
             Incentives Staking & Holding
