@@ -881,36 +881,8 @@ export default function App({ onLogin }) {
         <BottomNav tab={tab} setTab={setTab} />
       </div>
 
-      {/* Floating Telegram Bot link */}
-      <a 
-        href="https://t.me/HappyHourAI_bot" 
-        target="_blank" 
-        rel="noopener noreferrer"
-        style={{
-          position: 'fixed',
-          bottom: 24,
-          right: 24,
-          width: 56,
-          height: 56,
-          borderRadius: 16,
-          overflow: 'hidden',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          zIndex: 50,
-          transition: 'transform 0.2s, box-shadow 0.2s',
-          cursor: 'pointer'
-        }}
-        onMouseEnter={e => {
-          e.currentTarget.style.transform = 'translateY(-2px) scale(1.05)'
-          e.currentTarget.style.boxShadow = '0 12px 40px rgba(0, 0, 0, 0.4)'
-        }}
-        onMouseLeave={e => {
-          e.currentTarget.style.transform = 'none'
-          e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.3)'
-        }}
-      >
-        <img src="/logo.jfif" alt="Happy Hour Bot" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-      </a>
+      {/* Floating AI Chat assistant */}
+      {isConnected && <HappyBotChat address={address} isClubMember={isClubMember} />}
 
       {/* Wallet Connect Modal */}
       <WalletConnectModal isOpen={isConnectModalOpen} onClose={() => setIsConnectModalOpen(false)} />

@@ -94,8 +94,54 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
       )
     },
     {
+      name: 'Happy Hour Affiliate',
+      url: '#',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+        </svg>
+      )
+    },
+    {
+      name: 'Terms of Service',
+      url: '#',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+      )
+    },
+    {
+      name: 'Privacy Policy',
+      url: '#',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+      )
+    }
+  ]
+
+  const socials = [
+    {
       name: 'Telegram',
       url: 'https://t.me/happyhourapp',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      )
+    },
+    {
+      name: 'HappyHourBot',
+      url: 'https://web.telegram.org/@HappyHourBased_bot',
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -113,24 +159,13 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
       )
     },
     {
-      name: 'DexScreener',
-      url: 'https://dexscreener.com/base/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9',
-      logo: '/dexscreener.jpg'
-    },
-    {
-      name: 'GeckoTerminal',
-      url: 'https://www.geckoterminal.com/uk/base/pools/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9',
-      logo: '/geckoterminal.jpg'
-    },
-    {
-      name: 'CoinGecko',
-      url: 'https://www.coingecko.com/en/coins/happy-hour',
-      logo: '/CoinGecko-logo.png'
-    },
-    {
-      name: 'BankrTerminal',
-      url: 'https://bankr.bot/terminal/agents/0x8235edf32a1e10bd1867ad622915ab613664cba3',
-      logo: '/bankr-logo.jpg'
+      name: 'Founder / Developer',
+      url: 'https://x.com/mksvibe',
+      icon: (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+      )
     }
   ]
 
@@ -294,6 +329,72 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
           )}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {resources.map((r, i) => (
+              <a
+                key={i}
+                href={r.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: isCollapsed ? 'center' : 'flex-start',
+                  gap: isCollapsed ? 0 : 12,
+                  width: '100%',
+                  padding: isCollapsed ? '9px 0' : '9px 12px',
+                  borderRadius: 12,
+                  color: '#C1C4CD',
+                  fontSize: 14.5,
+                  fontWeight: 500,
+                  textDecoration: 'none',
+                  boxSizing: 'border-box',
+                  transition: 'all 0.15s ease'
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+                  e.currentTarget.style.color = '#FFFFFF';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.color = '#C1C4CD';
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 20, color: '#8A8F9E' }}>
+                  {r.icon ? (
+                    r.icon
+                  ) : (
+                    <img src={r.logo} alt="" style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover' }} />
+                  )}
+                </div>
+                {!isCollapsed && (
+                  <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span>{r.name}</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}>
+                      <line x1="7" y1="17" x2="17" y2="7"></line>
+                      <polyline points="7 7 17 7 17 17"></polyline>
+                    </svg>
+                  </div>
+                )}
+              </a>
+            ))}
+          </div>
+        </div>
+
+        {/* Socials Section */}
+        <div>
+          {!isCollapsed && (
+            <div style={{
+              fontSize: 14.5,
+              fontWeight: 600,
+              color: '#717886',
+              paddingLeft: 12,
+              marginBottom: 8,
+              marginTop: 16
+            }}>
+              Socials
+            </div>
+          )}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {socials.map((r, i) => (
               <a
                 key={i}
                 href={r.url}
