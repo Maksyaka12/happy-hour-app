@@ -201,9 +201,9 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
         <div>
           {!isCollapsed && (
             <div style={{
-              fontSize: 13,
+              fontSize: 11,
               fontWeight: 500,
-              color: 'var(--text2)',
+              color: '#8A8F9E',
               paddingLeft: 12,
               marginBottom: 8
             }}>
@@ -227,7 +227,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                     borderRadius: 12,
                     border: 'none',
                     background: active ? 'rgba(59, 130, 246, 0.08)' : 'transparent',
-                    color: 'var(--text)',
+                    color: active ? '#FFFFFF' : '#C1C4CD',
                     fontSize: 13,
                     fontWeight: 500,
                     cursor: 'pointer',
@@ -236,18 +236,18 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                   onMouseEnter={e => {
                     if (!active) {
                       e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
-                      e.currentTarget.style.color = 'var(--text)';
+                      e.currentTarget.style.color = '#FFFFFF';
                     }
                   }}
                   onMouseLeave={e => {
                     if (!active) {
                       e.currentTarget.style.background = 'transparent';
-                      e.currentTarget.style.color = 'var(--text)';
+                      e.currentTarget.style.color = '#C1C4CD';
                     }
                   }}
                 >
                   <div style={{
-                    color: active ? '#3B82F6' : '#64748B',
+                    color: active ? '#3B82F6' : '#8A8F9E',
                     display: 'flex',
                     alignItems: 'center'
                   }}>
@@ -264,9 +264,9 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
         <div>
           {!isCollapsed && (
             <div style={{
-              fontSize: 13,
+              fontSize: 11,
               fontWeight: 500,
-              color: 'var(--text2)',
+              color: '#8A8F9E',
               paddingLeft: 12,
               marginBottom: 8
             }}>
@@ -288,7 +288,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                   width: '100%',
                   padding: isCollapsed ? '9px 0' : '9px 12px',
                   borderRadius: 12,
-                  color: 'var(--text)',
+                  color: '#C1C4CD',
                   fontSize: 13,
                   fontWeight: 500,
                   textDecoration: 'none',
@@ -297,14 +297,14 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                 }}
                 onMouseEnter={e => {
                   e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
-                  e.currentTarget.style.color = 'var(--text)';
+                  e.currentTarget.style.color = '#FFFFFF';
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.color = 'var(--text)';
+                  e.currentTarget.style.color = '#C1C4CD';
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 20, color: '#64748B' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 20, color: '#8A8F9E' }}>
                   {r.icon ? (
                     r.icon
                   ) : (
