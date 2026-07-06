@@ -202,10 +202,8 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
         <div>
           {!isCollapsed && (
             <div style={{
-              fontSize: 11.5,
+              fontSize: 14.5,
               fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
               color: '#8A8F9E',
               paddingLeft: 12,
               marginBottom: 8
@@ -268,10 +266,8 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
         <div>
           {!isCollapsed && (
             <div style={{
-              fontSize: 11.5,
+              fontSize: 14.5,
               fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
               color: '#8A8F9E',
               paddingLeft: 12,
               marginBottom: 8
