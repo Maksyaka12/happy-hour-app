@@ -356,67 +356,75 @@ export default function App({ onLogin }) {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
               <section>
-                <h2 style={{ color: '#FFFFFF', fontSize: 18, marginBottom: 12, fontWeight: 600 }}>1. Introduction</h2>
-                <p>
-                  Welcome to the Happy Hour AI Consumer Platform ("Happy Hour", "we", "us", or "our"). These Terms of Service ("Terms") govern your access to and use of the Happy Hour website, platform, smart contracts, and AI agent services (collectively, the "Services"). By connecting your wallet and using our Services, you agree to be bound by these Terms.
-                </p>
+                <h2 style={{ color: '#FFFFFF', fontSize: 16, marginBottom: 16, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>1. Acceptance of Terms</h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <p>By accessing or using the Happy Hour Platform, website, smart contracts, AI agents (including @happyhourbot), or any related services (collectively, the "Services"), you agree to be bound by these Terms of Service. If you do not agree to all the terms and conditions, you may not access or use the Services.</p>
+                  <p>The Services are operated by Happy Hour ("Company", "we", "us", or "our"). We reserve the right to modify these terms at any time at our sole discretion. Your continued use of the Services following the posting of revised Terms means that you accept and agree to the changes.</p>
+                </div>
               </section>
 
               <section>
-                <h2 style={{ color: '#FFFFFF', fontSize: 18, marginBottom: 12, fontWeight: 600 }}>2. Platform Services</h2>
-                <p style={{ marginBottom: 12 }}>
-                  Happy Hour provides a suite of decentralized finance and AI-driven services, including but not limited to:
-                </p>
-                <ul style={{ listStyleType: 'disc', paddingLeft: 20, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  <li><strong>Staking:</strong> Users can stake $HH tokens to earn yields and Happy Points (HP).</li>
-                  <li><strong>Hourly Lottery:</strong> A frequent raffle system where users can deposit $HH for tickets to win a pooled prize.</li>
-                  <li><strong>Big Daily Lottery:</strong> A daily grand prize draw using Chainlink VRF for verifiable randomness.</li>
-                  <li><strong>Happy Points (HP) & Streaks:</strong> A reward system granting points for daily check-ins, staking, and participation.</li>
-                  <li><strong>Happy Club Membership:</strong> A premium subscription offering enhanced AI agent capabilities and automated on-chain actions.</li>
-                  <li><strong>AI Agents (@happyhourbot):</strong> Chat interfaces providing portfolio insights, platform data, and automated executions.</li>
-                </ul>
+                <h2 style={{ color: '#FFFFFF', fontSize: 16, marginBottom: 16, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>2. Description of Services</h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <p>Happy Hour is an AI-powered consumer platform and decentralized finance ecosystem that allows users to interact with smart contracts on the blockchain. Core features include:</p>
+                  <ul style={{ listStyleType: 'disc', paddingLeft: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <li><strong style={{ color: '#E2E8F0' }}>Staking & Yield:</strong> Depositing $HH tokens into smart contracts to earn yields and platform rewards such as Happy Points (HP).</li>
+                    <li><strong style={{ color: '#E2E8F0' }}>Lotteries & Raffles:</strong> Participating in Hourly and Big Daily Lotteries using verifiable on-chain randomness (e.g., Chainlink VRF).</li>
+                    <li><strong style={{ color: '#E2E8F0' }}>AI Agents:</strong> Utilizing conversational interfaces to perform on-chain interactions, execute trades, and manage portfolios.</li>
+                    <li><strong style={{ color: '#E2E8F0' }}>Happy Club:</strong> An exclusive membership offering enhanced agent capabilities and automation.</li>
+                  </ul>
+                  <p>We do not have control over the decentralized blockchain networks. All transactions are executed via unhosted, self-custodial wallets. You are solely responsible for managing your private keys and securing your assets.</p>
+                </div>
               </section>
 
               <section>
-                <h2 style={{ color: '#FFFFFF', fontSize: 18, marginBottom: 12, fontWeight: 600 }}>3. Smart Contracts and Blockchain Risks</h2>
-                <p>
-                  Our Services rely on smart contracts deployed on the blockchain. While we strive to ensure security, interacting with smart contracts carries inherent risks, including vulnerabilities, bugs, and potential loss of funds. By using the Happy Hour platform, you acknowledge and accept these risks. We are not liable for any losses resulting from smart contract failures or blockchain network issues.
-                </p>
+                <h2 style={{ color: '#FFFFFF', fontSize: 16, marginBottom: 16, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>3. Eligibility and Compliance</h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <p>You must be at least 18 years old and possess the legal capacity to form a binding contract to use the Services. By accessing the Services, you represent and warrant that you are not on any trade or economic sanctions lists, such as the UN Security Council Sanctions list, nor restricted by the Office of Foreign Assets Control (OFAC).</p>
+                  <p>The Services may not be available or appropriate for use in all jurisdictions. By accessing or using the Services, you agree that you are solely and entirely responsible for compliance with all laws and regulations that may apply to you.</p>
+                </div>
               </section>
 
               <section>
-                <h2 style={{ color: '#FFFFFF', fontSize: 18, marginBottom: 12, fontWeight: 600 }}>4. Lotteries and Rewards</h2>
-                <p>
-                  Participation in the Hourly Lottery and Big Daily Lottery requires the deposit of tokens or earning of eligible tickets. The Hourly Lottery distributes 85% of the pool to the winner, with 15% burned. The Big Daily Lottery relies on verifiable randomness to select winners. All lottery outcomes are final and recorded on the blockchain. Happy Points (HP) have no monetary value outside of the platform mechanics and cannot be directly exchanged for fiat currency.
-                </p>
+                <h2 style={{ color: '#FFFFFF', fontSize: 16, marginBottom: 16, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>4. AI Agents and Automation Risks</h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <p>The Happy Hour AI Agents are experimental technologies designed to interpret your conversational inputs and execute on-chain instructions. You acknowledge that AI systems may misinterpret commands, hallucinate, or produce unexpected results.</p>
+                  <p>You assume full responsibility for all transactions authorized through the AI agent interface. We strongly advise carefully reviewing all transaction prompts before confirming them in your wallet. The Company is not acting as an investment advisor, and no communication from the AI agents should be construed as financial advice.</p>
+                </div>
               </section>
 
               <section>
-                <h2 style={{ color: '#FFFFFF', fontSize: 18, marginBottom: 12, fontWeight: 600 }}>5. AI Agents and Automation</h2>
-                <p>
-                  The Happy Hour AI Agents (including @happyhourbot) provide automated interactions and on-chain executions based on your instructions. You are solely responsible for the actions initiated by the AI agent on your behalf. We do not guarantee the accuracy, completeness, or profitability of the AI agent's actions or insights. Happy Club members assume full responsibility for any recurring or automated executions configured.
-                </p>
+                <h2 style={{ color: '#FFFFFF', fontSize: 16, marginBottom: 16, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>5. Assumption of Risk</h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <p>By interacting with the Services, you acknowledge and agree that:</p>
+                  <ul style={{ listStyleType: 'disc', paddingLeft: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <li>Cryptographic assets are highly volatile and subject to significant price fluctuations.</li>
+                    <li>Smart contracts are subject to bugs, vulnerabilities, and potential exploits which could result in a total loss of your assets.</li>
+                    <li>The regulatory environment for cryptographic technologies is uncertain, and new regulations could negatively impact the Services.</li>
+                    <li>You are solely responsible for determining the tax implications of your interactions with the Services.</li>
+                  </ul>
+                </div>
               </section>
 
               <section>
-                <h2 style={{ color: '#FFFFFF', fontSize: 18, marginBottom: 12, fontWeight: 600 }}>6. User Obligations</h2>
-                <p>
-                  You agree not to use the Services for any unlawful purpose, to manipulate the lottery systems, or to exploit platform mechanics. You must secure your wallet and private keys; we cannot recover lost access.
-                </p>
+                <h2 style={{ color: '#FFFFFF', fontSize: 16, marginBottom: 16, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>6. Limitation of Liability</h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <p>TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL THE COMPANY, ITS AFFILIATES, OR PERSONNEL BE LIABLE FOR ANY DIRECT, INDIRECT, PUNITIVE, INCIDENTAL, SPECIAL, CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER INCLUDING, WITHOUT LIMITATION, DAMAGES FOR LOSS OF USE, DATA, OR CRYPTO ASSETS, ARISING OUT OF OR IN ANY WAY CONNECTED WITH THE USE OR PERFORMANCE OF THE SERVICES.</p>
+                </div>
               </section>
 
               <section>
-                <h2 style={{ color: '#FFFFFF', fontSize: 18, marginBottom: 12, fontWeight: 600 }}>7. Disclaimers and Limitation of Liability</h2>
-                <p>
-                  The Services are provided "as is" and "as available". We disclaim all warranties, express or implied. In no event shall Happy Hour or its team be liable for any indirect, incidental, or consequential damages arising from your use of the platform, token volatility, or smart contract interactions.
-                </p>
+                <h2 style={{ color: '#FFFFFF', fontSize: 16, marginBottom: 16, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>7. Intellectual Property</h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <p>All content, features, and functionality provided via the Services, including but not limited to the Happy Hour logo, design, text, graphics, and underlying code, are the exclusive property of the Company and are protected by international copyright, trademark, and other intellectual property laws.</p>
+                </div>
               </section>
 
               <section>
-                <h2 style={{ color: '#FFFFFF', fontSize: 18, marginBottom: 12, fontWeight: 600 }}>8. Changes to Terms</h2>
-                <p>
-                  We may modify these Terms at any time. Continued use of the Services following any updates constitutes your acceptance of the revised Terms.
-                </p>
+                <h2 style={{ color: '#FFFFFF', fontSize: 16, marginBottom: 16, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>8. Governing Law</h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <p>These Terms shall be governed by and construed in accordance with the laws of the jurisdiction in which the Company is incorporated, without giving effect to any principles of conflicts of law. Any dispute arising from these Terms shall be resolved exclusively in the competent courts of that jurisdiction.</p>
+                </div>
               </section>
             </div>
           </div>
