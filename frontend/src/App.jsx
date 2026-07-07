@@ -45,6 +45,75 @@ function getReferralCode() {
   return ref || null
 }
 
+const URL_TO_TAB = {
+  '': 'raffle',
+  '/': 'raffle',
+  '/profile': 'home',
+  '/hourly-lottery': 'raffle',
+  '/daily-lottery': 'dailyRaffle',
+  '/staking': 'earn',
+  '/campaigns': 'contests',
+  '/account': 'account',
+  '/terms': 'terms',
+  '/affiliate': 'affiliate',
+  '/privacy': 'privacy',
+  '/skills': 'skills',
+  '/x402': 'x402',
+  '/agent-chat': 'agentChat'
+}
+
+const TAB_TO_URL = Object.fromEntries(Object.entries(URL_TO_TAB).map(([k, v]) => [v, k]))
+TAB_TO_URL['home'] = '/profile'
+TAB_TO_URL['raffle'] = '/hourly-lottery'
+TAB_TO_URL['dailyRaffle'] = '/daily-lottery'
+TAB_TO_URL['earn'] = '/staking'
+TAB_TO_URL['contests'] = '/campaigns'
+TAB_TO_URL['account'] = '/account'
+TAB_TO_URL['terms'] = '/terms'
+TAB_TO_URL['affiliate'] = '/affiliate'
+TAB_TO_URL['privacy'] = '/privacy'
+TAB_TO_URL['skills'] = '/skills'
+TAB_TO_URL['x402'] = '/x402'
+TAB_TO_URL['agentChat'] = '/agent-chat'
+
+function useAppRouter() {
+  const [tab, setTabState] = useState(() => {
+    try {
+      const path = window.location.pathname
+      const initialTab = URL_TO_TAB[path]
+      if (initialTab) return initialTab
+
+      let saved = localStorage.getItem('happy_tab') || 'raffle'
+      if (saved === 'profile') saved = 'home'
+      if (saved === 'staking' || saved === 'raid') saved = 'earn'
+      if (['tasks', 'leaderboard', 'boxes'].includes(saved)) saved = 'raffle'
+      return saved
+    } catch { return 'raffle' }
+  })
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname
+      if (URL_TO_TAB[path]) {
+        setTabState(URL_TO_TAB[path])
+      }
+    }
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [])
+
+  const setTab = (newTab) => {
+    setTabState(newTab)
+    try { localStorage.setItem('happy_tab', newTab) } catch { }
+    const newUrl = TAB_TO_URL[newTab] || '/'
+    if (window.location.pathname !== newUrl) {
+      window.history.pushState({}, '', newUrl)
+    }
+  }
+
+  return [tab, setTab]
+}
+
 export default function App({ onLogin }) {
   const isMiniapp = useMemo(() => {
     if (typeof window === 'undefined') return false
@@ -69,21 +138,10 @@ export default function App({ onLogin }) {
     }
   }
 
-  const [tab, setTab] = useState(() => {
-    try {
-      let saved = localStorage.getItem('happy_tab') || 'raffle'
-      if (saved === 'profile') saved = 'home'
-      if (saved === 'staking' || saved === 'raid') saved = 'earn'
-      if (['tasks', 'leaderboard', 'boxes'].includes(saved)) saved = 'raffle'
-      return saved
-    } catch { return 'raffle' }
-  })
+  const [tab, setTab] = useAppRouter()
   const [caCopied, setCaCopied] = useState(false)
   const [initialContest, setInitialContest] = useState(null)
 
-  useEffect(() => {
-    try { localStorage.setItem('happy_tab', tab) } catch { }
-  }, [tab])
   // useAccount().chainId returns the REAL wallet chain (even if unsupported)
   // useChainId() returns base.id by default when chain is not in wagmi config — can't use it here
   const { address, isConnected, isConnecting, isReconnecting, chainId: accountChainId } = useAccount()
