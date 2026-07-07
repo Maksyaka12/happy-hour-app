@@ -343,7 +343,7 @@ export default function App({ onLogin }) {
         return (
           <div style={{
             width: '100%',
-            maxWidth: 800,
+            maxWidth: 1200,
             margin: '0 auto',
             padding: '40px 24px',
             fontFamily: "'Inter', sans-serif",
@@ -351,8 +351,10 @@ export default function App({ onLogin }) {
             lineHeight: 1.6,
             fontSize: 15
           }}>
-            <h1 style={{ color: '#FFFFFF', fontSize: 28, marginBottom: 8, fontWeight: 700, letterSpacing: '-0.02em' }}>Terms of Service</h1>
-            <p style={{ marginBottom: 40, fontSize: 14 }}>Last updated: July 2026</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 40, flexWrap: 'wrap', gap: 16 }}>
+              <h1 style={{ color: '#FFFFFF', fontSize: 20, fontWeight: 600, margin: 0 }}>Terms of Service for Happy Hour</h1>
+              <p style={{ fontSize: 14, margin: 0 }}>Last Updated: July 2026</p>
+            </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
               <section>
