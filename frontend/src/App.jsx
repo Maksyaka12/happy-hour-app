@@ -534,11 +534,11 @@ export default function App({ onLogin }) {
             alignItems: 'center'
           }}>
             <h1 style={{
-              fontSize: 48,
-              fontWeight: 700,
+              fontSize: 36,
+              fontWeight: 500,
               color: '#FFFFFF',
               marginBottom: 16,
-              letterSpacing: '-0.02em',
+              letterSpacing: '-0.01em',
               fontFamily: "'Inter', sans-serif"
             }}>Become a part of the Happy Hour Team</h1>
             
