@@ -19,6 +19,7 @@ import { WalletConnectModal } from './components/WalletConnectModal'
 import { Sidebar } from './components/Sidebar'
 import { Header } from './components/Header'
 import { DailyRaffleSection } from './components/DailyRaffleSection'
+import { TermsSection } from './components/TermsSection'
 
 const short = (a) => (a ? `${a.slice(0, 6)}\u2026${a.slice(-4)}` : '\u2014')
 
@@ -600,11 +601,11 @@ export default function App({ onLogin }) {
               />
             )}
             {tab === 'account' && <AccountSection address={address} onRequireWallet={handleRequireWallet} />}
-            {['affiliate', 'terms', 'privacy', 'skills', 'x402', 'agentChat'].includes(tab) && (
+            {tab === 'terms' && <TermsSection />}
+            {['affiliate', 'privacy', 'skills', 'x402', 'agentChat'].includes(tab) && (
               <div style={{ padding: '80px 20px', textAlign: 'center' }}>
                 <h2 style={{ color: '#FFFFFF', fontSize: 28, marginBottom: 12 }}>
                   {tab === 'affiliate' ? 'Happy Hour Affiliate' : 
-                   tab === 'terms' ? 'Terms of Service' : 
                    tab === 'privacy' ? 'Privacy Policy' :
                    tab === 'skills' ? 'Skills' : 
                    tab === 'agentChat' ? 'Agent Chat' : 'x402 Endpoints'}
