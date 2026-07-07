@@ -204,6 +204,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
         </svg>
       )
     }
+  ]
   const hhCoinItems = [
     {
       id: 'hhIntro',
