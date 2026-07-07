@@ -521,14 +521,243 @@ export default function App({ onLogin }) {
           </div>
         )
       case 'affiliate':
+        return (
+          <div style={{
+            width: '100%',
+            maxWidth: 1200,
+            margin: '0 auto',
+            padding: '60px 24px',
+            fontFamily: "'Inter', sans-serif",
+            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
+          }}>
+            <h1 style={{
+              fontSize: 48,
+              fontWeight: 700,
+              color: '#FFFFFF',
+              marginBottom: 16,
+              letterSpacing: '-0.02em',
+              fontFamily: "'Inter', sans-serif"
+            }}>Become a part of the Happy Hour Team</h1>
+            
+            <p style={{
+              fontSize: 16,
+              color: '#94A3B8',
+              lineHeight: 1.6,
+              maxWidth: 600,
+              marginBottom: 32,
+              marginInline: 'auto'
+            }}>
+              We are looking for passionate individuals committed to the long-term growth of the Happy Hour project and our native $HH token, aligning with our vision.
+            </p>
+
+            <button style={{
+              background: '#3B82F6',
+              color: '#FFFFFF',
+              border: 'none',
+              borderRadius: 8,
+              padding: '12px 24px',
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: 'default',
+              fontFamily: "'Inter', sans-serif",
+              marginBottom: 56,
+              transition: 'none'
+            }}>
+              Open Roles
+            </button>
+
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+              gap: 24,
+              width: '100%',
+              textAlign: 'left'
+            }}>
+              {/* Card 1: Community Managers */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.02)',
+                border: '1px solid rgba(255, 255, 255, 0.05)',
+                borderRadius: 12,
+                padding: 24,
+                display: 'flex',
+                gap: 16,
+                alignItems: 'flex-start'
+              }}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 40,
+                  height: 40,
+                  borderRadius: 8,
+                  background: 'rgba(59, 130, 246, 0.1)',
+                  color: '#3B82F6',
+                  flexShrink: 0
+                }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, color: '#FFFFFF', margin: 0 }}>Community Managers</h3>
+                  <p style={{ fontSize: 14, color: '#94A3B8', margin: 0, lineHeight: 1.5 }}>
+                    Moderate and cultivate active, healthy communities on X (Twitter) and Telegram. Host discussions, address user inquiries, guide newcomers, and maintain a highly engaged, positive environment.
+                  </p>
+                </div>
+              </div>
+
+              {/* Card 2: Social Media Managers */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.02)',
+                border: '1px solid rgba(255, 255, 255, 0.05)',
+                borderRadius: 12,
+                padding: 24,
+                display: 'flex',
+                gap: 16,
+                alignItems: 'flex-start'
+              }}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 40,
+                  height: 40,
+                  borderRadius: 8,
+                  background: 'rgba(59, 130, 246, 0.1)',
+                  color: '#3B82F6',
+                  flexShrink: 0
+                }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 20h9"></path>
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                  </svg>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, color: '#FFFFFF', margin: 0 }}>Social Media Managers</h3>
+                  <p style={{ fontSize: 14, color: '#94A3B8', margin: 0, lineHeight: 1.5 }}>
+                    Curate high-quality content and maintain a consistent project voice. Publish updates, highlight product announcements, write detailed guides/articles, and run campaigns to acquire new users.
+                  </p>
+                </div>
+              </div>
+
+              {/* Card 3: Market Leads */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.02)',
+                border: '1px solid rgba(255, 255, 255, 0.05)',
+                borderRadius: 12,
+                padding: 24,
+                display: 'flex',
+                gap: 16,
+                alignItems: 'flex-start'
+              }}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 40,
+                  height: 40,
+                  borderRadius: 8,
+                  background: 'rgba(59, 130, 246, 0.1)',
+                  color: '#3B82F6',
+                  flexShrink: 0
+                }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                    <polyline points="2 17 12 22 22 17"></polyline>
+                    <polyline points="2 12 12 17 22 12"></polyline>
+                  </svg>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, color: '#FFFFFF', margin: 0 }}>Market Leads</h3>
+                  <p style={{ fontSize: 14, color: '#94A3B8', margin: 0, lineHeight: 1.5 }}>
+                    Lead marketing calls and coordinate targeted campaigns to showcase native $HH token updates. Responsible for recruiting, onboarding, and managing a team of Market Managers to maximize reach.
+                  </p>
+                </div>
+              </div>
+
+              {/* Card 4: Market Managers */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.02)',
+                border: '1px solid rgba(255, 255, 255, 0.05)',
+                borderRadius: 12,
+                padding: 24,
+                display: 'flex',
+                gap: 16,
+                alignItems: 'flex-start'
+              }}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 40,
+                  height: 40,
+                  borderRadius: 8,
+                  background: 'rgba(59, 130, 246, 0.1)',
+                  color: '#3B82F6',
+                  flexShrink: 0
+                }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                  </svg>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, color: '#FFFFFF', margin: 0 }}>Market Managers</h3>
+                  <p style={{ fontSize: 14, color: '#94A3B8', margin: 0, lineHeight: 1.5 }}>
+                    Promote ecosystem updates and share call updates regarding the native $HH token. Analyze market trends, build strategic visibility, and drive token adoption across crypto communities.
+                  </p>
+                </div>
+              </div>
+
+              {/* Card 5: Social Media Leads */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.02)',
+                border: '1px solid rgba(255, 255, 255, 0.05)',
+                borderRadius: 12,
+                padding: 24,
+                display: 'flex',
+                gap: 16,
+                alignItems: 'flex-start'
+              }}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 40,
+                  height: 40,
+                  borderRadius: 8,
+                  background: 'rgba(59, 130, 246, 0.1)',
+                  color: '#3B82F6',
+                  flexShrink: 0
+                }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                  </svg>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, color: '#FFFFFF', margin: 0 }}>Social Media Leads</h3>
+                  <p style={{ fontSize: 14, color: '#94A3B8', margin: 0, lineHeight: 1.5 }}>
+                    Drive the overarching content strategy. Formulate promotional campaigns, draft high-impact announcements, write tutorials, oversee user growth, and manage/recruit Social Media Managers.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
       case 'skills':
       case 'x402':
       case 'agentChat':
         return (
           <div style={{ padding: '80px 20px', textAlign: 'center' }}>
             <h2 style={{ color: '#FFFFFF', fontSize: 28, marginBottom: 12 }}>
-              {tab === 'affiliate' ? 'Happy Hour Affiliate' : 
-               tab === 'skills' ? 'Skills' : 
+              {tab === 'skills' ? 'Skills' : 
                tab === 'agentChat' ? 'Agent Chat' : 'x402 Endpoints'}
             </h2>
             <p style={{ color: '#8A8F9E', fontSize: 16 }}>Coming Soon</p>
