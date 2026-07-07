@@ -74,8 +74,9 @@ export function Header({ tab, address, isConnected, displayName, isClubMember, h
 
       {/* Top right actions */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-        {/* Daily Streak */}
-        {streakCount > 0 && (
+        {/* ================= DESKTOP STATS (Always visible on desktop, hidden on mobile) ================= */}
+        <div className="desktop-stat" style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          {/* Daily Streak */}
           <div style={{
             background: 'rgba(255, 255, 255, 0.03)',
             border: '1px solid rgba(255, 255, 255, 0.08)',
@@ -89,42 +90,83 @@ export function Header({ tab, address, isConnected, displayName, isClubMember, h
               <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
             </svg>
             <span style={{ fontSize: 13, fontWeight: 750, color: '#FFFFFF', fontFamily: "'DM Mono', monospace" }}>
-              {streakCount}
+              {isConnected ? (streakCount || 0) : 0}
             </span>
           </div>
+
+          {/* HP Balance */}
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.03)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            borderRadius: 14,
+            padding: '6px 12px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6
+          }}>
+            <span style={{ fontSize: 13, fontWeight: 750, color: '#FFFFFF', fontFamily: "'DM Mono', monospace" }}>
+              {isConnected ? (hpBalance || 0) : 0} HP
+            </span>
+            <img src="/logo.jfif" alt="HP" style={{ width: 16, height: 16, borderRadius: '50%' }} />
+          </div>
+
+          {/* $HH Balance */}
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.03)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            borderRadius: 14,
+            padding: '6px 12px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6
+          }}>
+            <span style={{ fontSize: 13, fontWeight: 750, color: '#FFFFFF', fontFamily: "'DM Mono', monospace" }}>
+              {isConnected ? (hhBalance || 0) : 0} $HH
+            </span>
+            <img src="/logo.jfif" alt="$HH" style={{ width: 16, height: 16, borderRadius: '50%' }} />
+          </div>
+        </div>
+
+        {/* ================= MOBILE STATS (Only visible on mobile when connected, hidden on desktop) ================= */}
+        {isConnected && address && (
+          <div className="mobile-only-flex" style={{ display: 'none', alignItems: 'center', gap: 8 }}>
+            {/* Daily Streak */}
+            {streakCount > 0 && (
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.03)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: 14,
+                padding: '6px 12px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6
+              }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF9800" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
+                </svg>
+                <span style={{ fontSize: 13, fontWeight: 750, color: '#FFFFFF', fontFamily: "'DM Mono', monospace" }}>
+                  {streakCount}
+                </span>
+              </div>
+            )}
+
+            {/* $HH Balance */}
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              borderRadius: 14,
+              padding: '6px 12px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6
+            }}>
+              <span style={{ fontSize: 13, fontWeight: 750, color: '#FFFFFF', fontFamily: "'DM Mono', monospace" }}>
+                {hhBalance || 0}
+              </span>
+              <img src="/logo.jfif" alt="$HH" style={{ width: 16, height: 16, borderRadius: '50%' }} />
+            </div>
+          </div>
         )}
-
-        {/* HP Balance */}
-        <div className="desktop-stat" style={{
-          background: 'rgba(255, 255, 255, 0.03)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: 14,
-          padding: '6px 12px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6
-        }}>
-          <span style={{ fontSize: 13, fontWeight: 750, color: '#FFFFFF', fontFamily: "'DM Mono', monospace" }}>
-            {hpBalance} HP
-          </span>
-          <img src="/logo.jfif" alt="HP" style={{ width: 16, height: 16, borderRadius: '50%' }} />
-        </div>
-
-        {/* $HH Balance */}
-        <div style={{
-          background: 'rgba(255, 255, 255, 0.03)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: 14,
-          padding: '6px 12px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6
-        }}>
-          <span style={{ fontSize: 13, fontWeight: 750, color: '#FFFFFF', fontFamily: "'DM Mono', monospace" }}>
-            {hhBalance}<span className="desktop-only-inline"> $HH</span>
-          </span>
-          <img src="/logo.jfif" alt="$HH" style={{ width: 16, height: 16, borderRadius: '50%' }} />
-        </div>
 
         {/* Connect Button or User Info */}
         {isConnected && address ? (
@@ -166,7 +208,8 @@ export function Header({ tab, address, isConnected, displayName, isClubMember, h
               alignItems: 'center',
               gap: 6,
               boxShadow: '0 4px 12px rgba(59, 130, 246, 0.2)',
-              transition: 'all 0.2s'
+              transition: 'all 0.2s',
+              outline: 'none'
             }}
             onMouseEnter={e => {
               e.currentTarget.style.background = '#2563EB';

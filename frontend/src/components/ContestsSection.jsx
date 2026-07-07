@@ -1578,7 +1578,26 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
             {/* Bottom: Metrics */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 'auto' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: 12, color: '#64748B' }}>Prize Pool</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ fontSize: 12, color: '#64748B' }}>Prize Pool</span>
+                  <div style={{
+                    background: 'rgba(16, 185, 129, 0.1)',
+                    border: '1px solid rgba(16, 185, 129, 0.3)',
+                    borderRadius: 100,
+                    padding: '2px 8px',
+                    color: '#10B981',
+                    fontSize: 10,
+                    fontWeight: 600,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    lineHeight: 1
+                  }}>
+                    Sponsored by 
+                    <img src="/logo.jfif" alt="Happy Hour Logo" style={{ width: 10, height: 10, borderRadius: '50%', objectFit: 'cover' }} />
+                    Happy Hour
+                  </div>
+                </div>
                 <span style={{ fontSize: 13, fontWeight: 600, color: '#10B981' }}>$100 in $HH</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -1666,7 +1685,26 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
             {/* Bottom: Metrics */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 'auto' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: 12, color: '#64748B' }}>Prize Pool</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ fontSize: 12, color: '#64748B' }}>Prize Pool</span>
+                  <div style={{
+                    background: 'rgba(16, 185, 129, 0.1)',
+                    border: '1px solid rgba(16, 185, 129, 0.3)',
+                    borderRadius: 100,
+                    padding: '2px 8px',
+                    color: '#10B981',
+                    fontSize: 10,
+                    fontWeight: 600,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    lineHeight: 1
+                  }}>
+                    Sponsored by 
+                    <img src="/logo.jfif" alt="Happy Hour Logo" style={{ width: 10, height: 10, borderRadius: '50%', objectFit: 'cover' }} />
+                    Happy Hour
+                  </div>
+                </div>
                 <span style={{ fontSize: 13, fontWeight: 600, color: '#EF4444' }}>$120 in $HH</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

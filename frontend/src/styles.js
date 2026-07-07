@@ -84,6 +84,10 @@ export const CSS = `
       display: none !important;
     }
     
+    .mobile-only-flex {
+      display: flex !important;
+    }
+    
     /* Show mobile-only elements */
     .mobile-hamburger {
       display: flex !important;
