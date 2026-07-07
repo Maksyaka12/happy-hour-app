@@ -540,7 +540,7 @@ export default function App({ onLogin }) {
               marginBottom: 16,
               letterSpacing: '-0.01em',
               fontFamily: "'Inter', sans-serif"
-            }}>Become a part of the Happy Hour Team</h1>
+            }}>Become a Team Member</h1>
             
             <p style={{
               fontSize: 16,
@@ -604,7 +604,7 @@ export default function App({ onLogin }) {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   <h3 style={{ fontSize: 16, fontWeight: 600, color: '#FFFFFF', margin: 0 }}>Community Managers</h3>
                   <p style={{ fontSize: 14, color: '#94A3B8', margin: 0, lineHeight: 1.5 }}>
-                    Moderate and cultivate active, healthy communities on X (Twitter) and Telegram. Host discussions, address user inquiries, guide newcomers, and maintain a highly engaged, positive environment.
+                    Moderate and engage our community groups on X and Telegram. Host discussions, guide users, and maintain a highly active, positive environment.
                   </p>
                 </div>
               </div>
@@ -638,7 +638,7 @@ export default function App({ onLogin }) {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   <h3 style={{ fontSize: 16, fontWeight: 600, color: '#FFFFFF', margin: 0 }}>Social Media Managers</h3>
                   <p style={{ fontSize: 14, color: '#94A3B8', margin: 0, lineHeight: 1.5 }}>
-                    Curate high-quality content and maintain a consistent project voice. Publish updates, highlight product announcements, write detailed guides/articles, and run campaigns to acquire new users.
+                    Maintain content across social channels, highlight project updates/announcements, write detailed guides/articles, and drive user acquisition.
                   </p>
                 </div>
               </div>
@@ -673,7 +673,7 @@ export default function App({ onLogin }) {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   <h3 style={{ fontSize: 16, fontWeight: 600, color: '#FFFFFF', margin: 0 }}>Market Leads</h3>
                   <p style={{ fontSize: 14, color: '#94A3B8', margin: 0, lineHeight: 1.5 }}>
-                    Lead marketing calls and coordinate targeted campaigns to showcase native $HH token updates. Responsible for recruiting, onboarding, and managing a team of Market Managers to maximize reach.
+                    Lead marketing call campaigns, highlight updates on native $HH coin, and onboard/manage a team of Market Managers.
                   </p>
                 </div>
               </div>
@@ -708,7 +708,7 @@ export default function App({ onLogin }) {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   <h3 style={{ fontSize: 16, fontWeight: 600, color: '#FFFFFF', margin: 0 }}>Market Managers</h3>
                   <p style={{ fontSize: 14, color: '#94A3B8', margin: 0, lineHeight: 1.5 }}>
-                    Promote ecosystem updates and share call updates regarding the native $HH token. Analyze market trends, build strategic visibility, and drive token adoption across crypto communities.
+                    Publish call updates regarding the native $HH token, analyze market trends, and expand token visibility in crypto groups.
                   </p>
                 </div>
               </div>
@@ -744,7 +744,7 @@ export default function App({ onLogin }) {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   <h3 style={{ fontSize: 16, fontWeight: 600, color: '#FFFFFF', margin: 0 }}>Social Media Leads</h3>
                   <p style={{ fontSize: 14, color: '#94A3B8', margin: 0, lineHeight: 1.5 }}>
-                    Drive the overarching content strategy. Formulate promotional campaigns, draft high-impact announcements, write tutorials, oversee user growth, and manage/recruit Social Media Managers.
+                    Manage content strategy, highlight updates, write guides, attract users, and recruit/manage new Social Media Managers.
                   </p>
                 </div>
               </div>
