@@ -10,11 +10,10 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
 
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
 
-  const [isCollapsed, setIsCollapsed] = useState(() => {
+  const [isCollapsedRaw, setIsCollapsed] = useState(() => {
     try {
       const saved = localStorage.getItem('sidebar_collapsed')
       if (saved !== null) return saved === 'true'
-      if (typeof window !== 'undefined' && window.innerWidth < 768) return true
       return false
     } catch { return false }
   })
@@ -25,9 +24,21 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
   const [isResourcesOpen, setIsResourcesOpen] = useState(true)
   const [isSocialsOpen, setIsSocialsOpen] = useState(true)
 
+  const [isMobile, setIsMobile] = useState(false)
   useEffect(() => {
-    try { localStorage.setItem('sidebar_collapsed', isCollapsed) } catch {}
-  }, [isCollapsed])
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768)
+    }
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  const isCollapsed = isCollapsedRaw && !isMobile
+
+  useEffect(() => {
+    try { localStorage.setItem('sidebar_collapsed', isCollapsedRaw) } catch {}
+  }, [isCollapsedRaw])
 
   const tabs = [
     {

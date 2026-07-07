@@ -76,7 +76,7 @@ export function Header({ tab, address, isConnected, displayName, isClubMember, h
       <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
         {/* Daily Streak */}
         {streakCount > 0 && (
-          <div className="desktop-stat" style={{
+          <div style={{
             background: 'rgba(255, 255, 255, 0.03)',
             border: '1px solid rgba(255, 255, 255, 0.08)',
             borderRadius: 14,
@@ -111,7 +111,7 @@ export function Header({ tab, address, isConnected, displayName, isClubMember, h
         </div>
 
         {/* $HH Balance */}
-        <div className="desktop-stat" style={{
+        <div style={{
           background: 'rgba(255, 255, 255, 0.03)',
           border: '1px solid rgba(255, 255, 255, 0.08)',
           borderRadius: 14,
@@ -128,7 +128,7 @@ export function Header({ tab, address, isConnected, displayName, isClubMember, h
 
         {/* Connect Button or User Info */}
         {isConnected && address ? (
-          <div style={{
+          <div className="desktop-stat" style={{
             display: 'flex',
             alignItems: 'center',
             gap: 8,
