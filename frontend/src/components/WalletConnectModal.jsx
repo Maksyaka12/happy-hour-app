@@ -1,10 +1,18 @@
-import { useConnect } from 'wagmi'
+import { useEffect } from 'react'
+import { useConnect, useAccount } from 'wagmi'
 import { BaseMark } from './BaseMark'
 
 export function WalletConnectModal({ isOpen, onClose }) {
   if (!isOpen) return null
 
   const { connect, connectors, isPending, error } = useConnect()
+  const { isConnected } = useAccount()
+
+  useEffect(() => {
+    if (isConnected) {
+      onClose()
+    }
+  }, [isConnected, onClose])
 
   // Find the two connectors we configured in wagmi.js
   const baseConnector     = connectors.find(c => c.id === 'base-account' || c.name?.toLowerCase().includes('base'))
@@ -74,28 +82,16 @@ export function WalletConnectModal({ isOpen, onClose }) {
         </button>
 
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: 28 }}>
-          <div style={{ 
-            width: 48, 
-            height: 48, 
-            borderRadius: 16, 
-            background: 'rgba(59, 130, 246, 0.1)', 
-            border: '1px solid rgba(59, 130, 246, 0.2)',
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center',
-            margin: '0 auto 16px'
-          }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-              <line x1="12" y1="22.08" x2="12" y2="12"></line>
-            </svg>
-          </div>
-          <h3 style={{ margin: '0 0 8px', fontSize: 20, fontWeight: 800, letterSpacing: '-0.3px' }}>Connect Wallet</h3>
-          <p style={{ margin: 0, fontSize: 13, color: 'rgba(255, 255, 255, 0.6)', lineHeight: 1.5 }}>
-            Connect your wallet to participate in raffles, staking, and submit campaigns posts.
-          </p>
+        <div style={{ textAlign: 'center', marginBottom: 20 }}>
+          <img src="/logo.jfif" alt="Happy Hour Logo" style={{
+            width: 72,
+            height: 72,
+            borderRadius: '50%',
+            margin: '0 auto 8px',
+            display: 'block',
+            boxShadow: '0 4px 16px rgba(59, 130, 246, 0.25)',
+            border: '2px solid rgba(59, 130, 246, 0.3)'
+          }} />
         </div>
 
         {/* Buttons List */}
@@ -130,7 +126,7 @@ export function WalletConnectModal({ isOpen, onClose }) {
                   onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
                   onMouseLeave={e => e.currentTarget.style.transform = 'none'}
                 >
-                  Connect in App
+                  Connect Base Account
                 </button>
               )
             ) : (
