@@ -5,7 +5,7 @@ import { HappyHourLogo } from './HappyHourLogo'
 
 const short = (a) => (a ? `${a.slice(0, 6)}...${a.slice(-4)}` : '')
 
-export function Sidebar({ tab, setTab, address, isConnected, displayName, isClubMember, onRequireWallet }) {
+export function Sidebar({ tab, setTab, address, isConnected, displayName, isClubMember, onRequireWallet, isMobileSidebarOpen, setIsMobileSidebarOpen }) {
   const { disconnect } = useDisconnect()
 
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
@@ -264,21 +264,23 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
   ]
 
   return (
-    <aside style={{
-      width: isCollapsed ? 68 : 260,
-      background: 'var(--bg2)',
-      borderRight: '1px solid var(--border)',
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100vh',
-      position: 'sticky',
-      top: 0,
-      zIndex: 50,
-      fontFamily: "'Inter', sans-serif",
-      color: '#94A3B8',
-      userSelect: 'none',
-      flexShrink: 0
-    }}>
+    <aside 
+      className={`sidebar-container ${isMobileSidebarOpen ? 'open' : ''}`}
+      style={{
+        width: isCollapsed ? 68 : 260,
+        background: 'var(--bg2)',
+        borderRight: '1px solid var(--border)',
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100vh',
+        position: 'sticky',
+        top: 0,
+        zIndex: 50,
+        fontFamily: "'Inter', sans-serif",
+        color: '#94A3B8',
+        userSelect: 'none',
+        flexShrink: 0
+      }}>
       {/* Brand Header */}
       <div style={{
         height: 72,
@@ -314,6 +316,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
 
         <button 
           onClick={() => setIsCollapsed(!isCollapsed)}
+          className="collapse-btn"
           style={{
             background: 'transparent',
             border: 'none',
@@ -332,6 +335,27 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
           ) : (
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
           )}
+        </button>
+
+        <button 
+          onClick={() => setIsMobileSidebarOpen(false)}
+          className="mobile-close-btn"
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: '#FFFFFF',
+            cursor: 'pointer',
+            padding: 8,
+            display: 'none',
+            alignItems: 'center',
+            justifyContent: 'center',
+            outline: 'none'
+          }}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
         </button>
       </div>
 

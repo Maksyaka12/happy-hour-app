@@ -66,19 +66,64 @@ export const CSS = `
     background: linear-gradient(160deg, #EBF0FF 0%, #DDEAFF 40%, #E8EEFF 100%);
   }
 
-  /* Web layout adaptive styling (always desktop view) */
-  .web-mode .desktop-only {
-    display: flex !important;
-  }
-  .web-mode .mobile-only {
-    display: none !important;
+  /* Responsive Helpers */
+  @media (max-width: 768px) {
+    .desktop-only {
+      display: none !important;
+    }
+    .mobile-only {
+      display: block !important;
+    }
+    
+    /* Hide desktop stats in header */
+    .desktop-stat {
+      display: none !important;
+    }
+    
+    /* Show mobile-only elements */
+    .mobile-hamburger {
+      display: flex !important;
+    }
+    
+    /* Sidebar as a sliding drawer */
+    aside.sidebar-container {
+      position: fixed !important;
+      left: -260px !important;
+      top: 0 !important;
+      bottom: 0 !important;
+      width: 260px !important;
+      height: 100vh !important;
+      transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      z-index: 1000 !important;
+      box-shadow: 10px 0 40px rgba(0, 0, 0, 0.6) !important;
+    }
+    aside.sidebar-container.open {
+      left: 0 !important;
+    }
+    
+    /* Make grids/columns stack vertically on mobile */
+    .responsive-grid {
+      grid-template-columns: 1fr !important;
+      gap: 16px !important;
+    }
+    
+    .responsive-flex {
+      flex-direction: column !important;
+      gap: 16px !important;
+    }
+
+    #main-content-scroll {
+      padding: 16px 12px 64px !important;
+    }
   }
 
-  .miniapp-mode .desktop-only {
-    display: none !important;
-  }
-  .miniapp-mode .mobile-only {
-    display: block;
+  @media (min-width: 769px) {
+    .desktop-only {
+      display: flex !important;
+    }
+    .mobile-only {
+      display: none !important;
+    }
   }
 
   @keyframes fadeIn    { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:none } }

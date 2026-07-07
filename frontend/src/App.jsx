@@ -148,6 +148,7 @@ export default function App({ onLogin }) {
   const [tab, setTab] = useAppRouter()
   const [caCopied, setCaCopied] = useState(false)
   const [initialContest, setInitialContest] = useState(null)
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
 
   // useAccount().chainId returns the REAL wallet chain (even if unsupported)
   // useChainId() returns base.id by default when chain is not in wagmi config — can't use it here
@@ -786,10 +787,9 @@ export default function App({ onLogin }) {
     <>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
       <div 
-        className={isMiniapp ? "miniapp-mode" : "web-mode sidebar-layout"} 
-        style={{ minHeight: '100vh', color: 'var(--text)', position: 'relative' }}
+        className="app-container" 
+        style={{ minHeight: '100vh', color: 'var(--text)', position: 'relative', display: 'flex', background: 'var(--bg2)' }}
       >
-
         {/* Wrong Network Banner */}
         {onWrongChain && (
           <div style={{
@@ -818,500 +818,103 @@ export default function App({ onLogin }) {
           </div>
         )}
 
-        {/* WEB DESKTOP SIDEBAR + HEADER LAYOUT */}
-        {!isMiniapp && (
-          <div className="desktop-only" style={{ display: 'flex', minHeight: '100vh', width: '100%', background: 'var(--bg2)' }}>
-            <Sidebar 
-              tab={tab} 
-              setTab={setTab} 
-              address={address} 
-              isConnected={isConnected} 
-              displayName={displayName} 
-              isClubMember={isClubMember} 
-              onRequireWallet={handleRequireWallet} 
-            />
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, background: 'var(--bg2)' }}>
-              <Header 
-                tab={tab} 
-                address={address} 
-                isConnected={isConnected} 
-                displayName={displayName} 
-                isClubMember={isClubMember} 
-                hhBalance={hhBalanceStr}
-                hpBalance={hpBalance}
-                streakCount={streakCount}
-                onRequireWallet={handleRequireWallet} 
-              />
-              <div className="dark-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '32px 16px 64px', boxSizing: 'border-box' }}>
-                <div style={{ maxWidth: ['contests', 'earn'].includes(tab) ? 1200 : ['terms', 'privacy', 'affiliate', 'skills', 'x402', 'agentChat'].includes(tab) ? 800 : 640, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-                  {renderTabContent()}
-                </div>
-              </div>
-            </div>
-          </div>
+        {/* Sidebar Drawer Backdrop (for mobile) */}
+        {isMobileSidebarOpen && (
+          <div 
+            onClick={() => setIsMobileSidebarOpen(false)}
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0, 0, 0, 0.6)',
+              backdropFilter: 'blur(4px)',
+              zIndex: 999,
+              transition: 'opacity 0.2s'
+            }}
+          />
         )}
 
-        {/* MOBILE OR MINIAPP LAYOUT */}
-        <div className={isMiniapp ? "" : "mobile-only"}>
-          <div
-            style={{
-              position: 'sticky',
-              top: onWrongChain ? 44 : 0,
-              zIndex: 40,
-              background: 'var(--bg)',
-              borderBottom: '1px solid var(--border2)',
-              padding: '10px 16px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              boxShadow: '0 1px 8px rgba(10,11,13,0.06)',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <HappyHourLogo size={26} />
-              <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--text)', letterSpacing: -0.5 }}>
-                happy <span style={{ color: '#0052FF' }}>hour</span>
-              </span>
+        {/* Sidebar */}
+        <Sidebar 
+          tab={tab} 
+          setTab={(newTab) => {
+            setTab(newTab)
+            setIsMobileSidebarOpen(false) // Close sidebar drawer when tab clicked on mobile
+          }} 
+          address={address} 
+          isConnected={isConnected} 
+          displayName={displayName} 
+          isClubMember={isClubMember} 
+          onRequireWallet={handleRequireWallet} 
+          isMobileSidebarOpen={isMobileSidebarOpen}
+          setIsMobileSidebarOpen={setIsMobileSidebarOpen}
+        />
+
+        {/* Main Content Area */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, background: 'var(--bg2)' }}>
+          {/* Header */}
+          <Header 
+            tab={tab} 
+            address={address} 
+            isConnected={isConnected} 
+            displayName={displayName} 
+            isClubMember={isClubMember} 
+            hhBalance={hhBalanceStr}
+            hpBalance={hpBalance}
+            streakCount={streakCount}
+            onRequireWallet={handleRequireWallet} 
+            setIsMobileSidebarOpen={setIsMobileSidebarOpen}
+          />
+          
+          {/* Scrollable Content Wrapper */}
+          <div className="dark-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '32px 16px 64px', boxSizing: 'border-box' }} id="main-content-scroll">
+            <div style={{ maxWidth: ['contests', 'earn'].includes(tab) ? 1200 : ['terms', 'privacy', 'affiliate', 'skills', 'x402', 'agentChat'].includes(tab) ? 800 : 640, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+              {renderTabContent()}
             </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              {/* Telegram Link */}
-              <a 
-                href="https://t.me/happyhourapp" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                title="Telegram Channel"
-                style={{
-                  width: 24,
-                  height: 24,
-                  borderRadius: '50%',
-                  background: 'rgba(0, 136, 204, 0.08)',
-                  border: '1px solid rgba(0, 136, 204, 0.2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  textDecoration: 'none'
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(0, 136, 204, 0.16)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'rgba(0, 136, 204, 0.08)'}
-              >
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#0088cc' }}>
-                  <path d="M21.9 2.19a1 1 0 0 0-.99-.08l-19 8a1 1 0 0 0-.1 1.82l4.9 2.2 3.1 7.1a1 1 0 0 0 1.77.16l2.9-3.8 4.7 3.3a1 1 0 0 0 1.51-.55l4-17a1 1 0 0 0-.39-.85zM8.62 13.12l8.28-5.28-6.4 6.72-.4 2.88z"/>
-                </svg>
-              </a>
-
-              {/* X (Twitter) Link */}
-              <a 
-                href="https://x.com/happyhour_base" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                title="Follow us on X"
-                style={{
-                  width: 24,
-                  height: 24,
-                  borderRadius: '50%',
-                  background: 'rgba(0, 0, 0, 0.05)',
-                  border: '1px solid var(--border2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  textDecoration: 'none'
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(0, 0, 0, 0.1)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'rgba(0, 0, 0, 0.05)'}
-              >
-                <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" style={{ color: 'var(--text)' }}>
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                </svg>
-              </a>
-
-              {/* Docs Link */}
-              <a 
-                href="/docs" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                title="Documentation"
-                style={{
-                  width: 24,
-                  height: 24,
-                  borderRadius: '50%',
-                  background: 'rgba(0, 82, 255, 0.08)',
-                  border: '1px solid rgba(0, 82, 255, 0.2)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  textDecoration: 'none',
-                  gap: 1
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(0, 82, 255, 0.16)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'rgba(0, 82, 255, 0.08)'}
-              >
-                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#0052ff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                  <polyline points="14 2 14 8 20 8"/>
-                  <line x1="16" y1="13" x2="8" y2="13"/>
-                  <line x1="16" y1="17" x2="8" y2="17"/>
-                  <polyline points="10 9 9 9 8 9"/>
-                </svg>
-                <span style={{ fontSize: 6, fontWeight: 800, color: '#0052ff', lineHeight: 1, letterSpacing: '-0.1px' }}>
-                  docs
-                </span>
-              </a>
-
-              {/* DexScreener Link */}
-              <a 
-                href="https://dexscreener.com/base/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                title="DexScreener Chart"
-                style={{
-                  width: 24,
-                  height: 24,
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  textDecoration: 'none',
-                  overflow: 'hidden'
-                }}
-                onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
-                onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-              >
-                <img src="/dexscreener.jpg" alt="DexScreener" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </a>
-
-              {/* GeckoTerminal Link */}
-              <a 
-                href="https://www.geckoterminal.com/uk/base/pools/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                title="GeckoTerminal Chart"
-                style={{
-                  width: 24,
-                  height: 24,
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  textDecoration: 'none',
-                  overflow: 'hidden'
-                }}
-                onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
-                onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-              >
-                <img src="/geckoterminal.jpg" alt="GeckoTerminal" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </a>
-
-              {/* CoinGecko Link */}
-              <a 
-                href="https://www.coingecko.com/en/coins/happy-hour" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                title="CoinGecko"
-                style={{
-                  width: 24,
-                  height: 24,
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  textDecoration: 'none',
-                  overflow: 'hidden'
-                }}
-                onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
-                onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-              >
-                <img src="/CoinGecko-logo.png" alt="CoinGecko" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </a>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                {/* Daily Streak */}
-                {streakCount > 0 && (
-                  <div style={{
-                    background: 'rgba(255, 255, 255, 0.03)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
-                    borderRadius: 12,
-                    padding: '4px 8px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 4
-                  }}>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#FF9800" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
-                    </svg>
-                    <span style={{ fontSize: 11, fontWeight: 750, color: '#FFFFFF', fontFamily: "'DM Mono', monospace" }}>
-                      {streakCount}
-                    </span>
-                  </div>
-                )}
-
-                {/* HP Balance */}
-                <div style={{
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  borderRadius: 12,
-                  padding: '4px 8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 4
-                }}>
-                  <span style={{ fontSize: 11, fontWeight: 750, color: '#FFFFFF', fontFamily: "'DM Mono', monospace" }}>
-                    {hpBalance}
-                  </span>
-                  <img src="/logo.jfif" alt="HP" style={{ width: 12, height: 12, borderRadius: '50%' }} />
-                </div>
-
-                {/* $HH Balance */}
-                <div style={{
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  borderRadius: 12,
-                  padding: '4px 8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 4
-                }}>
-                  <span style={{ fontSize: 11, fontWeight: 750, color: '#FFFFFF', fontFamily: "'DM Mono', monospace" }}>
-                    {hhBalanceStr}
-                  </span>
-                  <img src="/logo.jfif" alt="$HH" style={{ width: 12, height: 12, borderRadius: '50%' }} />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div style={{ height: 12 }} />
-
-          <div style={{ position: 'relative', zIndex: 1, maxWidth: ['contests', 'earn'].includes(tab) ? 1200 : ['terms', 'privacy', 'affiliate', 'skills', 'x402', 'agentChat'].includes(tab) ? 800 : 640, margin: '0 auto' }}>
-            {renderTabContent()}
-          </div>
-
-          <footer style={{
-            width: '100%',
-            background: '#1D1F23',
-            borderTop: '1px solid rgba(255, 255, 255, 0.12)',
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 16,
-            padding: '32px 16px 140px',
-            boxSizing: 'border-box',
-            color: '#FFFFFF'
-          }}>
-            {/* Logo / Branding Row */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
-              <img src="/logo.jfif" alt="$HH Logo" style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover' }} />
-              <span style={{ fontSize: 12, fontWeight: 800, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: 6 }}>
-                $HH <span style={{ color: 'rgba(255, 255, 255, 0.6)', fontWeight: 650 }}>powered by</span>
-                <a 
-                  href="https://x.com/bankrbot" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: 6, 
-                    textDecoration: 'none', 
-                    color: '#FFFFFF',
-                    transition: 'opacity 0.2s'
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
-                  onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-                >
-                  <img src="/bankr-logo.jpg" alt="Bankr Logo" style={{ width: 22, height: 22, borderRadius: 6, objectFit: 'cover' }} />
-                  <span>Bankr</span>
-                </a>
-              </span>
-            </div>
-
-            {/* CA / Token Contract block */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              borderRadius: 10,
-              padding: '6px 10px',
+            
+            {/* Unified Footer */}
+            <footer style={{
               width: '100%',
-              maxWidth: 350,
-              justifyContent: 'space-between',
-              boxSizing: 'border-box'
+              maxWidth: 1200,
+              margin: '64px auto 0',
+              background: '#1D1F23',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              borderRadius: 20,
+              textAlign: 'center',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 16,
+              padding: '32px 16px',
+              boxSizing: 'border-box',
+              color: '#FFFFFF'
             }}>
-              <span style={{ fontSize: 9.5, fontWeight: 900, color: '#3B82F6', letterSpacing: '0.5px', flexShrink: 0 }}>$HH CA:</span>
-              <span style={{ 
-                fontSize: 8.5, 
-                fontWeight: 800, 
-                fontFamily: "sf mono, consolas, 'Fira Code', monospace", 
-                color: '#FFFFFF', 
-                letterSpacing: '-0.1px',
-                wordBreak: 'break-all',
-                textAlign: 'center',
-                flex: 1,
-                padding: '0 4px'
-              }}>
-                {caCopied ? 'Copied! ✅' : '0x8235EdF32a1e10Bd1867ad622915AB613664cbA3'}
-              </span>
-              <button 
-                onClick={() => {
-                  navigator.clipboard.writeText('0x8235EdF32a1e10Bd1867ad622915AB613664cbA3');
-                  setCaCopied(true);
-                  setTimeout(() => setCaCopied(false), 2000);
-                }}
-                title="Copy Contract Address"
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: 0,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#3B82F6',
-                  transition: 'all 0.2s',
-                  flexShrink: 0
-                }}
-                onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.15)'}
-                onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-              >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-              </button>
-            </div>
+              {/* Logo / Branding Row */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
+                <img src="/logo.jfif" alt="$HH Logo" style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover' }} />
+                <span style={{ fontSize: 12, fontWeight: 800, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  $HH <span style={{ color: 'rgba(255, 255, 255, 0.6)', fontWeight: 650 }}>powered by</span>
+                  <a 
+                    href="https://x.com/happyhour_base" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    style={{ color: '#3B82F6', textDecoration: 'none', fontWeight: 850 }}
+                    onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
+                    onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
+                  >
+                    @happyhour_base
+                  </a>
+                </span>
+              </div>
 
-            {/* Links Grid */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, width: '100%', margin: '8px 0' }}>
-              <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px 20px' }}>
+              {/* Links Row */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 14, margin: '8px 0' }}>
                 <a 
                   href="https://t.me/happyhourapp" 
                   target="_blank" 
-                  rel="noopener noreferrer"
-                  style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
-                  onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
-                >
-                  <div style={{
-                    width: 20, height: 20, borderRadius: '50%', background: 'rgba(0, 136, 204, 0.15)',
-                    border: '1px solid rgba(0, 136, 204, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center'
-                  }}>
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#3B82F6' }}>
-                      <path d="M21.9 2.19a1 1 0 0 0-.99-.08l-19 8a1 1 0 0 0-.1 1.82l4.9 2.2 3.1 7.1a1 1 0 0 0 1.77.16l2.9-3.8 4.7 3.3a1 1 0 0 0 1.51-.55l4-17a1 1 0 0 0-.39-.85zM8.62 13.12l8.28-5.28-6.4 6.72-.4 2.88z"/>
-                    </svg>
-                  </div>
-                  <span>Official TG</span>
-                </a>
-
-                <a 
-                  href="https://x.com/happyhour_base" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
-                  onMouseEnter={e => { e.currentTarget.style.color = '#FFFFFF'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
-                >
-                  <div style={{
-                    width: 20, height: 20, borderRadius: '50%', background: 'rgba(255, 255, 255, 0.08)',
-                    border: '1px solid rgba(255, 255, 255, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center'
-                  }}>
-                    <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#FFFFFF' }}>
-                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                    </svg>
-                  </div>
-                  <span>Official X</span>
-                </a>
-
-                <a 
-                  href="https://x.com/mksvibe" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
-                  onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
-                >
-                  <div style={{
-                    width: 20, height: 20, borderRadius: '50%', overflow: 'hidden',
-                    border: '1.5px solid #3B82F6', display: 'flex', alignItems: 'center', justifyContent: 'center'
-                  }}>
-                    <img src="/mksvibe.jpg" alt="mksvibe" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  </div>
-                  <span>Devs X</span>
-                </a>
-              </div>
-
-              <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px 20px' }}>
-                <a 
-                  href="https://dexscreener.com/base/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
-                  onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'none'; }}
-                >
-                  <div style={{
-                    width: 20, height: 20, borderRadius: '50%', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.15)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center'
-                  }}>
-                    <img src="/dexscreener.jpg" alt="DexScreener" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  </div>
-                  <span>Dexscreener</span>
-                </a>
-
-                <a 
-                  href="https://www.geckoterminal.com/uk/base/pools/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
-                  onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'none'; }}
-                >
-                  <div style={{
-                    width: 20, height: 20, borderRadius: '50%', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.15)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center'
-                  }}>
-                    <img src="/geckoterminal.jpg" alt="GeckoTerminal" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  </div>
-                  <span>GeckoTerminal</span>
-                </a>
-
-                <a 
-                  href="https://www.coingecko.com/en/coins/happy-hour" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
-                  onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'none'; }}
-                >
-                  <div style={{
-                    width: 20, height: 20, borderRadius: '50%', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.15)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center'
-                  }}>
-                    <img src="/CoinGecko-logo.png" alt="CoinGecko" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  </div>
-                  <span>CoinGecko</span>
-                </a>
-              </div>
-
-              <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px 20px' }}>
-                <a 
-                  href="/docs"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  rel="noopener noreferrer" 
                   style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
                   onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
                   onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
@@ -1321,17 +924,59 @@ export default function App({ onLogin }) {
                     display: 'flex', alignItems: 'center', justifyContent: 'center'
                   }}>
                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                      <line x1="22" y1="2" x2="11" y2="13"/>
+                      <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                    </svg>
+                  </div>
+                  <span>Telegram</span>
+                </a>
+
+                <a 
+                  href="https://x.com/happyhour_base" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
+                  onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
+                >
+                  <div style={{
+                    width: 20, height: 20, borderRadius: '50%', background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.15)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}>
+                    <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                  </div>
+                  <span>Follow us on X</span>
+                </a>
+
+                <a 
+                  href="/docs" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
+                  onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
+                >
+                  <div style={{
+                    width: 20, height: 20, borderRadius: '50%', background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.15)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                      <polyline points="14 2 14 8 20 8"/>
+                      <line x1="16" y1="13" x2="8" y2="13"/>
+                      <line x1="16" y1="17" x2="8" y2="17"/>
+                      <polyline points="10 9 9 9 8 9"/>
                     </svg>
                   </div>
                   <span>Docs</span>
                 </a>
 
                 <a 
-                  href="/docs/utility"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="https://dexscreener.com/base/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
                   style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
                   onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
                   onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
@@ -1341,7 +986,27 @@ export default function App({ onLogin }) {
                     display: 'flex', alignItems: 'center', justifyContent: 'center'
                   }}>
                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                      <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+                      <polyline points="16 7 22 7 22 13"/>
+                    </svg>
+                  </div>
+                  <span>DexScreener</span>
+                </a>
+
+                <a 
+                  href="/docs/utility" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 550, color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'all 0.2s' }}
+                  onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.transform = 'translateY(-0.5px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; e.currentTarget.style.transform = 'none'; }}
+                >
+                  <div style={{
+                    width: 20, height: 20, borderRadius: '50%', background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.15)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polygon points="5 3 19 12 5 21 5 3"/>
                     </svg>
                   </div>
                   <span>$HH Utility</span>
@@ -1368,23 +1033,21 @@ export default function App({ onLogin }) {
                   <span>$HH Economy</span>
                 </a>
               </div>
-            </div>
 
-            {/* Copyright */}
-            <div style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.5)', fontWeight: 650 }}>
-              &copy; {new Date().getFullYear()} Happy Hour. All rights reserved.
-            </div>
-        </footer>
+              {/* Copyright */}
+              <div style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.5)', fontWeight: 650 }}>
+                &copy; {new Date().getFullYear()} Happy Hour. All rights reserved.
+              </div>
+            </footer>
+          </div>
+        </div>
 
-        <BottomNav tab={tab} setTab={setTab} />
+        {/* Floating AI Chat assistant */}
+        {isConnected && <HappyBotChat address={address} isClubMember={isClubMember} />}
+
+        {/* Wallet Connect Modal */}
+        <WalletConnectModal isOpen={isConnectModalOpen} onClose={() => setIsConnectModalOpen(false)} />
       </div>
-
-      {/* Floating AI Chat assistant */}
-      {isConnected && <HappyBotChat address={address} isClubMember={isClubMember} />}
-
-      {/* Wallet Connect Modal */}
-      <WalletConnectModal isOpen={isConnectModalOpen} onClose={() => setIsConnectModalOpen(false)} />
-    </div>
-  </>
+    </>
   )
 }

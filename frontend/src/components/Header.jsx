@@ -2,7 +2,7 @@ import { BaseMark } from './BaseMark'
 
 const short = (a) => (a ? `${a.slice(0, 6)}...${a.slice(-4)}` : '')
 
-export function Header({ tab, address, isConnected, displayName, isClubMember, hhBalance, hpBalance, streakCount, onRequireWallet }) {
+export function Header({ tab, address, isConnected, displayName, isClubMember, hhBalance, hpBalance, streakCount, onRequireWallet, setIsMobileSidebarOpen }) {
   const tabNames = {
     home: 'Profile',
     raffle: 'Hourly Lottery',
@@ -14,7 +14,12 @@ export function Header({ tab, address, isConnected, displayName, isClubMember, h
     privacy: 'Privacy Policy',
     skills: 'Skills',
     agentChat: 'Agent Chat',
-    x402: 'x402 Endpoints'
+    x402: 'x402 Endpoints',
+    link: 'Linked accounts',
+    settings: 'Settings',
+    hhIntro: '$HH Introduction',
+    hhChart: '$HH Chart',
+    hhSwap: '$HH Swap'
   }
 
   return (
@@ -32,22 +37,46 @@ export function Header({ tab, address, isConnected, displayName, isClubMember, h
       color: '#FFFFFF',
       fontFamily: "'Inter', sans-serif"
     }}>
-      {/* Tab Title */}
-      <h1 style={{
-        margin: 0,
-        fontSize: 18,
-        fontWeight: 800,
-        color: '#FFFFFF',
-        letterSpacing: '-0.3px'
-      }}>
-        {tabNames[tab] || 'Platform'}
-      </h1>
+      {/* Left side: Hamburger + Title */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <button 
+          onClick={() => setIsMobileSidebarOpen(true)}
+          className="mobile-hamburger"
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: '#FFFFFF',
+            cursor: 'pointer',
+            padding: 8,
+            display: 'none',
+            alignItems: 'center',
+            justifyContent: 'center',
+            outline: 'none'
+          }}
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+
+        <h1 style={{
+          margin: 0,
+          fontSize: 18,
+          fontWeight: 800,
+          color: '#FFFFFF',
+          letterSpacing: '-0.3px'
+        }}>
+          {tabNames[tab] || 'Platform'}
+        </h1>
+      </div>
 
       {/* Top right actions */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
         {/* Daily Streak */}
         {streakCount > 0 && (
-          <div style={{
+          <div className="desktop-stat" style={{
             background: 'rgba(255, 255, 255, 0.03)',
             border: '1px solid rgba(255, 255, 255, 0.08)',
             borderRadius: 14,
@@ -66,7 +95,7 @@ export function Header({ tab, address, isConnected, displayName, isClubMember, h
         )}
 
         {/* HP Balance */}
-        <div style={{
+        <div className="desktop-stat" style={{
           background: 'rgba(255, 255, 255, 0.03)',
           border: '1px solid rgba(255, 255, 255, 0.08)',
           borderRadius: 14,
@@ -82,7 +111,7 @@ export function Header({ tab, address, isConnected, displayName, isClubMember, h
         </div>
 
         {/* $HH Balance */}
-        <div style={{
+        <div className="desktop-stat" style={{
           background: 'rgba(255, 255, 255, 0.03)',
           border: '1px solid rgba(255, 255, 255, 0.08)',
           borderRadius: 14,
