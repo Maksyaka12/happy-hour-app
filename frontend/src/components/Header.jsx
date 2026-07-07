@@ -121,7 +121,7 @@ export function Header({ tab, address, isConnected, displayName, isClubMember, h
           gap: 6
         }}>
           <span style={{ fontSize: 13, fontWeight: 750, color: '#FFFFFF', fontFamily: "'DM Mono', monospace" }}>
-            {hhBalance} $HH
+            {hhBalance}<span className="desktop-only-inline"> $HH</span>
           </span>
           <img src="/logo.jfif" alt="$HH" style={{ width: 16, height: 16, borderRadius: '50%' }} />
         </div>

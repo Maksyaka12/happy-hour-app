@@ -80,6 +80,10 @@ export const CSS = `
       display: none !important;
     }
     
+    .desktop-only-inline {
+      display: none !important;
+    }
+    
     /* Show mobile-only elements */
     .mobile-hamburger {
       display: flex !important;
