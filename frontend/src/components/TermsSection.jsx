@@ -7,10 +7,12 @@ export function TermsSection() {
       fontFamily: "'Inter', sans-serif",
       color: '#A1A1AA',
       lineHeight: 1.7,
-      fontSize: 15
+      fontSize: 15,
+      border: '5px solid red',
+      backgroundColor: 'yellow'
     }}>
-      <h1 style={{ color: '#FAFAFA', fontSize: 32, marginBottom: 12, fontWeight: 700, letterSpacing: '-0.02em' }}>Terms of Service</h1>
-      <p style={{ marginBottom: 48, fontSize: 14 }}>Last updated: July 2026</p>
+      <h1 style={{ color: 'black', fontSize: 32, marginBottom: 12, fontWeight: 700, letterSpacing: '-0.02em' }}>Terms of Service DEBUG RENDER</h1>
+      <p style={{ marginBottom: 48, fontSize: 14, color: 'black' }}>Last updated: July 2026</p>
 
       <h2 style={{ color: '#FAFAFA', fontSize: 20, marginTop: 48, marginBottom: 16, fontWeight: 600, letterSpacing: '-0.01em' }}>1. Introduction</h2>
       <p style={{ marginBottom: 16 }}>
