@@ -431,8 +431,96 @@ export default function App({ onLogin }) {
             </div>
           </div>
         )
-      case 'affiliate':
       case 'privacy':
+        return (
+          <div style={{
+            width: '100%',
+            maxWidth: 1200,
+            margin: '0 auto',
+            padding: '40px 24px',
+            fontFamily: "'Inter', sans-serif",
+            color: '#94A3B8',
+            lineHeight: 1.6,
+            fontSize: 15
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 40, flexWrap: 'wrap', gap: 16 }}>
+              <h1 style={{ color: '#FFFFFF', fontSize: 20, fontWeight: 600, margin: 0 }}>Privacy Policy for Happy Hour</h1>
+              <p style={{ fontSize: 14, margin: 0 }}>Last Updated: July 2026</p>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+              <section>
+                <h2 style={{ color: '#FFFFFF', fontSize: 16, marginBottom: 16, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>1. Introduction</h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <p>Happy Hour ("Company", "we", "us", or "our") is committed to protecting the privacy of its users. This Privacy Policy describes how we collect, use, store, and disclose information from users ("you") when you access our Platform, smart contracts, social channels, or interact with our AI agents (such as @happyhourbot and the in-app Happy Bot).</p>
+                  <p>By connecting your wallet and interacting with the Services, you consent to the data collection and processing activities described in this Policy.</p>
+                </div>
+              </section>
+
+              <section>
+                <h2 style={{ color: '#FFFFFF', fontSize: 16, marginBottom: 16, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>2. Information We Collect</h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <p>Unlike traditional web applications, we do not require you to provide personal details such as your legal name, email address, physical address, or phone number. However, we collect certain identifiers to provide the Services:</p>
+                  <ul style={{ listStyleType: 'disc', paddingLeft: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <li><strong style={{ color: '#E2E8F0' }}>Blockchain Addresses & Wallet Data:</strong> We collect and store your public blockchain address (wallet address) which acts as your primary user identifier. We index public transaction histories related to our smart contracts (staking, lottery tickets, HP check-ins) to compute your badge rewards (e.g. Happy Holder, Happy Staker).</li>
+                    <li><strong style={{ color: '#E2E8F0' }}>Social Media & Profile Linking:</strong> If you link your X (formerly Twitter) or Telegram account to your wallet address to use @happyhourbot, we store the mapping of your handle to your wallet address, along with authentication status.</li>
+                    <li><strong style={{ color: '#E2E8F0' }}>Conversational Interactions & Chat Logs:</strong> We log inputs and queries sent to the in-app Happy Bot and @happyhourbot. This data is used to analyze queries, execute on-chain instructions, and improve the AI agent's responsiveness.</li>
+                    <li><strong style={{ color: '#E2E8F0' }}>Usage & System Metrics:</strong> We log usage events (such as query counts per day, active check-in streaks) in our database to manage platform limits, track bot query quotas (5 free queries/day vs. unlimited for Happy Club members), and prevent spam/DDoS activities.</li>
+                  </ul>
+                </div>
+              </section>
+
+              <section>
+                <h2 style={{ color: '#FFFFFF', fontSize: 16, marginBottom: 16, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>3. How We Use Your Information</h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <p>We use the collected information for the following business purposes:</p>
+                  <ul style={{ listStyleType: 'disc', paddingLeft: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <li>To provide, operate, and maintain the Happy Hour Platform, including the Hourly and Daily Raffle prize distributions.</li>
+                    <li>To authenticate your wallet and social accounts for bot command execution (e.g. automating a raffle deposit or staking via Twitter DM).</li>
+                    <li>To monitor and calculate user performance rankings, check-in streaks, badges, and Happy Points (HP).</li>
+                    <li>To enforce our daily usage policies, query counts, and premium Happy Club memberships.</li>
+                    <li>To identify, debug, and patch errors on our web interface and database services.</li>
+                  </ul>
+                </div>
+              </section>
+
+              <section>
+                <h2 style={{ color: '#FFFFFF', fontSize: 16, marginBottom: 16, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>4. Blockchain Data Transparency</h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <p>Please note that any transactions or actions initiated on-chain via our smart contracts (such as staking tokens or buying lottery tickets) are permanently recorded on public ledger systems. This data is public, immutable, and accessible to anyone. We cannot delete or modify data stored on public blockchain networks.</p>
+                </div>
+              </section>
+
+              <section>
+                <h2 style={{ color: '#FFFFFF', fontSize: 16, marginBottom: 16, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>5. Third-Party Integrations</h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <p>We work with third-party service providers to power key features of our infrastructure. These include:</p>
+                  <ul style={{ listStyleType: 'disc', paddingLeft: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <li><strong style={{ color: '#E2E8F0' }}>Supabase:</strong> For off-chain database hosting, linked social handle records, query counters, and automation configurations.</li>
+                    <li><strong style={{ color: '#E2E8F0' }}>Chainlink VRF:</strong> For verifiable, cryptographically secure randomness in daily draws.</li>
+                    <li><strong style={{ color: '#E2E8F0' }}>Wallet Providers:</strong> Self-custodial connection kits (such as Privy) to handle secure logins.</li>
+                  </ul>
+                </div>
+              </section>
+
+              <section>
+                <h2 style={{ color: '#FFFFFF', fontSize: 16, marginBottom: 16, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>6. Data Security</h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <p>We implement industry-standard database security measures to protect your off-chain profile data. Because we are a decentralized platform, we never collect, store, or have access to your wallet's private keys or recovery phrases. You are solely responsible for keeping your credentials and private keys secure.</p>
+                </div>
+              </section>
+
+              <section>
+                <h2 style={{ color: '#FFFFFF', fontSize: 16, marginBottom: 16, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>7. Your Privacy Rights</h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <p>Depending on your jurisdiction (such as the EEA under GDPR or California under CCPA), you may have the right to request access to, deletion of, or restriction of our processing of your off-chain data (such as your linked X account or query history). Since we do not store names or emails, we verify request ownership solely by having you sign a cryptographically secure message with the wallet address linked to the data.</p>
+                  <p>To request data deletion or exercise your rights, please submit a request to support@happyhour-based.app.</p>
+                </div>
+              </section>
+            </div>
+          </div>
+        )
+      case 'affiliate':
       case 'skills':
       case 'x402':
       case 'agentChat':
@@ -440,7 +528,6 @@ export default function App({ onLogin }) {
           <div style={{ padding: '80px 20px', textAlign: 'center' }}>
             <h2 style={{ color: '#FFFFFF', fontSize: 28, marginBottom: 12 }}>
               {tab === 'affiliate' ? 'Happy Hour Affiliate' : 
-               tab === 'privacy' ? 'Privacy Policy' :
                tab === 'skills' ? 'Skills' : 
                tab === 'agentChat' ? 'Agent Chat' : 'x402 Endpoints'}
             </h2>
