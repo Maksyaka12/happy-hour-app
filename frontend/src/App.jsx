@@ -59,7 +59,10 @@ const URL_TO_TAB = {
   '/skills': 'skills',
   '/x402': 'x402',
   '/agent-chat': 'agentChat',
-  '/settings': 'settings'
+  '/settings': 'settings',
+  '/hh-intro': 'hhIntro',
+  '/hh-chart': 'hhChart',
+  '/hh-swap': 'hhSwap'
 }
 
 const TAB_TO_URL = Object.fromEntries(Object.entries(URL_TO_TAB).map(([k, v]) => [v, k]))
@@ -76,6 +79,9 @@ TAB_TO_URL['skills'] = '/skills'
 TAB_TO_URL['x402'] = '/x402'
 TAB_TO_URL['settings'] = '/settings'
 TAB_TO_URL['agentChat'] = '/agent-chat'
+TAB_TO_URL['hhIntro'] = '/hh-intro'
+TAB_TO_URL['hhChart'] = '/hh-chart'
+TAB_TO_URL['hhSwap'] = '/hh-swap'
 
 function useAppRouter() {
   const [tab, setTabState] = useState(() => {
@@ -756,11 +762,17 @@ export default function App({ onLogin }) {
       case 'skills':
       case 'x402':
       case 'agentChat':
+      case 'hhIntro':
+      case 'hhChart':
+      case 'hhSwap':
         return (
           <div style={{ padding: '80px 20px', textAlign: 'center' }}>
             <h2 style={{ color: '#FFFFFF', fontSize: 28, marginBottom: 12 }}>
               {tab === 'skills' ? 'Skills' : 
-               tab === 'agentChat' ? 'Agent Chat' : 'x402 Endpoints'}
+               tab === 'agentChat' ? 'Agent Chat' : 
+               tab === 'hhIntro' ? '$HH Introduction' : 
+               tab === 'hhChart' ? '$HH Chart' : 
+               tab === 'hhSwap' ? '$HH Swap' : 'x402 Endpoints'}
             </h2>
             <p style={{ color: '#8A8F9E', fontSize: 16 }}>Coming Soon</p>
           </div>

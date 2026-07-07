@@ -20,6 +20,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
   })
 
   const [isPlatformOpen, setIsPlatformOpen] = useState(true)
+  const [isHhCoinOpen, setIsHhCoinOpen] = useState(true)
   const [isToolsOpen, setIsToolsOpen] = useState(true)
   const [isResourcesOpen, setIsResourcesOpen] = useState(true)
   const [isSocialsOpen, setIsSocialsOpen] = useState(true)
@@ -203,6 +204,62 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
         </svg>
       )
     }
+  const hhCoinItems = [
+    {
+      id: 'hhIntro',
+      name: '$HH Introduction',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+      )
+    },
+    {
+      id: 'hhChart',
+      name: '$HH Chart',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
+      )
+    },
+    {
+      id: 'hhSwap',
+      name: '$HH Swap',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="m16 3 4 4-4 4"></path>
+          <path d="M20 7H9a4 4 0 0 0-4 4v3"></path>
+          <path d="m8 21-4-4 4-4"></path>
+          <path d="M4 17h11a4 4 0 0 0 4-4v-3"></path>
+        </svg>
+      )
+    },
+    {
+      name: '$HH Economy',
+      url: '/docs/economy',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 2v20"></path>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+        </svg>
+      )
+    },
+    {
+      name: '$HH Utility',
+      url: '/docs/utility',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        </svg>
+      )
+    }
   ]
 
   return (
@@ -357,6 +414,100 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                   </div>
                   {!isCollapsed && <span>{t.name}</span>}
                 </button>
+              )
+            })}
+          </div>
+        )}
+        </div>
+
+        {/* $HH Native Coin Section */}
+        <div>
+          {!isCollapsed && (
+            <div 
+              onClick={() => setIsHhCoinOpen(!isHhCoinOpen)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '0 12px',
+                marginBottom: 8,
+                cursor: 'pointer',
+                userSelect: 'none'
+              }}
+            >
+              <span style={{
+                fontSize: 11,
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                color: '#64748B'
+              }}>
+                $HH Native Coin
+              </span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isHhCoinOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+          )}
+          {(isHhCoinOpen || isCollapsed) && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {hhCoinItems.map((r, i) => {
+              const isButton = !!r.id;
+              const active = isButton && tab === r.id;
+              const Component = isButton ? 'button' : 'a';
+              const baseStyle = {
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: isCollapsed ? 'center' : 'flex-start',
+                gap: isCollapsed ? 0 : 12,
+                width: '100%',
+                padding: isCollapsed ? '10px 0' : '10px 12px',
+                borderRadius: 12,
+                color: active ? '#FFFFFF' : '#C1C4CD',
+                fontSize: 14.5,
+                fontWeight: 500,
+                textDecoration: 'none',
+                boxSizing: 'border-box',
+                transition: 'all 0.15s ease'
+              };
+              
+              const props = isButton ? {
+                key: r.id,
+                onClick: () => setTab(r.id),
+                style: { ...baseStyle, background: active ? 'rgba(59, 130, 246, 0.08)' : 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }
+              } : {
+                key: r.name,
+                href: r.url,
+                target: "_blank",
+                rel: "noopener noreferrer",
+                style: baseStyle
+              };
+
+              return (
+                <Component
+                  {...props}
+                  onMouseEnter={e => {
+                    if (!active) {
+                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+                      e.currentTarget.style.color = '#FFFFFF';
+                    }
+                  }}
+                  onMouseLeave={e => {
+                    if (!active) {
+                      e.currentTarget.style.background = 'transparent';
+                      e.currentTarget.style.color = '#C1C4CD';
+                    }
+                  }}
+                >
+                  <div style={{
+                    color: active ? '#3B82F6' : '#8A8F9E',
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}>
+                    {r.icon}
+                  </div>
+                  {!isCollapsed && <span>{r.name}</span>}
+                </Component>
               )
             })}
           </div>
