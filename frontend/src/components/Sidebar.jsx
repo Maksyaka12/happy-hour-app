@@ -5,7 +5,7 @@ import { HappyHourLogo } from './HappyHourLogo'
 
 const short = (a) => (a ? `${a.slice(0, 6)}...${a.slice(-4)}` : '')
 
-export function Sidebar({ tab, setTab, address, isConnected, displayName, isClubMember, onRequireWallet, isMobileSidebarOpen, setIsMobileSidebarOpen }) {
+export function Sidebar({ tab, setTab, address, isConnected, displayName, isClubMember, onRequireWallet, onLogout, isMobileSidebarOpen, setIsMobileSidebarOpen }) {
   const { disconnect } = useDisconnect()
 
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
@@ -952,7 +952,11 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                 <button
                   onClick={() => {
                     setIsProfileMenuOpen(false)
-                    disconnect()
+                    if (onLogout) {
+                      onLogout()
+                    } else {
+                      disconnect()
+                    }
                   }}
                   style={{
                     width: '100%',

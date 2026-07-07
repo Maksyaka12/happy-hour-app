@@ -60,7 +60,7 @@ const safeParseUnits = (amountStr, decimals = 18) => {
 }
 
 
-export function ProfileSection({ address, basename, totalUsers, setTab, onRequireWallet }) {
+export function ProfileSection({ address, basename, totalUsers, setTab, onRequireWallet, onLogout }) {
   const { disconnect } = useDisconnect()
   const { writeContract: wagmiWriteContract } = useWriteContract()
 
@@ -1029,7 +1029,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
           
           {/* Disconnect Button */}
           <button
-            onClick={() => disconnect()}
+            onClick={() => onLogout ? onLogout() : disconnect()}
             style={{
               background: 'rgba(255,255,255,0.1)',
               backdropFilter: 'blur(8px)',

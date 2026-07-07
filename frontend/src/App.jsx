@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useAccount, useReadContract, useSwitchChain } from 'wagmi'
+import { useAccount, useReadContract, useSwitchChain, useDisconnect } from 'wagmi'
 import { base } from 'wagmi/chains'
 import { formatUnits } from 'viem'
 import { db } from './config/supabase'
@@ -121,7 +121,7 @@ function useAppRouter() {
   return [tab, setTab]
 }
 
-export default function App({ onLogin }) {
+export default function App({ onLogin, onLogout }) {
   const isMiniapp = useMemo(() => {
     if (typeof window === 'undefined') return false
     const params = new URLSearchParams(window.location.search)
@@ -154,6 +154,14 @@ export default function App({ onLogin }) {
   // useChainId() returns base.id by default when chain is not in wagmi config — can't use it here
   const { address, isConnected, isConnecting, isReconnecting, chainId: accountChainId } = useAccount()
   const { switchChain, isPending: isSwitching } = useSwitchChain()
+  const { disconnect } = useDisconnect()
+  const handleLogout = () => {
+    disconnect()
+    if (onLogout) {
+      onLogout()
+    }
+  }
+
   const basename = useBasename(address)
   const onWrongChain = isConnected && !!accountChainId && accountChainId !== base.id
 
@@ -329,7 +337,7 @@ export default function App({ onLogin }) {
   const renderTabContent = () => {
     switch (tab) {
       case 'home':
-        return <ProfileSection address={address} basename={basename} totalUsers={totalUsers} setTab={setTab} onRequireWallet={handleRequireWallet} />
+        return <ProfileSection address={address} basename={basename} totalUsers={totalUsers} setTab={setTab} onRequireWallet={handleRequireWallet} onLogout={handleLogout} />
       case 'raffle':
         return <RaffleSection address={address} basename={basename} onRequireWallet={handleRequireWallet} />
       case 'dailyRaffle':
@@ -848,6 +856,7 @@ export default function App({ onLogin }) {
           displayName={displayName} 
           isClubMember={isClubMember} 
           onRequireWallet={handleRequireWallet} 
+          onLogout={handleLogout}
           isMobileSidebarOpen={isMobileSidebarOpen}
           setIsMobileSidebarOpen={setIsMobileSidebarOpen}
         />

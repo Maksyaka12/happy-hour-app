@@ -25,8 +25,8 @@ const isDocsRoute = window.location.pathname.startsWith('/docs')
 const isMobileDappBrowser = typeof window !== 'undefined' && window.ethereum && /Mobi|Android|iPhone/i.test(navigator.userAgent)
 
 const PrivyWebAppWrapper = () => {
-  const { login } = usePrivy()
-  return <App onLogin={login} />
+  const { login, logout } = usePrivy()
+  return <App onLogin={login} onLogout={logout} />
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(
