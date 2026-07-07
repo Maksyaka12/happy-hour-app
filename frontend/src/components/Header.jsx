@@ -8,7 +8,13 @@ export function Header({ tab, address, isConnected, displayName, isClubMember, h
     raffle: 'Hourly Lottery',
     dailyRaffle: 'Big Daily Lottery',
     earn: 'Staking',
-    contests: 'Campaigns'
+    contests: 'Campaigns',
+    terms: 'Terms of Service',
+    affiliate: 'Happy Hour Affiliate',
+    privacy: 'Privacy Policy',
+    skills: 'Skills',
+    agentChat: 'Agent Chat',
+    x402: 'x402 Endpoints'
   }
 
   return (
