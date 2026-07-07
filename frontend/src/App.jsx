@@ -52,13 +52,14 @@ const URL_TO_TAB = {
   '/daily-lottery': 'dailyRaffle',
   '/staking': 'earn',
   '/campaigns': 'contests',
-  '/account': 'account',
+  '/link': 'link',
   '/terms': 'terms',
   '/affiliate': 'affiliate',
   '/privacy': 'privacy',
   '/skills': 'skills',
   '/x402': 'x402',
-  '/agent-chat': 'agentChat'
+  '/agent-chat': 'agentChat',
+  '/settings': 'settings'
 }
 
 const TAB_TO_URL = Object.fromEntries(Object.entries(URL_TO_TAB).map(([k, v]) => [v, k]))
@@ -67,12 +68,13 @@ TAB_TO_URL['raffle'] = '/hourly-lottery'
 TAB_TO_URL['dailyRaffle'] = '/daily-lottery'
 TAB_TO_URL['earn'] = '/staking'
 TAB_TO_URL['contests'] = '/campaigns'
-TAB_TO_URL['account'] = '/account'
+TAB_TO_URL['link'] = '/link'
 TAB_TO_URL['terms'] = '/terms'
 TAB_TO_URL['affiliate'] = '/affiliate'
 TAB_TO_URL['privacy'] = '/privacy'
 TAB_TO_URL['skills'] = '/skills'
 TAB_TO_URL['x402'] = '/x402'
+TAB_TO_URL['settings'] = '/settings'
 TAB_TO_URL['agentChat'] = '/agent-chat'
 
 function useAppRouter() {
@@ -337,8 +339,44 @@ export default function App({ onLogin }) {
             onRequireWallet={handleRequireWallet}
           />
         )
-      case 'account':
+      case 'link':
         return <AccountSection address={address} onRequireWallet={handleRequireWallet} />
+      case 'settings':
+        return (
+          <div style={{
+            width: '100%',
+            maxWidth: 1200,
+            margin: '0 auto',
+            padding: '40px 24px',
+            fontFamily: "'Inter', sans-serif",
+            color: '#94A3B8',
+            lineHeight: 1.6,
+            fontSize: 15
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 40, flexWrap: 'wrap', gap: 16 }}>
+              <h1 style={{ color: '#FFFFFF', fontSize: 20, fontWeight: 600, margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                Settings
+              </h1>
+            </div>
+            
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              borderRadius: 20,
+              padding: 24,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 16
+            }}>
+              <h3 style={{ color: '#FFFFFF', margin: 0, fontSize: 16 }}>General Settings</h3>
+              <p style={{ margin: 0, fontSize: 14, color: '#64748B' }}>Configure your Happy Hour platform preferences and interface configurations. Settings content is coming soon.</p>
+            </div>
+          </div>
+        )
       case 'terms':
         return (
           <div style={{
@@ -710,43 +748,6 @@ export default function App({ onLogin }) {
                   <p style={{ fontSize: 14, color: '#94A3B8', margin: 0, lineHeight: 1.5 }}>
                     Publish call updates regarding the native $HH token, analyze market trends, and expand token visibility in crypto groups.
                   </p>
-                </div>
-              </div>
-
-              {/* Card 5: Social Media Leads */}
-              <div style={{
-                background: 'rgba(255, 255, 255, 0.02)',
-                border: '1px solid rgba(255, 255, 255, 0.05)',
-                borderRadius: 12,
-                padding: 24,
-                display: 'flex',
-                gap: 16,
-                alignItems: 'flex-start'
-              }}>
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: 40,
-                  height: 40,
-                  borderRadius: 8,
-                  background: 'rgba(59, 130, 246, 0.1)',
-                  color: '#3B82F6',
-                  flexShrink: 0
-                }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                  </svg>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <h3 style={{ fontSize: 16, fontWeight: 600, color: '#FFFFFF', margin: 0 }}>Social Media Leads</h3>
-                  <p style={{ fontSize: 14, color: '#94A3B8', margin: 0, lineHeight: 1.5 }}>
-                    Manage content strategy, highlight updates, write guides, attract users, and recruit/manage new Social Media Managers.
-                  </p>
-                </div>
               </div>
             </div>
           </div>

@@ -99,7 +99,7 @@ export function AccountSection({ address, onRequireWallet }) {
           margin: '0 0 8px 0',
           fontFamily: "'Outfit', 'Inter', sans-serif"
         }}>
-          Account Settings
+          Linked accounts
         </h1>
         <p style={{
           fontSize: 14,
@@ -107,7 +107,7 @@ export function AccountSection({ address, onRequireWallet }) {
           margin: 0,
           lineHeight: 1.5
         }}>
-          Manage your personal information and connected social accounts.
+          Manage your connected social accounts.
         </p>
       </div>
 
@@ -127,11 +127,11 @@ export function AccountSection({ address, onRequireWallet }) {
             width: 32,
             height: 32,
             borderRadius: 8,
-            background: 'rgba(139, 92, 246, 0.15)',
+            background: 'rgba(255, 255, 255, 0.08)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#8B5CF6'
+            color: '#94A3B8'
           }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
