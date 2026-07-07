@@ -82,16 +82,19 @@ export function WalletConnectModal({ isOpen, onClose }) {
         </button>
 
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: 20 }}>
+        <div style={{ textAlign: 'center', marginBottom: 24 }}>
           <img src="/logo.jfif" alt="Happy Hour Logo" style={{
             width: 72,
             height: 72,
-            borderRadius: '50%',
-            margin: '0 auto 8px',
+            borderRadius: 18,
+            margin: '0 auto 16px',
             display: 'block',
             boxShadow: '0 4px 16px rgba(59, 130, 246, 0.25)',
             border: '2px solid rgba(59, 130, 246, 0.3)'
           }} />
+          <p style={{ margin: 0, fontSize: 14, color: 'rgba(255, 255, 255, 0.7)', lineHeight: 1.5, fontWeight: 500 }}>
+            Connect your wallet to Happy Hour mini-app
+          </p>
         </div>
 
         {/* Buttons List */}
