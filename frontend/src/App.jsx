@@ -748,6 +748,7 @@ export default function App({ onLogin }) {
                   <p style={{ fontSize: 14, color: '#94A3B8', margin: 0, lineHeight: 1.5 }}>
                     Publish call updates regarding the native $HH token, analyze market trends, and expand token visibility in crypto groups.
                   </p>
+                </div>
               </div>
             </div>
           </div>
