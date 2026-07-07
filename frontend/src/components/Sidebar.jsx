@@ -421,6 +421,84 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
         )}
         </div>
 
+        {/* Tools Section */}
+        <div>
+          {!isCollapsed && (
+            <div 
+              onClick={() => setIsToolsOpen(!isToolsOpen)}
+              style={{
+                fontSize: 14.5,
+                fontWeight: 600,
+                color: '#717886',
+                padding: '4px 12px',
+                marginBottom: 4,
+                marginTop: 8,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                userSelect: 'none'
+              }}
+            >
+              Tools
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isToolsOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+          )}
+          {(isToolsOpen || isCollapsed) && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              {tools.map(t => {
+                const active = tab === t.id
+                return (
+                  <button
+                    key={t.id}
+                    onClick={() => setTab(t.id)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: isCollapsed ? 'center' : 'flex-start',
+                      gap: isCollapsed ? 0 : 12,
+                      width: '100%',
+                      padding: isCollapsed ? '10px 0' : '10px 12px',
+                      borderRadius: 12,
+                      border: 'none',
+                      background: active ? 'rgba(59, 130, 246, 0.08)' : 'transparent',
+                      color: active ? '#FFFFFF' : '#C1C4CD',
+                      fontSize: 14.5,
+                      fontWeight: 500,
+                      fontFamily: 'inherit',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                    onMouseEnter={e => {
+                      if (!active) {
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+                        e.currentTarget.style.color = '#FFFFFF';
+                      }
+                    }}
+                    onMouseLeave={e => {
+                      if (!active) {
+                        e.currentTarget.style.background = 'transparent';
+                        e.currentTarget.style.color = '#C1C4CD';
+                      }
+                    }}
+                  >
+                    <div style={{
+                      color: active ? '#3B82F6' : '#8A8F9E',
+                      display: 'flex',
+                      alignItems: 'center'
+                    }}>
+                      {t.icon}
+                    </div>
+                    {!isCollapsed && <span>{t.name}</span>}
+                  </button>
+                )
+              })}
+            </div>
+          )}
+        </div>
+
         {/* $HH Native Coin Section */}
         <div>
           {!isCollapsed && (
@@ -507,90 +585,22 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                   }}>
                     {r.icon}
                   </div>
-                  {!isCollapsed && <span>{r.name}</span>}
+                  {!isCollapsed && (
+                    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span>{r.name}</span>
+                      {!isButton && (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}>
+                          <line x1="7" y1="17" x2="17" y2="7"></line>
+                          <polyline points="7 7 17 7 17 17"></polyline>
+                        </svg>
+                      )}
+                    </div>
+                  )}
                 </Component>
               )
             })}
           </div>
         )}
-        </div>
-
-        {/* Tools Section */}
-        <div>
-          {!isCollapsed && (
-            <div 
-              onClick={() => setIsToolsOpen(!isToolsOpen)}
-              style={{
-                fontSize: 14.5,
-                fontWeight: 600,
-                color: '#717886',
-                padding: '4px 12px',
-                marginBottom: 4,
-                marginTop: 8,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                userSelect: 'none'
-              }}
-            >
-              Tools
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isToolsOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
-                <polyline points="6 9 12 15 18 9"></polyline>
-              </svg>
-            </div>
-          )}
-          {(isToolsOpen || isCollapsed) && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              {tools.map(t => {
-                const active = tab === t.id
-                return (
-                  <button
-                    key={t.id}
-                    onClick={() => setTab(t.id)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: isCollapsed ? 'center' : 'flex-start',
-                      gap: isCollapsed ? 0 : 12,
-                      width: '100%',
-                      padding: isCollapsed ? '10px 0' : '10px 12px',
-                      borderRadius: 12,
-                      border: 'none',
-                      background: active ? 'rgba(59, 130, 246, 0.08)' : 'transparent',
-                      color: active ? '#FFFFFF' : '#C1C4CD',
-                      fontSize: 14.5,
-                      fontWeight: 500,
-                      fontFamily: 'inherit',
-                      cursor: 'pointer',
-                      transition: 'all 0.15s ease'
-                    }}
-                    onMouseEnter={e => {
-                      if (!active) {
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
-                        e.currentTarget.style.color = '#FFFFFF';
-                      }
-                    }}
-                    onMouseLeave={e => {
-                      if (!active) {
-                        e.currentTarget.style.background = 'transparent';
-                        e.currentTarget.style.color = '#C1C4CD';
-                      }
-                    }}
-                  >
-                    <div style={{
-                      color: active ? '#3B82F6' : '#8A8F9E',
-                      display: 'flex',
-                      alignItems: 'center'
-                    }}>
-                      {t.icon}
-                    </div>
-                    {!isCollapsed && <span>{t.name}</span>}
-                  </button>
-                )
-              })}
-            </div>
-          )}
         </div>
 
         {/* Resources Section */}
