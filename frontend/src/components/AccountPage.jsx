@@ -55,16 +55,7 @@ export function AccountPage({ address, basename }) {
     }}>
       {/* Header Profile Section */}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
-        <h1 style={{
-          fontSize: 24,
-          fontWeight: 800,
-          margin: 0,
-          fontFamily: "'Outfit', 'Inter', sans-serif",
-          alignSelf: 'flex-start',
-          marginBottom: 16
-        }}>
-          Account
-        </h1>
+
 
         <div style={{
           width: 80,
@@ -107,7 +98,7 @@ export function AccountPage({ address, basename }) {
           <div style={{ fontSize: 16, fontWeight: 700, color: '#F8FAFC' }}>Referral link</div>
         </div>
         <div style={{ fontSize: 14, color: '#94A3B8' }}>
-          Share your link — every friend who joins boosts your HP by 30%.
+          Share your link — earn 30% of all HP from every friend who joins.
         </div>
 
         <div style={{
