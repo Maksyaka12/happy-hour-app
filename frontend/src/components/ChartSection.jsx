@@ -120,17 +120,17 @@ export function ChartSection() {
           <div style={{
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'space-between',
+            justifyContent: 'center',
+            gap: 6,
             height: 80,
-            padding: '4px 0',
             boxSizing: 'border-box'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <h1 style={{ fontSize: 26, fontWeight: 600, color: '#FFFFFF', margin: 0, lineHeight: 1.1 }}>Happy Hour</h1>
+              <h1 style={{ fontSize: 28, fontWeight: 600, color: '#FFFFFF', margin: 0, lineHeight: 1.1 }}>Happy Hour</h1>
               <span style={{ fontSize: 13, fontWeight: 600, color: '#8A8F9E', background: 'rgba(255,255,255,0.06)', padding: '2px 6px', borderRadius: 6 }}>$HH</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 14, color: '#8A8F9E', fontFamily: 'monospace' }}>{shortAddress}</span>
+              <span style={{ fontSize: 15, color: '#8A8F9E', fontFamily: 'monospace' }}>{shortAddress}</span>
               <button 
                 onClick={handleCopy}
                 style={{
