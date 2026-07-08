@@ -10,6 +10,7 @@ import { EarnSection } from './components/EarnSection'
 import { ContestsSection } from './components/ContestsSection'
 import { ProfileSection } from './components/ProfileSection'
 import { AccountSection } from './components/AccountSection'
+import { AccountPage } from './components/AccountPage'
 import { BottomNav } from './components/BottomNav'
 import { HappyHourLogo } from './components/HappyHourLogo'
 import { HappyBotChat } from './components/HappyBotChat'
@@ -356,42 +357,8 @@ export default function App({ onLogin, onLogout }) {
         )
       case 'link':
         return <AccountSection address={address} onRequireWallet={handleRequireWallet} />
-      case 'settings':
-        return (
-          <div style={{
-            width: '100%',
-            maxWidth: 1200,
-            margin: '0 auto',
-            padding: '40px 24px',
-            fontFamily: "'Inter', sans-serif",
-            color: '#94A3B8',
-            lineHeight: 1.6,
-            fontSize: 15
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 40, flexWrap: 'wrap', gap: 16 }}>
-              <h1 style={{ color: '#FFFFFF', fontSize: 20, fontWeight: 600, margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="3"></circle>
-                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                </svg>
-                Settings
-              </h1>
-            </div>
-            
-            <div style={{
-              background: 'rgba(255, 255, 255, 0.03)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              borderRadius: 20,
-              padding: 24,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 16
-            }}>
-              <h3 style={{ color: '#FFFFFF', margin: 0, fontSize: 16 }}>General Settings</h3>
-              <p style={{ margin: 0, fontSize: 14, color: '#64748B' }}>Configure your Happy Hour platform preferences and interface configurations. Settings content is coming soon.</p>
-            </div>
-          </div>
-        )
+      case 'account':
+        return <AccountPage address={address} basename={basename} onRequireWallet={handleRequireWallet} />
       case 'terms':
         return (
           <div style={{

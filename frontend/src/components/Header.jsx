@@ -16,7 +16,7 @@ export function Header({ tab, address, isConnected, displayName, isClubMember, h
     agentChat: 'Agent Chat',
     x402: 'x402 Endpoints',
     link: 'Linked accounts',
-    settings: 'Settings',
+    account: 'Account',
     hhIntro: '$HH Introduction',
     hhChart: '$HH Chart',
     hhSwap: '$HH Swap'
