@@ -89,28 +89,28 @@ export function ChartSection() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <div style={{ position: 'relative' }}>
             <div style={{
-              width: 56,
-              height: 56,
+              width: 80,
+              height: 80,
               borderRadius: '50%',
               background: 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               overflow: 'hidden',
-              boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
+              boxShadow: '0 4px 12px rgba(59, 130, 246, 0.2)'
             }}>
               <img src="/logo.jfif" alt="Happy Hour Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
             {/* Base Badge */}
             <div style={{
               position: 'absolute',
-              bottom: -2,
-              right: -2,
-              width: 20,
-              height: 20,
-              borderRadius: '50%',
+              bottom: 0,
+              right: 0,
+              width: 24,
+              height: 24,
+              borderRadius: 6,
               overflow: 'hidden',
-              border: '2px solid #13141F',
+              border: '2.5px solid #13141F',
               boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
             }}>
               <img src="/base_logo.webp" alt="Base Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -119,7 +119,7 @@ export function ChartSection() {
 
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <h1 style={{ fontSize: 22, fontWeight: 800, color: '#FFFFFF', margin: 0 }}>Happy Hour</h1>
+              <h1 style={{ fontSize: 22, fontWeight: 600, color: '#FFFFFF', margin: 0 }}>Happy Hour</h1>
               <span style={{ fontSize: 13, fontWeight: 600, color: '#8A8F9E', background: 'rgba(255,255,255,0.06)', padding: '2px 6px', borderRadius: 6 }}>$HH</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
@@ -176,7 +176,7 @@ export function ChartSection() {
         width: '100%',
         height: 600,
         background: '#13141F',
-        border: '1px solid rgba(255,255,255,0.06)',
+        border: 'none',
         borderRadius: 20,
         overflow: 'hidden',
         boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
