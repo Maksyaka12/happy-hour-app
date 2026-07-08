@@ -525,7 +525,17 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                     }}>
                       {t.icon}
                     </div>
-                    {!isCollapsed && <span>{t.name}</span>}
+                    {!isCollapsed && (
+                      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <span>{t.name}</span>
+                        {t.url && (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}>
+                            <line x1="7" y1="17" x2="17" y2="7"></line>
+                            <polyline points="7 7 17 7 17 17"></polyline>
+                          </svg>
+                        )}
+                      </div>
+                    )}
                   </button>
                 )
               })}
