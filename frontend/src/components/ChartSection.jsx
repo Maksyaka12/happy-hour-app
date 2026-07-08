@@ -109,14 +109,11 @@ export function ChartSection() {
               width: 20,
               height: 20,
               borderRadius: '50%',
-              background: '#0052FF',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              overflow: 'hidden',
               border: '2px solid #13141F',
               boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
             }}>
-              <span style={{ fontSize: 9, fontWeight: 900, color: '#FFFFFF', letterSpacing: '-0.5px' }}>B</span>
+              <img src="/base_logo.webp" alt="Base Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
           </div>
 
