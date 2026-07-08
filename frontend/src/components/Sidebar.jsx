@@ -23,6 +23,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
   const [isToolsOpen, setIsToolsOpen] = useState(true)
   const [isResourcesOpen, setIsResourcesOpen] = useState(true)
   const [isSocialsOpen, setIsSocialsOpen] = useState(true)
+  const [isDexOpen, setIsDexOpen] = useState(true)
 
   const [isMobile, setIsMobile] = useState(false)
   useEffect(() => {
@@ -216,6 +217,28 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
           <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
         </svg>
       )
+    }
+  ]
+  const dexItems = [
+    {
+      name: 'Dexscreener',
+      url: 'https://dexscreener.com/base/0x8235edf32a1e10bd1867ad527915ab613664cba3',
+      logo: '/dexscreener.jpg'
+    },
+    {
+      name: 'GeckoTerminal',
+      url: 'https://www.geckoterminal.com/base/pools/0x3235edf32a1e10bd1867ad527915ab613664cba3',
+      logo: '/geckoterminal.jpg'
+    },
+    {
+      name: 'Coingecko',
+      url: 'https://www.coingecko.com/en/coins/happy-hour',
+      logo: '/CoinGecko-logo.png'
+    },
+    {
+      name: 'BankrTerminal',
+      url: 'https://bankr.bot/terminal/discover/0x8235edf32a1e10bd1867ad527915ab613664cba3',
+      logo: '/bankr-logo.jpg'
     }
   ]
   const hhCoinItems = [
@@ -737,6 +760,81 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                 </Component>
               )
             })}
+            </div>
+          )}
+        </div>
+
+        {/* DEX Section */}
+        <div>
+          {!isCollapsed && (
+            <div 
+              onClick={() => setIsDexOpen(!isDexOpen)}
+              style={{
+                fontSize: 14.5,
+                fontWeight: 600,
+                color: '#717886',
+                padding: '4px 12px',
+                marginBottom: 4,
+                marginTop: 8,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                userSelect: 'none'
+              }}
+            >
+              DEX
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isDexOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+          )}
+          {(isDexOpen || isCollapsed) && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {dexItems.map((r, i) => (
+              <a
+                key={i}
+                href={r.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: isCollapsed ? 'center' : 'flex-start',
+                  gap: isCollapsed ? 0 : 12,
+                  width: '100%',
+                  padding: isCollapsed ? '9px 0' : '9px 12px',
+                  borderRadius: 12,
+                  color: '#C1C4CD',
+                  fontSize: 14.5,
+                  fontWeight: 500,
+                  textDecoration: 'none',
+                  boxSizing: 'border-box',
+                  transition: 'all 0.15s ease'
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+                  e.currentTarget.style.color = '#FFFFFF';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.color = '#C1C4CD';
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 20 }}>
+                  <img src={r.logo} alt="" style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover' }} />
+                </div>
+                {!isCollapsed && (
+                  <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span>{r.name}</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}>
+                      <line x1="7" y1="17" x2="17" y2="7"></line>
+                      <polyline points="7 7 17 7 17 17"></polyline>
+                    </svg>
+                  </div>
+                )}
+              </a>
+            ))}
             </div>
           )}
         </div>

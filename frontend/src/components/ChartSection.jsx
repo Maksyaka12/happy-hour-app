@@ -117,13 +117,20 @@ export function ChartSection() {
             </div>
           </div>
 
-          <div>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            height: 80,
+            padding: '4px 0',
+            boxSizing: 'border-box'
+          }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <h1 style={{ fontSize: 22, fontWeight: 600, color: '#FFFFFF', margin: 0 }}>Happy Hour</h1>
+              <h1 style={{ fontSize: 26, fontWeight: 600, color: '#FFFFFF', margin: 0, lineHeight: 1.1 }}>Happy Hour</h1>
               <span style={{ fontSize: 13, fontWeight: 600, color: '#8A8F9E', background: 'rgba(255,255,255,0.06)', padding: '2px 6px', borderRadius: 6 }}>$HH</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
-              <span style={{ fontSize: 12, color: '#8A8F9E', fontFamily: 'monospace' }}>{shortAddress}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 14, color: '#8A8F9E', fontFamily: 'monospace' }}>{shortAddress}</span>
               <button 
                 onClick={handleCopy}
                 style={{
@@ -190,6 +197,64 @@ export function ChartSection() {
             border: 'none'
           }}
         />
+      </div>
+
+      {/* Explore on DEX Section */}
+      <div style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <h2 style={{ fontSize: 14, fontWeight: 700, color: '#94A3B8', margin: 0, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          Explore on DEX
+        </h2>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+          gap: 16
+        }}>
+          {[
+            { name: 'Dexscreener', logo: '/dexscreener.jpg', url: 'https://dexscreener.com/base/0x8235edf32a1e10bd1867ad527915ab613664cba3' },
+            { name: 'GeckoTerminal', logo: '/geckoterminal.jpg', url: 'https://www.geckoterminal.com/base/pools/0x3235edf32a1e10bd1867ad527915ab613664cba3' },
+            { name: 'Coingecko', logo: '/CoinGecko-logo.png', url: 'https://www.coingecko.com/en/coins/happy-hour' },
+            { name: 'BankrTerminal', logo: '/bankr-logo.jpg', url: 'https://bankr.bot/terminal/discover/0x8235edf32a1e10bd1867ad527915ab613664cba3' }
+          ].map((item) => (
+            <a
+              key={item.name}
+              href={item.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '16px 20px',
+                background: 'rgba(255, 255, 255, 0.03)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: 14,
+                color: '#FFFFFF',
+                textDecoration: 'none',
+                transition: 'all 0.2s ease',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.06)'
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)'
+                e.currentTarget.style.transform = 'translateY(-2px)'
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)'
+                e.currentTarget.style.transform = 'none'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <img src={item.logo} alt={item.name} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover' }} />
+                <span style={{ fontSize: 14, fontWeight: 600 }}>{item.name}</span>
+              </div>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="7" y1="17" x2="17" y2="7"></line>
+                <polyline points="7 7 17 7 17 17"></polyline>
+              </svg>
+            </a>
+          ))}
+        </div>
       </div>
     </div>
   )
