@@ -173,6 +173,17 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
         </svg>
       )
+    },
+    {
+      id: 'happyHourBot',
+      name: 'HappyHourBot',
+      url: 'https://t.me/happyhourbased_bot',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      )
     }
   ]
 
@@ -187,16 +198,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
         </svg>
       )
     },
-    {
-      name: 'HappyHourBot',
-      url: 'https://web.telegram.org/@HappyHourBased_bot',
-      icon: (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="22" y1="2" x2="11" y2="13"></line>
-          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-        </svg>
-      )
-    },
+
     {
       name: 'Follow on X',
       url: 'https://x.com/happyhour_base',
@@ -479,7 +481,13 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                 return (
                   <button
                     key={t.id}
-                    onClick={() => setTab(t.id)}
+                    onClick={() => {
+                      if (t.url) {
+                        window.open(t.url, '_blank')
+                      } else {
+                        setTab(t.id)
+                      }
+                    }}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
