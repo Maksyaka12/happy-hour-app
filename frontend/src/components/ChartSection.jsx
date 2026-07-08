@@ -201,7 +201,7 @@ export function ChartSection() {
 
       {/* Explore on DEX Section */}
       <div style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <h2 style={{ fontSize: 14, fontWeight: 700, color: '#94A3B8', margin: 0, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        <h2 style={{ fontSize: 16, fontWeight: 700, color: '#94A3B8', margin: 0, letterSpacing: '0.02em' }}>
           Explore on DEX
         </h2>
         <div style={{
@@ -210,10 +210,10 @@ export function ChartSection() {
           gap: 16
         }}>
           {[
-            { name: 'Dexscreener', logo: '/dexscreener.jpg', url: 'https://dexscreener.com/base/0x8235edf32a1e10bd1867ad527915ab613664cba3' },
-            { name: 'GeckoTerminal', logo: '/geckoterminal.jpg', url: 'https://www.geckoterminal.com/base/pools/0x3235edf32a1e10bd1867ad527915ab613664cba3' },
+            { name: 'Dexscreener', logo: '/dexscreener.jpg', url: 'https://dexscreener.com/base/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9' },
+            { name: 'GeckoTerminal', logo: '/geckoterminal.jpg', url: 'https://www.geckoterminal.com/base/pools/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9' },
             { name: 'Coingecko', logo: '/CoinGecko-logo.png', url: 'https://www.coingecko.com/en/coins/happy-hour' },
-            { name: 'BankrTerminal', logo: '/bankr-logo.jpg', url: 'https://bankr.bot/terminal/discover/0x8235edf32a1e10bd1867ad527915ab613664cba3' }
+            { name: 'BankrTerminal', logo: '/bankr-logo.jpg', url: 'https://bankr.bot/terminal/agents/0x8235edf32a1e10bd1867ad527915ab613664cba3' }
           ].map((item) => (
             <a
               key={item.name}

@@ -222,12 +222,12 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
   const dexItems = [
     {
       name: 'Dexscreener',
-      url: 'https://dexscreener.com/base/0x8235edf32a1e10bd1867ad527915ab613664cba3',
+      url: 'https://dexscreener.com/base/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9',
       logo: '/dexscreener.jpg'
     },
     {
       name: 'GeckoTerminal',
-      url: 'https://www.geckoterminal.com/base/pools/0x3235edf32a1e10bd1867ad527915ab613664cba3',
+      url: 'https://www.geckoterminal.com/base/pools/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9',
       logo: '/geckoterminal.jpg'
     },
     {
@@ -237,7 +237,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
     },
     {
       name: 'BankrTerminal',
-      url: 'https://bankr.bot/terminal/discover/0x8235edf32a1e10bd1867ad527915ab613664cba3',
+      url: 'https://bankr.bot/terminal/agents/0x8235edf32a1e10bd1867ad527915ab613664cba3',
       logo: '/bankr-logo.jpg'
     }
   ]
