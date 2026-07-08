@@ -11,6 +11,7 @@ import { ContestsSection } from './components/ContestsSection'
 import { ProfileSection } from './components/ProfileSection'
 import { AccountSection } from './components/AccountSection'
 import { AccountPage } from './components/AccountPage'
+import { ChartSection } from './components/ChartSection'
 import { BottomNav } from './components/BottomNav'
 import { HappyHourLogo } from './components/HappyHourLogo'
 import { HappyBotChat } from './components/HappyBotChat'
@@ -735,11 +736,12 @@ export default function App({ onLogin, onLogout }) {
             </div>
           </div>
         )
+      case 'hhChart':
+        return <ChartSection />
       case 'skills':
       case 'x402':
       case 'agentChat':
       case 'hhIntro':
-      case 'hhChart':
       case 'hhSwap':
         return (
           <div style={{ padding: '80px 20px', textAlign: 'center' }}>
@@ -747,7 +749,6 @@ export default function App({ onLogin, onLogout }) {
               {tab === 'skills' ? 'Skills' : 
                tab === 'agentChat' ? 'Agent Chat' : 
                tab === 'hhIntro' ? '$HH Introduction' : 
-               tab === 'hhChart' ? '$HH Chart' : 
                tab === 'hhSwap' ? '$HH Swap' : 'x402 Endpoints'}
             </h2>
             <p style={{ color: '#8A8F9E', fontSize: 16 }}>Coming Soon</p>
