@@ -213,7 +213,7 @@ export function ChartSection() {
             { name: 'Dexscreener', logo: '/dexscreener.jpg', url: 'https://dexscreener.com/base/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9' },
             { name: 'GeckoTerminal', logo: '/geckoterminal.jpg', url: 'https://www.geckoterminal.com/base/pools/0xe186aa00d52844ed05d1b1373fc2ec8b0562d613f9f4b470ee7fafa0c1a388f9' },
             { name: 'Coingecko', logo: '/CoinGecko-logo.png', url: 'https://www.coingecko.com/en/coins/happy-hour' },
-            { name: 'BankrTerminal', logo: '/bankr-logo.jpg', url: 'https://bankr.bot/terminal/agents/0x8235edf32a1e10bd1867ad527915ab613664cba3' }
+            { name: 'BankrTerminal', logo: '/bankr-logo.jpg', url: 'https://bankr.bot/terminal/agents/0x8235edf32a1e10bd1867ad622915ab613664cba3' }
           ].map((item) => (
             <a
               key={item.name}

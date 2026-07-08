@@ -237,7 +237,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
     },
     {
       name: 'BankrTerminal',
-      url: 'https://bankr.bot/terminal/agents/0x8235edf32a1e10bd1867ad527915ab613664cba3',
+      url: 'https://bankr.bot/terminal/agents/0x8235edf32a1e10bd1867ad622915ab613664cba3',
       logo: '/bankr-logo.jpg'
     }
   ]
