@@ -748,7 +748,7 @@ export default function App({ onLogin, onLogout }) {
             <h2 style={{ color: '#FFFFFF', fontSize: 28, marginBottom: 12 }}>
               {tab === 'skills' ? 'Skills' : 
                tab === 'agentChat' ? 'Agent Chat' : 
-               tab === 'hhIntro' ? '$HH Introduction' : 
+               tab === 'hhIntro' ? '$HH' : 
                tab === 'hhSwap' ? '$HH Swap' : 'x402 Endpoints'}
             </h2>
             <p style={{ color: '#8A8F9E', fontSize: 16 }}>Coming Soon</p>

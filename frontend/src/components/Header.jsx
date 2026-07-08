@@ -17,7 +17,7 @@ export function Header({ tab, address, isConnected, displayName, isClubMember, h
     x402: 'x402 Endpoints',
     link: 'Linked accounts',
     account: 'Account',
-    hhIntro: '$HH Introduction',
+    hhIntro: '$HH',
     hhChart: '$HH Chart',
     hhSwap: '$HH Swap'
   }
