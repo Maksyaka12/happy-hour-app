@@ -148,6 +148,17 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
 
   const tools = [
     {
+      id: 'wallet',
+      name: 'Wallet',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="2" y="7" width="20" height="14" rx="2"/>
+          <path d="M16 11h2"/>
+          <path d="M6 3l6-3 6 3"/>
+        </svg>
+      )
+    },
+    {
       id: 'agentChat',
       name: 'Agent Chat',
       icon: (

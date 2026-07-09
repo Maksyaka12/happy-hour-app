@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useAccount, useReadContract, useSwitchChain, useDisconnect } from 'wagmi'
+import { useWallets } from '@privy-io/react-auth'
 import { base } from 'wagmi/chains'
 import { formatUnits } from 'viem'
 import { db } from './config/supabase'
@@ -12,6 +13,7 @@ import { ProfileSection } from './components/ProfileSection'
 import { AccountSection } from './components/AccountSection'
 import { AccountPage } from './components/AccountPage'
 import { ChartSection } from './components/ChartSection'
+import { WalletSection } from './components/WalletSection'
 import { BottomNav } from './components/BottomNav'
 import { HappyHourLogo } from './components/HappyHourLogo'
 import { HappyBotChat } from './components/HappyBotChat'
@@ -64,7 +66,8 @@ const URL_TO_TAB = {
   '/settings': 'settings',
   '/hh-intro': 'hhIntro',
   '/hh-chart': 'hhChart',
-  '/hh-swap': 'hhSwap'
+  '/hh-swap': 'hhSwap',
+  '/wallet': 'wallet',
 }
 
 const TAB_TO_URL = Object.fromEntries(Object.entries(URL_TO_TAB).map(([k, v]) => [v, k]))
@@ -84,6 +87,7 @@ TAB_TO_URL['agentChat'] = '/agent-chat'
 TAB_TO_URL['hhIntro'] = '/hh-intro'
 TAB_TO_URL['hhChart'] = '/hh-chart'
 TAB_TO_URL['hhSwap'] = '/hh-swap'
+TAB_TO_URL['wallet'] = '/wallet'
 
 function useAppRouter() {
   const [tab, setTabState] = useState(() => {
@@ -123,7 +127,7 @@ function useAppRouter() {
   return [tab, setTab]
 }
 
-export default function App({ onLogin, onLogout }) {
+export default function App({ onLogin, onLogout, privyUser }) {
   const isMiniapp = useMemo(() => {
     if (typeof window === 'undefined') return false
     const params = new URLSearchParams(window.location.search)
@@ -359,7 +363,9 @@ export default function App({ onLogin, onLogout }) {
       case 'link':
         return <AccountSection address={address} onRequireWallet={handleRequireWallet} />
       case 'account':
-        return <AccountPage address={address} basename={basename} onRequireWallet={handleRequireWallet} />
+        return <AccountPage address={address} basename={basename} onRequireWallet={handleRequireWallet} privyUser={privyUser} />
+      case 'wallet':
+        return <WalletSection onRequireWallet={handleRequireWallet} setTab={setTab} />
       case 'terms':
         return (
           <div style={{
@@ -850,7 +856,6 @@ export default function App({ onLogin, onLogout }) {
             <div style={{ maxWidth: ['contests', 'earn', 'hhChart'].includes(tab) ? 1200 : ['terms', 'privacy', 'affiliate', 'skills', 'x402', 'agentChat'].includes(tab) ? 800 : 640, margin: '0 auto', position: 'relative', zIndex: 1 }}>
               {renderTabContent()}
             </div>
-            
           </div>
         </div>
 

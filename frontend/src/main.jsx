@@ -25,8 +25,8 @@ const isDocsRoute = window.location.pathname.startsWith('/docs')
 const isMobileDappBrowser = typeof window !== 'undefined' && window.ethereum && /Mobi|Android|iPhone/i.test(navigator.userAgent)
 
 const PrivyWebAppWrapper = () => {
-  const { login, logout } = usePrivy()
-  return <App onLogin={login} onLogout={logout} />
+  const { login, logout, user: privyUser } = usePrivy()
+  return <App onLogin={login} onLogout={logout} privyUser={privyUser} />
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -49,16 +49,16 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <PrivyProvider
         appId="cmr71ywhn007f0cl16cnybewf"
         config={{
-          loginMethods: ['wallet'],
+          loginMethods: ['wallet', 'email', 'twitter', 'telegram'],
           appearance: {
             theme: 'dark',
             accentColor: '#3B82F6',
-            landingHeader: 'Connect your wallet',
-            loginMessage: 'Login to continue',
+            landingHeader: 'Welcome to Happy Hour',
+            loginMessage: 'Sign in to access your account',
             showWalletLoginFirst: true,
           },
           embeddedWallets: {
-            createOnLogin: 'users-without-wallets'
+            createOnLogin: 'all-users'
           }
         }}
       >
