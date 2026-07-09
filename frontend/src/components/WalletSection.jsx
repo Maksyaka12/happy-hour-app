@@ -186,7 +186,18 @@ export function WalletSection({ onRequireWallet, setTab }) {
 
   // Separate wallets
   const embeddedWallet = wallets.find(w => w.walletClientType === 'privy')
-  const externalWallet = wallets.find(w => w.walletClientType !== 'privy')
+
+  // External wallet: must be linked to the CURRENT Privy user (cross-reference linkedAccounts)
+  // This prevents showing wallets from other sessions / browser extensions
+  const linkedExternalAddresses = new Set(
+    (privyUser?.linkedAccounts || [])
+      .filter(a => a.type === 'wallet' && a.walletClientType !== 'privy' && a.connectorType !== 'embedded')
+      .map(a => a.address?.toLowerCase())
+  )
+  const externalWallet = wallets.find(w =>
+    w.walletClientType !== 'privy' &&
+    linkedExternalAddresses.has(w.address?.toLowerCase())
+  )
 
   // If no embedded wallet after 4 sec, show "Create Wallet" button
   useEffect(() => {

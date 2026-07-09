@@ -29,9 +29,24 @@ const PrivyWebAppWrapper = () => {
   const { wallets } = useWallets()
   const { createWallet } = useCreateWallet()
 
-  // Wait for Privy to finish initialising before rendering the app.
-  // This prevents the "stuck" state where the button becomes unresponsive
-  // after a partial / failed login attempt.
+  // Guard: ensure createWallet() fires at most ONCE per session
+  // Calling it on every render was creating multiple embedded wallets
+  const walletCreationAttempted = React.useRef(false)
+
+  React.useEffect(() => {
+    if (!authenticated) {
+      // Reset when user logs out so next login can create wallet if needed
+      walletCreationAttempted.current = false
+      return
+    }
+    const embeddedWallet = wallets.find(w => w.walletClientType === 'privy')
+    if (embeddedWallet) return // already has one, nothing to do
+    if (walletCreationAttempted.current) return // already tried this session
+
+    walletCreationAttempted.current = true
+    createWallet().catch(e => console.error('createWallet failed:', e))
+  }, [authenticated, wallets]) // re-run when wallets list updates
+
   if (!ready) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0D0E14' }}>
@@ -41,22 +56,9 @@ const PrivyWebAppWrapper = () => {
     )
   }
 
-  // Auto-create embedded wallet if the user is authenticated but has none yet
-  // (happens when existing users log in after createOnLogin was changed to 'all-users')
-  const embeddedWallet = wallets.find(w => w.walletClientType === 'privy')
-  if (authenticated && !embeddedWallet) {
-    createWallet().catch(() => {}) // fire-and-forget
-  }
-
-  // Simple login — no logout() before it, which was breaking the email OTP flow.
-  // The ready check above already ensures Privy is in a clean state.
-  const handleLogin = () => {
-    login()
-  }
-
   return (
     <App
-      onLogin={handleLogin}
+      onLogin={login}
       onLogout={logout}
       privyUser={privyUser}
       privyWallets={wallets}

@@ -49,6 +49,12 @@ export function AccountPage({ address, basename, privyUser }) {
   const [linkCopied, setLinkCopied] = useState(false)
 
   const linkedWallets = privyUser?.linkedAccounts?.filter(a => a.type === 'wallet') || []
+  // Separate embedded (Privy-managed) from external (MetaMask, Coinbase, etc.)
+  const embeddedWallets = linkedWallets.filter(a => a.walletClientType === 'privy' || a.connectorType === 'embedded')
+  const externalWallets = linkedWallets.filter(a => a.walletClientType !== 'privy' && a.connectorType !== 'embedded')
+  // Only show one embedded wallet (the most recent one) to avoid confusion from duplicates
+  const primaryEmbedded = embeddedWallets.slice(-1)
+
   const linkedEmail = privyUser?.linkedAccounts?.find(a => a.type === 'email')
   const linkedTwitter = privyUser?.linkedAccounts?.find(a => a.type === 'twitter_oauth')
   const linkedTelegram = privyUser?.linkedAccounts?.find(a => a.type === 'telegram')
@@ -93,11 +99,31 @@ export function AccountPage({ address, basename, privyUser }) {
           Connect multiple methods — they all access the same account &amp; embedded wallet.
         </div>
 
-        {linkedWallets.length > 0 ? linkedWallets.map(w => (
+        {/* Embedded Wallet — always exactly 1 */}
+        {primaryEmbedded.length > 0 ? primaryEmbedded.map(w => (
           <LinkedAccountRow
             key={w.address}
             icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 11h2"/><path d="M6 3l6-3 6 3"/></svg>}
-            label="Wallet"
+            label="Embedded Wallet"
+            value={short(w.address)}
+            linked={true}
+            canUnlink={false}
+          />
+        )) : (
+          <LinkedAccountRow
+            icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 11h2"/><path d="M6 3l6-3 6 3"/></svg>}
+            label="Embedded Wallet"
+            value="Creating…"
+            linked={false}
+          />
+        )}
+
+        {/* External Wallets (MetaMask, Coinbase, etc.) */}
+        {externalWallets.length > 0 ? externalWallets.map(w => (
+          <LinkedAccountRow
+            key={w.address}
+            icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>}
+            label="External Wallet"
             value={short(w.address)}
             linked={true}
             canUnlink={linkedAccountsCount > 1}
@@ -105,8 +131,8 @@ export function AccountPage({ address, basename, privyUser }) {
           />
         )) : (
           <LinkedAccountRow
-            icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 11h2"/><path d="M6 3l6-3 6 3"/></svg>}
-            label="Wallet"
+            icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>}
+            label="External Wallet"
             value={null}
             linked={false}
             onLink={linkWallet}
