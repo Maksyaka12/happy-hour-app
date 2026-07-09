@@ -11,7 +11,7 @@ import { WagmiProvider } from 'wagmi'
 import { config } from './config/wagmi'
 
 // Privy Providers (for normal Web Browser)
-import { PrivyProvider, usePrivy, useWallets } from '@privy-io/react-auth'
+import { PrivyProvider, usePrivy, useWallets, useCreateWallet } from '@privy-io/react-auth'
 import { WagmiProvider as PrivyWagmiProvider } from '@privy-io/wagmi'
 import { privyWagmiConfig } from './config/privyWagmi'
 
@@ -27,6 +27,7 @@ const isMobileDappBrowser = typeof window !== 'undefined' && window.ethereum && 
 const PrivyWebAppWrapper = () => {
   const { login, logout, user: privyUser, ready, authenticated } = usePrivy()
   const { wallets } = useWallets()
+  const { createWallet } = useCreateWallet()
 
   // Wait for Privy to finish initialising before rendering the app.
   // This prevents the "stuck" state where the button becomes unresponsive
@@ -40,18 +41,17 @@ const PrivyWebAppWrapper = () => {
     )
   }
 
-  // If Privy has a stuck / partial session (not authenticated but not clean either),
-  // wrap login to clear state first so the modal always opens fresh.
-  const handleLogin = async () => {
-    try {
-      if (!authenticated) {
-        // Clear any stale Privy keys that might prevent modal from opening
-        try { await logout() } catch {}
-      }
-      await login()
-    } catch (e) {
-      console.warn('Privy login error:', e)
-    }
+  // Auto-create embedded wallet if the user is authenticated but has none yet
+  // (happens when existing users log in after createOnLogin was changed to 'all-users')
+  const embeddedWallet = wallets.find(w => w.walletClientType === 'privy')
+  if (authenticated && !embeddedWallet) {
+    createWallet().catch(() => {}) // fire-and-forget
+  }
+
+  // Simple login — no logout() before it, which was breaking the email OTP flow.
+  // The ready check above already ensures Privy is in a clean state.
+  const handleLogin = () => {
+    login()
   }
 
   return (

@@ -1,6 +1,6 @@
-import { useState, useCallback } from 'react'
-import { useWallets, usePrivy } from '@privy-io/react-auth'
-import { useBalance, useReadContract, useSendTransaction } from 'wagmi'
+import { useState, useCallback, useEffect } from 'react'
+import { useWallets, usePrivy, useCreateWallet } from '@privy-io/react-auth'
+import { useBalance, useReadContract } from 'wagmi'
 import { parseEther, isAddress } from 'viem'
 import { HH_ADDRESS, HH_ABI } from '../config/constants'
 
@@ -176,14 +176,30 @@ function SendModal({ embeddedWallet, onClose }) {
 export function WalletSection({ onRequireWallet, setTab }) {
   const { wallets } = useWallets()
   const { user: privyUser } = usePrivy()
+  const { createWallet } = useCreateWallet()
 
   const [activeWalletType, setActiveWalletType] = useState('embedded') // 'embedded' | 'external'
   const [modal, setModal] = useState(null) // null | 'deposit' | 'send'
   const [addrCopied, setAddrCopied] = useState(false)
+  const [isCreatingWallet, setIsCreatingWallet] = useState(false)
+  const [showCreateBtn, setShowCreateBtn] = useState(false)
 
   // Separate wallets
   const embeddedWallet = wallets.find(w => w.walletClientType === 'privy')
   const externalWallet = wallets.find(w => w.walletClientType !== 'privy')
+
+  // If no embedded wallet after 4 sec, show "Create Wallet" button
+  useEffect(() => {
+    if (embeddedWallet) { setShowCreateBtn(false); return }
+    const t = setTimeout(() => setShowCreateBtn(true), 4000)
+    return () => clearTimeout(t)
+  }, [embeddedWallet])
+
+  const handleCreateWallet = async () => {
+    setIsCreatingWallet(true)
+    try { await createWallet() } catch (e) { console.error('createWallet:', e) }
+    finally { setIsCreatingWallet(false) }
+  }
 
   const activeWallet = activeWalletType === 'embedded' ? embeddedWallet : externalWallet
   const activeAddress = activeWallet?.address
@@ -231,9 +247,34 @@ export function WalletSection({ onRequireWallet, setTab }) {
   if (!embeddedWallet) {
     return (
       <div style={{ padding: '60px 24px', textAlign: 'center' }}>
-        <div style={{ fontSize: 40, marginBottom: 16 }}>🔐</div>
-        <h2 style={{ color: '#FFFFFF', fontSize: 20, fontWeight: 700, marginBottom: 8 }}>Loading wallet…</h2>
-        <p style={{ color: '#94A3B8', fontSize: 15 }}>Your embedded wallet is being set up.</p>
+        {!showCreateBtn ? (
+          <>
+            <div style={{ width: 44, height: 44, border: '3px solid rgba(59,130,246,0.3)', borderTopColor: '#3B82F6', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 20px' }} />
+            <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+            <h2 style={{ color: '#FFFFFF', fontSize: 20, fontWeight: 700, marginBottom: 8 }}>Setting up wallet…</h2>
+            <p style={{ color: '#94A3B8', fontSize: 15 }}>Your embedded wallet is being created.</p>
+          </>
+        ) : (
+          <>
+            <div style={{ fontSize: 40, marginBottom: 16 }}>🔐</div>
+            <h2 style={{ color: '#FFFFFF', fontSize: 20, fontWeight: 700, marginBottom: 8 }}>Wallet not found</h2>
+            <p style={{ color: '#94A3B8', fontSize: 15, marginBottom: 24 }}>
+              Click below to create your embedded wallet.
+            </p>
+            <button
+              onClick={handleCreateWallet}
+              disabled={isCreatingWallet}
+              style={{
+                background: '#3B82F6', color: '#FFFFFF', border: 'none',
+                borderRadius: 12, padding: '14px 32px', fontSize: 15,
+                fontWeight: 700, cursor: isCreatingWallet ? 'wait' : 'pointer',
+                opacity: isCreatingWallet ? 0.7 : 1
+              }}
+            >
+              {isCreatingWallet ? 'Creating…' : 'Create Wallet'}
+            </button>
+          </>
+        )}
       </div>
     )
   }
