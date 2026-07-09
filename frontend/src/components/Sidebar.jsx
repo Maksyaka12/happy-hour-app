@@ -5,7 +5,30 @@ import { HappyHourLogo } from './HappyHourLogo'
 
 const short = (a) => (a ? `${a.slice(0, 6)}...${a.slice(-4)}` : '')
 
-export function Sidebar({ tab, setTab, address, isConnected, displayName, isClubMember, onRequireWallet, onLogout, isMobileSidebarOpen, setIsMobileSidebarOpen }) {
+export function Sidebar({ tab, setTab, address, isConnected, displayName, isClubMember, onRequireWallet, onLogout, isMobileSidebarOpen, setIsMobileSidebarOpen, privyUser }) {
+
+  // Returns { label, icon } based on how user is logged in
+  const getLoginIdentity = () => {
+    if (!privyUser) return { label: displayName || (address ? `${address.slice(0,6)}…${address.slice(-4)}` : ''), icon: null }
+    const twitter = privyUser.linkedAccounts?.find(a => a.type === 'twitter_oauth')
+    const telegram = privyUser.linkedAccounts?.find(a => a.type === 'telegram')
+    const email = privyUser.linkedAccounts?.find(a => a.type === 'email')
+    const externalWallet = privyUser.linkedAccounts?.find(
+      a => a.type === 'wallet' && a.walletClientType !== 'privy' && a.connectorType !== 'embedded'
+    )
+    if (externalWallet && !twitter && !telegram && !email)
+      return { label: displayName || (address ? `${address.slice(0,6)}…${address.slice(-4)}` : ''), icon: null }
+    if (twitter?.username)
+      return { label: `@${twitter.username}`, icon: 'x' }
+    if (telegram?.telegramUserId)
+      return { label: `@${telegram.username || telegram.firstName || telegram.telegramUserId}`, icon: 'tg' }
+    if (email?.address)
+      return { label: email.address, icon: 'email' }
+    return { label: displayName || (address ? `${address.slice(0,6)}…${address.slice(-4)}` : ''), icon: null }
+  }
+
+  const loginIdentity = getLoginIdentity()
+
   const { disconnect } = useDisconnect()
 
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
@@ -960,15 +983,17 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
               <UserAvatar address={address} size={36} />
               {!isCollapsed && (
                 <div style={{ flex: 1, minWidth: 0, textAlign: 'left' }}>
-                  <div style={{
-                    fontSize: 14,
-                    fontWeight: 700,
-                    color: '#FFFFFF',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis'
-                  }}>
-                    {displayName || short(address)}
+                  <div style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    {loginIdentity.icon === 'x' && (
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" style={{ opacity: 0.8, flexShrink: 0 }}><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    )}
+                    {loginIdentity.icon === 'tg' && (
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="#2AABEE" style={{ flexShrink: 0 }}><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.99 1.26-5.61 3.71-.53.37-1.01.55-1.44.54-.48-.01-1.39-.27-2.07-.49-.83-.27-1.49-.41-1.43-.87.03-.24.36-.49.98-.75 3.84-1.67 6.4-2.77 7.68-3.3 3.65-1.51 4.41-1.78 4.9-1.79.11 0 .36.03.52.16.14.11.18.26.19.37.01.07.02.24.01.35z"/></svg>
+                    )}
+                    {loginIdentity.icon === 'email' && (
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" style={{ flexShrink: 0 }}><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    )}
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{loginIdentity.label}</span>
                   </div>
                   <div style={{
                     fontSize: 11.5,

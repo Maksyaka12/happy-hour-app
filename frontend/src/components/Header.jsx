@@ -2,7 +2,44 @@ import { BaseMark } from './BaseMark'
 
 const short = (a) => (a ? `${a.slice(0, 6)}...${a.slice(-4)}` : '')
 
-export function Header({ tab, address, isConnected, displayName, isClubMember, hhBalance, hpBalance, streakCount, onRequireWallet, setIsMobileSidebarOpen }) {
+// Returns { label, icon } for the user's primary login method
+function getLoginIdentity(privyUser, address, displayName) {
+  if (!privyUser) return { label: displayName || short(address), icon: null }
+
+  const twitter = privyUser.linkedAccounts?.find(a => a.type === 'twitter_oauth')
+  const telegram = privyUser.linkedAccounts?.find(a => a.type === 'telegram')
+  const email = privyUser.linkedAccounts?.find(a => a.type === 'email')
+  const externalWallet = privyUser.linkedAccounts?.find(
+    a => a.type === 'wallet' && a.walletClientType !== 'privy' && a.connectorType !== 'embedded'
+  )
+
+  // Priority: wallet login first (most specific), then social
+  if (externalWallet && !twitter && !telegram && !email) {
+    return { label: displayName || short(address), icon: null }
+  }
+  if (twitter?.username) {
+    return {
+      label: `@${twitter.username}`,
+      icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+    }
+  }
+  if (telegram?.telegramUserId) {
+    const tgName = telegram.username || telegram.firstName || `TG ${telegram.telegramUserId}`
+    return {
+      label: `@${tgName}`,
+      icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.99 1.26-5.61 3.71-.53.37-1.01.55-1.44.54-.48-.01-1.39-.27-2.07-.49-.83-.27-1.49-.41-1.43-.87.03-.24.36-.49.98-.75 3.84-1.67 6.4-2.77 7.68-3.3 3.65-1.51 4.41-1.78 4.9-1.79.11 0 .36.03.52.16.14.11.18.26.19.37.01.07.02.24.01.35z"/></svg>
+    }
+  }
+  if (email?.address) {
+    return {
+      label: email.address,
+      icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+    }
+  }
+  return { label: displayName || short(address), icon: null }
+}
+
+export function Header({ tab, address, isConnected, displayName, isClubMember, hhBalance, hpBalance, streakCount, onRequireWallet, setIsMobileSidebarOpen, privyUser }) {
   const tabNames = {
     home: 'Profile',
     raffle: 'Hourly Lottery',
@@ -170,27 +207,18 @@ export function Header({ tab, address, isConnected, displayName, isClubMember, h
 
         {/* Connect Button or User Info */}
         {isConnected && address ? (
-          <div className="desktop-stat" style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            background: 'rgba(59, 130, 246, 0.06)',
-            border: '1px solid rgba(59, 130, 246, 0.2)',
-            borderRadius: 14,
-            padding: '6px 12px',
-            fontSize: 12.5,
-            fontWeight: 700,
-            color: '#FFFFFF'
-          }}>
+          <div className="desktop-stat" style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(59, 130, 246, 0.06)', border: '1px solid rgba(59, 130, 246, 0.2)', borderRadius: 14, padding: '6px 12px', fontSize: 12.5, fontWeight: 700, color: '#FFFFFF' }}>
             <BaseMark size={14} color="#3B82F6" />
-            <span>{displayName || short(address)}</span>
-            {isClubMember && (
-              <span style={{ 
-                fontSize: 10, 
-                marginLeft: 2, 
-                animation: 'floatingLogo 3s ease-in-out infinite' 
-              }}>👑</span>
-            )}
+            {(() => {
+              const { label, icon } = getLoginIdentity(privyUser, address, displayName)
+              return (
+                <>
+                  {icon && <span style={{ display: 'flex', alignItems: 'center', opacity: 0.8 }}>{icon}</span>}
+                  <span style={{ maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
+                </>
+              )
+            })()}
+            {isClubMember && <span style={{ fontSize: 10, marginLeft: 2, animation: 'floatingLogo 3s ease-in-out infinite' }}>👑</span>}
           </div>
         ) : (
           <button

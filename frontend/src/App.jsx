@@ -840,6 +840,7 @@ export default function App({ onLogin, onLogout, privyUser, privyWallets = [] })
           onLogout={handleLogout}
           isMobileSidebarOpen={isMobileSidebarOpen}
           setIsMobileSidebarOpen={setIsMobileSidebarOpen}
+          privyUser={privyUser}
         />
 
         {/* Main Content Area */}
@@ -856,6 +857,7 @@ export default function App({ onLogin, onLogout, privyUser, privyWallets = [] })
             streakCount={streakCount}
             onRequireWallet={handleRequireWallet} 
             setIsMobileSidebarOpen={setIsMobileSidebarOpen}
+            privyUser={privyUser}
           />
           
           {/* Scrollable Content Wrapper */}
