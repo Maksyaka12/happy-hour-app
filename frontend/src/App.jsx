@@ -168,15 +168,22 @@ export default function App({ onLogin, onLogout, privyUser }) {
     }
   }
 
-  const basename = useBasename(address)
+  // Embedded wallet fallback: if no external wallet connected, use Privy embedded wallet
+  const { wallets } = useWallets()
+  const embeddedWallet = wallets.find(w => w.walletClientType === 'privy')
+  const effectiveAddress = address || embeddedWallet?.address
+  // isAuthenticated = true if external wallet connected OR logged in via Privy (email/X/TG)
+  const isAuthenticated = isConnected || !!privyUser
+
+  const basename = useBasename(effectiveAddress)
   const onWrongChain = isConnected && !!accountChainId && accountChainId !== base.id
 
   const { data: hhBalanceRaw } = useReadContract({
     address: HH_ADDRESS,
     abi: HH_ABI,
     functionName: 'balanceOf',
-    args: address ? [address] : undefined,
-    query: { enabled: !!address, refetchInterval: 15000 }
+    args: effectiveAddress ? [effectiveAddress] : undefined,
+    query: { enabled: !!effectiveAddress, refetchInterval: 15000 }
   })
   const hhBalanceRawParsed = hhBalanceRaw !== undefined ? parseFloat(formatUnits(hhBalanceRaw, 18)) : 0
   const hhBalanceStr = formatConcise(hhBalanceRawParsed)
@@ -185,8 +192,8 @@ export default function App({ onLogin, onLogout, privyUser }) {
     address: COORDINATOR_ADDRESS,
     abi: COORDINATOR_ABI,
     functionName: 'getUserSummary',
-    args: address ? [address] : undefined,
-    query: { enabled: !!address, refetchInterval: 15000 }
+    args: effectiveAddress ? [effectiveAddress] : undefined,
+    query: { enabled: !!effectiveAddress, refetchInterval: 15000 }
   })
   
   const [simulatedSummary] = useState({ hp: 1250, streak: 5 })
@@ -200,8 +207,8 @@ export default function App({ onLogin, onLogout, privyUser }) {
     address: MEMBERSHIP_ADDRESS,
     abi: MEMBERSHIP_ABI,
     functionName: 'isMember',
-    args: address ? [address] : undefined,
-    query: { enabled: !!address, refetchInterval: 15000 }
+    args: effectiveAddress ? [effectiveAddress] : undefined,
+    query: { enabled: !!effectiveAddress, refetchInterval: 15000 }
   })
 
   const [simulatedMember, setSimulatedMember] = useState(() => {
@@ -232,19 +239,20 @@ export default function App({ onLogin, onLogout, privyUser }) {
   }
 
   useEffect(() => {
-    if (!isConnected || !address) return
+    if (!effectiveAddress) return
 
     db.rpc('sync_user_profile', {
-      p_address: address.toLowerCase(),
+      p_address: effectiveAddress.toLowerCase(),
       p_basename: basename ?? null,
       p_ref_code: referralCode,
     }).then(({ error }) => {
       if (error) console.error('sync_user_profile:', error)
     })
-  }, [isConnected, address, basename, referralCode])
+    // privy_id stored for future DB migration: privyUser?.id
+  }, [isAuthenticated, effectiveAddress, basename, referralCode])
 
   const [totalUsers, setTotalUsers] = useState(0)
-  const isAdmin = address && atob('MHg0YzkxZDNiZWQzNzJjMTE3OTViOWNlOWE5MDE3ZGZlNDQ3YmYwNTBh') === address.toLowerCase()
+  const isAdmin = effectiveAddress && atob('MHg0YzkxZDNiZWQzNzJjMTE3OTViOWNlOWE5MDE3ZGZlNDQ3YmYwNTBh') === effectiveAddress.toLowerCase()
 
   useEffect(() => {
     if (!isAdmin) return
@@ -317,7 +325,7 @@ export default function App({ onLogin, onLogout, privyUser }) {
     )
   }
 
-  const displayName = basename || short(address)
+  const displayName = basename || short(effectiveAddress)
 
   // Maintenance Mode Toggle
   const IS_MAINTENANCE_MODE = false;
@@ -343,27 +351,27 @@ export default function App({ onLogin, onLogout, privyUser }) {
   const renderTabContent = () => {
     switch (tab) {
       case 'home':
-        return <ProfileSection address={address} basename={basename} totalUsers={totalUsers} setTab={setTab} onRequireWallet={handleRequireWallet} onLogout={handleLogout} />
+        return <ProfileSection address={effectiveAddress} basename={basename} totalUsers={totalUsers} setTab={setTab} onRequireWallet={handleRequireWallet} onLogout={handleLogout} />
       case 'raffle':
-        return <RaffleSection address={address} basename={basename} onRequireWallet={handleRequireWallet} />
+        return <RaffleSection address={effectiveAddress} basename={basename} onRequireWallet={handleRequireWallet} />
       case 'dailyRaffle':
-        return <DailyRaffleSection address={address} basename={basename} onRequireWallet={handleRequireWallet} />
+        return <DailyRaffleSection address={effectiveAddress} basename={basename} onRequireWallet={handleRequireWallet} />
       case 'earn':
-        return <EarnSection setTab={setTab} address={address} onRequireWallet={handleRequireWallet} />
+        return <EarnSection setTab={setTab} address={effectiveAddress} onRequireWallet={handleRequireWallet} />
       case 'contests':
         return (
           <ContestsSection 
             setTab={setTab} 
-            address={address} 
+            address={effectiveAddress} 
             initialContest={initialContest} 
             onClearInitialContest={() => setInitialContest(null)} 
             onRequireWallet={handleRequireWallet}
           />
         )
       case 'link':
-        return <AccountSection address={address} onRequireWallet={handleRequireWallet} />
+        return <AccountSection address={effectiveAddress} onRequireWallet={handleRequireWallet} />
       case 'account':
-        return <AccountPage address={address} basename={basename} onRequireWallet={handleRequireWallet} privyUser={privyUser} />
+        return <AccountPage address={effectiveAddress} basename={basename} onRequireWallet={handleRequireWallet} privyUser={privyUser} />
       case 'wallet':
         return <WalletSection onRequireWallet={handleRequireWallet} setTab={setTab} />
       case 'terms':
@@ -823,10 +831,10 @@ export default function App({ onLogin, onLogout, privyUser }) {
           tab={tab} 
           setTab={(newTab) => {
             setTab(newTab)
-            setIsMobileSidebarOpen(false) // Close sidebar drawer when tab clicked on mobile
+            setIsMobileSidebarOpen(false)
           }} 
-          address={address} 
-          isConnected={isConnected} 
+          address={effectiveAddress} 
+          isConnected={isAuthenticated} 
           displayName={displayName} 
           isClubMember={isClubMember} 
           onRequireWallet={handleRequireWallet} 
@@ -840,8 +848,8 @@ export default function App({ onLogin, onLogout, privyUser }) {
           {/* Header */}
           <Header 
             tab={tab} 
-            address={address} 
-            isConnected={isConnected} 
+            address={effectiveAddress} 
+            isConnected={isAuthenticated} 
             displayName={displayName} 
             isClubMember={isClubMember} 
             hhBalance={hhBalanceStr}
@@ -860,7 +868,7 @@ export default function App({ onLogin, onLogout, privyUser }) {
         </div>
 
         {/* Floating AI Chat assistant */}
-        {isConnected && <HappyBotChat address={address} isClubMember={isClubMember} />}
+        {isAuthenticated && <HappyBotChat address={effectiveAddress} isClubMember={isClubMember} />}
 
         {/* Wallet Connect Modal */}
         <WalletConnectModal isOpen={isConnectModalOpen} onClose={() => setIsConnectModalOpen(false)} />
