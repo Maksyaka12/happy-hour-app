@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useAccount, useReadContract, useSwitchChain, useDisconnect } from 'wagmi'
-import { useWallets } from '@privy-io/react-auth'
 import { base } from 'wagmi/chains'
 import { formatUnits } from 'viem'
 import { db } from './config/supabase'
@@ -127,7 +126,7 @@ function useAppRouter() {
   return [tab, setTab]
 }
 
-export default function App({ onLogin, onLogout, privyUser }) {
+export default function App({ onLogin, onLogout, privyUser, privyWallets = [] }) {
   const isMiniapp = useMemo(() => {
     if (typeof window === 'undefined') return false
     const params = new URLSearchParams(window.location.search)
@@ -169,8 +168,8 @@ export default function App({ onLogin, onLogout, privyUser }) {
   }
 
   // Embedded wallet fallback: if no external wallet connected, use Privy embedded wallet
-  const { wallets } = useWallets()
-  const embeddedWallet = wallets.find(w => w.walletClientType === 'privy')
+  // privyWallets is passed from PrivyWebAppWrapper (safe Privy context) or [] in mini-app mode
+  const embeddedWallet = privyWallets.find(w => w.walletClientType === 'privy')
   const effectiveAddress = address || embeddedWallet?.address
   // isAuthenticated = true if external wallet connected OR logged in via Privy (email/X/TG)
   const isAuthenticated = isConnected || !!privyUser

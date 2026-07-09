@@ -11,7 +11,7 @@ import { WagmiProvider } from 'wagmi'
 import { config } from './config/wagmi'
 
 // Privy Providers (for normal Web Browser)
-import { PrivyProvider, usePrivy } from '@privy-io/react-auth'
+import { PrivyProvider, usePrivy, useWallets } from '@privy-io/react-auth'
 import { WagmiProvider as PrivyWagmiProvider } from '@privy-io/wagmi'
 import { privyWagmiConfig } from './config/privyWagmi'
 
@@ -25,8 +25,43 @@ const isDocsRoute = window.location.pathname.startsWith('/docs')
 const isMobileDappBrowser = typeof window !== 'undefined' && window.ethereum && /Mobi|Android|iPhone/i.test(navigator.userAgent)
 
 const PrivyWebAppWrapper = () => {
-  const { login, logout, user: privyUser } = usePrivy()
-  return <App onLogin={login} onLogout={logout} privyUser={privyUser} />
+  const { login, logout, user: privyUser, ready, authenticated } = usePrivy()
+  const { wallets } = useWallets()
+
+  // Wait for Privy to finish initialising before rendering the app.
+  // This prevents the "stuck" state where the button becomes unresponsive
+  // after a partial / failed login attempt.
+  if (!ready) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0D0E14' }}>
+        <div style={{ width: 36, height: 36, border: '3px solid rgba(59,130,246,0.3)', borderTopColor: '#3B82F6', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+      </div>
+    )
+  }
+
+  // If Privy has a stuck / partial session (not authenticated but not clean either),
+  // wrap login to clear state first so the modal always opens fresh.
+  const handleLogin = async () => {
+    try {
+      if (!authenticated) {
+        // Clear any stale Privy keys that might prevent modal from opening
+        try { await logout() } catch {}
+      }
+      await login()
+    } catch (e) {
+      console.warn('Privy login error:', e)
+    }
+  }
+
+  return (
+    <App
+      onLogin={handleLogin}
+      onLogout={logout}
+      privyUser={privyUser}
+      privyWallets={wallets}
+    />
+  )
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(
