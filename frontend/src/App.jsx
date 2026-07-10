@@ -472,7 +472,11 @@ export default function App() {
         
         <div style={{ position: 'relative', zIndex: 1, maxWidth: 640, margin: '0 auto' }}>
           {tab === 'home' && <ProfileSection address={address} basename={basename} totalUsers={totalUsers} setTab={setTab} />}
-          {tab === 'raffle' && <RaffleSection address={address} basename={basename} />}
+          {tab === 'raffle' && (
+            <UnderConstructionSection style={{ minHeight: '80vh' }}>
+              <RaffleSection address={address} basename={basename} />
+            </UnderConstructionSection>
+          )}
           {tab === 'earn' && <EarnSection setTab={setTab} address={address} />}
           {tab === 'boxes' && (
             <UnderConstructionSection style={{ padding: '12px 12px 120px' }}>

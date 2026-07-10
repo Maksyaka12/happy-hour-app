@@ -49,7 +49,7 @@ export function StakingSection({ setTab }) {
   const [hhPrice, setHhPrice] = useState(0.00025) // Fallback price
   const [priceChange, setPriceChange] = useState(8.4) // 24h price change mock %
   const [stakingAmount, setStakingAmount] = useState('')
-  const [stakeActionTab, setStakeActionTab] = useState('stake') // 'stake' or 'unstake'
+  const [stakeActionTab, setStakeActionTab] = useState('unstake') // 'stake' or 'unstake' — default unstake while staking is paused
   const [lockPeriod, setLockPeriod] = useState('7') // '7' or '10'
   
   // Simulated Positions List
@@ -728,17 +728,19 @@ export function StakingSection({ setTab }) {
           border: '1px solid rgba(255,255,255,0.08)'
         }}>
           <button
-            onClick={() => setStakeActionTab('stake')}
+            disabled
+            title="Temporarily unavailable"
             style={{
               flex: 1, padding: '6px 10px', border: 'none', borderRadius: 7, fontSize: 11.5, fontWeight: 800,
-              background: stakeActionTab === 'stake' ? '#FFFFFF' : 'transparent',
-              color: stakeActionTab === 'stake' ? '#090514' : 'rgba(255,255,255,0.5)',
-              boxShadow: stakeActionTab === 'stake' ? '0 1px 4px rgba(0,0,0,0.15)' : 'none',
-              cursor: 'pointer',
-              outline: 'none'
+              background: 'transparent',
+              color: 'rgba(255,255,255,0.2)',
+              cursor: 'not-allowed',
+              outline: 'none',
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1
             }}
           >
-            Stake
+            <span>Stake</span>
+            <span style={{ fontSize: 8, fontWeight: 600, color: 'rgba(255,165,0,0.7)', letterSpacing: 0.2 }}>Unavailable</span>
           </button>
           <button
             onClick={() => setStakeActionTab('unstake')}
