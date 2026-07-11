@@ -22,6 +22,7 @@ import { WalletConnectModal } from './components/WalletConnectModal'
 import { Sidebar } from './components/Sidebar'
 import { Header } from './components/Header'
 import { DailyRaffleSection } from './components/DailyRaffleSection'
+import { ComingSoonScreen } from './components/ComingSoonScreen'
 
 const short = (a) => (a ? `${a.slice(0, 6)}\u2026${a.slice(-4)}` : '\u2014')
 
@@ -348,6 +349,20 @@ export default function App({ onLogin, onLogout, privyUser, privyWallets = [] })
   }
 
   const renderTabContent = () => {
+    // Tabs that are "Coming Soon" for non-admin users
+    const COMING_SOON_TABS = new Set([
+      'raffle', 'dailyRaffle', 'contests',          // Platform
+      'wallet', 'skills', 'agentChat', 'x402',      // Tools
+      'hhIntro', 'hhChart', 'hhSwap',               // $HH Native Coin
+      'docs', 'affiliate', 'terms', 'privacy',      // Resources
+      'link', 'account'                             // Account
+    ])
+
+    // Non-admin users see Coming Soon for restricted tabs
+    if (!isAdmin && COMING_SOON_TABS.has(tab)) {
+      return <ComingSoonScreen tab={tab} />
+    }
+
     switch (tab) {
       case 'home':
         return <ProfileSection address={effectiveAddress} basename={basename} totalUsers={totalUsers} setTab={setTab} onRequireWallet={handleRequireWallet} onLogout={handleLogout} />
@@ -356,7 +371,7 @@ export default function App({ onLogin, onLogout, privyUser, privyWallets = [] })
       case 'dailyRaffle':
         return <DailyRaffleSection address={effectiveAddress} basename={basename} onRequireWallet={handleRequireWallet} />
       case 'earn':
-        return <EarnSection setTab={setTab} address={effectiveAddress} onRequireWallet={handleRequireWallet} />
+        return <EarnSection setTab={setTab} address={effectiveAddress} onRequireWallet={handleRequireWallet} isAdmin={isAdmin} />
       case 'contests':
         return (
           <ContestsSection 
@@ -841,6 +856,7 @@ export default function App({ onLogin, onLogout, privyUser, privyWallets = [] })
           isMobileSidebarOpen={isMobileSidebarOpen}
           setIsMobileSidebarOpen={setIsMobileSidebarOpen}
           privyUser={privyUser}
+          isAdmin={isAdmin}
         />
 
         {/* Main Content Area */}

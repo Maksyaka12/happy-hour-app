@@ -5,7 +5,7 @@ import { HappyHourLogo } from './HappyHourLogo'
 
 const short = (a) => (a ? `${a.slice(0, 6)}...${a.slice(-4)}` : '')
 
-export function Sidebar({ tab, setTab, address, isConnected, displayName, isClubMember, onRequireWallet, onLogout, isMobileSidebarOpen, setIsMobileSidebarOpen, privyUser }) {
+export function Sidebar({ tab, setTab, address, isConnected, displayName, isClubMember, onRequireWallet, onLogout, isMobileSidebarOpen, setIsMobileSidebarOpen, privyUser, isAdmin }) {
 
   // Returns { label, icon } based on how user is logged in
   const getLoginIdentity = () => {
@@ -457,6 +457,8 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
             <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {tabs.map(t => {
               const active = tab === t.id
+              // Raffle and dailyRaffle are coming soon for non-admins
+              const isSoon = !isAdmin && (t.id === 'raffle' || t.id === 'dailyRaffle')
               return (
                 <button
                   key={t.id}
@@ -471,34 +473,26 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                     borderRadius: 12,
                     border: 'none',
                     background: active ? 'rgba(59, 130, 246, 0.08)' : 'transparent',
-                    color: active ? '#FFFFFF' : '#C1C4CD',
+                    color: active ? '#FFFFFF' : isSoon ? 'rgba(193,196,205,0.4)' : '#C1C4CD',
                     fontSize: 14.5,
                     fontWeight: 500,
                     fontFamily: 'inherit',
                     cursor: 'pointer',
-                    transition: 'all 0.15s ease'
+                    transition: 'all 0.15s ease',
+                    opacity: isSoon ? 0.65 : 1
                   }}
-                  onMouseEnter={e => {
-                    if (!active) {
-                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
-                      e.currentTarget.style.color = '#FFFFFF';
-                    }
-                  }}
-                  onMouseLeave={e => {
-                    if (!active) {
-                      e.currentTarget.style.background = 'transparent';
-                      e.currentTarget.style.color = '#C1C4CD';
-                    }
-                  }}
+                  onMouseEnter={e => { if (!active && !isSoon) { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'; e.currentTarget.style.color = '#FFFFFF'; } }}
+                  onMouseLeave={e => { if (!active && !isSoon) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#C1C4CD'; } }}
                 >
-                  <div style={{
-                    color: active ? '#3B82F6' : '#8A8F9E',
-                    display: 'flex',
-                    alignItems: 'center'
-                  }}>
+                  <div style={{ color: active ? '#3B82F6' : isSoon ? 'rgba(138,143,158,0.4)' : '#8A8F9E', display: 'flex', alignItems: 'center' }}>
                     {t.icon}
                   </div>
-                  {!isCollapsed && <span>{t.name}</span>}
+                  {!isCollapsed && (
+                    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span>{t.name}</span>
+                      {isSoon && <span style={{ fontSize: 9, fontWeight: 700, color: '#3B82F6', background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: 4, padding: '1px 5px', letterSpacing: '0.05em' }}>SOON</span>}
+                    </div>
+                  )}
                 </button>
               )
             })}
@@ -535,62 +529,39 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
             <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               {tools.map(t => {
                 const active = tab === t.id
+                const isSoon = !isAdmin && !!t.id // all tools are coming soon for non-admins
                 return (
                   <button
-                    key={t.id}
+                    key={t.id || t.name}
                     onClick={() => {
-                      if (t.url) {
-                        window.open(t.url, '_blank')
-                      } else {
-                        setTab(t.id)
-                      }
+                      if (t.url) { window.open(t.url, '_blank') }
+                      else { setTab(t.id) }
                     }}
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
+                      display: 'flex', alignItems: 'center',
                       justifyContent: isCollapsed ? 'center' : 'flex-start',
-                      gap: isCollapsed ? 0 : 12,
-                      width: '100%',
+                      gap: isCollapsed ? 0 : 12, width: '100%',
                       padding: isCollapsed ? '10px 0' : '10px 12px',
-                      borderRadius: 12,
-                      border: 'none',
+                      borderRadius: 12, border: 'none',
                       background: active ? 'rgba(59, 130, 246, 0.08)' : 'transparent',
-                      color: active ? '#FFFFFF' : '#C1C4CD',
-                      fontSize: 14.5,
-                      fontWeight: 500,
-                      fontFamily: 'inherit',
-                      cursor: 'pointer',
-                      transition: 'all 0.15s ease'
+                      color: active ? '#FFFFFF' : isSoon ? 'rgba(193,196,205,0.4)' : '#C1C4CD',
+                      fontSize: 14.5, fontWeight: 500, fontFamily: 'inherit',
+                      cursor: 'pointer', transition: 'all 0.15s ease',
+                      opacity: isSoon ? 0.65 : 1
                     }}
-                    onMouseEnter={e => {
-                      if (!active) {
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
-                        e.currentTarget.style.color = '#FFFFFF';
-                      }
-                    }}
-                    onMouseLeave={e => {
-                      if (!active) {
-                        e.currentTarget.style.background = 'transparent';
-                        e.currentTarget.style.color = '#C1C4CD';
-                      }
-                    }}
+                    onMouseEnter={e => { if (!active && !isSoon) { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'; e.currentTarget.style.color = '#FFFFFF'; } }}
+                    onMouseLeave={e => { if (!active && !isSoon) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#C1C4CD'; } }}
                   >
-                    <div style={{
-                      color: active ? '#3B82F6' : '#8A8F9E',
-                      display: 'flex',
-                      alignItems: 'center'
-                    }}>
+                    <div style={{ color: active ? '#3B82F6' : isSoon ? 'rgba(138,143,158,0.4)' : '#8A8F9E', display: 'flex', alignItems: 'center' }}>
                       {t.icon}
                     </div>
                     {!isCollapsed && (
                       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <span>{t.name}</span>
-                        {t.url && (
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}>
-                            <line x1="7" y1="17" x2="17" y2="7"></line>
-                            <polyline points="7 7 17 7 17 17"></polyline>
-                          </svg>
-                        )}
+                        {isSoon
+                          ? <span style={{ fontSize: 9, fontWeight: 700, color: '#3B82F6', background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: 4, padding: '1px 5px', letterSpacing: '0.05em' }}>SOON</span>
+                          : t.url && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+                        }
                       </div>
                     )}
                   </button>
@@ -634,67 +605,44 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
             {hhCoinItems.map((r, i) => {
               const isButton = !!r.id;
               const active = isButton && tab === r.id;
+              const isSoon = !isAdmin && isButton // all $HH internal pages are coming soon
               const Component = isButton ? 'button' : 'a';
               const baseStyle = {
-                display: 'flex',
-                alignItems: 'center',
+                display: 'flex', alignItems: 'center',
                 justifyContent: isCollapsed ? 'center' : 'flex-start',
-                gap: isCollapsed ? 0 : 12,
-                width: '100%',
+                gap: isCollapsed ? 0 : 12, width: '100%',
                 padding: isCollapsed ? '10px 0' : '10px 12px',
                 borderRadius: 12,
-                color: active ? '#FFFFFF' : '#C1C4CD',
-                fontSize: 14.5,
-                fontWeight: 500,
-                textDecoration: 'none',
-                boxSizing: 'border-box',
-                transition: 'all 0.15s ease'
+                color: active ? '#FFFFFF' : isSoon ? 'rgba(193,196,205,0.4)' : '#C1C4CD',
+                fontSize: 14.5, fontWeight: 500,
+                textDecoration: 'none', boxSizing: 'border-box',
+                transition: 'all 0.15s ease',
+                opacity: isSoon ? 0.65 : 1
               };
-              
               const props = isButton ? {
                 key: r.id,
                 onClick: () => setTab(r.id),
                 style: { ...baseStyle, background: active ? 'rgba(59, 130, 246, 0.08)' : 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }
               } : {
-                key: r.name,
-                href: r.url,
-                target: "_blank",
-                rel: "noopener noreferrer",
+                key: r.name, href: r.url, target: "_blank", rel: "noopener noreferrer",
                 style: baseStyle
               };
-
               return (
                 <Component
                   {...props}
-                  onMouseEnter={e => {
-                    if (!active) {
-                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
-                      e.currentTarget.style.color = '#FFFFFF';
-                    }
-                  }}
-                  onMouseLeave={e => {
-                    if (!active) {
-                      e.currentTarget.style.background = 'transparent';
-                      e.currentTarget.style.color = '#C1C4CD';
-                    }
-                  }}
+                  onMouseEnter={e => { if (!active && !isSoon) { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'; e.currentTarget.style.color = '#FFFFFF'; } }}
+                  onMouseLeave={e => { if (!active && !isSoon) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#C1C4CD'; } }}
                 >
-                  <div style={{
-                    color: active ? '#3B82F6' : '#8A8F9E',
-                    display: 'flex',
-                    alignItems: 'center'
-                  }}>
+                  <div style={{ color: active ? '#3B82F6' : isSoon ? 'rgba(138,143,158,0.4)' : '#8A8F9E', display: 'flex', alignItems: 'center' }}>
                     {r.icon}
                   </div>
                   {!isCollapsed && (
                     <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <span>{r.name}</span>
-                      {!isButton && (
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}>
-                          <line x1="7" y1="17" x2="17" y2="7"></line>
-                          <polyline points="7 7 17 7 17 17"></polyline>
-                        </svg>
-                      )}
+                      {isSoon
+                        ? <span style={{ fontSize: 9, fontWeight: 700, color: '#3B82F6', background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: 4, padding: '1px 5px', letterSpacing: '0.05em' }}>SOON</span>
+                        : !isButton && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+                      }
                     </div>
                   )}
                 </Component>
@@ -733,62 +681,44 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
             <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {resources.map((r, i) => {
               const isButton = !!r.id;
+              const isSoon = !isAdmin && isButton // docs, affiliate, terms, privacy are coming soon
               const Component = isButton ? 'button' : 'a';
               const baseStyle = {
-                display: 'flex',
-                alignItems: 'center',
+                display: 'flex', alignItems: 'center',
                 justifyContent: isCollapsed ? 'center' : 'flex-start',
-                gap: isCollapsed ? 0 : 12,
-                width: '100%',
+                gap: isCollapsed ? 0 : 12, width: '100%',
                 padding: isCollapsed ? '9px 0' : '9px 12px',
                 borderRadius: 12,
-                color: '#C1C4CD',
-                fontSize: 14.5,
-                fontWeight: 500,
-                textDecoration: 'none',
-                boxSizing: 'border-box',
-                transition: 'all 0.15s ease'
+                color: isSoon ? 'rgba(193,196,205,0.4)' : '#C1C4CD',
+                fontSize: 14.5, fontWeight: 500,
+                textDecoration: 'none', boxSizing: 'border-box',
+                transition: 'all 0.15s ease',
+                opacity: isSoon ? 0.65 : 1
               };
-              
               const props = isButton ? {
                 onClick: () => setTab(r.id),
                 style: { ...baseStyle, background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }
               } : {
-                href: r.url,
-                target: "_blank",
-                rel: "noopener noreferrer",
+                href: r.url, target: "_blank", rel: "noopener noreferrer",
                 style: baseStyle
               };
-
               return (
                 <Component
                   key={i}
                   {...props}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
-                    e.currentTarget.style.color = '#FFFFFF';
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.color = '#C1C4CD';
-                  }}
+                  onMouseEnter={e => { if (!isSoon) { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'; e.currentTarget.style.color = '#FFFFFF'; } }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = isSoon ? 'rgba(193,196,205,0.4)' : '#C1C4CD'; }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 20, color: '#8A8F9E' }}>
-                    {r.icon ? (
-                      r.icon
-                    ) : (
-                      <img src={r.logo} alt="" style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover' }} />
-                    )}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 20, color: isSoon ? 'rgba(138,143,158,0.4)' : '#8A8F9E' }}>
+                    {r.icon ? r.icon : <img src={r.logo} alt="" style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover', opacity: isSoon ? 0.4 : 1 }} />}
                   </div>
                   {!isCollapsed && (
                     <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <span>{r.name}</span>
-                      {!isButton && (
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}>
-                          <line x1="7" y1="17" x2="17" y2="7"></line>
-                          <polyline points="7 7 17 7 17 17"></polyline>
-                        </svg>
-                      )}
+                      {isSoon
+                        ? <span style={{ fontSize: 9, fontWeight: 700, color: '#3B82F6', background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: 4, padding: '1px 5px', letterSpacing: '0.05em' }}>SOON</span>
+                        : !isButton && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+                      }
                     </div>
                   )}
                 </Component>
@@ -1045,29 +975,22 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                     setTab('link')
                   }}
                   style={{
-                    width: '100%',
-                    background: 'transparent',
-                    border: 'none',
-                    borderRadius: 8,
-                    padding: '10px 12px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    color: '#FFFFFF',
-                    fontSize: 13.5,
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    transition: 'background 0.15s'
+                    width: '100%', background: 'transparent', border: 'none', borderRadius: 8,
+                    padding: '10px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    color: isAdmin ? '#FFFFFF' : 'rgba(255,255,255,0.4)',
+                    fontSize: 13.5, fontWeight: 600, cursor: 'pointer', textAlign: 'left', transition: 'background 0.15s'
                   }}
-                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
-                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                  onMouseEnter={e => isAdmin && (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                  </svg>
-                  Linked accounts
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                    </svg>
+                    Linked accounts
+                  </div>
+                  {!isAdmin && <span style={{ fontSize: 9, fontWeight: 700, color: '#3B82F6', background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: 4, padding: '1px 5px', letterSpacing: '0.05em' }}>SOON</span>}
                 </button>
 
                 <button
