@@ -351,7 +351,7 @@ export default function App({ onLogin, onLogout, privyUser, privyWallets = [] })
   const renderTabContent = () => {
     // Tabs that are "Coming Soon" for non-admin users
     const COMING_SOON_TABS = new Set([
-      'raffle', 'dailyRaffle', 'contests',          // Platform
+      'home', 'raffle', 'dailyRaffle', 'contests',  // Platform
       'wallet', 'skills', 'agentChat', 'x402',      // Tools
       'hhIntro', 'hhChart', 'hhSwap',               // $HH Native Coin
       'docs', 'affiliate', 'terms', 'privacy',      // Resources

@@ -136,7 +136,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
     },
     {
       id: 'affiliate',
-      name: 'Happy Hour Affiliate',
+      name: 'Affiliate Program',
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
@@ -457,8 +457,8 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
             <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {tabs.map(t => {
               const active = tab === t.id
-              // Raffle and dailyRaffle are coming soon for non-admins
-              const isSoon = !isAdmin && (t.id === 'raffle' || t.id === 'dailyRaffle')
+              // Platform tabs that are coming soon for non-admins
+              const isSoon = !isAdmin && t.id !== 'earn'
               return (
                 <button
                   key={t.id}
@@ -534,6 +534,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                   <button
                     key={t.id || t.name}
                     onClick={() => {
+                      if (isSoon && t.url) return;
                       if (t.url) { window.open(t.url, '_blank') }
                       else { setTab(t.id) }
                     }}
@@ -546,7 +547,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                       background: active ? 'rgba(59, 130, 246, 0.08)' : 'transparent',
                       color: active ? '#FFFFFF' : isSoon ? 'rgba(193,196,205,0.4)' : '#C1C4CD',
                       fontSize: 14.5, fontWeight: 500, fontFamily: 'inherit',
-                      cursor: 'pointer', transition: 'all 0.15s ease',
+                      cursor: (isSoon && t.url) ? 'default' : 'pointer', transition: 'all 0.15s ease',
                       opacity: isSoon ? 0.65 : 1
                     }}
                     onMouseEnter={e => { if (!active && !isSoon) { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'; e.currentTarget.style.color = '#FFFFFF'; } }}
@@ -605,7 +606,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
             {hhCoinItems.map((r, i) => {
               const isButton = !!r.id;
               const active = isButton && tab === r.id;
-              const isSoon = !isAdmin && isButton // all $HH internal pages are coming soon
+              const isSoon = !isAdmin // all $HH internal pages and external links are coming soon
               const Component = isButton ? 'button' : 'a';
               const baseStyle = {
                 display: 'flex', alignItems: 'center',
@@ -624,8 +625,9 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                 onClick: () => setTab(r.id),
                 style: { ...baseStyle, background: active ? 'rgba(59, 130, 246, 0.08)' : 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }
               } : {
-                key: r.name, href: r.url, target: "_blank", rel: "noopener noreferrer",
-                style: baseStyle
+                key: r.name, href: isSoon ? undefined : r.url, target: isSoon ? undefined : "_blank", rel: "noopener noreferrer",
+                onClick: (e) => { if (isSoon) e.preventDefault() },
+                style: { ...baseStyle, cursor: isSoon ? 'default' : 'pointer' }
               };
               return (
                 <Component
@@ -681,7 +683,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
             <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {resources.map((r, i) => {
               const isButton = !!r.id;
-              const isSoon = !isAdmin && isButton // docs, affiliate, terms, privacy are coming soon
+              const isSoon = !isAdmin // docs, affiliate, terms, privacy are all coming soon
               const Component = isButton ? 'button' : 'a';
               const baseStyle = {
                 display: 'flex', alignItems: 'center',
@@ -699,8 +701,9 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                 onClick: () => setTab(r.id),
                 style: { ...baseStyle, background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }
               } : {
-                href: r.url, target: "_blank", rel: "noopener noreferrer",
-                style: baseStyle
+                href: isSoon ? undefined : r.url, target: isSoon ? undefined : "_blank", rel: "noopener noreferrer",
+                onClick: (e) => { if (isSoon) e.preventDefault() },
+                style: { ...baseStyle, cursor: isSoon ? 'default' : 'pointer' }
               };
               return (
                 <Component
@@ -999,29 +1002,22 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
                     setTab('account')
                   }}
                   style={{
-                    width: '100%',
-                    background: 'transparent',
-                    border: 'none',
-                    borderRadius: 8,
-                    padding: '10px 12px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    color: '#FFFFFF',
-                    fontSize: 13.5,
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    transition: 'background 0.15s'
+                    width: '100%', background: 'transparent', border: 'none', borderRadius: 8,
+                    padding: '10px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    color: isAdmin ? '#FFFFFF' : 'rgba(255,255,255,0.4)',
+                    fontSize: 13.5, fontWeight: 600, cursor: 'pointer', textAlign: 'left', transition: 'background 0.15s'
                   }}
-                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
-                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                  onMouseEnter={e => isAdmin && (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                  </svg>
-                  Account
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    Account
+                  </div>
+                  {!isAdmin && <span style={{ fontSize: 9, fontWeight: 700, color: '#3B82F6', background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: 4, padding: '1px 5px', letterSpacing: '0.05em' }}>SOON</span>}
                 </button>
 
                 <button
