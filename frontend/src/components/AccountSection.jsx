@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import { usePrivy } from '@privy-io/react-auth'
+import { UserAvatar } from './UserAvatar'
+
+const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
 
 const SPIN_CSS = `
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -41,7 +44,14 @@ function AccountRow({ icon, label, subLabel, linked, loading, onToggle, canUnlin
       <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
         {icon}
         <div>
-          <div style={{ fontSize: 15, fontWeight: 600, color: '#FFFFFF' }}>{label}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ fontSize: 15, fontWeight: 600, color: '#FFFFFF' }}>{label}</div>
+            {linked && (
+              <div style={{ background: 'rgba(34,197,94,0.15)', color: '#22C55E', padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 700, border: '1px solid rgba(34,197,94,0.3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Linked
+              </div>
+            )}
+          </div>
           <div style={{ fontSize: 13, color: linked ? '#94A3B8' : '#64748B', marginTop: 2 }}>
             {linked ? subLabel : 'Not linked'}
           </div>
@@ -77,11 +87,8 @@ const TGIcon = () => (
 )
 
 const EmailIcon = () => (
-  <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(234,67,53,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#EA4335' }}>
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-      <polyline points="22,6 12,13 2,6"/>
-    </svg>
+  <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+    <img src="/gmail_logo.webp" alt="Gmail" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
   </div>
 )
 
@@ -96,6 +103,8 @@ export function AccountSection({ address, onRequireWallet }) {
   const [loadingX, setLoadingX] = useState(false)
   const [loadingTg, setLoadingTg] = useState(false)
   const [loadingEmail, setLoadingEmail] = useState(false)
+
+  const [unlinkConfirm, setUnlinkConfirm] = useState(null)
 
   const linkedTwitter = privyUser?.linkedAccounts?.find(a => a.type === 'twitter_oauth')
   const linkedTelegram = privyUser?.linkedAccounts?.find(a => a.type === 'telegram')
@@ -113,7 +122,7 @@ export function AccountSection({ address, onRequireWallet }) {
   const handleToggleX = () => {
     if (!privyUser) { onRequireWallet?.(); return }
     if (linkedTwitter) {
-      wrap(setLoadingX, () => unlinkTwitter(linkedTwitter.subject))
+      setUnlinkConfirm({ type: 'X (Twitter)', action: () => wrap(setLoadingX, () => unlinkTwitter(linkedTwitter.subject)) })
     } else {
       wrap(setLoadingX, () => linkTwitter())
     }
@@ -122,7 +131,7 @@ export function AccountSection({ address, onRequireWallet }) {
   const handleToggleTg = () => {
     if (!privyUser) { onRequireWallet?.(); return }
     if (linkedTelegram) {
-      wrap(setLoadingTg, () => unlinkTelegram(linkedTelegram.telegramUserId))
+      setUnlinkConfirm({ type: 'Telegram', action: () => wrap(setLoadingTg, () => unlinkTelegram(linkedTelegram.telegramUserId)) })
     } else {
       wrap(setLoadingTg, () => linkTelegram())
     }
@@ -131,23 +140,27 @@ export function AccountSection({ address, onRequireWallet }) {
   const handleToggleEmail = () => {
     if (!privyUser) { onRequireWallet?.(); return }
     if (linkedEmail) {
-      wrap(setLoadingEmail, () => unlinkEmail(linkedEmail.address))
+      setUnlinkConfirm({ type: 'Email', action: () => wrap(setLoadingEmail, () => unlinkEmail(linkedEmail.address)) })
     } else {
       wrap(setLoadingEmail, () => linkEmail())
     }
   }
 
+  const displayName = linkedTwitter?.username ? `@${linkedTwitter.username}` : linkedEmail?.address ? linkedEmail.address : short(address)
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24, animation: 'fadeIn 0.3s ease', color: '#FFFFFF' }}>
       <style>{SPIN_CSS}</style>
 
-      <div>
-        <h1 style={{ fontSize: 24, fontWeight: 800, margin: '0 0 8px 0', fontFamily: "'Outfit','Inter',sans-serif" }}>
-          Linked accounts
-        </h1>
-        <p style={{ fontSize: 14, color: '#94A3B8', margin: 0, lineHeight: 1.5 }}>
-          Manage your connected social accounts.
-        </p>
+      {/* Avatar + Name */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+        <div style={{ width: 80, height: 80, borderRadius: '50%', overflow: 'hidden', background: 'rgba(255,255,255,0.05)', boxShadow: '0 4px 16px rgba(0,0,0,0.2)' }}>
+          <UserAvatar address={address} size={80} />
+        </div>
+        <div style={{ fontSize: 17, fontWeight: 700, color: '#FFFFFF' }}>{displayName}</div>
+        {privyUser?.id && (
+          <div style={{ fontSize: 11, color: '#4B5563', fontFamily: 'monospace' }}>{privyUser.id.slice(0, 24)}…</div>
+        )}
       </div>
 
       <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, padding: 24, display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -206,6 +219,36 @@ export function AccountSection({ address, onRequireWallet }) {
           />
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {unlinkConfirm && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(4px)' }} onClick={() => setUnlinkConfirm(null)} />
+          <div style={{ position: 'relative', background: '#0F172A', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 24, padding: 32, width: '100%', maxWidth: 400, display: 'flex', flexDirection: 'column', gap: 24, animation: 'fadeIn 0.2s ease', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
+            <h3 style={{ fontSize: 20, fontWeight: 700, color: '#FFFFFF', margin: 0 }}>Unlink {unlinkConfirm.type}?</h3>
+            <div style={{ fontSize: 15, color: '#94A3B8', lineHeight: 1.5 }}>
+              Are you sure you want to unlink your {unlinkConfirm.type} account?
+            </div>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button
+                onClick={() => setUnlinkConfirm(null)}
+                style={{ flex: 1, padding: '12px 0', borderRadius: 12, border: 'none', background: 'rgba(255,255,255,0.05)', color: '#FFFFFF', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  unlinkConfirm.action()
+                  setUnlinkConfirm(null)
+                }}
+                style={{ flex: 1, padding: '12px 0', borderRadius: 12, border: 'none', background: '#EF4444', color: '#FFFFFF', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
+              >
+                Unlink
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
