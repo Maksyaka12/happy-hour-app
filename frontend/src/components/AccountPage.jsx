@@ -5,7 +5,7 @@ import { db } from '../config/supabase'
 
 const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
 
-function LinkedAccountRow({ icon, label, value, linked, onLink, onUnlink, canUnlink = true }) {
+function LinkedAccountRow({ icon, label, value, linked, onLink, onUnlink, canUnlink = true, isLast = false }) {
   const [loading, setLoading] = useState(false)
 
   const handleAction = async () => {
@@ -19,7 +19,7 @@ function LinkedAccountRow({ icon, label, value, linked, onLink, onUnlink, canUnl
   }
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 0', borderBottom: isLast ? 'none' : '1px solid rgba(255,255,255,0.06)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <div style={{ width: 36, height: 36, borderRadius: 10, overflow: 'hidden', background: linked ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: linked ? '#3B82F6' : '#94A3B8', flexShrink: 0 }}>
           {icon}
@@ -119,7 +119,7 @@ export function AccountPage({ address, basename, privyUser }) {
         )}
 
         {/* External Wallets (MetaMask, Coinbase, etc.) */}
-        {externalWallets.length > 0 ? externalWallets.map(w => (
+        {externalWallets.length > 0 ? externalWallets.map((w, i) => (
           <LinkedAccountRow
             key={w.address}
             icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>}
@@ -128,6 +128,7 @@ export function AccountPage({ address, basename, privyUser }) {
             linked={true}
             canUnlink={linkedAccountsCount > 1}
             onUnlink={() => unlinkWallet(w.address)}
+            isLast={i === externalWallets.length - 1}
           />
         )) : (
           <LinkedAccountRow
@@ -136,9 +137,26 @@ export function AccountPage({ address, basename, privyUser }) {
             value={null}
             linked={false}
             onLink={linkWallet}
+            isLast={true}
           />
         )}
       </div>
+
+      {/* Backup Email */}
+      {linkedEmail && (
+        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, padding: 24, display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#F8FAFC' }}>Your backup email</div>
+          </div>
+          <div style={{ fontSize: 14, color: '#94A3B8', marginTop: 4 }}>
+            {linkedEmail.address}
+          </div>
+        </div>
+      )}
 
 
       {/* Referral Hub */}
