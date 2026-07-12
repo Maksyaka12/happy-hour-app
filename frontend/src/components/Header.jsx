@@ -4,38 +4,40 @@ const short = (a) => (a ? `${a.slice(0, 6)}...${a.slice(-4)}` : '')
 
 // Returns { label, icon } for the user's primary login method
 function getLoginIdentity(privyUser, address, displayName) {
-  if (!privyUser) return { label: displayName || short(address), icon: null }
-
-  const twitter = privyUser.linkedAccounts?.find(a => a.type === 'twitter_oauth')
-  const telegram = privyUser.linkedAccounts?.find(a => a.type === 'telegram')
-  const email = privyUser.linkedAccounts?.find(a => a.type === 'email')
-  const externalWallet = privyUser.linkedAccounts?.find(
-    a => a.type === 'wallet' && a.walletClientType !== 'privy' && a.connectorType !== 'embedded'
-  )
-
-  // Priority: wallet login first (most specific), then social
-  if (externalWallet && !twitter && !telegram && !email) {
+  if (!privyUser || !privyUser.linkedAccounts || privyUser.linkedAccounts.length === 0) {
     return { label: displayName || short(address), icon: null }
   }
-  if (twitter?.username) {
+
+  // Sort linked accounts by latestVerifiedAt to find the most recently used login method
+  const sortedAccounts = [...privyUser.linkedAccounts].sort((a, b) => {
+    const timeA = a.latestVerifiedAt ? new Date(a.latestVerifiedAt).getTime() : (a.firstVerifiedAt ? new Date(a.firstVerifiedAt).getTime() : 0);
+    const timeB = b.latestVerifiedAt ? new Date(b.latestVerifiedAt).getTime() : (b.firstVerifiedAt ? new Date(b.firstVerifiedAt).getTime() : 0);
+    return timeB - timeA;
+  });
+
+  const activeAccount = sortedAccounts[0];
+
+  if (activeAccount.type === 'twitter_oauth') {
     return {
-      label: `@${twitter.username}`,
+      label: `@${activeAccount.username}`,
       icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
     }
   }
-  if (telegram?.telegramUserId) {
-    const tgName = telegram.username || telegram.firstName || `TG ${telegram.telegramUserId}`
+  if (activeAccount.type === 'telegram') {
+    const tgName = activeAccount.username || activeAccount.firstName || `TG ${activeAccount.telegramUserId}`
     return {
       label: `@${tgName}`,
       icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.99 1.26-5.61 3.71-.53.37-1.01.55-1.44.54-.48-.01-1.39-.27-2.07-.49-.83-.27-1.49-.41-1.43-.87.03-.24.36-.49.98-.75 3.84-1.67 6.4-2.77 7.68-3.3 3.65-1.51 4.41-1.78 4.9-1.79.11 0 .36.03.52.16.14.11.18.26.19.37.01.07.02.24.01.35z"/></svg>
     }
   }
-  if (email?.address) {
+  if (activeAccount.type === 'email') {
     return {
-      label: email.address,
+      label: activeAccount.address,
       icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
     }
   }
+  
+  // Default to wallet or display name
   return { label: displayName || short(address), icon: null }
 }
 

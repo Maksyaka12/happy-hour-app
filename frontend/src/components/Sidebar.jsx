@@ -9,21 +9,31 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
 
   // Returns { label, icon } based on how user is logged in
   const getLoginIdentity = () => {
-    if (!privyUser) return { label: displayName || (address ? `${address.slice(0,6)}…${address.slice(-4)}` : ''), icon: null }
-    const twitter = privyUser.linkedAccounts?.find(a => a.type === 'twitter_oauth')
-    const telegram = privyUser.linkedAccounts?.find(a => a.type === 'telegram')
-    const email = privyUser.linkedAccounts?.find(a => a.type === 'email')
-    const externalWallet = privyUser.linkedAccounts?.find(
-      a => a.type === 'wallet' && a.walletClientType !== 'privy' && a.connectorType !== 'embedded'
-    )
-    if (externalWallet && !twitter && !telegram && !email)
+    if (!privyUser || !privyUser.linkedAccounts || privyUser.linkedAccounts.length === 0) {
       return { label: displayName || (address ? `${address.slice(0,6)}…${address.slice(-4)}` : ''), icon: null }
-    if (twitter?.username)
-      return { label: `@${twitter.username}`, icon: 'x' }
-    if (telegram?.telegramUserId)
-      return { label: `@${telegram.username || telegram.firstName || telegram.telegramUserId}`, icon: 'tg' }
-    if (email?.address)
-      return { label: email.address, icon: 'email' }
+    }
+
+    // Sort linked accounts by latestVerifiedAt to find the most recently used login method
+    const sortedAccounts = [...privyUser.linkedAccounts].sort((a, b) => {
+      const timeA = a.latestVerifiedAt ? new Date(a.latestVerifiedAt).getTime() : (a.firstVerifiedAt ? new Date(a.firstVerifiedAt).getTime() : 0);
+      const timeB = b.latestVerifiedAt ? new Date(b.latestVerifiedAt).getTime() : (b.firstVerifiedAt ? new Date(b.firstVerifiedAt).getTime() : 0);
+      return timeB - timeA;
+    });
+
+    const activeAccount = sortedAccounts[0];
+
+    if (activeAccount.type === 'twitter_oauth') {
+      return { label: `@${activeAccount.username}`, icon: 'x' }
+    }
+    if (activeAccount.type === 'telegram') {
+      const tgName = activeAccount.username || activeAccount.firstName || `TG ${activeAccount.telegramUserId}`;
+      return { label: `@${tgName}`, icon: 'tg' }
+    }
+    if (activeAccount.type === 'email') {
+      return { label: activeAccount.address, icon: 'email' }
+    }
+    
+    // For wallet or any other fallback
     return { label: displayName || (address ? `${address.slice(0,6)}…${address.slice(-4)}` : ''), icon: null }
   }
 
