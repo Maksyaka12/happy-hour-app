@@ -21,7 +21,7 @@ function LinkedAccountRow({ icon, label, value, linked, onLink, onUnlink, canUnl
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <div style={{ width: 36, height: 36, borderRadius: 10, background: linked ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: linked ? '#3B82F6' : '#94A3B8', flexShrink: 0 }}>
+        <div style={{ width: 36, height: 36, borderRadius: 10, overflow: 'hidden', background: linked ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: linked ? '#3B82F6' : '#94A3B8', flexShrink: 0 }}>
           {icon}
         </div>
         <div>
@@ -103,7 +103,7 @@ export function AccountPage({ address, basename, privyUser }) {
         {primaryEmbedded.length > 0 ? primaryEmbedded.map(w => (
           <LinkedAccountRow
             key={w.address}
-            icon={<img src="/logo_200.png" alt="HH" style={{ width: 18, height: 18, borderRadius: 4, objectFit: 'cover' }} />}
+            icon={<img src="/logo_200.png" alt="HH" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
             label="HH Embedded Wallet"
             value={short(w.address)}
             linked={true}
@@ -111,7 +111,7 @@ export function AccountPage({ address, basename, privyUser }) {
           />
         )) : (
           <LinkedAccountRow
-            icon={<img src="/logo_200.png" alt="HH" style={{ width: 18, height: 18, borderRadius: 4, objectFit: 'cover' }} />}
+            icon={<img src="/logo_200.png" alt="HH" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
             label="HH Embedded Wallet"
             value="Creating…"
             linked={false}
