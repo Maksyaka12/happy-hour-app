@@ -92,27 +92,27 @@ export function AccountPage({ address, basename, privyUser }) {
         )}
       </div>
 
-      {/* Linked Accounts */}
+      {/* Wallets */}
       <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, padding: 24 }}>
-        <div style={{ fontSize: 16, fontWeight: 700, color: '#F8FAFC', marginBottom: 4 }}>Linked Accounts</div>
+        <div style={{ fontSize: 16, fontWeight: 700, color: '#F8FAFC', marginBottom: 4 }}>Wallets</div>
         <div style={{ fontSize: 13, color: '#94A3B8', marginBottom: 16 }}>
-          Connect multiple methods — they all access the same account &amp; embedded wallet.
+          Manage your account wallets.
         </div>
 
         {/* Embedded Wallet — always exactly 1 */}
         {primaryEmbedded.length > 0 ? primaryEmbedded.map(w => (
           <LinkedAccountRow
             key={w.address}
-            icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 11h2"/><path d="M6 3l6-3 6 3"/></svg>}
-            label="Embedded Wallet"
+            icon={<img src={`${basename}/logo_200.png`} alt="HH" style={{ width: 18, height: 18, borderRadius: 4, objectFit: 'cover' }} />}
+            label="HH Embedded Wallet"
             value={short(w.address)}
             linked={true}
             canUnlink={false}
           />
         )) : (
           <LinkedAccountRow
-            icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 11h2"/><path d="M6 3l6-3 6 3"/></svg>}
-            label="Embedded Wallet"
+            icon={<img src={`${basename}/logo_200.png`} alt="HH" style={{ width: 18, height: 18, borderRadius: 4, objectFit: 'cover' }} />}
+            label="HH Embedded Wallet"
             value="Creating…"
             linked={false}
           />
@@ -138,37 +138,8 @@ export function AccountPage({ address, basename, privyUser }) {
             onLink={linkWallet}
           />
         )}
-
-        <LinkedAccountRow
-          icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>}
-          label="Email"
-          value={linkedEmail?.address || null}
-          linked={!!linkedEmail}
-          canUnlink={linkedAccountsCount > 1}
-          onLink={linkEmail}
-          onUnlink={linkedEmail ? () => unlinkEmail(linkedEmail.address) : undefined}
-        />
-
-        <LinkedAccountRow
-          icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>}
-          label="X (Twitter)"
-          value={linkedTwitter?.username ? `@${linkedTwitter.username}` : null}
-          linked={!!linkedTwitter}
-          canUnlink={linkedAccountsCount > 1}
-          onLink={linkTwitter}
-          onUnlink={linkedTwitter ? () => unlinkTwitter(linkedTwitter.subject) : undefined}
-        />
-
-        <LinkedAccountRow
-          icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>}
-          label="Telegram"
-          value={linkedTelegram?.telegramUserId ? `ID: ${linkedTelegram.telegramUserId}` : null}
-          linked={!!linkedTelegram}
-          canUnlink={linkedAccountsCount > 1}
-          onLink={linkTelegram}
-          onUnlink={linkedTelegram ? () => unlinkTelegram(linkedTelegram.telegramUserId) : undefined}
-        />
       </div>
+
 
       {/* Referral Hub */}
       <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
