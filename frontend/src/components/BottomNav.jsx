@@ -14,14 +14,47 @@ const isBaseApp = () => {
   return false
 }
 
+const NAV_ICONS = {
+  raffle: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="7" width="20" height="14" rx="2"/>
+      <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+      <line x1="12" y1="12" x2="12" y2="16"/>
+      <line x1="10" y1="14" x2="14" y2="14"/>
+    </svg>
+  ),
+  contests: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/>
+      <path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+      <path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/>
+      <path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/>
+      <path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"/>
+      <path d="M15.5 19H14v1.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/>
+      <path d="M10 9.5c0 .83-.67 1.5-1.5 1.5h-5C2.67 11 2 10.33 2 9.5S2.67 8 3.5 8h5c.83 0 1.5.67 1.5 1.5z"/>
+      <path d="M8.5 5H10V3.5C10 2.67 9.33 2 8.5 2S7 2.67 7 3.5 7.67 5 8.5 5z"/>
+    </svg>
+  ),
+  earn: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+    </svg>
+  ),
+  home: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+      <circle cx="12" cy="7" r="4"/>
+    </svg>
+  ),
+}
+
 export function BottomNav({ tab, setTab }) {
   const tabs = [
-    { id: 'raffle',      label: 'Raffle',   icon: '🎰' },
-    { id: 'tasks',       label: 'Tasks',    icon: '📋' },
-    { id: 'contests',    label: 'Contests', icon: '🏅' },
-    { id: 'leaderboard', label: 'Rewards',  icon: '🏆' },
-    { id: 'earn',        label: 'Earn',     icon: '💎' },
-    { id: 'home',        label: 'Home',     icon: '🏠' },
+    { id: 'raffle',   label: 'Raffle',    icon: NAV_ICONS.raffle },
+    { id: 'contests', label: 'Campaigns', icon: NAV_ICONS.contests },
+    { id: 'earn',     label: 'Staking',   icon: NAV_ICONS.earn },
+    { id: 'home',     label: 'Profile',   icon: NAV_ICONS.home },
   ]
 
   // Base App bug fixed, no offset needed
@@ -56,9 +89,10 @@ export function BottomNav({ tab, setTab }) {
             background: tab === t.id ? '#EEF0F3' : 'transparent',
             outline: tab === t.id ? '1px solid rgba(0,0,255,0.15)' : 'none',
             transition: 'all 0.2s',
-            position: 'relative'
+            position: 'relative',
+            color: tab === t.id ? '#0000FF' : '#717886',
           }}>
-            <span style={{ fontSize: 18, lineHeight: 1 }}>{t.icon}</span>
+            <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>{t.icon}</span>
             <span style={{
               fontSize: 8.5, fontWeight: 700, letterSpacing: 0.1,
               color: tab === t.id ? '#0000FF' : '#717886',

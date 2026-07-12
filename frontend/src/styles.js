@@ -14,18 +14,18 @@ export const CSS = `
     --red:       #FC401F;
     --green:     #059669;
     --gold:      #D97706;
-    --bg:        #FFFFFF;
-    --bg2:       #F8F9FC;
-    --bg3:       #EEF0F3;
-    --text:      #0A0B0D;
-    --text2:     #32353D;
-    --muted:     #717886;
-    --border:    #DEE1E7;
-    --border2:   #EEF0F3;
-    --blue-bg:   #EEF0F3;
-    --blue-bg2:  #F0F5FF;
-    --green-bg:  #D1FAE5;
-    --red-bg:    #FEE2E2;
+    --bg:        #1C1D2C;
+    --bg2:       #13141F;
+    --bg3:       #28293D;
+    --text:      #FFFFFF;
+    --text2:     #A0A5B5;
+    --muted:     #8F95B2;
+    --border:    #2E2F3A;
+    --border2:   #3B3D4F;
+    --blue-bg:   #1E2030;
+    --blue-bg2:  #25273C;
+    --green-bg:  rgba(5, 150, 105, 0.15);
+    --red-bg:    rgba(252, 64, 31, 0.15);
     --shadow:    0 1px 4px rgba(10,11,13,0.07), 0 4px 12px rgba(10,11,13,0.04);
   }
 
@@ -64,6 +64,74 @@ export const CSS = `
 
   .connect-bg {
     background: linear-gradient(160deg, #EBF0FF 0%, #DDEAFF 40%, #E8EEFF 100%);
+  }
+
+  /* Responsive Helpers */
+  @media (max-width: 768px) {
+    .desktop-only {
+      display: none !important;
+    }
+    .mobile-only {
+      display: block !important;
+    }
+    
+    /* Hide desktop stats in header */
+    .desktop-stat {
+      display: none !important;
+    }
+    
+    .desktop-only-inline {
+      display: none !important;
+    }
+    
+    .mobile-only-flex {
+      display: flex !important;
+    }
+    
+    /* Show mobile-only elements */
+    .mobile-hamburger {
+      display: flex !important;
+    }
+    
+    /* Sidebar as a sliding drawer */
+    aside.sidebar-container {
+      position: fixed !important;
+      left: -260px !important;
+      top: 0 !important;
+      bottom: 0 !important;
+      width: 260px !important;
+      height: 100vh !important;
+      transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      z-index: 1000 !important;
+      box-shadow: 10px 0 40px rgba(0, 0, 0, 0.6) !important;
+    }
+    aside.sidebar-container.open {
+      left: 0 !important;
+    }
+    
+    /* Make grids/columns stack vertically on mobile */
+    .responsive-grid {
+      grid-template-columns: 1fr !important;
+      gap: 16px !important;
+    }
+    
+    .responsive-flex {
+      flex-direction: column !important;
+      gap: 16px !important;
+    }
+
+    #main-content-scroll {
+      padding: 16px 12px 64px !important;
+    }
+  }
+
+  @media (min-width: 769px) {
+    .desktop-only {
+      display: flex !important;
+    }
+    .mobile-only {
+      display: none !important;
+    }
   }
 
   @keyframes fadeIn    { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:none } }

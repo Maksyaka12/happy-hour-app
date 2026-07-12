@@ -32,7 +32,7 @@ const calculateTradingContestTimeLeft = () => {
   return `${d}d ${h.toString().padStart(2, '0')}h ${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`
 }
 
-export function ContestsSection({ setTab, address, initialContest = null, onClearInitialContest }) {
+export function ContestsSection({ setTab, address, initialContest = null, onClearInitialContest, onRequireWallet }) {
   const [activeContest, setActiveContest] = useState(initialContest)
 
   useEffect(() => {
@@ -70,7 +70,10 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
   const [loadingSubmissions, setLoadingSubmissions] = useState(false)
 
   const handleSubmitPost = async () => {
-    if (!address) return
+    if (!address) {
+      if (onRequireWallet) onRequireWallet()
+      return
+    }
     if (!postUrl.startsWith('http://') && !postUrl.startsWith('https://')) {
       setPostMsg('Link must start with http:// or https://')
       setPostStatus('error')
@@ -449,12 +452,12 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
         {/* Back Button */}
         <button
           onClick={() => setActiveContest(null)}
+          className="text-subtle"
           style={{
             background: 'none',
             border: 'none',
-            color: '#717886',
             fontSize: 13,
-            fontWeight: 700,
+            fontWeight: 500,
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -463,16 +466,15 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
             padding: 0,
             transition: 'color 0.2s'
           }}
-          onMouseEnter={e => e.currentTarget.style.color = '#F59E0B'}
-          onMouseLeave={e => e.currentTarget.style.color = '#717886'}
+          onMouseEnter={e => e.currentTarget.style.color = 'var(--text-main)'}
+          onMouseLeave={e => e.currentTarget.style.color = 'var(--text-subtle)'}
         >
-          ← Back to Contests
+          ← Back to Campaigns
         </button>
 
         {/* Contest Banner - Themed to match the Contest Card */}
-        <div style={{
-          backgroundColor: '#2A1A06',
-          borderRadius: 24,
+        <div className="card-strict" style={{
+          background: 'url(/banner.jpg) center/cover',
           padding: '36px 20px',
           marginBottom: 20,
           position: 'relative',
@@ -481,11 +483,14 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 8px 32px rgba(245, 158, 11, 0.15)',
           overflow: 'hidden',
-          border: '1px solid rgba(245, 158, 11, 0.3)',
           boxSizing: 'border-box'
         }}>
+          {/* Inner overlay for darkening the image */}
+          <div style={{
+            position: 'absolute', inset: 0, 
+            background: 'rgba(23, 25, 35, 0.85)'
+          }} />
           {/* Style block for keyframes in case we are in detail view */}
           <style dangerouslySetInnerHTML={{ __html: `
             @keyframes floatingLogo {
@@ -494,24 +499,11 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
               100% { transform: translateY(0px); }
             }
           ` }} />
-
-          {/* Graded background image with amber/warm gold hue filter */}
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundImage: 'url(/banner.jpg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            filter: 'hue-rotate(25deg) brightness(0.5) contrast(1.15)',
-            zIndex: 0,
-            pointerEvents: 'none'
-          }} />
-          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.15)', zIndex: 0 }} />
           
           {/* Floating creative emojis */}
           {[
             { char: '🎨', top: '10%', right: '15%', size: 28, opacity: 0.35, r: '15deg', dur: 4.2 },
-            { char: '🖌️', bottom: '15%', left: '20%', size: 24, opacity: 0.3, r: '-20deg', dur: 4.8 },
+            { char: '✍️', bottom: '15%', left: '20%', size: 24, opacity: 0.3, r: '-20deg', dur: 4.8 },
             { char: '✏️', top: '45%', left: '8%', size: 22, opacity: 0.25, r: '10deg', dur: 5.5 },
             { char: '📝', bottom: '10%', right: '25%', size: 20, opacity: 0.3, r: '-15deg', dur: 3.9 }
           ].map((s, i) => (
@@ -536,72 +528,71 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
           
           <div style={{ position: 'relative', zIndex: 2, textAlign: 'center' }}>
             <div style={{
-              fontFamily: "'Barlow Condensed', sans-serif",
-              fontSize: 38,
-              fontWeight: 900,
-              color: '#FFFFFF',
+              fontFamily: 'var(--font-mono)',
+              fontSize: 32,
+              fontWeight: 500,
+              color: 'var(--text-main)',
               lineHeight: 1.1,
-              textShadow: '0 2px 10px rgba(0,0,0,0.5)',
               letterSpacing: '-0.5px'
             }}>
-              Launch Contest
+              Launch Campaign
             </div>
             
             {/* Badges in Banner */}
             <div style={{ display: 'flex', gap: 6, marginTop: 8, justifyContent: 'center', flexWrap: 'wrap', alignItems: 'center' }}>
               <div style={{
-                background: 'rgba(255, 255, 255, 0.18)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.28)',
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
                 borderRadius: 50,
                 height: 24,
                 boxSizing: 'border-box',
                 padding: '0 12px',
                 fontSize: 10,
-                fontWeight: 900,
-                color: '#FFFFFF',
+                fontWeight: 500,
+                color: 'var(--text-main)',
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: 4
+                gap: 4,
+                fontFamily: 'var(--font-mono)'
               }}>
                 <span style={{ lineHeight: 1 }}>$120 in</span>
                 <img src="/logo.jfif" alt="$HH" style={{ width: 12, height: 12, borderRadius: '50%', objectFit: 'cover' }} />
                 <span style={{ lineHeight: 1 }}>$HH</span>
               </div>
               <div style={{
-                background: 'rgba(255, 255, 255, 0.18)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.28)',
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
                 borderRadius: 50,
                 height: 24,
                 boxSizing: 'border-box',
                 padding: '0 12px',
                 fontSize: 10,
-                fontWeight: 800,
-                color: '#FFFFFF',
+                fontWeight: 500,
+                color: 'var(--text-main)',
                 display: 'inline-flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                fontFamily: 'var(--font-mono)'
               }}>
                 <span style={{ lineHeight: 1 }}>3 winners</span>
               </div>
               {CONTEST_TARGET_DATE.getTime() <= Date.now() ? (
                 <div style={{
-                  background: '#EF4444',
+                  background: 'rgba(239, 68, 68, 0.1)',
                   borderRadius: 50,
                   height: 24,
                   padding: '0 12px',
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  border: '1px solid rgba(239, 68, 68, 0.5)',
+                  border: '1px solid rgba(239, 68, 68, 0.3)',
                 }}>
                   <span style={{
-                    fontFamily: "'Outfit', 'Inter', sans-serif",
+                    fontFamily: 'var(--font-mono)',
                     fontSize: 10,
-                    fontWeight: 800,
-                    color: '#FFFFFF',
+                    fontWeight: 500,
+                    color: '#EF4444',
                     letterSpacing: '0.5px',
                     lineHeight: 1
                   }}>Ended</span>
@@ -609,21 +600,20 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
                   <div style={{
-                    background: 'rgba(0, 0, 0, 0.55)',
-                    backdropFilter: 'blur(6px)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
-                    borderRadius: 6,
-                    height: 16,
-                    padding: '0 5px',
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: 50,
+                    height: 24,
+                    padding: '0 12px',
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
                     <span style={{
-                      fontFamily: "'Outfit', 'Inter', sans-serif",
+                      fontFamily: 'var(--font-mono)',
                       fontSize: 10,
-                      fontWeight: 700,
-                      color: '#FFFFFF',
+                      fontWeight: 500,
+                      color: 'var(--text-main)',
                       fontVariantNumeric: 'tabular-nums',
                       letterSpacing: '0.3px'
                     }}>{contestTimeLeft}</span>
@@ -637,24 +627,17 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
         {CONTEST_TARGET_DATE.getTime() <= Date.now() && <WinnersPedestal />}
 
         {/* Content Details (Glassmorphic Card) */}
-        <div style={{
-          background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(245, 158, 11, 0.03) 100%)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid #2A1A06',
-          borderRadius: 20,
+        <div className="card-strict" style={{
           padding: '20px',
-          boxShadow: '0 8px 32px rgba(245, 158, 11, 0.06)',
           boxSizing: 'border-box',
-          color: '#1E293B',
-          fontFamily: "'Outfit', 'Inter', sans-serif"
+          marginBottom: 16
         }}>
-          <h3 style={{ margin: '0 0 12px', fontSize: 18, fontWeight: 800, color: '#D97706' }}>About the Contest</h3>
-          <p style={{ margin: '0 0 16px', fontSize: 13, lineHeight: 1.5, color: '#475569', fontWeight: 600 }}>
-            In honor of the Season 2 launch - we are kicking off our Launch Contest dedicated to creators! Showcase your creativity to share a prize pool.
+          <h3 style={{ margin: '0 0 12px', fontSize: 18, fontWeight: 500, color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>About the Campaign</h3>
+          <p style={{ margin: '0 0 16px', fontSize: 13, lineHeight: 1.5, color: 'var(--text-subtle)', fontWeight: 400 }}>
+            In honor of the Season 2 launch - we are kicking off our Launch Campaign dedicated to creators! Showcase your creativity to share a prize pool.
           </p>
 
-          <div style={{ margin: '0 0 20px', fontSize: 13, color: '#475569', fontWeight: 500 }}>
+          <div style={{ margin: '0 0 20px', fontSize: 13, color: 'var(--text-subtle)', fontWeight: 400 }}>
             <ul style={{ margin: 0, paddingLeft: 20, lineHeight: 1.7 }}>
               <li>Explore our updated app</li>
               <li>Create content about Happy Hour: guides, tutorials, videos, threads, art, or memes.</li>
@@ -663,9 +646,9 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
             </ul>
           </div>
 
-          <div style={{ borderTop: '1px solid rgba(245, 158, 11, 0.15)', paddingTop: 16 }}>
-            <h4 style={{ margin: '0 0 8px', fontSize: 14, fontWeight: 700, color: '#1E293B' }}>Rewards breakdown:</h4>
-            <ul style={{ margin: 0, paddingLeft: 20, fontSize: 13, color: '#475569', lineHeight: 1.6, fontWeight: 500 }}>
+          <div style={{ borderTop: '1px solid var(--border)', paddingTop: 16 }}>
+            <h4 style={{ margin: '0 0 8px', fontSize: 14, fontWeight: 500, color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>Rewards breakdown:</h4>
+            <ul style={{ margin: 0, paddingLeft: 20, fontSize: 13, color: 'var(--text-subtle)', lineHeight: 1.6, fontWeight: 400 }}>
               <li>1st Place: $60 in $HH coin</li>
               <li>2nd Place: $30 in $HH coin</li>
               <li>3rd Place: $30 in $HH coin</li>
@@ -674,43 +657,28 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
         </div>
 
         {/* Post Submission Form */}
-        <div style={{
-          background: 'linear-gradient(135deg, #2A1A06 0%, #4F330D 100%)',
-          borderRadius: 24,
+        <div className="card-strict" style={{
           padding: '22px 20px',
-          marginTop: 16,
           position: 'relative',
-          overflow: 'hidden',
-          boxShadow: '0 8px 32px rgba(42,26,6,0.2)',
-          border: '1px solid rgba(245,158,11,0.3)',
           boxSizing: 'border-box'
         }}>
           <div style={{ position: 'relative', zIndex: 1 }}>
-            <div style={{ fontSize: 16, fontWeight: 800, color: '#fff', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span>✍️ Submit your Contest post</span>
+            <div style={{ fontSize: 16, fontWeight: 500, color: 'var(--text-main)', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-mono)' }}>
+              <span>📝 Submit your Campaign post</span>
             </div>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', marginBottom: 14, lineHeight: 1.5, fontWeight: 500 }}>
+            <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 14, lineHeight: 1.5, fontWeight: 400 }}>
               Submit your X posts link below. You can submit as many posts as you want.
             </div>
             
             {postStatus === 'success' ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <div style={{ background: 'rgba(5,150,105,0.25)', borderRadius: 14, padding: '10px 14px', fontSize: 12, color: '#6EE7B7', fontWeight: 800 }}>
-                  ✓ {postMsg}
+                <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: 8, padding: '10px 14px', fontSize: 12, color: '#10B981', fontWeight: 500 }}>
+                  ✔️ {postMsg}
                 </div>
                 <button
+                  className="btn-primary-strict"
                   onClick={() => { setPostStatus(''); setPostMsg(''); }}
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.15)',
-                    color: '#fff',
-                    borderRadius: 50,
-                    padding: '8px 16px',
-                    fontSize: 11,
-                    fontWeight: 700,
-                    border: 'none',
-                    cursor: 'pointer',
-                    alignSelf: 'flex-start'
-                  }}
+                  style={{ alignSelf: 'flex-start' }}
                 >
                   Submit another link
                 </button>
@@ -720,35 +688,38 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
                 <input
                   value={postUrl}
                   onChange={e => { setPostUrl(e.target.value); setPostStatus(''); setPostMsg('') }}
-                  placeholder="Paste your link here…"
+                  placeholder="Paste your link here..."
                   style={{
-                    flex: 1, padding: '10px 16px', borderRadius: 50,
-                    border: postStatus === 'error' ? '1.5px solid #FCA5A5' : '1.5px solid rgba(255,255,255,0.2)',
-                    background: 'rgba(255,255,255,0.1)', color: '#fff',
+                    flex: 1, padding: '10px 16px', borderRadius: 8,
+                    border: postStatus === 'error' ? '1px solid #EF4444' : '1px solid var(--border)',
+                    background: 'rgba(0,0,0,0.2)', color: 'var(--text-main)',
                     fontSize: 12, outline: 'none', fontFamily: 'inherit',
-                    fontWeight: 600
+                    fontWeight: 400
                   }}
                 />
                 <button
+                  className="btn-primary-strict"
                   onClick={handleSubmitPost}
-                  disabled={postStatus === 'submitting' || !postUrl || !address}
+                  disabled={postStatus === 'submitting' || !postUrl}
                   style={{
-                    background: '#fff', color: '#2A1A06', borderRadius: 50,
-                    padding: '10px 20px', fontSize: 12, fontWeight: 800,
-                    border: 'none', cursor: postStatus === 'submitting' || !postUrl || !address ? 'not-allowed' : 'pointer',
-                    opacity: postStatus === 'submitting' || !postUrl || !address ? 0.6 : 1,
+                    opacity: postStatus === 'submitting' || !postUrl ? 0.6 : 1,
                     whiteSpace: 'nowrap',
                   }}
                 >
-                  {postStatus === 'submitting' ? '…' : 'Submit'}
+                  {postStatus === 'submitting' ? '...' : 'Submit'}
                 </button>
               </div>
             )}
             {postStatus === 'error' && (
-              <div style={{ fontSize: 10, color: '#FCA5A5', marginTop: 6, fontWeight: 600 }}>{postMsg}</div>
+              <div style={{ fontSize: 10, color: '#EF4444', marginTop: 6, fontWeight: 500 }}>{postMsg}</div>
             )}
             {!address && (
-              <div style={{ fontSize: 10, color: '#FCA5A5', marginTop: 6, fontWeight: 600 }}>Please connect your wallet to submit a post.</div>
+              <div 
+                onClick={onRequireWallet}
+                style={{ fontSize: 10, color: '#EF4444', marginTop: 6, fontWeight: 500, cursor: 'pointer', textDecoration: 'underline' }}
+              >
+                Please connect your wallet to submit a post.
+              </div>
             )}
           </div>
         </div>
@@ -757,58 +728,48 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
         {address?.toLowerCase() === '0x4c91d3bed372c11795b9ce9a9017dfe447bf050a' && (
           <div style={{ marginTop: 16 }}>
             <button
+              className="btn-primary-strict"
               onClick={() => {
                 const next = !showAdminSubmissions
                 setShowAdminSubmissions(next)
                 if (next) loadAdminSubmissions()
               }}
               style={{
-                fontSize: 12,
-                padding: '8px 16px',
-                borderRadius: 50,
-                background: '#F59E0B',
-                color: '#fff',
-                border: 'none',
-                fontWeight: 700,
-                cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 6
               }}
             >
-              📬 View Submitted Posts {submissions.length > 0 ? `(${submissions.length})` : ''}
+              📂 View Submitted Posts {submissions.length > 0 ? `(${submissions.length})` : ''}
             </button>
 
             {showAdminSubmissions && (
-              <div style={{
-                background: '#FFF7ED',
-                border: '1px solid #FED7AA',
-                borderRadius: 16,
+              <div className="card-strict" style={{
                 padding: 16,
                 marginTop: 12,
                 boxSizing: 'border-box'
               }}>
-                <div style={{ fontSize: 14, fontWeight: 800, color: '#9A3412', marginBottom: 12 }}>
-                  Contest Submissions ({submissions.length})
+                <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-main)', marginBottom: 12, fontFamily: 'var(--font-mono)' }}>
+                  Campaign Submissions ({submissions.length})
                 </div>
 
                 {loadingSubmissions ? (
                   <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0' }}>
-                    <div style={{ width: 16, height: 16, border: '2px solid rgba(154,52,18,0.3)', borderTopColor: '#9A3412', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                    <div style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.1)', borderTopColor: 'var(--text-main)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
                   </div>
                 ) : submissions.length === 0 ? (
-                  <div style={{ fontSize: 12, color: '#B45309', textAlign: 'center', padding: '12px 0' }}>
+                  <div style={{ fontSize: 12, color: 'var(--text-subtle)', textAlign: 'center', padding: '12px 0' }}>
                     No submissions found
                   </div>
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 300, overflowY: 'auto' }}>
                     {submissions.map(s => (
-                      <div key={s.id} style={{ background: '#fff', borderRadius: 12, padding: '10px 12px', border: '1px solid #FED7AA', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                      <div key={s.id} style={{ background: 'rgba(0,0,0,0.2)', borderRadius: 8, padding: '10px 12px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: 4 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontSize: 10.5, fontWeight: 700, color: '#717886', fontFamily: "'DM Mono', monospace" }}>
+                          <span style={{ fontSize: 10.5, fontWeight: 400, color: 'var(--text-subtle)', fontFamily: 'var(--font-mono)' }}>
                             {s.address}
                           </span>
-                          <span style={{ fontSize: 9, color: '#A0AEC0' }}>
+                          <span style={{ fontSize: 9, color: 'var(--text-subtle)' }}>
                             {new Date(s.submitted_at).toLocaleString()}
                           </span>
                         </div>
@@ -818,8 +779,8 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
                           rel="noopener noreferrer"
                           style={{
                             fontSize: 11.5,
-                            color: '#0052FF',
-                            fontWeight: 600,
+                            color: '#0000FF',
+                            fontWeight: 500,
                             wordBreak: 'break-all',
                             textDecoration: 'none'
                           }}
@@ -863,12 +824,12 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
           onMouseEnter={e => e.currentTarget.style.color = '#EF4444'}
           onMouseLeave={e => e.currentTarget.style.color = '#717886'}
         >
-          ← Back to Contests
+          ← Back to Campaigns
         </button>
 
-        {/* Contest Banner - Red themed */}
+        {/* Contest Banner */}
         <div style={{
-          backgroundColor: '#140505',
+          background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover',
           borderRadius: 24,
           padding: '36px 20px',
           marginBottom: 20,
@@ -878,29 +839,17 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 8px 32px rgba(239, 68, 68, 0.15)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
           overflow: 'hidden',
-          border: '1px solid rgba(239, 68, 68, 0.2)',
+          border: '1px solid var(--border)',
           boxSizing: 'border-box'
         }}>
-          {/* Graded background image with red hue filter */}
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundImage: 'url(/banner.jpg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            filter: 'hue-rotate(330deg) brightness(0.4) contrast(1.15)',
-            zIndex: 0,
-            pointerEvents: 'none'
-          }} />
-          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.15)', zIndex: 0 }} />
           
           {/* Floating financial emojis */}
           {[
             { char: '📈', top: '10%', right: '15%', size: 28, opacity: 0.35, r: '15deg', dur: 4.5 },
             { char: '📉', bottom: '15%', left: '20%', size: 24, opacity: 0.3, r: '-20deg', dur: 5.2 },
-            { char: '📊', top: '45%', left: '8%', size: 22, opacity: 0.25, r: '10deg', dur: 3.8 },
+            { char: '🏆', top: '45%', left: '8%', size: 22, opacity: 0.25, r: '10deg', dur: 3.8 },
             { char: '💸', bottom: '10%', right: '25%', size: 20, opacity: 0.3, r: '-15deg', dur: 4.4 }
           ].map((s, i) => (
             <div key={i} style={{
@@ -932,7 +881,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
               textShadow: '0 2px 10px rgba(0,0,0,0.5)',
               letterSpacing: '-0.5px'
             }}>
-              Trading Contest
+              Trading Campaign
             </div>
             
             {/* Badges in Banner */}
@@ -1007,7 +956,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
           color: '#1E293B',
           fontFamily: "'Outfit', 'Inter', sans-serif"
         }}>
-          <h3 style={{ margin: '0 0 12px', fontSize: 18, fontWeight: 800, color: '#D97706' }}>About the Contest</h3>
+          <h3 style={{ margin: '0 0 12px', fontSize: 18, fontWeight: 800, color: '#D97706' }}>About the Campaign</h3>
           <p style={{ margin: '0 0 8px', fontSize: 13, lineHeight: 1.5, color: '#475569', fontWeight: 600 }}>
             Trade $HH coin on any platform or DEX on Base to participate in the contest and share the prize pool!
           </p>
@@ -1055,30 +1004,17 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
 
         {/* User Trading Status Card (Premium Staking-inspired style) */}
         <div style={{
-          background: 'linear-gradient(145deg, rgba(20, 10, 10, 0.95) 0%, rgba(35, 18, 18, 0.90) 50%, rgba(14, 5, 5, 0.98) 100%)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          border: '1px solid rgba(255, 255, 255, 0.15)',
+          background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover',
           borderRadius: 20,
           padding: '16px 18px',
-          boxShadow: '0 8px 32px rgba(10, 5, 5, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
           boxSizing: 'border-box',
           fontFamily: "'Outfit', 'Inter', sans-serif",
           position: 'relative',
           overflow: 'hidden',
-          marginTop: 16
+          marginTop: 16,
+          border: '1px solid var(--border)',
         }}>
-          {/* Background image overlay */}
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundImage: 'url(/banner.jpg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            filter: 'hue-rotate(330deg) brightness(0.25) contrast(1.2)',
-            zIndex: 0,
-            pointerEvents: 'none'
-          }} />
 
           {/* Shimmer glow */}
           <div style={{
@@ -1156,7 +1092,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
                           {userVolumeHH.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                         </span>
                         <span style={{ fontSize: 11, color: '#FCD34D', fontWeight: 700, marginTop: 1 }}>
-                          ≈ ${userVolumeUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          &asymp; ${userVolumeUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </span>
                       </div>
                     </div>
@@ -1264,7 +1200,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
                                   {trade.amountHH.toLocaleString(undefined, { maximumFractionDigits: 0 })} HH
                                 </div>
                                 <div style={{ fontSize: 10.5, color: 'rgba(255, 255, 255, 0.5)', marginTop: 0.5 }}>
-                                  ≈ ${trade.amountUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                  &asymp; ${trade.amountUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                 </div>
                               </div>
                             </div>
@@ -1373,7 +1309,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
                 gap: 6
               }}
             >
-              📊 View Contest Leaderboard {adminLeaderboard.length > 0 ? `(${adminLeaderboard.length})` : ''}
+              🏆 View Campaign Leaderboard {adminLeaderboard.length > 0 ? `(${adminLeaderboard.length})` : ''}
             </button>
 
             {showAdminLeaderboard && (
@@ -1386,7 +1322,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
                 boxSizing: 'border-box'
               }}>
                 <div style={{ fontSize: 14.5, fontWeight: 800, color: '#B91C1C', marginBottom: 12 }}>
-                  Real-time Trading Contest Leaderboard
+                  Real-time Trading Campaign Leaderboard
                 </div>
 
                 {loadingAdminLeaderboard ? (
@@ -1441,7 +1377,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
                               sells: <span style={{ fontWeight: 600, color: '#B91C1C' }}>{item.sells.toLocaleString(undefined, { maximumFractionDigits: 0 })} HH</span>
                             </div>
                             <div style={{ fontSize: 10, color: '#64748B' }}>
-                              USD Volume: <span style={{ fontWeight: 600, color: '#1E293B' }}>≈ ${((item.buys + item.sells) * hhPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                              USD Volume: <span style={{ fontWeight: 600, color: '#1E293B' }}>&asymp; ${((item.buys + item.sells) * hhPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                             </div>
                           </div>
                         </div>
@@ -1477,123 +1413,47 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
   const isEnded = CONTEST_TARGET_DATE.getTime() <= Date.now();
 
   return (
-    <div style={{ padding: '0 16px 120px' }}>
-      <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes floatingLogo {
-          0% { transform: translateY(0px); }
-          50% { transform: translateY(-6px); }
-          100% { transform: translateY(0px); }
-        }
-      ` }} />
-
-      {/* Section Banner - Identical to Earn, but with USDC + HH logos */}
+    <div style={{ animation: 'fadeIn 0.3s ease-out', width: '100%', maxWidth: 1200, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 24, paddingBottom: 120 }}>
+      {/* Hero Banner */}
       <div style={{
-        backgroundImage: 'url(/banner.jpg)',
-        backgroundColor: '#0000FF',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        width: '100%',
+        background: 'linear-gradient(135deg, rgba(16,18,27,1) 0%, rgba(20,22,35,1) 100%)',
         borderRadius: 24,
-        padding: '36px 20px',
-        marginBottom: 16,
         position: 'relative',
-        minHeight: 120,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
         overflow: 'hidden',
-        border: '1px solid rgba(255,255,255,0.1)',
-        boxSizing: 'border-box'
-      }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.25)', zIndex: 0 }} />
-        
-        {/* Floating $HH & USDC Logos */}
-        {[
-          { type: 'hh', top: '10%', left: '8%', size: 38, opacity: 0.45, r: '-15deg', blur: 0.4, dur: 4.5 },
-          { type: 'usdc', bottom: '10%', left: '22%', size: 28, opacity: 0.4, r: '10deg', blur: 0, dur: 5.2 },
-          { type: 'hh', top: '8%', right: '12%', size: 44, opacity: 0.5, r: '18deg', blur: 0.5, dur: 3.8 },
-          { type: 'usdc', top: '45%', right: '28%', size: 24, opacity: 0.35, r: '-8deg', blur: 0.8, dur: 6.0 },
-          { type: 'hh', bottom: '8%', right: '6%', size: 48, opacity: 0.55, r: '12deg', blur: 0, dur: 4.4 },
-          { type: 'usdc', top: '40%', left: '4%', size: 32, opacity: 0.4, r: '15deg', blur: 0.3, dur: 5.0 }
-        ].map((s, i) => (
-          <div key={i} style={{
-            position: 'absolute',
-            top: s.top,
-            right: s.right,
-            left: s.left,
-            bottom: s.bottom,
-            zIndex: 1,
-            pointerEvents: 'none',
-            userSelect: 'none',
-            animation: `floatingLogo ${s.dur}s ease-in-out infinite`,
-          }}>
-            <img
-              src={s.type === 'hh' ? '/logo.jfif' : '/usdc-logo.png'}
-              alt=""
-              style={{
-                width: s.size,
-                height: s.size,
-                borderRadius: '50%',
-                opacity: s.opacity,
-                filter: s.blur > 0 ? `blur(${s.blur}px)` : 'none',
-                transform: `rotate(${s.r})`,
-                objectFit: 'cover'
-              }}
-            />
-          </div>
-        ))}
-
-        <div style={{ position: 'relative', zIndex: 2, textAlign: 'center' }}>
-          <div style={{
-            fontFamily: "'Outfit', 'Inter', sans-serif",
-            fontSize: 32,
-            fontWeight: 900,
-            color: '#FFFFFF',
-            lineHeight: 1.1,
-            textShadow: '0 2px 10px rgba(0,0,0,0.5)',
-            letterSpacing: '-1px'
-          }}>
-            Contests Hub
-          </div>
-        </div>
-      </div>
-
-      {/* Info Card (Premium Glassmorphism Theme) */}
-      <div style={{
-        background: 'linear-gradient(135deg, rgba(0, 82, 255, 0.08) 0%, rgba(0, 82, 255, 0.03) 100%)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        border: '1px solid rgba(0, 82, 255, 0.22)',
-        borderRadius: 16,
-        padding: '12px 16px',
-        marginBottom: 16,
-        boxShadow: '0 8px 32px rgba(0, 82, 255, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
-        boxSizing: 'border-box'
-      }}>
-        <div style={{
-          color: '#1E293B',
-          fontFamily: "'Outfit', 'Inter', sans-serif",
-          fontSize: 12.5,
-          fontWeight: 600,
-          lineHeight: 1.6,
-          textAlign: 'center'
-        }}>
-          Follow contests to participate and earn{" "}
-          <img src="/logo.jfif" alt="$HH" style={{ width: 13, height: 13, borderRadius: '50%', objectFit: 'cover', display: 'inline-block', verticalAlign: 'middle', margin: '0 2px 2px' }} />
-          {" "}$HH and{" "}
-          <img src="/usdc-logo.png" alt="USDC" style={{ width: 13, height: 13, display: 'inline-block', verticalAlign: 'middle', margin: '0 2px 2px' }} />
-          {" "}USDC rewards. Contests are added periodically.
-        </div>
-      </div>
-
-      {/* Filter Tabs */}
-      <div style={{
+        border: '1px solid rgba(255,255,255,0.05)',
         display: 'flex',
-        gap: 8,
-        marginBottom: 16,
-        fontFamily: "'Outfit', 'Inter', sans-serif"
+        flexDirection: 'row',
+        alignItems: 'center',
+        minHeight: 320
       }}>
+        {/* Glow Effects */}
+        <div style={{ position: 'absolute', top: '-20%', left: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: '-20%', right: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
+
+        {/* Content Left */}
+        <div style={{ flex: 1, padding: '40px 48px', position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ display: 'flex' }}>
+            <span style={{
+              background: 'rgba(168, 85, 247, 0.15)', color: '#A855F7', padding: '4px 12px', borderRadius: 12, fontSize: 11, fontWeight: 700, border: '1px solid rgba(168, 85, 247, 0.3)'
+            }}>Happy Hour: Campaigns</span>
+          </div>
+          <h1 style={{ fontSize: 36, fontWeight: 600, color: '#FFFFFF', lineHeight: 1.1, margin: 0, fontFamily: "'Inter', sans-serif", letterSpacing: '-0.5px' }}>
+            Incentives Campaigns
+          </h1>
+          <p style={{ fontSize: 14, color: '#94A3B8', lineHeight: 1.6, margin: 0, fontWeight: 400, maxWidth: 480, fontFamily: "'Inter', sans-serif" }}>
+            Campaigns Hub presents various incentive social and onchain activities with $HH coin rewards. Campaigns are added regularly.
+          </p>
+        </div>
+
+        {/* Graphic Right */}
+        <div style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '50%', minHeight: 320, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', zIndex: 1 }}>
+          <img src="/campaigns_banner_graphic.png" alt="Web3 Campaigns" style={{ height: '100%', width: '100%', objectFit: 'cover', maskImage: 'linear-gradient(to left, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%)', WebkitMaskImage: 'linear-gradient(to left, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%)' }} />
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
         {[
           { id: 'all', label: 'All', count: 2 },
           { id: 'ongoing', label: 'Ongoing', count: 1 },
@@ -1605,312 +1465,255 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
               key={tab.id}
               onClick={() => setSelectedFilter(tab.id)}
               style={{
-                background: isActive ? '#0052FF' : 'rgba(255, 255, 255, 0.05)',
-                border: isActive ? '1px solid #0052FF' : '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: 50,
+                background: isActive ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.04)',
+                border: isActive ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(255, 255, 255, 0.05)',
+                borderRadius: 8,
                 padding: '6px 14px',
-                color: isActive ? '#FFFFFF' : '#717886',
-                fontSize: 12,
-                fontWeight: 700,
+                color: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.6)',
+                fontSize: 13,
+                fontFamily: "'Inter', sans-serif",
+                fontWeight: 500,
                 cursor: 'pointer',
                 transition: 'all 0.2s',
                 display: 'flex',
                 alignItems: 'center',
-                gap: 4
+                gap: 6
               }}
               onMouseEnter={e => {
                 if (!isActive) {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'
                   e.currentTarget.style.color = '#FFFFFF'
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'
                 }
               }}
               onMouseLeave={e => {
                 if (!isActive) {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'
-                  e.currentTarget.style.color = '#717886'
+                  e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)'
                 }
               }}
             >
-              {tab.label} <span style={{ opacity: 0.6, fontSize: 10 }}>({tab.count})</span>
+              {tab.label} <span style={{ opacity: 0.5, fontSize: 11 }}>{tab.count}</span>
             </button>
           )
         })}
       </div>
 
-      {/* Feature Blocks Stack (Full width) */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        {/* Block 1: Trader Contest (Coming Soon / Upcoming) */}
+      {/* Grid Layout for Cards */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+        gap: 20,
+        width: '100%'
+      }}>
+        {/* Trading Campaign Card */}
         {(selectedFilter === 'all' || selectedFilter === 'ongoing') && (
           <div
             onClick={() => setActiveContest('trader')}
             style={{
-              background: '#140505',
-              borderRadius: 20,
-              padding: '12px 18px',
+              background: '#1A1C24',
+              border: '1px solid rgba(255, 255, 255, 0.05)',
+              borderRadius: 16,
+              padding: 24,
               cursor: 'pointer',
               transition: 'all 0.2s',
-              boxShadow: '0 8px 32px rgba(239, 68, 68, 0.15)',
-              minHeight: 96,
-              boxSizing: 'border-box',
               display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              position: 'relative',
-              overflow: 'hidden',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              width: '100%',
-              gap: 16
+              flexDirection: 'column',
+              boxSizing: 'border-box',
+              fontFamily: "'Inter', sans-serif",
+              height: '100%'
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.transform = 'translateY(-1.5px)'
-              e.currentTarget.style.boxShadow = '0 12px 36px rgba(239, 68, 68, 0.25)'
+              e.currentTarget.style.transform = 'translateY(-2px)'
+              e.currentTarget.style.background = '#1E2029'
+              e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.2)'
             }}
             onMouseLeave={e => {
               e.currentTarget.style.transform = 'none'
-              e.currentTarget.style.boxShadow = '0 8px 32px rgba(239, 68, 68, 0.15)'
+              e.currentTarget.style.background = '#1A1C24'
+              e.currentTarget.style.boxShadow = 'none'
             }}
           >
-            {/* Graded background image */}
-            <div style={{
-              position: 'absolute',
-              inset: 0,
-              backgroundImage: 'url(/banner.jpg)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              filter: 'hue-rotate(330deg) brightness(0.4) contrast(1.15)',
-              zIndex: 0,
-              pointerEvents: 'none'
-            }} />
-            
-            {/* Left side */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, position: 'relative', zIndex: 1 }}>
-              <div style={{ fontSize: 18, fontWeight: 900, color: '#FFFFFF' }}>Trading Contest</div>
-              <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                <div style={{
-                  background: 'linear-gradient(135deg, #0052FF 0%, #7C3AED 100%)',
-                  border: '1px solid rgba(0, 82, 255, 0.5)',
-                  borderRadius: 6,
-                  height: 20,
-                  boxSizing: 'border-box',
-                  padding: '0 8px',
-                  fontSize: 10,
-                  fontWeight: 900,
-                  color: '#FFFFFF',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 3,
-                }}>
-                  <span>$100 in</span>
-                  <img src="/logo.jfif" alt="$HH" style={{ width: 11, height: 11, borderRadius: '50%', objectFit: 'cover' }} />
-                  <span>$HH</span>
+            {/* Top row: Icon + Title vs Tags */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                <div style={{ width: 64, height: 64, borderRadius: 16, overflow: 'hidden', flexShrink: 0 }}>
+                  <img src="/logo.jfif" alt="Trading" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
-                <div style={{
-                  background: 'rgba(255, 255, 255, 0.12)',
-                  border: '1px solid rgba(255, 255, 255, 0.22)',
-                  borderRadius: 6,
-                  height: 20,
-                  boxSizing: 'border-box',
-                  padding: '0 8px',
-                  fontSize: 10,
-                  fontWeight: 800,
-                  color: 'rgba(255, 255, 255, 0.85)',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                  <span>3 winners</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <div style={{ fontSize: 16, fontWeight: 600, color: '#FFFFFF', lineHeight: 1.2 }}>Onchain Campaign: Trading</div>
+                  <div style={{ fontSize: 13, color: '#94A3B8', fontWeight: 500 }}>$HH Rewards</div>
                 </div>
+              </div>
+              <div style={{
+                background: 'rgba(16, 185, 129, 0.1)',
+                border: '1px solid rgba(16, 185, 129, 0.3)',
+                borderRadius: 100,
+                padding: '4px 12px',
+                color: '#10B981',
+                fontSize: 12,
+                fontWeight: 600,
+                flexShrink: 0
+              }}>
+                Ongoing
               </div>
             </div>
-            
-            {/* Right side */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8, position: 'relative', zIndex: 1 }}>
-              <div style={{
-                background: '#10B981',
-                border: '1px solid rgba(16, 185, 129, 0.5)',
-                borderRadius: 6,
-                height: 20,
-                padding: '0 8px',
-                color: '#FFFFFF',
-                fontSize: 10,
-                fontWeight: 800,
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                <span>{tradingContestTimeLeft}</span>
+
+            {/* Middle: Description */}
+            <div style={{ 
+              fontSize: 13, 
+              color: '#94A3B8', 
+              lineHeight: 1.5, 
+              marginBottom: 20, 
+              minHeight: 40,
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden'
+            }}>
+              Participate in our ongoing volume contest. Trade $HH to climb the leaderboard and earn rewards.
+            </div>
+
+            <div style={{ height: 1, background: 'rgba(255, 255, 255, 0.05)', marginBottom: 16 }} />
+
+            {/* Bottom: Metrics */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 'auto' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ fontSize: 12, color: '#64748B' }}>Prize Pool</span>
+                  <div style={{
+                    background: 'rgba(16, 185, 129, 0.1)',
+                    border: '1px solid rgba(16, 185, 129, 0.3)',
+                    borderRadius: 100,
+                    padding: '2px 8px',
+                    color: '#10B981',
+                    fontSize: 10,
+                    fontWeight: 600,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    lineHeight: 1
+                  }}>
+                    Sponsored by 
+                    <img src="/logo.jfif" alt="Happy Hour Logo" style={{ width: 10, height: 10, borderRadius: '50%', objectFit: 'cover' }} />
+                    Happy Hour
+                  </div>
+                </div>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#10B981' }}>$100 in $HH</span>
               </div>
-              <div style={{
-                background: 'rgba(255, 255, 255, 0.12)',
-                border: '1px solid rgba(255, 255, 255, 0.25)',
-                borderRadius: 8,
-                padding: '6px 16px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#FFFFFF',
-                fontSize: 12,
-                fontWeight: 800,
-                transition: 'background 0.2s'
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
-              >
-                Participate →
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: 12, color: '#64748B' }}>Winners</span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#10B981' }}>Top 3</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: 12, color: '#64748B' }}>Time Left</span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#10B981', fontVariantNumeric: 'tabular-nums' }}>{tradingContestTimeLeft}</span>
               </div>
             </div>
           </div>
         )}
 
-        {/* Block 2: Creator Contest (Ended / Launch Contest) */}
+        {/* Launch Campaign Card */}
         {(selectedFilter === 'all' || selectedFilter === 'ended') && (
           <div
             onClick={() => setActiveContest('creator')}
             style={{
-              background: '#2A1A06',
-              borderRadius: 20,
-              padding: '12px 18px',
+              background: '#1A1C24',
+              border: '1px solid rgba(255, 255, 255, 0.05)',
+              borderRadius: 16,
+              padding: 24,
               cursor: 'pointer',
               transition: 'all 0.2s',
-              boxShadow: '0 8px 32px rgba(245, 158, 11, 0.15)',
-              minHeight: 96,
-              boxSizing: 'border-box',
               display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              position: 'relative',
-              overflow: 'hidden',
-              border: '1px solid rgba(245, 158, 11, 0.3)',
-              width: '100%',
-              gap: 16
+              flexDirection: 'column',
+              boxSizing: 'border-box',
+              fontFamily: "'Inter', sans-serif",
+              height: '100%'
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.transform = 'translateY(-1.5px)'
-              e.currentTarget.style.boxShadow = '0 12px 36px rgba(245, 158, 11, 0.25)'
+              e.currentTarget.style.transform = 'translateY(-2px)'
+              e.currentTarget.style.background = '#1E2029'
+              e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.2)'
             }}
             onMouseLeave={e => {
               e.currentTarget.style.transform = 'none'
-              e.currentTarget.style.boxShadow = '0 8px 32px rgba(245, 158, 11, 0.15)'
+              e.currentTarget.style.background = '#1A1C24'
+              e.currentTarget.style.boxShadow = 'none'
             }}
           >
-            {/* Graded background image */}
-            <div style={{
-              position: 'absolute',
-              inset: 0,
-              backgroundImage: 'url(/banner.jpg)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              filter: 'hue-rotate(25deg) brightness(0.4) contrast(1.15)',
-              zIndex: 0,
-              pointerEvents: 'none'
-            }} />
-
-            {/* Left side */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, position: 'relative', zIndex: 1 }}>
-              <div style={{ fontSize: 18, fontWeight: 900, color: '#FFFFFF' }}>Launch Contest</div>
-              <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                <div style={{
-                  background: 'linear-gradient(135deg, #FCD34D 0%, #F59E0B 100%)',
-                  border: '1px solid rgba(245, 158, 11, 0.5)',
-                  borderRadius: 6,
-                  height: 20,
-                  boxSizing: 'border-box',
-                  padding: '0 8px',
-                  fontSize: 10,
-                  fontWeight: 900,
-                  color: '#2A1A06',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 3,
-                }}>
-                  <span>$120 in</span>
-                  <img src="/logo.jfif" alt="$HH" style={{ width: 11, height: 11, borderRadius: '50%', objectFit: 'cover' }} />
-                  <span>$HH</span>
+            {/* Top row: Icon + Title vs Tags */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                <div style={{ width: 64, height: 64, borderRadius: 16, overflow: 'hidden', flexShrink: 0 }}>
+                  <img src="/logo.jfif" alt="Launch" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
-                <div style={{
-                  background: 'rgba(255, 255, 255, 0.12)',
-                  border: '1px solid rgba(255, 255, 255, 0.22)',
-                  borderRadius: 6,
-                  height: 20,
-                  boxSizing: 'border-box',
-                  padding: '0 8px',
-                  fontSize: 10,
-                  fontWeight: 800,
-                  color: 'rgba(255, 255, 255, 0.85)',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                  <span>3 winners</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <div style={{ fontSize: 16, fontWeight: 600, color: '#FFFFFF', lineHeight: 1.2 }}>Social Campaign: Launch</div>
+                  <div style={{ fontSize: 13, color: '#94A3B8', fontWeight: 500 }}>$HH Rewards</div>
                 </div>
+              </div>
+              <div style={{
+                background: 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                borderRadius: 100,
+                padding: '4px 12px',
+                color: '#EF4444',
+                fontSize: 12,
+                fontWeight: 600,
+                flexShrink: 0
+              }}>
+                Ended
               </div>
             </div>
 
-            {/* Right side */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8, position: 'relative', zIndex: 1 }}>
-              {/* Timer or Ended Badge */}
-              {isEnded ? (
-                <div style={{
-                  background: '#EF4444',
-                  borderRadius: 6,
-                  height: 20,
-                  padding: '0 8px',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: '1px solid rgba(239, 68, 68, 0.5)',
-                }}>
-                  <span style={{
-                    fontFamily: "'Outfit', 'Inter', sans-serif",
-                    fontSize: 10,
-                    fontWeight: 800,
-                    color: '#FFFFFF',
-                    letterSpacing: '0.5px'
-                  }}>Ended</span>
-                </div>
-              ) : (
-                <div style={{
-                  background: 'rgba(0, 0, 0, 0.55)',
-                  backdropFilter: 'blur(6px)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  borderRadius: 6,
-                  height: 20,
-                  padding: '0 8px',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                  <span style={{
-                    fontFamily: "'Outfit', 'Inter', sans-serif",
-                    fontSize: 10,
-                    fontWeight: 700,
-                    color: '#FFFFFF',
-                    fontVariantNumeric: 'tabular-nums',
-                    letterSpacing: '0.3px'
-                  }}>{contestTimeLeft}</span>
-                </div>
-              )}
+            {/* Middle: Description */}
+            <div style={{ 
+              fontSize: 13, 
+              color: '#94A3B8', 
+              lineHeight: 1.5, 
+              marginBottom: 20, 
+              minHeight: 40,
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden'
+            }}>
+              Our token launch celebration. Create content about $HH to win a share of the massive prize pool.
+            </div>
 
-              {/* Action button */}
-              <div style={{
-                background: 'rgba(255, 255, 255, 0.12)',
-                border: '1px solid rgba(255, 255, 255, 0.25)',
-                borderRadius: 8,
-                padding: '6px 16px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#FFFFFF',
-                fontSize: 12,
-                fontWeight: 800,
-                transition: 'background 0.2s'
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
-              >
-                {isEnded ? 'View Results →' : 'Participate →'}
+            <div style={{ height: 1, background: 'rgba(255, 255, 255, 0.05)', marginBottom: 16 }} />
+
+            {/* Bottom: Metrics */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 'auto' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ fontSize: 12, color: '#64748B' }}>Prize Pool</span>
+                  <div style={{
+                    background: 'rgba(16, 185, 129, 0.1)',
+                    border: '1px solid rgba(16, 185, 129, 0.3)',
+                    borderRadius: 100,
+                    padding: '2px 8px',
+                    color: '#10B981',
+                    fontSize: 10,
+                    fontWeight: 600,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    lineHeight: 1
+                  }}>
+                    Sponsored by 
+                    <img src="/logo.jfif" alt="Happy Hour Logo" style={{ width: 10, height: 10, borderRadius: '50%', objectFit: 'cover' }} />
+                    Happy Hour
+                  </div>
+                </div>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#EF4444' }}>$120 in $HH</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: 12, color: '#64748B' }}>Winners</span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#EF4444' }}>Top 3</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: 12, color: '#64748B' }}>Time Left</span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#EF4444' }}>Ended</span>
               </div>
             </div>
           </div>
@@ -1982,7 +1785,7 @@ function WinnersPedestal() {
           <div style={{ fontSize: 9.5, fontWeight: 800, color: '#000000', marginBottom: 1, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>@Benny___5</div>
           <div style={{ display: 'flex', gap: 4, marginBottom: 4, alignItems: 'center' }}>
             <a href="https://x.com/Benny___5" target="_blank" rel="noopener noreferrer" style={{ fontSize: 8.5, fontWeight: 700, color: '#F59E0B', textDecoration: 'none' }}>view profile</a>
-            <span style={{ fontSize: 8.5, color: '#717886' }}>·</span>
+            <span style={{ fontSize: 8.5, color: '#717886' }}>&middot;</span>
             <a href="https://basescan.org/tx/0xda57e3fde642b797356fcd3bf7360c3329ba0fa923fa2ebf0e4474dd9e483ae6" target="_blank" rel="noopener noreferrer" style={{ fontSize: 8.5, fontWeight: 700, color: '#F59E0B', textDecoration: 'none' }}>payout</a>
           </div>
           
@@ -2032,7 +1835,7 @@ function WinnersPedestal() {
           <div style={{ fontSize: 10, fontWeight: 800, color: '#000000', marginBottom: 1, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>@DrsonaliV20871</div>
           <div style={{ display: 'flex', gap: 4, marginBottom: 4, alignItems: 'center' }}>
             <a href="https://x.com/DrsonaliV20871" target="_blank" rel="noopener noreferrer" style={{ fontSize: 8.5, fontWeight: 700, color: '#F59E0B', textDecoration: 'none' }}>view profile</a>
-            <span style={{ fontSize: 8.5, color: '#717886' }}>·</span>
+            <span style={{ fontSize: 8.5, color: '#717886' }}>&middot;</span>
             <a href="https://basescan.org/tx/0xb1553466b66949b35045256c00f8d02d14cc7e0bb98045d5465fe69f128cd2eb" target="_blank" rel="noopener noreferrer" style={{ fontSize: 8.5, fontWeight: 700, color: '#F59E0B', textDecoration: 'none' }}>payout</a>
           </div>
           
@@ -2079,7 +1882,7 @@ function WinnersPedestal() {
           <div style={{ fontSize: 9.5, fontWeight: 800, color: '#000000', marginBottom: 1, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>@Shillawakning</div>
           <div style={{ display: 'flex', gap: 4, marginBottom: 4, alignItems: 'center' }}>
             <a href="https://x.com/Shillawakning" target="_blank" rel="noopener noreferrer" style={{ fontSize: 8.5, fontWeight: 700, color: '#F59E0B', textDecoration: 'none' }}>view profile</a>
-            <span style={{ fontSize: 8.5, color: '#717886' }}>·</span>
+            <span style={{ fontSize: 8.5, color: '#717886' }}>&middot;</span>
             <a href="https://basescan.org/tx/0x6047a5aa9461a684d1a3a8d8a8415d21f72554f321a5b7fa4e2f2888a5c3221a" target="_blank" rel="noopener noreferrer" style={{ fontSize: 8.5, fontWeight: 700, color: '#F59E0B', textDecoration: 'none' }}>payout</a>
           </div>
           

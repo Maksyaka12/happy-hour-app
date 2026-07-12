@@ -1,71 +1,96 @@
 import { useState, useEffect } from 'react'
 import { db } from '../config/supabase'
 
-// Color configs for different event types
-const TYPE_CONFIG = {
+// Badge color configs by type and history mode
+const HP_CONFIG = {
   deposit: {
-    title: '#0A0B0D',
-    badgeBg: '#FFFBEB',
-    badgeText: '#D97706',
-    value: '#0A0B0D' // Black text for deposit points
-  },
-  checkin: {
-    title: '#0A0B0D',
-    badgeBg: '#F0F5FF',
-    badgeText: '#0000FF',
-    value: '#0A0B0D'
+    label: 'Deposit',
+    badgeBg: '#EFF6FF',
+    badgeText: '#2563EB',
+    valuePrefix: '+',
+    valueColor: '#0A0B0D'
   },
   win: {
-    title: '#0A0B0D',
+    label: 'Win',
     badgeBg: '#F0FDF4',
     badgeText: '#15803D',
-    value: '#0A0B0D'
+    valuePrefix: '+',
+    valueColor: '#0A0B0D'
   },
-  boost: {
-    title: '#0A0B0D',
-    badgeBg: '#F0F5FF',
-    badgeText: '#0000FF',
-    value: '#0A0B0D'
+  win_daily: {
+    label: 'Win Daily',
+    badgeBg: '#F5F3FF',
+    badgeText: '#7C3AED',
+    valuePrefix: '+',
+    valueColor: '#0A0B0D'
   },
-  quest: {
-    title: '#0A0B0D',
-    badgeBg: '#F5ECFF', // Purple-ish
-    badgeText: '#9747FF',
-    value: '#0A0B0D'
-  },
-  hold: {
-    title: '#0A0B0D',
-    badgeBg: 'rgba(217, 119, 6, 0.1)',
-    badgeText: '#D97706',
-    value: '#0A0B0D'
-  },
-  stake: {
-    title: '#0A0B0D',
-    badgeBg: '#F5ECFF',
-    badgeText: '#9747FF',
-    value: '#0A0B0D'
-  },
-  raid: {
-    title: '#0A0B0D',
-    badgeBg: '#FEE2E2',
-    badgeText: '#DC2626',
-    value: '#0A0B0D'
+  checkin: {
+    label: 'Check-in',
+    badgeBg: '#FFF7ED',
+    badgeText: '#EA580C',
+    valuePrefix: '+',
+    valueColor: '#0A0B0D'
   },
   default: {
-    title: '#0A0B0D',
+    label: '',
     badgeBg: '#F1F3F7',
     badgeText: '#4B5563',
-    value: '#0A0B0D'
+    valuePrefix: '+',
+    valueColor: '#0A0B0D'
+  }
+}
+
+const HH_CONFIG = {
+  deposit: {
+    label: 'Deposit',
+    badgeBg: '#EFF6FF',
+    badgeText: '#2563EB',
+    valuePrefix: '-',
+    valueColor: '#0A0B0D'
+  },
+  win: {
+    label: 'Win',
+    badgeBg: '#F0FDF4',
+    badgeText: '#15803D',
+    valuePrefix: '+',
+    valueColor: '#0A0B0D'
+  },
+  win_daily: {
+    label: 'Win Daily',
+    badgeBg: '#F5F3FF',
+    badgeText: '#7C3AED',
+    valuePrefix: '+',
+    valueColor: '#0A0B0D'
+  },
+  default: {
+    label: '',
+    badgeBg: '#F1F3F7',
+    badgeText: '#4B5563',
+    valuePrefix: '+',
+    valueColor: '#0A0B0D'
   }
 }
 
 const formatDate = (dateStr) => {
   const d = new Date(dateStr)
-  // Example output: "Apr 18"
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
+const formatHP = (val) => {
+  const n = parseFloat(val || 0)
+  return n.toFixed(2)
+}
+
+const formatHH = (val) => {
+  const n = parseFloat(val || 0)
+  if (n >= 1e9) return (n / 1e9).toFixed(1).replace(/\.0$/, '') + 'b'
+  if (n >= 1e6) return (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'm'
+  if (n >= 1e3) return (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'k'
+  return n.toFixed(2)
+}
+
 export function HistorySection({ address }) {
+  const [historyTab, setHistoryTab] = useState('hp') // 'hp' | 'hh'
   const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(true)
   const [limit, setLimit] = useState(5)
@@ -74,7 +99,6 @@ export function HistorySection({ address }) {
   useEffect(() => {
     async function loadHistory() {
       if (!address) return
-      
       setLoading(true)
       const { data, error } = await db
         .from('user_activity')
@@ -87,22 +111,15 @@ export function HistorySection({ address }) {
         console.error('Error loading history:', error)
       } else {
         setHistory(data || [])
-        // If we received exactly 'limit' items, there might be more
         setHasMore(data?.length === limit)
       }
       setLoading(false)
     }
-
     loadHistory()
   }, [address, limit])
 
-  const onLoadMore = () => {
-    setLimit((prev) => prev + 5)
-  }
-
-  const onShowLess = () => {
-    setLimit(5)
-  }
+  const onLoadMore = () => setLimit((prev) => prev + 5)
+  const onShowLess = () => setLimit(5)
 
   if (loading && history.length === 0) {
     return (
@@ -113,8 +130,16 @@ export function HistorySection({ address }) {
   }
 
   if (!loading && history.length === 0) {
-    return null // Don't show history box if there is no history yet.
+    return null
   }
+
+  // Filter records by tab
+  const hpTypes = ['deposit', 'win', 'win_daily', 'checkin']
+  const hhTypes = ['deposit', 'win', 'win_daily']
+
+  const filteredHistory = historyTab === 'hp'
+    ? history.filter(r => hpTypes.includes(r.type))
+    : history.filter(r => hhTypes.includes(r.type))
 
   return (
     <div style={{
@@ -125,63 +150,96 @@ export function HistorySection({ address }) {
       boxShadow: '0 8px 32px rgba(0, 82, 255, 0.02)',
       border: '1px solid #E5E9F0'
     }}>
-      <div style={{ fontSize: 13.5, fontWeight: 850, color: '#0A0B0D', marginBottom: 12 }}>History</div>
-      
+      {/* Header with switcher */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+        <div style={{ fontSize: 13.5, fontWeight: 850, color: '#0A0B0D' }}>History</div>
+        {/* HP / $HH Switcher */}
+        <div style={{
+          display: 'flex',
+          background: '#EEF0F3',
+          border: '1px solid #DEE1E7',
+          borderRadius: 10,
+          padding: 3,
+          gap: 3
+        }}>
+          {[
+            { id: 'hp', label: 'HP' },
+            { id: 'hh', label: '$HH' }
+          ].map(t => (
+            <button
+              key={t.id}
+              onClick={() => setHistoryTab(t.id)}
+              style={{
+                padding: '4px 10px',
+                borderRadius: 7,
+                border: 'none',
+                background: historyTab === t.id ? '#FFFFFF' : 'transparent',
+                color: historyTab === t.id ? '#0000FF' : '#717886',
+                fontSize: 10.5,
+                fontWeight: 800,
+                cursor: 'pointer',
+                outline: 'none',
+                transition: 'all 0.15s',
+                boxShadow: historyTab === t.id ? '0 1px 4px rgba(0,0,0,0.08)' : 'none'
+              }}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        {history.map((record, index) => {
-          const config = TYPE_CONFIG[record.type] || TYPE_CONFIG.default
-          const isDeposit = record.type === 'deposit'
+        {filteredHistory.length === 0 ? (
+          <div style={{ textAlign: 'center', color: '#717886', fontSize: 12, padding: '12px 0' }}>
+            No {historyTab === 'hp' ? 'HP' : '$HH'} history yet
+          </div>
+        ) : filteredHistory.map((record, index) => {
+          const config = historyTab === 'hp'
+            ? (HP_CONFIG[record.type] || HP_CONFIG.default)
+            : (HH_CONFIG[record.type] || HH_CONFIG.default)
 
-          let displayValue = record.value
-
-          let displayAction = record.action
-          if (displayAction === 'Daily Claim') {
-            displayAction = 'Daily'
-          } else if (displayAction === 'Hold Reward') {
-            displayAction = 'Holding'
-          } else if (displayAction === 'Stake Reward') {
-            displayAction = 'Staking'
+          // Build badge label
+          let badgeLabel = config.label
+          // For checkin: show streak from badge field e.g. "Streak (8d)"
+          if (record.type === 'checkin' && record.badge) {
+            badgeLabel = `Check-in`
           }
-          
+          // Show round number from badge for deposit/win
+          const roundBadge = record.badge || ''
+
+          // Build value display
+          let valueDisplay
+          if (historyTab === 'hp') {
+            valueDisplay = `${config.valuePrefix}${formatHP(record.value)} HP`
+          } else {
+            // $HH tab: value_hh column or derive from value
+            const hhVal = record.value_hh ?? record.value
+            valueDisplay = (
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'flex-end' }}>
+                <span>{config.valuePrefix}{formatHH(hhVal)}</span>
+                <img src="/logo.jfif" alt="$HH" style={{ width: 11, height: 11, borderRadius: '50%', objectFit: 'cover' }} />
+              </span>
+            )
+          }
+
           return (
             <div key={record.id} style={{
               display: 'grid',
-              gridTemplateColumns: '60px 95px 45px 1fr',
+              gridTemplateColumns: '60px 1fr 45px auto',
               alignItems: 'center',
               gap: 6,
               padding: '10px 0',
-              borderBottom: index !== history.length - 1 ? '1px solid #F1F3F7' : 'none'
+              borderBottom: index !== filteredHistory.length - 1 ? '1px solid #F1F3F7' : 'none'
             }}>
-              {/* 1. Action */}
-              <div style={{ position: 'relative', whiteSpace: 'nowrap', paddingTop: record.boost_mult > 1 ? 4 : 0 }}>
-                <span style={{ fontSize: 11, fontWeight: 800, color: config.title }}>
-                  {displayAction}
-                </span>
-                {record.boost_mult > 1 && (
-                  <span style={{
-                    position: 'absolute',
-                    top: -5,
-                    left: 2,
-                    fontSize: 7,
-                    fontWeight: 900,
-                    color: record.boost_mult >= 5 ? '#9333EA' : '#059669',
-                    background: record.boost_mult >= 5 ? 'rgba(147, 51, 234, 0.2)' : 'rgba(5, 150, 105, 0.2)',
-                    border: `1px solid ${record.boost_mult >= 5 ? 'rgba(147, 51, 234, 0.4)' : 'rgba(5, 150, 105, 0.4)'}`,
-                    padding: '1px 3px',
-                    borderRadius: 4,
-                    transform: 'rotate(-2deg)',
-                    zIndex: 1,
-                    backdropFilter: 'blur(4px)',
-                    textTransform: 'lowercase'
-                  }}>
-                    {record.boost_mult}x boost
-                  </span>
-                )}
+              {/* 1. Action Type */}
+              <div style={{ fontSize: 11, fontWeight: 800, color: '#0A0B0D', whiteSpace: 'nowrap' }}>
+                {historyTab === 'hp' && record.type === 'checkin' ? 'Check-in' : config.label}
               </div>
 
               {/* 2. Badge */}
               <div>
-                {record.badge && (
+                {roundBadge && (
                   <span style={{
                     background: config.badgeBg,
                     color: config.badgeText,
@@ -192,7 +250,7 @@ export function HistorySection({ address }) {
                     whiteSpace: 'nowrap',
                     display: 'inline-block'
                   }}>
-                    {record.badge}
+                    {roundBadge}
                   </span>
                 )}
               </div>
@@ -203,8 +261,8 @@ export function HistorySection({ address }) {
               </div>
 
               {/* 4. Value */}
-              <div style={{ fontSize: 12, fontWeight: 800, color: config.value, textAlign: 'right', whiteSpace: 'nowrap' }}>
-                {displayValue}
+              <div style={{ fontSize: 12, fontWeight: 800, color: config.valueColor, textAlign: 'right', whiteSpace: 'nowrap' }}>
+                {valueDisplay}
               </div>
             </div>
           )

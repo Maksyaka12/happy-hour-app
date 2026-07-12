@@ -44,12 +44,13 @@ const getPositionApr = (pos) => {
   return 103
 }
 
-export function StakingSection({ setTab }) {
+export function StakingSection({ setTab, onRequireWallet, isAdmin }) {
   const { address, isConnected } = useAccount()
   const [hhPrice, setHhPrice] = useState(0.00025) // Fallback price
   const [priceChange, setPriceChange] = useState(8.4) // 24h price change mock %
   const [stakingAmount, setStakingAmount] = useState('')
-  const [stakeActionTab, setStakeActionTab] = useState('unstake') // 'stake' or 'unstake' — default unstake while staking is paused
+  // Non-admins default to 'unstake' since staking is paused for them
+  const [stakeActionTab, setStakeActionTab] = useState(isAdmin ? 'stake' : 'unstake') // 'stake' or 'unstake'
   const [lockPeriod, setLockPeriod] = useState('7') // '7' or '10'
   
   // Simulated Positions List
@@ -247,17 +248,27 @@ export function StakingSection({ setTab }) {
   const walletUsdValue = walletBalance * hhPrice
   const stakedUsdValue = stakedBalance * hhPrice
 
-  // Daily HP Earnings Calculations (10% of USD value for hold, 20% for stake - ceiling at 100$ hold / 100$ stake)
-  const holdHpEarned = Math.min(10.0, walletUsdValue * 0.10)
-  const stakeHpEarned = Math.min(20.0, stakedUsdValue * 0.20)
+  // Daily HP Earnings Calculations (Badges)
+  const isHolder = walletBalance >= 100_000_000
+  const isStaker = stakedBalance >= 100_000_000
+
+  const holdHpEarned = isHolder ? 5 : 0
+  const stakeHpEarned = isStaker ? 10 : 0
   const totalDailyPassiveHp = holdHpEarned + stakeHpEarned
 
-  // Progress to caps ($100 USD holds/stakes)
-  const holdCapPercent = Math.min(100, (walletUsdValue / 100) * 100)
-  const stakeCapPercent = Math.min(100, (stakedUsdValue / 100) * 100)
+  // Win Chance Boost
+  const winChanceBoost = isStaker ? 5 : (isHolder ? 2 : 0)
+
+  // Progress to badges (100M HH)
+  const holdCapPercent = Math.min(100, (walletBalance / 100_000_000) * 100)
+  const stakeCapPercent = Math.min(100, (stakedBalance / 100_000_000) * 100)
 
   // Stake Action
   const handleStake = async () => {
+    if (!address) {
+      if (onRequireWallet) onRequireWallet()
+      return
+    }
     const amount = parseFloat(stakingAmount)
     if (isNaN(amount) || amount <= 0) {
       setTxError('Please enter a valid amount to stake.')
@@ -318,6 +329,10 @@ export function StakingSection({ setTab }) {
 
   // Unstake position
   const handleUnstakePosition = (positionIndex, amount) => {
+    if (!address) {
+      if (onRequireWallet) onRequireWallet()
+      return
+    }
     setTxError('')
     
     const isSimulated = contractPositionsRaw === undefined
@@ -420,34 +435,72 @@ export function StakingSection({ setTab }) {
   ].sort((a, b) => b.staked - a.staked).map((s, idx) => ({ ...s, rank: idx + 1 }))
 
   return (
-    <div style={{ animation: 'fadeIn 0.3s ease-out', width: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <div style={{ animation: 'fadeIn 0.3s ease-out', width: '100%', maxWidth: 1200, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 24 }}>
       
-      {/* Card 1: Holding Rewards (Premium Slate/Graphite Theme - Slightly Lighter than Staking) */}
+      {/* Hero Banner (Bankr x402 Style) */}
+      <div style={{
+        width: '100%',
+        background: 'linear-gradient(135deg, rgba(16,18,27,1) 0%, rgba(20,22,35,1) 100%)',
+        borderRadius: 24,
+        position: 'relative',
+        overflow: 'hidden',
+        border: '1px solid rgba(255,255,255,0.05)',
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        minHeight: 320
+      }}>
+        {/* Glow Effects */}
+        <div style={{ position: 'absolute', top: '-20%', left: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: '-20%', right: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
+
+        {/* Content Left */}
+        <div style={{ flex: 1, padding: '40px 48px', position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ display: 'flex' }}>
+            <span style={{
+              background: 'rgba(59, 130, 246, 0.15)', color: '#3B82F6', padding: '4px 12px', borderRadius: 12, fontSize: 11, fontWeight: 700, border: '1px solid rgba(59, 130, 246, 0.3)'
+            }}>Happy Hour: Incentives</span>
+          </div>
+          <h1 style={{ fontSize: 36, fontWeight: 600, color: '#FFFFFF', lineHeight: 1.1, margin: 0, fontFamily: "'Inter', sans-serif", letterSpacing: '-0.5px' }}>
+            Incentives Staking & Holding
+          </h1>
+          <p style={{ fontSize: 14, color: '#94A3B8', lineHeight: 1.6, margin: 0, fontWeight: 400, maxWidth: 480, fontFamily: "'Inter', sans-serif" }}>
+            Up to 166% APR for staking HH with 7-10 days lock. Earn passive HP (loyalty points) just for holding and staking $HH while receiving additional % chance to win in hourly/daily raffles.
+          </p>
+          <div style={{ display: 'flex', gap: 12, marginTop: 12 }}>
+            <button style={{
+              background: '#3B82F6', color: '#FFFFFF', border: 'none', borderRadius: 8, padding: '12px 24px', fontSize: 14, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Inter', sans-serif"
+            }} onMouseEnter={e => e.currentTarget.style.background = '#2563EB'} onMouseLeave={e => e.currentTarget.style.background = '#3B82F6'}>
+              Staking
+            </button>
+            <button style={{
+              background: '#FFFFFF', color: '#090514', border: 'none', borderRadius: 8, padding: '12px 24px', fontSize: 14, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Inter', sans-serif"
+            }} onMouseEnter={e => e.currentTarget.style.background = '#E2E8F0'} onMouseLeave={e => e.currentTarget.style.background = '#FFFFFF'}>
+              Holding
+            </button>
+          </div>
+        </div>
+
+        {/* Graphic Right */}
+        <div style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '50%', minHeight: 320, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', zIndex: 1 }}>
+          <img src="/staking_banner_graphic.png" alt="Web3 Staking" style={{ height: '100%', width: '100%', objectFit: 'cover', maskImage: 'linear-gradient(to left, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%)', WebkitMaskImage: 'linear-gradient(to left, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%)' }} />
+        </div>
+      </div>
+
+      <div className="responsive-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, width: '100%' }}>
+      {/* Card 1: Holding Rewards */}
       <div id="holding-card" style={{
-        background: 'linear-gradient(145deg, rgba(36, 36, 44, 0.95) 0%, rgba(56, 58, 68, 0.90) 50%, rgba(24, 24, 30, 0.98) 100%)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
+        background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover',
         borderRadius: 20,
         padding: '16px 18px',
-        boxShadow: '0 8px 32px rgba(10, 10, 15, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
         display: 'flex',
         flexDirection: 'column',
         gap: 12,
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        border: '1px solid var(--border)'
       }}>
-        {/* Grayscaled background image overlay */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: 'url(/banner.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          filter: 'grayscale(100%) brightness(0.40) contrast(1.1)',
-          zIndex: 0,
-          pointerEvents: 'none'
-        }} />
 
         {/* Shimmer glow */}
         <div style={{
@@ -465,17 +518,34 @@ export function StakingSection({ setTab }) {
           <div style={{ fontSize: 14.5, fontWeight: 900, color: '#FFFFFF', letterSpacing: '0.2px' }}>
             Holding Rewards
           </div>
-          <span style={{
-            background: 'rgba(255, 255, 255, 0.08)',
-            color: '#A0AEC0',
-            padding: '3px 8px',
-            borderRadius: 8,
-            fontSize: 10,
-            fontWeight: 800,
-            border: '1px solid rgba(255, 255, 255, 0.1)'
-          }}>
-            Passive
-          </span>
+          {isHolder ? (
+            <span style={{
+              background: 'rgba(16, 185, 129, 0.15)',
+              color: '#10B981',
+              padding: '3px 8px',
+              borderRadius: 8,
+              fontSize: 10,
+              fontWeight: 900,
+              border: '1px solid rgba(16, 185, 129, 0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4
+            }}>
+              ✨ Happy Holder
+            </span>
+          ) : (
+            <span style={{
+              background: 'rgba(255, 255, 255, 0.08)',
+              color: '#A0AEC0',
+              padding: '3px 8px',
+              borderRadius: 8,
+              fontSize: 10,
+              fontWeight: 800,
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}>
+              Passive
+            </span>
+          )}
         </div>
 
         {/* Two Plates Layout (Mockup-inspired side-by-side design) */}
@@ -514,8 +584,8 @@ export function StakingSection({ setTab }) {
                       <button
                         onClick={() => setTab('home')}
                         style={{
-                          background: 'linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%)',
-                          color: '#FFFFFF',
+                          background: '#3B82F6',
+                          color: '#13141F',
                           border: 'none',
                           borderRadius: 6,
                           padding: '2px 6px',
@@ -546,8 +616,8 @@ export function StakingSection({ setTab }) {
 
           {/* Right Plate: Holder HP Earnings */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-            <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.5px', textAlign: 'center' }}>
-              Holder HP Earnings
+            <span style={{ fontSize: 10, fontWeight: 800, color: isHolder ? '#10B981' : '#A0AEC0', letterSpacing: '0.5px', textAlign: 'center' }}>
+              Happy Holder Badge
             </span>
             <div style={{
               background: 'rgba(16, 185, 129, 0.08)',
@@ -562,8 +632,8 @@ export function StakingSection({ setTab }) {
             }}>
               <span style={{ fontSize: 16 }}>⚡</span>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ fontSize: 13, fontWeight: 900, color: '#10B981', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-                  +{formatNumber(holdHpEarned, 2)} HP
+                <span style={{ fontSize: 13, fontWeight: 900, color: isHolder ? '#10B981' : '#64748B', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                  +{formatNumber(holdHpEarned, 0)} HP
                 </span>
                 <span style={{ fontSize: 9, color: 'rgba(16, 185, 129, 0.7)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.2px' }}>
                   per day
@@ -574,29 +644,16 @@ export function StakingSection({ setTab }) {
         </div>
       </div>
 
-      {/* Card 2: Staking Rewards (Premium Slate/Graphite Dark Grey Theme) */}
+      {/* Card 2: Staking Rewards */}
       <div id="staking-card" style={{
-        background: 'linear-gradient(145deg, rgba(20, 20, 25, 0.95) 0%, rgba(38, 39, 48, 0.90) 50%, rgba(12, 12, 16, 0.98) 100%)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
+        background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover',
         borderRadius: 20,
         padding: 16,
-        boxShadow: '0 8px 32px rgba(10, 10, 15, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        border: '1px solid var(--border)'
       }}>
-        {/* Grayscaled background image overlay */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: 'url(/banner.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          filter: 'grayscale(100%) brightness(0.28) contrast(1.1)',
-          zIndex: 0,
-          pointerEvents: 'none'
-        }} />
 
         {/* Shimmer glow */}
         <div style={{
@@ -614,17 +671,34 @@ export function StakingSection({ setTab }) {
           <div>
             <div style={{ fontSize: 14.5, fontWeight: 900, color: '#FFFFFF', letterSpacing: '0.2px' }}>Staking Rewards</div>
           </div>
-          <span style={{
-            background: 'rgba(255,255,255,0.08)',
-            color: '#A0AEC0',
-            padding: '3px 8px',
-            borderRadius: 8,
-            fontSize: 10,
-            fontWeight: 800,
-            border: '1px solid rgba(255,255,255,0.1)'
-          }}>
-            Active Pool
-          </span>
+          {isStaker ? (
+            <span style={{
+              background: 'rgba(16, 185, 129, 0.15)',
+              color: '#10B981',
+              padding: '3px 8px',
+              borderRadius: 8,
+              fontSize: 10,
+              fontWeight: 900,
+              border: '1px solid rgba(16, 185, 129, 0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4
+            }}>
+              ✨ Happy Staker
+            </span>
+          ) : (
+            <span style={{
+              background: 'rgba(255,255,255,0.08)',
+              color: '#A0AEC0',
+              padding: '3px 8px',
+              borderRadius: 8,
+              fontSize: 10,
+              fontWeight: 800,
+              border: '1px solid rgba(255,255,255,0.1)'
+            }}>
+              Active Pool
+            </span>
+          )}
         </div>
 
         {/* Three Plates Layout (Staked, Period, HP Earnings) */}
@@ -689,8 +763,8 @@ export function StakingSection({ setTab }) {
 
           {/* Column 3: HP Earnings */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-            <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.3px', textAlign: 'center' }}>
-              HP Earnings
+            <span style={{ fontSize: 10, fontWeight: 800, color: isStaker ? '#10B981' : '#A0AEC0', letterSpacing: '0.3px', textAlign: 'center' }}>
+              Staker Badge
             </span>
             <div style={{
               background: 'rgba(16, 185, 129, 0.08)',
@@ -705,8 +779,8 @@ export function StakingSection({ setTab }) {
             }}>
               <span style={{ fontSize: 13 }}>⚡</span>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ fontSize: 11.5, fontWeight: 900, color: '#10B981', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-                  +{formatNumber(stakeHpEarned, 2)} HP
+                <span style={{ fontSize: 11.5, fontWeight: 900, color: isStaker ? '#10B981' : '#64748B', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                  +{formatNumber(stakeHpEarned, 0)} HP
                 </span>
                 <span style={{ fontSize: 8.5, color: 'rgba(16, 185, 129, 0.7)', fontWeight: 700, textTransform: 'uppercase' }}>
                   per day
@@ -727,21 +801,37 @@ export function StakingSection({ setTab }) {
           marginBottom: 12,
           border: '1px solid rgba(255,255,255,0.08)'
         }}>
-          <button
-            disabled
-            title="Temporarily unavailable"
-            style={{
-              flex: 1, padding: '6px 10px', border: 'none', borderRadius: 7, fontSize: 11.5, fontWeight: 800,
-              background: 'transparent',
-              color: 'rgba(255,255,255,0.2)',
-              cursor: 'not-allowed',
-              outline: 'none',
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1
-            }}
-          >
-            <span>Stake</span>
-            <span style={{ fontSize: 8, fontWeight: 600, color: 'rgba(255,165,0,0.7)', letterSpacing: 0.2 }}>Unavailable</span>
-          </button>
+          {isAdmin ? (
+            <button
+              onClick={() => setStakeActionTab('stake')}
+              style={{
+                flex: 1, padding: '6px 10px', border: 'none', borderRadius: 7, fontSize: 11.5, fontWeight: 800,
+                background: stakeActionTab === 'stake' ? '#FFFFFF' : 'transparent',
+                color: stakeActionTab === 'stake' ? '#090514' : 'rgba(255,255,255,0.5)',
+                boxShadow: stakeActionTab === 'stake' ? '0 1px 4px rgba(0,0,0,0.15)' : 'none',
+                cursor: 'pointer',
+                outline: 'none'
+              }}
+            >
+              Stake
+            </button>
+          ) : (
+            <button
+              disabled
+              title="Temporarily unavailable"
+              style={{
+                flex: 1, padding: '6px 10px', border: 'none', borderRadius: 7, fontSize: 11.5, fontWeight: 800,
+                background: 'transparent',
+                color: 'rgba(255,255,255,0.2)',
+                cursor: 'not-allowed',
+                outline: 'none',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1
+              }}
+            >
+              <span>Stake</span>
+              <span style={{ fontSize: 8, fontWeight: 600, color: 'rgba(255,165,0,0.7)', letterSpacing: 0.2 }}>Unavailable</span>
+            </button>
+          )}
           <button
             onClick={() => setStakeActionTab('unstake')}
             style={{
@@ -878,8 +968,8 @@ export function StakingSection({ setTab }) {
               disabled={!!txStep}
               style={{
                 width: '100%', padding: '11px', border: 'none', borderRadius: 10,
-                background: '#FFFFFF',
-                color: '#090514', fontSize: 13, fontWeight: 800, cursor: 'pointer',
+                background: '#3B82F6',
+                color: '#13141F', fontSize: 13, fontWeight: 800, cursor: 'pointer',
                 boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
                 outline: 'none'
               }}
@@ -1011,8 +1101,8 @@ export function StakingSection({ setTab }) {
                               onClick={() => handleUnstakePosition(s.id, s.amount)}
                               disabled={unstakePending}
                               style={{
-                                background: '#FFFFFF',
-                                color: '#090514',
+                                background: '#3B82F6',
+                                color: '#13141F',
                                 border: 'none',
                                 borderRadius: 8,
                                 padding: '6px 12px',
@@ -1157,6 +1247,7 @@ export function StakingSection({ setTab }) {
           </div>
         )}
       </div>
+      </div>
 
       {/* Pending Withdrawals list has been integrated inside the Unstake positions list above */}
 
@@ -1218,8 +1309,8 @@ export function StakingSection({ setTab }) {
                   setStakingAmount('')
                 }}
                 style={{
-                  background: 'linear-gradient(135deg, #0052FF 0%, #0043D0 100%)',
-                  color: '#FFFFFF', border: 'none', borderRadius: 12, padding: '10px 24px',
+                  background: '#3B82F6',
+                  color: '#13141F', border: 'none', borderRadius: 12, padding: '10px 24px',
                   fontSize: 13, fontWeight: 800, cursor: 'pointer',
                   width: '100%'
                 }}
