@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { SwapWidget } from '@uniswap/widgets';
 import { useWallets } from '@privy-io/react-auth';
 
+import { ethers } from 'ethers';
+
 // $HH Token Address on Base
 const HH_TOKEN_ADDRESS = '0x8235EdF32a1e10Bd1867ad622915AB613664cbA3';
 
@@ -31,7 +33,10 @@ export default function CustomSwapWidget({ width = 360, wallet = null }) {
     let isMounted = true;
     if (activeWallet) {
       activeWallet.getEthereumProvider().then(p => {
-        if (isMounted) setProvider(p);
+        if (isMounted) {
+          const web3Provider = new ethers.providers.Web3Provider(p);
+          setProvider(web3Provider);
+        }
       });
     } else {
       setProvider(null);
