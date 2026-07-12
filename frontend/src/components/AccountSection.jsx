@@ -11,7 +11,7 @@ const SPIN_CSS = `
     background: rgba(255,255,255,0.1); border-radius: 12px;
     cursor: pointer; transition: background 0.3s ease; flex-shrink: 0;
   }
-  .acc-toggle.active { background: #8B5CF6; }
+  .acc-toggle.active { background: #16A34A; }
   .acc-toggle-knob {
     position: absolute; top: 2px; left: 2px;
     width: 20px; height: 20px; background: #FFFFFF;
@@ -24,7 +24,7 @@ const SPIN_CSS = `
 
 function Spinner() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" strokeWidth="2.5"
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="2.5"
       strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 1s linear infinite' }}>
       <line x1="12" y1="2" x2="12" y2="6"/>
       <line x1="12" y1="18" x2="12" y2="22"/>
