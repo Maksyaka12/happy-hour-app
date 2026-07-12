@@ -3,8 +3,9 @@ import { useWallets, usePrivy, useCreateWallet } from '@privy-io/react-auth'
 import { useBalance, useReadContract } from 'wagmi'
 import { parseEther, isAddress } from 'viem'
 import { HH_ADDRESS, HH_ABI } from '../config/constants'
+import CustomSwapWidget from './CustomSwapWidget'
 
-const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
+const short = (a) => (a ? `${a.slice(0, 6)}\u2026${a.slice(-4)}` : '\u2014')
 
 const formatBalance = (val, decimals = 18) => {
   if (val === undefined || val === null) return '0.00'
@@ -169,6 +170,23 @@ function SendModal({ embeddedWallet, onClose }) {
     </div>
   )
 }
+
+function SwapModal({ onClose }) {
+  return (
+    <div style={modalOverlayStyle} onClick={onClose}>
+      <div style={{ ...modalBoxStyle, background: '#111318', padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', alignItems: 'center' }} onClick={e => e.stopPropagation()}>
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)', boxSizing: 'border-box' }}>
+          <h3 style={{ margin: 0, fontSize: 18, color: '#FFFFFF', fontWeight: 600 }}>Swap</h3>
+          <button onClick={onClose} style={closeBtn}>✕</button>
+        </div>
+        <div style={{ padding: '24px 20px', width: '100%', display: 'flex', justifyContent: 'center' }}>
+          <CustomSwapWidget width={400} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 
 // ─────────────────────────────────────────
 // Main WalletSection component
@@ -459,7 +477,7 @@ export function WalletSection({ onRequireWallet, setTab }) {
           Send
         </button>
         <button
-          onClick={() => setTab('hhSwap')}
+          onClick={() => setModal('swap')}
           style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, background: 'rgba(255,255,255,0.06)', color: '#FFFFFF', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: '14px 0', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 16V4m0 0L3 8m4-4 4 4"/><path d="M17 8v12m0 0 4-4m-4 4-4-4"/></svg>
@@ -473,6 +491,9 @@ export function WalletSection({ onRequireWallet, setTab }) {
       )}
       {modal === 'send' && (
         <SendModal embeddedWallet={embeddedWallet} onClose={() => setModal(null)} />
+      )}
+      {modal === 'swap' && (
+        <SwapModal onClose={() => setModal(null)} />
       )}
     </div>
   )

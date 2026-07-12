@@ -23,6 +23,7 @@ import { Sidebar } from './components/Sidebar'
 import { Header } from './components/Header'
 import { DailyRaffleSection } from './components/DailyRaffleSection'
 import { ComingSoonScreen } from './components/ComingSoonScreen'
+import SwapSection from './components/SwapSection'
 
 const short = (a) => (a ? `${a.slice(0, 6)}\u2026${a.slice(-4)}` : '\u2014')
 
@@ -766,18 +767,18 @@ export default function App({ onLogin, onLogout, privyUser, privyWallets = [] })
         )
       case 'hhChart':
         return <ChartSection />
+      case 'hhSwap':
+        return <SwapSection />
       case 'skills':
       case 'x402':
       case 'agentChat':
       case 'hhIntro':
-      case 'hhSwap':
         return (
           <div style={{ padding: '80px 20px', textAlign: 'center' }}>
             <h2 style={{ color: '#FFFFFF', fontSize: 28, marginBottom: 12 }}>
               {tab === 'skills' ? 'Skills' : 
                tab === 'agentChat' ? 'Agent Chat' : 
-               tab === 'hhIntro' ? '$HH' : 
-               tab === 'hhSwap' ? '$HH Swap' : 'x402 Endpoints'}
+               tab === 'hhIntro' ? '$HH' : 'x402 Endpoints'}
             </h2>
             <p style={{ color: '#8A8F9E', fontSize: 16 }}>Coming Soon</p>
           </div>
