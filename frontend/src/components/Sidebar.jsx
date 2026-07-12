@@ -923,9 +923,9 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
               onMouseEnter={e => { if(!isProfileMenuOpen) e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)' }}
               onMouseLeave={e => { if(!isProfileMenuOpen) e.currentTarget.style.background = 'transparent' }}
             >
-              <UserAvatar address={address} size={36} profilePictureUrl={privyUser?.twitter?.profilePictureUrl} />
+              <UserAvatar address={address} size={36} profilePictureUrl={privyUser?.twitter?.profilePictureUrl} shape="square" />
               {!isCollapsed && (
-                <div style={{ flex: 1, minWidth: 0, textAlign: 'left' }}>
+                <div style={{ flex: 1, minWidth: 0, textAlign: 'left', fontFamily: '"Inter", sans-serif' }}>
                   <div style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: 4 }}>
                     {loginIdentity.icon === 'x' && (
                       <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" style={{ opacity: 0.8, flexShrink: 0 }}><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
