@@ -103,7 +103,7 @@ export function AccountPage({ address, basename, privyUser }) {
         {primaryEmbedded.length > 0 ? primaryEmbedded.map(w => (
           <LinkedAccountRow
             key={w.address}
-            icon={<img src="/logo_200.png" alt="HH" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+            icon={<img src="/logo.jfif" alt="HH" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
             label="HH Embedded Wallet"
             value={short(w.address)}
             linked={true}
@@ -111,7 +111,7 @@ export function AccountPage({ address, basename, privyUser }) {
           />
         )) : (
           <LinkedAccountRow
-            icon={<img src="/logo_200.png" alt="HH" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+            icon={<img src="/logo.jfif" alt="HH" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
             label="HH Embedded Wallet"
             value="Creating…"
             linked={false}
