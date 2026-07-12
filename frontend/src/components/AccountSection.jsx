@@ -45,9 +45,9 @@ function AccountRow({ icon, label, subLabel, linked, loading, onToggle, canUnlin
         {icon}
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ fontSize: 15, fontWeight: 600, color: '#FFFFFF' }}>{label}</div>
+            <div style={{ fontSize: 15, fontWeight: 600, color: '#FFFFFF', lineHeight: 1 }}>{label}</div>
             {linked && (
-              <div style={{ background: 'rgba(34,197,94,0.15)', color: '#22C55E', padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 700, border: '1px solid rgba(34,197,94,0.3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <div style={{ background: 'rgba(22,163,74,0.15)', color: '#16A34A', padding: '0 6px', height: 16, display: 'flex', alignItems: 'center', borderRadius: 4, fontSize: 11, fontWeight: 600, border: '1px solid rgba(22,163,74,0.3)' }}>
                 Linked
               </div>
             )}
