@@ -10,6 +10,7 @@ import ReactDOM from 'react-dom/client'
 import { PrivyProvider, usePrivy, useWallets, useCreateWallet } from '@privy-io/react-auth'
 import { WagmiProvider as PrivyWagmiProvider } from '@privy-io/wagmi'
 import { privyWagmiConfig } from './config/privyWagmi'
+import { base } from 'wagmi/chains'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import App from './App'
@@ -70,6 +71,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         appId="cmr71ywhn007f0cl16cnybewf"
         config={{
           loginMethods: ['wallet', 'email', 'twitter', 'telegram'],
+          defaultChain: base,
+          supportedChains: [base],
           appearance: {
             theme: 'dark',
             accentColor: '#3B82F6',
