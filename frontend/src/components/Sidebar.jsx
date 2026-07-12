@@ -923,7 +923,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
               onMouseEnter={e => { if(!isProfileMenuOpen) e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)' }}
               onMouseLeave={e => { if(!isProfileMenuOpen) e.currentTarget.style.background = 'transparent' }}
             >
-              <UserAvatar address={address} size={36} />
+              <UserAvatar address={address} size={36} profilePictureUrl={privyUser?.twitter?.profilePictureUrl} />
               {!isCollapsed && (
                 <div style={{ flex: 1, minWidth: 0, textAlign: 'left' }}>
                   <div style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: 4 }}>

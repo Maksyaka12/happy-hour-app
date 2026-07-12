@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useDisconnect, useWriteContract, useBalance, useReadContract, useChainId, useSwitchChain } from 'wagmi'
+import { usePrivy } from '@privy-io/react-auth'
 import { formatUnits, parseUnits } from 'viem'
 import { base } from 'wagmi/chains'
 import { APP_URL, FOUNDATION, CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI, HH_MANAGER_ADDRESS, STAKING_ADDRESS, STAKING_ABI, MEMBERSHIP_ADDRESS, MEMBERSHIP_ABI } from '../config/constants'
@@ -61,6 +62,7 @@ const safeParseUnits = (amountStr, decimals = 18) => {
 
 
 export function ProfileSection({ address, basename, totalUsers, setTab, onRequireWallet, onLogout }) {
+  const { user: privyUser } = usePrivy()
   const { disconnect } = useDisconnect()
   const { writeContract: wagmiWriteContract } = useWriteContract()
 
@@ -1018,7 +1020,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
               alignItems: 'center',
               justifyContent: 'center'
             }}>
-              <UserAvatar address={address} size={44} />
+              <UserAvatar address={address} size={44} profilePictureUrl={privyUser?.twitter?.profilePictureUrl} />
             </div>
             <div>
               <div style={{ fontSize: 14, fontWeight: 900, color: '#fff', letterSpacing: -0.3 }}>
