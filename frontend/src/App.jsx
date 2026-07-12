@@ -354,7 +354,7 @@ export default function App({ onLogin, onLogout, privyUser, privyWallets = [] })
       'home', 'raffle', 'dailyRaffle', 'contests',  // Platform
       'wallet', 'skills', 'agentChat', 'x402',      // Tools
       'hhIntro', 'hhChart', 'hhSwap',               // $HH Native Coin
-      'docs', 'affiliate', 'terms', 'privacy',      // Resources
+      'docs', 'affiliate',                           // Resources
       'link', 'account'                             // Account
     ])
 
