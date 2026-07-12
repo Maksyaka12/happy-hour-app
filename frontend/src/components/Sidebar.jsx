@@ -693,7 +693,7 @@ export function Sidebar({ tab, setTab, address, isConnected, displayName, isClub
             <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {resources.map((r, i) => {
               const isButton = !!r.id;
-              const isSoon = !isAdmin // docs, affiliate, terms, privacy are all coming soon
+              const isSoon = !isAdmin && !['terms', 'privacy'].includes(r.id) // docs and affiliate are coming soon
               const Component = isButton ? 'button' : 'a';
               const baseStyle = {
                 display: 'flex', alignItems: 'center',
