@@ -58,7 +58,6 @@ export default function CustomSwapWidget({ width = 360, wallet = null }) {
           jsonRpcUrlMap={jsonRpcUrlMap}
           defaultInputTokenAddress="NATIVE" // ETH on Base
           defaultOutputTokenAddress={HH_TOKEN_ADDRESS}
-          defaultChainId={8453}
           hideConnectionUI={true}
         />
       )}
