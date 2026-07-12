@@ -22,4 +22,9 @@ export default defineConfig({
   server: {
     historyApiFallback: true,
   },
+  build: {
+    commonjsOptions: {
+      transformMixedEsModules: true,
+    },
+  },
 })

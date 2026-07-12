@@ -61,23 +61,7 @@ export default function CustomSwapWidget({ width = 360, wallet = null }) {
           theme={customTheme}
           provider={provider}
           jsonRpcUrlMap={jsonRpcUrlMap}
-          tokenList={[
-            {
-              chainId: 8453,
-              address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
-              name: 'USD Coin',
-              symbol: 'USDC',
-              decimals: 6,
-              logoURI: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/base/assets/0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913/logo.png'
-            },
-            {
-              chainId: 8453,
-              address: HH_TOKEN_ADDRESS,
-              name: 'Happy Hour',
-              symbol: 'HH',
-              decimals: 18,
-            }
-          ]}
+          tokenList="https://tokens.uniswap.org"
           defaultInputTokenAddress="NATIVE" // ETH on Base
           defaultOutputTokenAddress={HH_TOKEN_ADDRESS}
           hideConnectionUI={true}
