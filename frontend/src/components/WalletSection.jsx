@@ -171,7 +171,7 @@ function SendModal({ embeddedWallet, onClose }) {
   )
 }
 
-function SwapModal({ onClose }) {
+function SwapModal({ onClose, wallet }) {
   return (
     <div style={modalOverlayStyle} onClick={onClose}>
       <div style={{ ...modalBoxStyle, background: '#111318', padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', alignItems: 'center' }} onClick={e => e.stopPropagation()}>
@@ -180,7 +180,7 @@ function SwapModal({ onClose }) {
           <button onClick={onClose} style={closeBtn}>✕</button>
         </div>
         <div style={{ padding: '24px 20px', width: '100%', display: 'flex', justifyContent: 'center' }}>
-          <CustomSwapWidget width={400} />
+          <CustomSwapWidget width={400} wallet={wallet} />
         </div>
       </div>
     </div>
@@ -493,7 +493,7 @@ export function WalletSection({ onRequireWallet, setTab }) {
         <SendModal embeddedWallet={embeddedWallet} onClose={() => setModal(null)} />
       )}
       {modal === 'swap' && (
-        <SwapModal onClose={() => setModal(null)} />
+        <SwapModal onClose={() => setModal(null)} wallet={activeWallet} />
       )}
     </div>
   )

@@ -22,9 +22,9 @@ const customTheme = {
   borderRadius: 16,
 };
 
-export default function CustomSwapWidget({ width = 360 }) {
+export default function CustomSwapWidget({ width = 360, wallet = null }) {
   const { wallets } = useWallets();
-  const activeWallet = wallets.length > 0 ? wallets[0] : null;
+  const activeWallet = wallet || (wallets.length > 0 ? wallets[0] : null);
   const [provider, setProvider] = useState(null);
 
   useEffect(() => {
@@ -40,17 +40,28 @@ export default function CustomSwapWidget({ width = 360 }) {
   }, [activeWallet]);
 
   return (
-    <div className="uniswap-widget-wrapper" style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-      <SwapWidget
-        width={width}
-        theme={customTheme}
-        provider={provider}
-        jsonRpcUrlMap={jsonRpcUrlMap}
-        defaultInputTokenAddress="NATIVE" // ETH on Base
-        defaultOutputTokenAddress={HH_TOKEN_ADDRESS}
-        defaultChainId={8453}
-        hideConnectionUI={true}
-      />
+    <div className="uniswap-widget-wrapper" style={{ display: 'flex', justifyContent: 'center', width: '100%', minHeight: 360, alignItems: 'center' }}>
+      {!activeWallet ? (
+        <div style={{ color: '#8A8F9E', fontFamily: 'Inter', textAlign: 'center' }}>
+          Please connect a wallet to use the swap feature.
+        </div>
+      ) : !provider ? (
+        <div style={{ color: '#8A8F9E', fontFamily: 'Inter', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+          <div style={{ width: 24, height: 24, border: '2px solid rgba(59,130,246,0.3)', borderTopColor: '#3B82F6', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+          <div>Initializing Swap Interface...</div>
+        </div>
+      ) : (
+        <SwapWidget
+          width={width}
+          theme={customTheme}
+          provider={provider}
+          jsonRpcUrlMap={jsonRpcUrlMap}
+          defaultInputTokenAddress="NATIVE" // ETH on Base
+          defaultOutputTokenAddress={HH_TOKEN_ADDRESS}
+          defaultChainId={8453}
+          hideConnectionUI={true}
+        />
+      )}
     </div>
   );
 }
