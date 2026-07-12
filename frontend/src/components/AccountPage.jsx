@@ -126,8 +126,6 @@ export function AccountPage({ address, basename, privyUser }) {
             label="External Wallet"
             value={short(w.address)}
             linked={true}
-            canUnlink={linkedAccountsCount > 1}
-            onUnlink={() => unlinkWallet(w.address)}
             isLast={i === externalWallets.length - 1}
           />
         )) : (
