@@ -245,6 +245,9 @@ export default function CustomSwapWidget({ width = 400, wallet = null }) {
       // Immediately refresh balances
       refetchEth();
       refetchErc20();
+      // RPCs can have a slight delay, refresh again after 2s and 5s
+      setTimeout(() => { refetchEth(); refetchErc20(); }, 2000);
+      setTimeout(() => { refetchEth(); refetchErc20(); }, 5000);
       
       // Reset inputs after success
       setSellAmount('');
@@ -313,9 +316,13 @@ export default function CustomSwapWidget({ width = 400, wallet = null }) {
           style={{
             background: 'transparent', border: 'none', outline: 'none',
             color: '#FFF', fontSize: 36, fontWeight: 500, width: '100%',
-            marginBottom: 16
+            marginBottom: 4
           }}
         />
+        
+        <div style={{ color: '#8A8F9E', fontSize: 13, marginBottom: 12, height: 16 }}>
+          {quote && sellAmount > 0 && quote.routeSummary.amountInUsd ? `≈ $${parseFloat(quote.routeSummary.amountInUsd).toFixed(2)}` : ''}
+        </div>
         
         <div style={{ position: 'relative' }}>
           <div 
@@ -386,9 +393,13 @@ export default function CustomSwapWidget({ width = 400, wallet = null }) {
           style={{
             background: 'transparent', border: 'none', outline: 'none',
             color: '#FFF', fontSize: 36, fontWeight: 500, width: '100%',
-            marginBottom: 16
+            marginBottom: 4
           }}
         />
+        
+        <div style={{ color: '#8A8F9E', fontSize: 13, marginBottom: 12, height: 16 }}>
+          {quote && buyAmount > 0 && quote.routeSummary.amountOutUsd ? `≈ $${parseFloat(quote.routeSummary.amountOutUsd).toFixed(2)}` : ''}
+        </div>
         
         <div style={{ position: 'relative' }}>
           <div 
