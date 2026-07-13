@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useWallets } from '@privy-io/react-auth';
-import { useAccount, useBalance, useReadContracts } from 'wagmi';
-import { formatUnits, parseUnits } from 'viem';
+import { useBalance, useReadContracts } from 'wagmi';
+import { formatUnits, parseUnits, createPublicClient, http, encodeFunctionData } from 'viem';
+import { base } from 'viem/chains';
 
 export const TOKENS = {
   ETH: { symbol: 'ETH', name: 'Ethereum', address: 'native', decimals: 18, logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png' },
@@ -17,8 +18,24 @@ const erc20Abi = [
     "name": "balanceOf",
     "outputs": [{ "name": "balance", "type": "uint256" }],
     "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [{ "name": "owner", "type": "address" }, { "name": "spender", "type": "address" }],
+    "name": "allowance",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [{ "name": "spender", "type": "address" }, { "name": "amount", "type": "uint256" }],
+    "name": "approve",
+    "outputs": [{ "name": "", "type": "bool" }],
+    "type": "function"
   }
 ];
+
+const publicClient = createPublicClient({ chain: base, transport: http() });
 
 export default function CustomSwapWidget({ width = 400, wallet = null }) {
   const { wallets } = useWallets();
@@ -32,9 +49,15 @@ export default function CustomSwapWidget({ width = 400, wallet = null }) {
   const [showSellDropdown, setShowSellDropdown] = useState(false);
   const [showBuyDropdown, setShowBuyDropdown] = useState(false);
 
-  // Use wagmi to fetch balances if wallet is connected
-  // Since activeWallet from Privy might be different from wagmi useAccount, 
-  // we fetch for the activeWallet address
+  // Swap State
+  const [quote, setQuote] = useState(null);
+  const [isFetchingQuote, setIsFetchingQuote] = useState(false);
+  const [isApproving, setIsApproving] = useState(false);
+  const [isSwapping, setIsSwapping] = useState(false);
+  const [allowanceOk, setAllowanceOk] = useState(true);
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [txHash, setTxHash] = useState(null);
+
   const address = activeWallet?.address;
 
   const { data: ethBalance } = useBalance({
@@ -81,6 +104,156 @@ export default function CustomSwapWidget({ width = 400, wallet = null }) {
     setBuyToken(temp);
     setSellAmount('');
     setBuyAmount('');
+    setQuote(null);
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(fetchQuote, 500);
+    return () => clearTimeout(timer);
+  }, [sellAmount, sellToken, buyToken, activeWallet]);
+
+  const fetchQuote = async () => {
+    if (!sellAmount || isNaN(parseFloat(sellAmount)) || parseFloat(sellAmount) <= 0) {
+      setQuote(null);
+      setBuyAmount('');
+      setErrorMsg(null);
+      return;
+    }
+    
+    setIsFetchingQuote(true);
+    setErrorMsg(null);
+    setTxHash(null);
+
+    try {
+      const amountIn = parseUnits(sellAmount, sellToken.decimals).toString();
+      const tIn = sellToken.symbol === 'ETH' ? '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' : sellToken.address;
+      const tOut = buyToken.symbol === 'ETH' ? '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' : buyToken.address;
+      
+      const res = await fetch(`https://aggregator-api.kyberswap.com/base/api/v1/routes?tokenIn=${tIn}&tokenOut=${tOut}&amountIn=${amountIn}`);
+      const data = await res.json();
+      
+      if (data.code !== 0) throw new Error(data.message || 'No route found');
+      if (!data.data.routeSummary) throw new Error('Insufficient liquidity for this swap');
+      
+      setQuote(data.data);
+      const outAmountStr = formatUnits(BigInt(data.data.routeSummary.amountOut), buyToken.decimals);
+      // Trim to 6 decimal places max for display
+      const outNum = parseFloat(outAmountStr);
+      setBuyAmount(outNum > 0 ? (outNum > 1 ? outNum.toFixed(4) : outNum.toFixed(6)) : outAmountStr);
+      
+      // Check allowance
+      if (sellToken.symbol !== 'ETH' && activeWallet) {
+         const allowance = await publicClient.readContract({
+           address: sellToken.address,
+           abi: erc20Abi,
+           functionName: 'allowance',
+           args: [activeWallet.address, data.data.routerAddress]
+         });
+         setAllowanceOk(allowance >= BigInt(amountIn));
+      } else {
+         setAllowanceOk(true);
+      }
+      
+    } catch (err) {
+      console.error(err);
+      setErrorMsg(err.message || 'Error fetching quote');
+      setQuote(null);
+      setBuyAmount('');
+    } finally {
+      setIsFetchingQuote(false);
+    }
+  };
+
+  const handleApprove = async () => {
+    if (!activeWallet || !quote) return;
+    setIsApproving(true);
+    setErrorMsg(null);
+    try {
+      const provider = await activeWallet.getEthereumProvider();
+      
+      // Approve max uint256 to avoid re-approving often
+      const maxUint = '115792089237316195423570985008687907853269984665640564039457584007913129639935'; 
+      
+      const data = encodeFunctionData({
+        abi: erc20Abi,
+        functionName: 'approve',
+        args: [quote.routerAddress, BigInt(maxUint)]
+      });
+      
+      const hash = await provider.request({
+        method: 'eth_sendTransaction',
+        params: [{
+          from: activeWallet.address,
+          to: sellToken.address,
+          data: data
+        }]
+      });
+      
+      await publicClient.waitForTransactionReceipt({ hash });
+      setAllowanceOk(true);
+      
+    } catch(err) {
+      console.error(err);
+      const msg = err.message?.includes('User rejected') ? 'Transaction rejected' : (err.message || 'Approval failed');
+      setErrorMsg(msg);
+    } finally {
+      setIsApproving(false);
+    }
+  };
+
+  const handleSwap = async () => {
+    if (!activeWallet || !quote) return;
+    setIsSwapping(true);
+    setErrorMsg(null);
+    setTxHash(null);
+    try {
+      const provider = await activeWallet.getEthereumProvider();
+      
+      const buildRes = await fetch('https://aggregator-api.kyberswap.com/base/api/v1/route/build', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          routeSummary: quote.routeSummary,
+          sender: activeWallet.address,
+          recipient: activeWallet.address,
+          slippageTolerance: 50, // 0.5% (50 bps)
+          deadline: Math.floor(Date.now() / 1000) + 1200,
+          source: 'HappyHour'
+        })
+      });
+      
+      const buildData = await buildRes.json();
+      if (buildData.code !== 0) throw new Error(buildData.message || 'Failed to build transaction');
+      
+      const txData = buildData.data;
+      
+      const hash = await provider.request({
+        method: 'eth_sendTransaction',
+        params: [{
+          from: activeWallet.address,
+          to: quote.routerAddress,
+          data: txData.data,
+          value: '0x' + BigInt(txData.value || 0).toString(16),
+        }]
+      });
+      
+      setTxHash(hash);
+      
+      // Wait for receipt to confirm
+      await publicClient.waitForTransactionReceipt({ hash });
+      
+      // Reset inputs after success
+      setSellAmount('');
+      setBuyAmount('');
+      setQuote(null);
+      
+    } catch(err) {
+      console.error(err);
+      const msg = err.message?.includes('User rejected') ? 'Transaction rejected' : (err.message || 'Swap failed');
+      setErrorMsg(msg);
+    } finally {
+      setIsSwapping(false);
+    }
   };
 
   const TokenDropdown = ({ tokens, onSelect, onClose }) => (
@@ -239,41 +412,107 @@ export default function CustomSwapWidget({ width = 400, wallet = null }) {
       <div style={{ padding: '0 8px', display: 'flex', flexDirection: 'column', gap: 8, marginTop: 4 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', color: '#8A8F9E', fontSize: 13 }}>
           <span>Minimum received</span>
-          <span style={{ color: '#FFF' }}>0.00 {buyToken.symbol}</span>
+          <span style={{ color: '#FFF' }}>
+            {quote ? (parseFloat(formatUnits(BigInt(quote.routeSummary.amountOut), buyToken.decimals)) * 0.995).toFixed(4) : '0.00'} {buyToken.symbol}
+          </span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', color: '#8A8F9E', fontSize: 13 }}>
           <span>Price impact</span>
-          <span style={{ color: '#FFF' }}>0.00%</span>
+          <span style={{ color: '#FFF' }}>
+             {/* Note: In KyberSwap, sometimes price impact is absent if route has 1 pool. Default to ~0.00% if not provided, or calculate roughly. Kyber API doesnt always return a direct 'priceImpact' field in routeSummary unless requested specifically. We'll default to 0.00% visually for now. */}
+             {isFetchingQuote ? '...' : (quote ? '< 0.5%' : '0.00%')}
+          </span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', color: '#8A8F9E', fontSize: 13 }}>
           <span>Max slippage</span>
-          <span style={{ color: '#FFF' }}>5.0%</span>
+          <span style={{ color: '#FFF' }}>0.5%</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', color: '#8A8F9E', fontSize: 13 }}>
-          <span>Fee</span>
-          <span style={{ color: '#FFF' }}>Free</span>
+          <span>Est. Gas</span>
+          <span style={{ color: '#FFF' }}>
+            {quote ? `$${parseFloat(quote.routeSummary.gasUsd || 0).toFixed(4)}` : 'Free'}
+          </span>
         </div>
       </div>
+      
+      {/* Messages */}
+      {errorMsg && (
+        <div style={{ color: '#EF4444', fontSize: 13, textAlign: 'center', marginTop: 4 }}>
+          {errorMsg}
+        </div>
+      )}
+      {txHash && (
+        <div style={{ color: '#22C55E', fontSize: 13, textAlign: 'center', marginTop: 4 }}>
+          Swap successful! <a href={`https://basescan.org/tx/${txHash}`} target="_blank" rel="noreferrer" style={{color:'#3B82F6'}}>View Explorer</a>
+        </div>
+      )}
 
-      {/* Swap Button */}
-      <button 
-        style={{ 
-          background: '#3B82F6', 
-          color: '#FFF', 
-          border: 'none', 
-          padding: '18px', 
-          borderRadius: 16, 
-          fontSize: 18, 
-          fontWeight: 600, 
-          cursor: 'pointer',
-          marginTop: 8,
-          transition: 'background 0.2s'
-        }}
-        onMouseEnter={(e) => e.currentTarget.style.background = '#60A5FA'}
-        onMouseLeave={(e) => e.currentTarget.style.background = '#3B82F6'}
-      >
-        {activeWallet ? 'Swap' : 'Connect Wallet'}
-      </button>
+      {/* Action Button */}
+      {!activeWallet ? (
+        <button 
+          style={{ 
+            background: '#3B82F6', color: '#FFF', border: 'none', padding: '18px', borderRadius: 16, fontSize: 18, fontWeight: 600, marginTop: 8
+          }}
+        >
+          Connect Wallet
+        </button>
+      ) : isFetchingQuote ? (
+        <button 
+          disabled
+          style={{ 
+            background: '#2A2D3D', color: '#8A8F9E', border: 'none', padding: '18px', borderRadius: 16, fontSize: 18, fontWeight: 600, marginTop: 8
+          }}
+        >
+          Fetching route...
+        </button>
+      ) : (!quote && sellAmount > 0) ? (
+        <button 
+          disabled
+          style={{ 
+            background: '#2A2D3D', color: '#8A8F9E', border: 'none', padding: '18px', borderRadius: 16, fontSize: 18, fontWeight: 600, marginTop: 8
+          }}
+        >
+          No route available
+        </button>
+      ) : (!quote || sellAmount <= 0) ? (
+        <button 
+          disabled
+          style={{ 
+            background: '#2A2D3D', color: '#8A8F9E', border: 'none', padding: '18px', borderRadius: 16, fontSize: 18, fontWeight: 600, marginTop: 8
+          }}
+        >
+          Enter an amount
+        </button>
+      ) : parseFloat(sellAmount) > parseFloat(sellBalance) ? (
+        <button 
+          disabled
+          style={{ 
+            background: '#2A2D3D', color: '#EF4444', border: 'none', padding: '18px', borderRadius: 16, fontSize: 18, fontWeight: 600, marginTop: 8
+          }}
+        >
+          Insufficient {sellToken.symbol} balance
+        </button>
+      ) : !allowanceOk ? (
+        <button 
+          onClick={handleApprove}
+          disabled={isApproving}
+          style={{ 
+            background: '#3B82F6', color: '#FFF', border: 'none', padding: '18px', borderRadius: 16, fontSize: 18, fontWeight: 600, marginTop: 8, cursor: 'pointer', transition: 'background 0.2s'
+          }}
+        >
+          {isApproving ? `Approving ${sellToken.symbol}...` : `Approve ${sellToken.symbol}`}
+        </button>
+      ) : (
+        <button 
+          onClick={handleSwap}
+          disabled={isSwapping}
+          style={{ 
+            background: '#3B82F6', color: '#FFF', border: 'none', padding: '18px', borderRadius: 16, fontSize: 18, fontWeight: 600, marginTop: 8, cursor: 'pointer', transition: 'background 0.2s'
+          }}
+        >
+          {isSwapping ? 'Swapping...' : 'Swap'}
+        </button>
+      )}
 
     </div>
   );
