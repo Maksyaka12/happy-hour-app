@@ -108,8 +108,29 @@ export default function CustomSwapWidget({ width = 400, wallet = null }) {
 
   const handlePercentage = (percent) => {
     if (!sellBalance || sellBalance === '0.0') return;
-    const amount = (parseFloat(sellBalance) * (percent / 100)).toFixed(sellToken.decimals === 6 ? 4 : 6);
-    setSellAmount(amount.replace(/\.?0+$/, '')); // trim trailing zeros
+    
+    let rawAmount = parseFloat(sellBalance) * (percent / 100);
+    
+    // Gas reserve for ETH on MAX (0.0001 ETH)
+    if (sellToken.symbol === 'ETH' && percent === 100) {
+      rawAmount = Math.max(0, rawAmount - 0.0001);
+    }
+
+    // Truncate instead of round to prevent exceeding balance
+    const factor = Math.pow(10, sellToken.decimals);
+    const truncated = Math.floor(rawAmount * factor) / factor;
+    
+    // Limit to 6 decimals max for UI, but allow fewer if token decimals is smaller
+    const maxDecimals = Math.min(6, sellToken.decimals);
+    let amountStr = truncated.toFixed(maxDecimals);
+    
+    // trim trailing zeros if decimal point exists
+    if (amountStr.includes('.')) {
+        amountStr = amountStr.replace(/\.?0+$/, '');
+    }
+    if (amountStr === '') amountStr = '0';
+    
+    setSellAmount(amountStr);
   };
 
   const handleSwitch = () => {
