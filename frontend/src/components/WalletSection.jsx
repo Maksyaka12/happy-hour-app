@@ -174,8 +174,8 @@ function SendModal({ embeddedWallet, onClose }) {
 function SwapModal({ onClose, wallet }) {
   return (
     <div style={modalOverlayStyle} onClick={onClose}>
-      <div style={{ ...modalBoxStyle, background: '#111318', padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', alignItems: 'center' }} onClick={e => e.stopPropagation()}>
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)', boxSizing: 'border-box' }}>
+      <div style={{ ...modalBoxStyle, background: '#111318', padding: 0, maxHeight: 'calc(100dvh - 40px)', overflowY: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }} onClick={e => e.stopPropagation()}>
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)', boxSizing: 'border-box', position: 'sticky', top: 0, background: '#111318', zIndex: 10 }}>
           <h3 style={{ margin: 0, fontSize: 18, color: '#FFFFFF', fontWeight: 600 }}>Swap</h3>
           <button onClick={onClose} style={closeBtn}>✕</button>
         </div>
