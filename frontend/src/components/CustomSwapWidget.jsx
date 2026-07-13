@@ -4,10 +4,10 @@ import { useAccount, useBalance, useReadContracts } from 'wagmi';
 import { formatUnits, parseUnits } from 'viem';
 
 export const TOKENS = {
-  ETH: { symbol: 'ETH', name: 'Ethereum', address: 'native', decimals: 18, logo: '/eth-logo.png' },
+  ETH: { symbol: 'ETH', name: 'Ethereum', address: 'native', decimals: 18, logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png' },
   WETH: { symbol: 'WETH', name: 'Wrapped Ether', address: '0x4200000000000000000000000000000000000006', decimals: 18, logo: '/weth-logo.png' },
   USDC: { symbol: 'USDC', name: 'USD Coin', address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', decimals: 6, logo: '/usdc-logo.png' },
-  HH: { symbol: 'HH', name: 'Happy Hour', address: '0x8235EdF32a1e10Bd1867ad622915AB613664cbA3', decimals: 18, logo: '/logo_happy_hour.png' }
+  HH: { symbol: 'HH', name: 'Happy Hour', address: '0x8235EdF32a1e10Bd1867ad622915AB613664cbA3', decimals: 18, logo: '/logo.jfif' }
 };
 
 const erc20Abi = [
