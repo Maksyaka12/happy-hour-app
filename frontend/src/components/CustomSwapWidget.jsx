@@ -60,13 +60,13 @@ export default function CustomSwapWidget({ width = 400, wallet = null }) {
 
   const address = activeWallet?.address;
 
-  const { data: ethBalance } = useBalance({
+  const { data: ethBalance, refetch: refetchEth } = useBalance({
     address: address,
     chainId: 8453,
     query: { enabled: !!address }
   });
 
-  const { data: erc20Balances } = useReadContracts({
+  const { data: erc20Balances, refetch: refetchErc20 } = useReadContracts({
     contracts: [
       { address: TOKENS.WETH.address, abi: erc20Abi, functionName: 'balanceOf', args: [address], chainId: 8453 },
       { address: TOKENS.USDC.address, abi: erc20Abi, functionName: 'balanceOf', args: [address], chainId: 8453 },
@@ -241,6 +241,10 @@ export default function CustomSwapWidget({ width = 400, wallet = null }) {
       
       // Wait for receipt to confirm
       await publicClient.waitForTransactionReceipt({ hash });
+      
+      // Immediately refresh balances
+      refetchEth();
+      refetchErc20();
       
       // Reset inputs after success
       setSellAmount('');
