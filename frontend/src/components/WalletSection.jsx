@@ -236,20 +236,34 @@ export function WalletSection({ onRequireWallet, setTab }) {
   // ETH Balance
   const { data: ethBalance } = useBalance({
     address: activeAddress,
+    chainId: 8453,
     query: { enabled: !!activeAddress, refetchInterval: 15000 }
   })
 
-  // $HH Balance
-  const { data: hhBalanceRaw } = useReadContract({
-    address: HH_ADDRESS,
-    abi: HH_ABI,
-    functionName: 'balanceOf',
-    args: activeAddress ? [activeAddress] : undefined,
+  // ERC20 Balances
+  const erc20Abi = [
+    {
+      "constant": true,
+      "inputs": [{ "name": "_owner", "type": "address" }],
+      "name": "balanceOf",
+      "outputs": [{ "name": "balance", "type": "uint256" }],
+      "type": "function"
+    }
+  ]
+
+  const { data: erc20Balances } = useReadContracts({
+    contracts: [
+      { address: '0x4200000000000000000000000000000000000006', abi: erc20Abi, functionName: 'balanceOf', args: [activeAddress], chainId: 8453 }, // WETH
+      { address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', abi: erc20Abi, functionName: 'balanceOf', args: [activeAddress], chainId: 8453 }, // USDC
+      { address: '0x8235EdF32a1e10Bd1867ad622915AB613664cbA3', abi: erc20Abi, functionName: 'balanceOf', args: [activeAddress], chainId: 8453 }  // HH
+    ],
     query: { enabled: !!activeAddress, refetchInterval: 15000 }
   })
 
   const ethAmt = ethBalance ? parseFloat(ethBalance.formatted).toFixed(4) : '0.0000'
-  const hhAmt = hhBalanceRaw !== undefined ? formatBalance(hhBalanceRaw.toString()) : '0.00'
+  const wethAmt = erc20Balances && erc20Balances[0]?.result !== undefined ? formatBalance(erc20Balances[0].result.toString(), 18) : '0.00'
+  const usdcAmt = erc20Balances && erc20Balances[1]?.result !== undefined ? formatBalance(erc20Balances[1].result.toString(), 6) : '0.00'
+  const hhAmt = erc20Balances && erc20Balances[2]?.result !== undefined ? formatBalance(erc20Balances[2].result.toString(), 18) : '0.00'
 
   const handleToggleWallet = () => {
     if (activeWalletType === 'embedded') {
@@ -296,7 +310,7 @@ export function WalletSection({ onRequireWallet, setTab }) {
               style={{
                 background: '#3B82F6', color: '#FFFFFF', border: 'none',
                 borderRadius: 12, padding: '14px 32px', fontSize: 15,
-                fontWeight: 700, cursor: isCreatingWallet ? 'wait' : 'pointer',
+                fontWeight: 700, cursor: isCreatingWallet ? 'wait' : 'opacity: 1',
                 opacity: isCreatingWallet ? 0.7 : 1
               }}
             >
@@ -431,12 +445,26 @@ export function WalletSection({ onRequireWallet, setTab }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <div style={tokenRowStyle}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#0052FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <img src="/logo_happy_hour.png" alt="HH" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} />
+              <div>
+                <div style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 600 }}>Happy Hour</div>
+                <div style={{ fontSize: 12, color: '#94A3B8' }}>$HH</div>
+              </div>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 600 }}>{hhAmt}</div>
+              <div style={{ fontSize: 12, color: '#94A3B8' }}>—</div>
+            </div>
+          </div>
+
+          <div style={tokenRowStyle}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#627EEA', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="white" opacity="0.2"/><path d="M12 6v12M6 12h12" stroke="white" strokeWidth="2"/></svg>
               </div>
               <div>
-                <div style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 600 }}>ETH</div>
-                <div style={{ fontSize: 12, color: '#94A3B8' }}>Ethereum</div>
+                <div style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 600 }}>Ethereum</div>
+                <div style={{ fontSize: 12, color: '#94A3B8' }}>ETH</div>
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
@@ -447,14 +475,32 @@ export function WalletSection({ onRequireWallet, setTab }) {
 
           <div style={tokenRowStyle}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <img src="/logo_happy_hour.png" alt="HH" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} />
+              <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#E84142', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="white" opacity="0.2"/><path d="M12 6v12M6 12h12" stroke="white" strokeWidth="2"/></svg>
+              </div>
               <div>
-                <div style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 600 }}>Happy Hour</div>
-                <div style={{ fontSize: 12, color: '#94A3B8' }}>$HH</div>
+                <div style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 600 }}>Wrapped Ether</div>
+                <div style={{ fontSize: 12, color: '#94A3B8' }}>WETH</div>
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 600 }}>{hhAmt}</div>
+              <div style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 600 }}>{wethAmt}</div>
+              <div style={{ fontSize: 12, color: '#94A3B8' }}>—</div>
+            </div>
+          </div>
+
+          <div style={tokenRowStyle}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#2775CA', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="white" opacity="0.2"/><path d="M12 6v12M6 12h12" stroke="white" strokeWidth="2"/></svg>
+              </div>
+              <div>
+                <div style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 600 }}>USD Coin</div>
+                <div style={{ fontSize: 12, color: '#94A3B8' }}>USDC</div>
+              </div>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 600 }}>{usdcAmt}</div>
               <div style={{ fontSize: 12, color: '#94A3B8' }}>—</div>
             </div>
           </div>

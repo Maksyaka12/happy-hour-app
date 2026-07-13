@@ -1,91 +1,279 @@
 import React, { useState, useEffect } from 'react';
-import { SwapWidget } from '@uniswap/widgets';
 import { useWallets } from '@privy-io/react-auth';
+import { useAccount, useBalance, useReadContracts } from 'wagmi';
+import { formatUnits, parseUnits } from 'viem';
 
-import { ethers } from 'ethers';
-
-// $HH Token Address on Base
-const HH_TOKEN_ADDRESS = '0x8235EdF32a1e10Bd1867ad622915AB613664cbA3';
-
-const jsonRpcUrlMap = {
-  8453: ['https://mainnet.base.org'],
+const TOKENS = {
+  ETH: { symbol: 'ETH', name: 'Ethereum', address: 'native', decimals: 18, logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png' },
+  WETH: { symbol: 'WETH', name: 'Wrapped Ether', address: '0x4200000000000000000000000000000000000006', decimals: 18, logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png' },
+  USDC: { symbol: 'USDC', name: 'USD Coin', address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', decimals: 6, logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/base/assets/0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913/logo.png' },
+  HH: { symbol: 'HH', name: 'Happy Hour', address: '0x8235EdF32a1e10Bd1867ad622915AB613664cbA3', decimals: 18, logo: '/logo.png' }
 };
 
-const customTheme = {
-  primary: '#FFFFFF',
-  secondary: '#C1C4CD',
-  interactive: '#2D323E',
-  container: '#111318', 
-  module: '#1A1D24',
-  accent: '#6E45E2', 
-  outline: '#2D323E',
-  dialog: '#111318',
-  fontFamily: 'Inter, sans-serif',
-  borderRadius: 16,
-};
+const erc20Abi = [
+  {
+    "constant": true,
+    "inputs": [{ "name": "_owner", "type": "address" }],
+    "name": "balanceOf",
+    "outputs": [{ "name": "balance", "type": "uint256" }],
+    "type": "function"
+  }
+];
 
-export default function CustomSwapWidget({ width = 360, wallet = null }) {
+export default function CustomSwapWidget({ width = 400, wallet = null }) {
   const { wallets } = useWallets();
   const activeWallet = wallet || (wallets.length > 0 ? wallets[0] : null);
-  const [provider, setProvider] = useState(null);
-  const [tokenList, setTokenList] = useState(null);
-  const [tokenListError, setTokenListError] = useState(false);
+  
+  const [sellToken, setSellToken] = useState(TOKENS.ETH);
+  const [buyToken, setBuyToken] = useState(TOKENS.HH);
+  const [sellAmount, setSellAmount] = useState('');
+  const [buyAmount, setBuyAmount] = useState('');
+  
+  const [showSellDropdown, setShowSellDropdown] = useState(false);
+  const [showBuyDropdown, setShowBuyDropdown] = useState(false);
 
-  useEffect(() => {
-    let isMounted = true;
-    if (activeWallet) {
-      activeWallet.getEthereumProvider().then(p => {
-        if (isMounted) {
-          const web3Provider = new ethers.providers.Web3Provider(p);
-          setProvider(web3Provider);
-        }
-      });
-    } else {
-      setProvider(null);
+  // Use wagmi to fetch balances if wallet is connected
+  // Since activeWallet from Privy might be different from wagmi useAccount, 
+  // we fetch for the activeWallet address
+  const address = activeWallet?.address;
+
+  const { data: ethBalance } = useBalance({
+    address: address,
+    chainId: 8453,
+    query: { enabled: !!address }
+  });
+
+  const { data: erc20Balances } = useReadContracts({
+    contracts: [
+      { address: TOKENS.WETH.address, abi: erc20Abi, functionName: 'balanceOf', args: [address], chainId: 8453 },
+      { address: TOKENS.USDC.address, abi: erc20Abi, functionName: 'balanceOf', args: [address], chainId: 8453 },
+      { address: TOKENS.HH.address, abi: erc20Abi, functionName: 'balanceOf', args: [address], chainId: 8453 }
+    ],
+    query: { enabled: !!address }
+  });
+
+  const getBalance = (tokenSymbol) => {
+    if (!address) return '0.0';
+    if (tokenSymbol === 'ETH') {
+      return ethBalance ? Number(formatUnits(ethBalance.value, 18)).toFixed(6) : '0.0';
     }
-    return () => { isMounted = false; };
-  }, [activeWallet]);
+    if (!erc20Balances) return '0.0';
+    
+    let index = 0;
+    if (tokenSymbol === 'USDC') index = 1;
+    if (tokenSymbol === 'HH') index = 2;
+    
+    const bal = erc20Balances[index]?.result;
+    return bal !== undefined ? Number(formatUnits(bal, TOKENS[tokenSymbol].decimals)).toFixed(6) : '0.0';
+  };
 
-  useEffect(() => {
-    fetch('https://tokens.uniswap.org')
-      .then(res => res.json())
-      .then(data => {
-        // Filter out non-EVM tokens (like Solana) which currently break Uniswap Widget schema validation
-        const evmTokens = data.tokens.filter(t => /^0x[a-fA-F0-9]{40}$/.test(t.address));
-        setTokenList({
-          ...data,
-          tokens: evmTokens
-        });
-      })
-      .catch(err => {
-        console.error('Failed to fetch Uniswap token list:', err);
-        setTokenListError(true);
-      });
-  }, []);
+  const sellBalance = getBalance(sellToken.symbol);
+
+  const handlePercentage = (percent) => {
+    if (!sellBalance || sellBalance === '0.0') return;
+    const amount = (parseFloat(sellBalance) * (percent / 100)).toFixed(sellToken.decimals === 6 ? 4 : 6);
+    setSellAmount(amount.replace(/\.?0+$/, '')); // trim trailing zeros
+  };
+
+  const handleSwitch = () => {
+    const temp = sellToken;
+    setSellToken(buyToken);
+    setBuyToken(temp);
+    setSellAmount('');
+    setBuyAmount('');
+  };
+
+  const TokenDropdown = ({ tokens, onSelect, onClose }) => (
+    <div style={{
+      position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 8,
+      background: '#1F2230', borderRadius: 16, padding: 8, zIndex: 10,
+      border: '1px solid rgba(255,255,255,0.05)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)'
+    }}>
+      {Object.values(tokens).map(t => (
+        <div key={t.symbol} onClick={() => { onSelect(t); onClose(); }} style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '12px 16px', cursor: 'pointer', borderRadius: 12,
+          transition: 'background 0.2s'
+        }} onMouseEnter={(e) => e.currentTarget.style.background = '#2A2D3D'}
+           onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <img src={t.logo} alt={t.symbol} style={{ width: 28, height: 28, borderRadius: '50%' }} />
+            <div style={{ color: '#FFF', fontWeight: 600, fontFamily: 'Inter' }}>{t.symbol}</div>
+          </div>
+          <div style={{ color: '#8A8F9E', fontSize: 14, fontFamily: 'Inter' }}>
+            {getBalance(t.symbol)}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 
   return (
-    <div className="uniswap-widget-wrapper" style={{ display: 'flex', justifyContent: 'center', width: '100%', minHeight: 360, alignItems: 'center' }}>
-      {!activeWallet ? (
-        <div style={{ color: '#8A8F9E', fontFamily: 'Inter', textAlign: 'center' }}>
-          Please connect a wallet to use the swap feature.
-        </div>
-      ) : !provider || (!tokenList && !tokenListError) ? (
-        <div style={{ color: '#8A8F9E', fontFamily: 'Inter', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-          <div style={{ width: 24, height: 24, border: '2px solid rgba(59,130,246,0.3)', borderTopColor: '#3B82F6', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-          <div>Initializing Swap Interface...</div>
-        </div>
-      ) : (
-        <SwapWidget
-          width={width}
-          theme={customTheme}
-          provider={provider}
-          jsonRpcUrlMap={jsonRpcUrlMap}
-          tokenList={tokenList || "https://tokens.uniswap.org"}
-          defaultInputTokenAddress="NATIVE" // ETH on Base
-          defaultOutputTokenAddress={HH_TOKEN_ADDRESS}
-          hideConnectionUI={true}
+    <div style={{ 
+      width: width, 
+      background: 'transparent', 
+      display: 'flex', 
+      flexDirection: 'column', 
+      gap: 12,
+      fontFamily: 'Inter, sans-serif'
+    }}>
+      
+      {/* Sell Section */}
+      <div style={{ 
+        background: '#1F2230', 
+        borderRadius: 24, 
+        padding: '20px 24px',
+        border: '1px solid rgba(255,255,255,0.02)'
+      }}>
+        <div style={{ color: '#8A8F9E', fontSize: 14, marginBottom: 12 }}>Sell Token</div>
+        
+        <input 
+          type="number" 
+          placeholder="0.0"
+          value={sellAmount}
+          onChange={e => setSellAmount(e.target.value)}
+          style={{
+            background: 'transparent', border: 'none', outline: 'none',
+            color: '#FFF', fontSize: 36, fontWeight: 500, width: '100%',
+            marginBottom: 16
+          }}
         />
-      )}
+        
+        <div style={{ position: 'relative' }}>
+          <div 
+            onClick={() => setShowSellDropdown(!showSellDropdown)}
+            style={{ 
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              background: '#161721', padding: '12px 16px', borderRadius: 16, cursor: 'pointer'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <img src={sellToken.logo} alt={sellToken.symbol} style={{ width: 24, height: 24, borderRadius: '50%' }} />
+              <span style={{ color: '#FFF', fontWeight: 600, fontSize: 18 }}>{sellToken.symbol}</span>
+            </div>
+            <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
+              <path d="M1 1.5L6 6.5L11 1.5" stroke="#8A8F9E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+          {showSellDropdown && (
+            <TokenDropdown tokens={TOKENS} onSelect={setSellToken} onClose={() => setShowSellDropdown(false)} />
+          )}
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 16 }}>
+          <div style={{ color: '#8A8F9E', fontSize: 14 }}>
+            Balance: <span style={{ color: '#FFF', fontWeight: 500 }}>{sellBalance} {sellToken.symbol}</span>
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button onClick={() => handlePercentage(25)} style={{ background: '#2A2D3D', border: 'none', color: '#FFF', padding: '6px 12px', borderRadius: 8, cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>25%</button>
+            <button onClick={() => handlePercentage(50)} style={{ background: '#2A2D3D', border: 'none', color: '#FFF', padding: '6px 12px', borderRadius: 8, cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>50%</button>
+            <button onClick={() => handlePercentage(100)} style={{ background: '#2A2D3D', border: 'none', color: '#FFF', padding: '6px 12px', borderRadius: 8, cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>Max</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Switch Button */}
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: -20, marginBottom: -20, zIndex: 1 }}>
+        <button 
+          onClick={handleSwitch}
+          style={{ 
+            background: '#8B5CF6', border: '4px solid #111318', width: 44, height: 44, 
+            borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+            transition: 'transform 0.2s'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+        </button>
+      </div>
+
+      {/* Buy Section */}
+      <div style={{ 
+        background: '#1F2230', 
+        borderRadius: 24, 
+        padding: '20px 24px',
+        border: '1px solid rgba(255,255,255,0.02)'
+      }}>
+        <div style={{ color: '#8A8F9E', fontSize: 14, marginBottom: 12 }}>Buy Token</div>
+        
+        <input 
+          type="number" 
+          placeholder="0.0"
+          value={buyAmount}
+          readOnly
+          style={{
+            background: 'transparent', border: 'none', outline: 'none',
+            color: '#FFF', fontSize: 36, fontWeight: 500, width: '100%',
+            marginBottom: 16
+          }}
+        />
+        
+        <div style={{ position: 'relative' }}>
+          <div 
+            onClick={() => setShowBuyDropdown(!showBuyDropdown)}
+            style={{ 
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              background: '#161721', padding: '12px 16px', borderRadius: 16, cursor: 'pointer'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <img src={buyToken.logo} alt={buyToken.symbol} style={{ width: 24, height: 24, borderRadius: '50%' }} />
+              <span style={{ color: '#FFF', fontWeight: 600, fontSize: 18 }}>{buyToken.symbol}</span>
+            </div>
+            <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
+              <path d="M1 1.5L6 6.5L11 1.5" stroke="#8A8F9E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+          {showBuyDropdown && (
+            <TokenDropdown tokens={TOKENS} onSelect={setBuyToken} onClose={() => setShowBuyDropdown(false)} />
+          )}
+        </div>
+      </div>
+
+      {/* Summary Section */}
+      <div style={{ padding: '0 8px', display: 'flex', flexDirection: 'column', gap: 8, marginTop: 4 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', color: '#8A8F9E', fontSize: 13 }}>
+          <span>Minimum received</span>
+          <span style={{ color: '#FFF' }}>0.00 {buyToken.symbol}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', color: '#8A8F9E', fontSize: 13 }}>
+          <span>Price impact</span>
+          <span style={{ color: '#FFF' }}>0.00%</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', color: '#8A8F9E', fontSize: 13 }}>
+          <span>Max slippage</span>
+          <span style={{ color: '#FFF' }}>5.0%</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', color: '#8A8F9E', fontSize: 13 }}>
+          <span>Fee</span>
+          <span style={{ color: '#FFF' }}>Free</span>
+        </div>
+      </div>
+
+      {/* Swap Button */}
+      <button 
+        style={{ 
+          background: '#8B5CF6', 
+          color: '#FFF', 
+          border: 'none', 
+          padding: '18px', 
+          borderRadius: 16, 
+          fontSize: 18, 
+          fontWeight: 600, 
+          cursor: 'pointer',
+          marginTop: 8,
+          transition: 'background 0.2s'
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.background = '#9F7EE6'}
+        onMouseLeave={(e) => e.currentTarget.style.background = '#8B5CF6'}
+      >
+        {activeWallet ? 'Swap' : 'Connect Wallet'}
+      </button>
+
     </div>
   );
 }

@@ -39,17 +39,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <script>
-      // Polyfill for require() which is used by some @uniswap/widgets dependencies (like ajv/uri-js)
-      if (typeof window.require === 'undefined') {
-        window.require = function(moduleName) {
-          console.warn('Dummy require called for:', moduleName);
-          return {};
-        };
-      }
-      // Polyfill for Browser.T used by @uniswap/smart-order-router
-      window.Browser = { T: () => {} };
-    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
