@@ -75,19 +75,33 @@ export default function CustomSwapWidget({ width = 400, wallet = null }) {
     query: { enabled: !!address }
   });
 
-  const getBalance = (tokenSymbol) => {
-    if (!address) return '0.0';
-    if (tokenSymbol === 'ETH') {
-      return ethBalance ? Number(formatUnits(ethBalance.value, 18)).toFixed(6) : '0.0';
+  const [localBalances, setLocalBalances] = useState({});
+
+  useEffect(() => {
+    if (!address) {
+      setLocalBalances({});
+      return;
     }
-    if (!erc20Balances) return '0.0';
-    
-    let index = 0;
-    if (tokenSymbol === 'USDC') index = 1;
-    if (tokenSymbol === 'HH') index = 2;
-    
-    const bal = erc20Balances[index]?.result;
-    return bal !== undefined ? Number(formatUnits(bal, TOKENS[tokenSymbol].decimals)).toFixed(6) : '0.0';
+    setLocalBalances(prev => {
+      const newBals = { ...prev };
+      if (ethBalance?.value !== undefined) {
+        newBals['ETH'] = Number(formatUnits(ethBalance.value, 18)).toFixed(6);
+      }
+      if (erc20Balances) {
+        const wethRes = erc20Balances[0]?.result;
+        const usdcRes = erc20Balances[1]?.result;
+        const hhRes = erc20Balances[2]?.result;
+        
+        if (wethRes !== undefined) newBals['WETH'] = Number(formatUnits(wethRes, TOKENS.WETH.decimals)).toFixed(6);
+        if (usdcRes !== undefined) newBals['USDC'] = Number(formatUnits(usdcRes, TOKENS.USDC.decimals)).toFixed(6);
+        if (hhRes !== undefined) newBals['HH'] = Number(formatUnits(hhRes, TOKENS.HH.decimals)).toFixed(6);
+      }
+      return newBals;
+    });
+  }, [ethBalance, erc20Balances, address]);
+
+  const getBalance = (tokenSymbol) => {
+    return localBalances[tokenSymbol] || '0.0';
   };
 
   const sellBalance = getBalance(sellToken.symbol);
