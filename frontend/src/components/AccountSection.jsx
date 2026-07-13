@@ -158,9 +158,6 @@ export function AccountSection({ address, onRequireWallet }) {
           <UserAvatar address={address} size={80} profilePictureUrl={linkedTwitter?.profilePictureUrl} />
         </div>
         <div style={{ fontSize: 17, fontWeight: 700, color: '#FFFFFF' }}>{displayName}</div>
-        {privyUser?.id && (
-          <div style={{ fontSize: 11, color: '#4B5563', fontFamily: 'monospace' }}>{privyUser.id.slice(0, 24)}…</div>
-        )}
       </div>
 
       <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, padding: 24, display: 'flex', flexDirection: 'column', gap: 24 }}>
