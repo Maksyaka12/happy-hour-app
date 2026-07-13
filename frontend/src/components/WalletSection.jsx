@@ -264,19 +264,27 @@ export function WalletSection({ onRequireWallet, setTab }) {
   const [prices, setPrices] = useState({ ETH: 0, WETH: 0, USDC: 1, HH: 0 })
 
   useEffect(() => {
-    fetch('https://api.dexscreener.com/latest/dex/tokens/0x4200000000000000000000000000000000000006,0x8235EdF32a1e10Bd1867ad622915AB613664cbA3')
-      .then(res => res.json())
-      .then(data => {
+    Promise.all([
+      fetch('https://api.dexscreener.com/latest/dex/tokens/0x4200000000000000000000000000000000000006').then(r => r.json()),
+      fetch('https://api.dexscreener.com/latest/dex/tokens/0x8235EdF32a1e10Bd1867ad622915AB613664cbA3').then(r => r.json())
+    ]).then(([wethData, hhData]) => {
          let p = { ETH: 0, WETH: 0, USDC: 1, HH: 0 };
-         data.pairs?.forEach(pair => {
-            if (pair.baseToken.address.toLowerCase() === '0x4200000000000000000000000000000000000006'.toLowerCase()) {
-               p.WETH = parseFloat(pair.priceUsd) || 0;
-               p.ETH = parseFloat(pair.priceUsd) || 0;
+         
+         if (wethData.pairs && wethData.pairs.length > 0) {
+            p.WETH = parseFloat(wethData.pairs[0].priceUsd) || 0;
+            p.ETH = parseFloat(wethData.pairs[0].priceUsd) || 0;
+         }
+         
+         if (hhData.pairs && hhData.pairs.length > 0) {
+            // Find the pair where HH is the baseToken
+            const hhPair = hhData.pairs.find(pair => pair.baseToken.address.toLowerCase() === '0x8235EdF32a1e10Bd1867ad622915AB613664cbA3'.toLowerCase());
+            if (hhPair) {
+                p.HH = parseFloat(hhPair.priceUsd) || 0;
+            } else {
+                p.HH = parseFloat(hhData.pairs[0].priceUsd) || 0;
             }
-            if (pair.baseToken.address.toLowerCase() === '0x8235EdF32a1e10Bd1867ad622915AB613664cbA3'.toLowerCase()) {
-               p.HH = parseFloat(pair.priceUsd) || 0;
-            }
-         });
+         }
+         
          setPrices(p);
       }).catch(console.error);
   }, []);
