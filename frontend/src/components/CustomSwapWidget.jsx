@@ -3,11 +3,11 @@ import { useWallets } from '@privy-io/react-auth';
 import { useAccount, useBalance, useReadContracts } from 'wagmi';
 import { formatUnits, parseUnits } from 'viem';
 
-const TOKENS = {
-  ETH: { symbol: 'ETH', name: 'Ethereum', address: 'native', decimals: 18, logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png' },
-  WETH: { symbol: 'WETH', name: 'Wrapped Ether', address: '0x4200000000000000000000000000000000000006', decimals: 18, logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png' },
-  USDC: { symbol: 'USDC', name: 'USD Coin', address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', decimals: 6, logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/base/assets/0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913/logo.png' },
-  HH: { symbol: 'HH', name: 'Happy Hour', address: '0x8235EdF32a1e10Bd1867ad622915AB613664cbA3', decimals: 18, logo: '/logo.png' }
+export const TOKENS = {
+  ETH: { symbol: 'ETH', name: 'Ethereum', address: 'native', decimals: 18, logo: '/eth-logo.png' },
+  WETH: { symbol: 'WETH', name: 'Wrapped Ether', address: '0x4200000000000000000000000000000000000006', decimals: 18, logo: '/weth-logo.png' },
+  USDC: { symbol: 'USDC', name: 'USD Coin', address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', decimals: 6, logo: '/usdc-logo.png' },
+  HH: { symbol: 'HH', name: 'Happy Hour', address: '0x8235EdF32a1e10Bd1867ad622915AB613664cbA3', decimals: 18, logo: '/logo_happy_hour.png' }
 };
 
 const erc20Abi = [
@@ -177,7 +177,7 @@ export default function CustomSwapWidget({ width = 400, wallet = null }) {
         <button 
           onClick={handleSwitch}
           style={{ 
-            background: '#8B5CF6', border: '4px solid #111318', width: 44, height: 44, 
+            background: '#3B82F6', border: '4px solid #111318', width: 44, height: 44, 
             borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
             transition: 'transform 0.2s'
           }}
@@ -257,7 +257,7 @@ export default function CustomSwapWidget({ width = 400, wallet = null }) {
       {/* Swap Button */}
       <button 
         style={{ 
-          background: '#8B5CF6', 
+          background: '#3B82F6', 
           color: '#FFF', 
           border: 'none', 
           padding: '18px', 
@@ -268,8 +268,8 @@ export default function CustomSwapWidget({ width = 400, wallet = null }) {
           marginTop: 8,
           transition: 'background 0.2s'
         }}
-        onMouseEnter={(e) => e.currentTarget.style.background = '#9F7EE6'}
-        onMouseLeave={(e) => e.currentTarget.style.background = '#8B5CF6'}
+        onMouseEnter={(e) => e.currentTarget.style.background = '#60A5FA'}
+        onMouseLeave={(e) => e.currentTarget.style.background = '#3B82F6'}
       >
         {activeWallet ? 'Swap' : 'Connect Wallet'}
       </button>

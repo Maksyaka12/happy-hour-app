@@ -3,7 +3,7 @@ import { useWallets, usePrivy, useCreateWallet } from '@privy-io/react-auth'
 import { useBalance, useReadContract, useReadContracts } from 'wagmi'
 import { parseEther, isAddress } from 'viem'
 import { HH_ADDRESS, HH_ABI } from '../config/constants'
-import CustomSwapWidget from './CustomSwapWidget'
+import CustomSwapWidget, { TOKENS } from './CustomSwapWidget'
 
 const short = (a) => (a ? `${a.slice(0, 6)}\u2026${a.slice(-4)}` : '\u2014')
 
@@ -445,7 +445,7 @@ export function WalletSection({ onRequireWallet, setTab }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <div style={tokenRowStyle}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <img src="/logo_happy_hour.png" alt="HH" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} />
+              <img src={TOKENS.HH.logo} alt="HH" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} />
               <div>
                 <div style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 600 }}>Happy Hour</div>
                 <div style={{ fontSize: 12, color: '#94A3B8' }}>$HH</div>
@@ -459,9 +459,7 @@ export function WalletSection({ onRequireWallet, setTab }) {
 
           <div style={tokenRowStyle}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#627EEA', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="white" opacity="0.2"/><path d="M12 6v12M6 12h12" stroke="white" strokeWidth="2"/></svg>
-              </div>
+              <img src={TOKENS.ETH.logo} alt="ETH" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} />
               <div>
                 <div style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 600 }}>Ethereum</div>
                 <div style={{ fontSize: 12, color: '#94A3B8' }}>ETH</div>
@@ -475,9 +473,7 @@ export function WalletSection({ onRequireWallet, setTab }) {
 
           <div style={tokenRowStyle}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#E84142', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="white" opacity="0.2"/><path d="M12 6v12M6 12h12" stroke="white" strokeWidth="2"/></svg>
-              </div>
+              <img src={TOKENS.WETH.logo} alt="WETH" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} />
               <div>
                 <div style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 600 }}>Wrapped Ether</div>
                 <div style={{ fontSize: 12, color: '#94A3B8' }}>WETH</div>
@@ -491,9 +487,7 @@ export function WalletSection({ onRequireWallet, setTab }) {
 
           <div style={tokenRowStyle}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#2775CA', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="white" opacity="0.2"/><path d="M12 6v12M6 12h12" stroke="white" strokeWidth="2"/></svg>
-              </div>
+              <img src={TOKENS.USDC.logo} alt="USDC" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} />
               <div>
                 <div style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 600 }}>USD Coin</div>
                 <div style={{ fontSize: 12, color: '#94A3B8' }}>USDC</div>
