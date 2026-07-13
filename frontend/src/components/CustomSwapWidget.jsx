@@ -77,6 +77,15 @@ export default function CustomSwapWidget({ width = 400, wallet = null }) {
 
   const [localBalances, setLocalBalances] = useState({});
 
+  const truncateFormat = (value, decimals) => {
+    const formatted = formatUnits(value, decimals);
+    const [intPart, fracPart] = formatted.split('.');
+    if (!fracPart) return intPart;
+    // For UI display and max amount, safely truncate up to 6 decimals
+    const truncatedFrac = fracPart.slice(0, 6);
+    return `${intPart}.${truncatedFrac}`.replace(/\.?0+$/, ''); // clean trailing zeroes
+  };
+
   useEffect(() => {
     if (!address) {
       setLocalBalances({});
@@ -85,29 +94,35 @@ export default function CustomSwapWidget({ width = 400, wallet = null }) {
     setLocalBalances(prev => {
       const newBals = { ...prev };
       if (ethBalance?.value !== undefined) {
-        newBals['ETH'] = Number(formatUnits(ethBalance.value, 18)).toFixed(6);
+        newBals['ETH'] = truncateFormat(ethBalance.value, 18);
       }
       if (erc20Balances) {
         const wethRes = erc20Balances[0]?.result;
         const usdcRes = erc20Balances[1]?.result;
         const hhRes = erc20Balances[2]?.result;
         
-        if (wethRes !== undefined) newBals['WETH'] = Number(formatUnits(wethRes, TOKENS.WETH.decimals)).toFixed(6);
-        if (usdcRes !== undefined) newBals['USDC'] = Number(formatUnits(usdcRes, TOKENS.USDC.decimals)).toFixed(6);
-        if (hhRes !== undefined) newBals['HH'] = Number(formatUnits(hhRes, TOKENS.HH.decimals)).toFixed(6);
+        if (wethRes !== undefined) newBals['WETH'] = truncateFormat(wethRes, TOKENS.WETH.decimals);
+        if (usdcRes !== undefined) newBals['USDC'] = truncateFormat(usdcRes, TOKENS.USDC.decimals);
+        if (hhRes !== undefined) newBals['HH'] = truncateFormat(hhRes, TOKENS.HH.decimals);
       }
       return newBals;
     });
   }, [ethBalance, erc20Balances, address]);
 
   const getBalance = (tokenSymbol) => {
-    return localBalances[tokenSymbol] || '0.0';
+    const val = localBalances[tokenSymbol];
+    return val ? (val === '0' ? '0.0' : val) : '0.0';
   };
 
   const sellBalance = getBalance(sellToken.symbol);
 
   const handlePercentage = (percent) => {
     if (!sellBalance || sellBalance === '0.0') return;
+    
+    if (percent === 100 && sellToken.symbol !== 'ETH') {
+       setSellAmount(sellBalance);
+       return;
+    }
     
     let rawAmount = parseFloat(sellBalance) * (percent / 100);
     
@@ -116,13 +131,15 @@ export default function CustomSwapWidget({ width = 400, wallet = null }) {
       rawAmount = Math.max(0, rawAmount - 0.0001);
     }
 
-    // Truncate instead of round to prevent exceeding balance
-    const factor = Math.pow(10, sellToken.decimals);
-    const truncated = Math.floor(rawAmount * factor) / factor;
+    let amountStr = rawAmount.toString();
+    if (amountStr.includes('e')) {
+        amountStr = rawAmount.toFixed(18); // Avoid scientific notation for very small numbers
+    }
     
-    // Limit to 6 decimals max for UI, but allow fewer if token decimals is smaller
-    const maxDecimals = Math.min(6, sellToken.decimals);
-    let amountStr = truncated.toFixed(maxDecimals);
+    const [intP, fracP] = amountStr.split('.');
+    if (fracP) {
+       amountStr = `${intP}.${fracP.slice(0, Math.min(6, sellToken.decimals))}`;
+    }
     
     // trim trailing zeros if decimal point exists
     if (amountStr.includes('.')) {
@@ -262,13 +279,19 @@ export default function CustomSwapWidget({ width = 400, wallet = null }) {
       
       const txData = buildData.data;
       
+      let swapValue = txData.value ? BigInt(txData.value) : BigInt(0);
+      if (sellToken.symbol === 'ETH') {
+          // When selling Native ETH, the transaction value must be the amount being sold
+          swapValue = BigInt(parseUnits(sellAmount, 18).toString());
+      }
+      
       const hash = await provider.request({
         method: 'eth_sendTransaction',
         params: [{
           from: activeWallet.address,
           to: quote.routerAddress,
           data: txData.data,
-          value: '0x' + BigInt(txData.value || 0).toString(16),
+          value: '0x' + swapValue.toString(16),
         }]
       });
       
