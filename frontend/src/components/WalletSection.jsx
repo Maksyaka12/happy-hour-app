@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react'
 import { useWallets, usePrivy, useCreateWallet } from '@privy-io/react-auth'
-import { useBalance, useReadContract } from 'wagmi'
+import { useBalance, useReadContract, useReadContracts } from 'wagmi'
 import { parseEther, isAddress } from 'viem'
 import { HH_ADDRESS, HH_ABI } from '../config/constants'
 import CustomSwapWidget from './CustomSwapWidget'
