@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { useWallets, usePrivy, useCreateWallet } from '@privy-io/react-auth'
 import { useBalance, useReadContract, useReadContracts } from 'wagmi'
-import { parseEther, isAddress, encodeFunctionData, parseUnits } from 'viem'
+import { parseEther, isAddress, encodeFunctionData, parseUnits, formatUnits } from 'viem'
 import { HH_ADDRESS, HH_ABI } from '../config/constants'
 import CustomSwapWidget, { TOKENS } from './CustomSwapWidget'
 
@@ -19,8 +19,9 @@ const formatBalance = (val, decimals = 18) => {
 // ─────────────────────────────────────────
 // Sub-component: Deposit Modal
 // ─────────────────────────────────────────
-function DepositModal({ embeddedAddress, onClose }) {
+function DepositModal({ embeddedWallet, externalWallet, onRequireWallet, onClose }) {
   const [copied, setCopied] = useState(false)
+  const embeddedAddress = embeddedWallet?.address
 
   const handleCopy = async () => {
     try {
@@ -30,43 +31,279 @@ function DepositModal({ embeddedAddress, onClose }) {
     } catch {}
   }
 
+  // State for depositing from External Wallet
+  const [token, setToken] = useState(TOKENS.ETH)
+  const [amount, setAmount] = useState('')
+  const [isSending, setIsSending] = useState(false)
+  const [txHash, setTxHash] = useState(null)
+  const [error, setError] = useState(null)
+  const [showTokenSelect, setShowTokenSelect] = useState(false)
+
+  const numAmt = parseFloat(amount)
+  const isValidAmount = amount && !isNaN(numAmt) && numAmt > 0
+
+  // Fetch balances for external wallet
+  const { data: extEth } = useBalance({
+    address: externalWallet?.address,
+    chainId: 8453,
+    query: { enabled: !!externalWallet?.address }
+  })
+  const erc20Abi = [
+    {
+      "constant": true,
+      "inputs": [{ "name": "_owner", "type": "address" }],
+      "name": "balanceOf",
+      "outputs": [{ "name": "balance", "type": "uint256" }],
+      "type": "function"
+    }
+  ]
+  const { data: extErc20 } = useReadContracts({
+    contracts: [
+      { address: TOKENS.WETH.address, abi: erc20Abi, functionName: 'balanceOf', args: [externalWallet?.address], chainId: 8453 },
+      { address: TOKENS.USDC.address, abi: erc20Abi, functionName: 'balanceOf', args: [externalWallet?.address], chainId: 8453 },
+      { address: TOKENS.HH.address, abi: erc20Abi, functionName: 'balanceOf', args: [externalWallet?.address], chainId: 8453 }
+    ],
+    query: { enabled: !!externalWallet?.address }
+  })
+
+  const [extBalances, setExtBalances] = useState({ ETH: '0', WETH: '0', USDC: '0', HH: '0' })
+
+  useEffect(() => {
+    if (!externalWallet?.address) return setExtBalances({ ETH: '0', WETH: '0', USDC: '0', HH: '0' })
+    const formatBalanceStr = (val, decimals) => {
+      if (!val) return '0'
+      const formatted = formatUnits(val, decimals)
+      const [intPart, fracPart] = formatted.split('.')
+      if (!fracPart) return intPart
+      return `${intPart}.${fracPart.slice(0, 6)}`.replace(/\.?0+$/, '')
+    }
+    
+    setExtBalances({
+      ETH: formatBalanceStr(extEth?.value, 18),
+      WETH: formatBalanceStr(extErc20?.[0]?.result, 18),
+      USDC: formatBalanceStr(extErc20?.[1]?.result, 6),
+      HH: formatBalanceStr(extErc20?.[2]?.result, 18)
+    })
+  }, [extEth, extErc20, externalWallet?.address])
+
+  const handleMax = () => {
+    let balStr = extBalances[token.symbol] || '0'
+    let balNum = parseFloat(balStr)
+    if (balNum <= 0) return setAmount('0')
+    if (token.symbol === 'ETH') {
+      const safeBal = Math.max(0, balNum - 0.0001)
+      setAmount(safeBal.toFixed(6).replace(/\.?0+$/, ''))
+    } else {
+      setAmount(balStr)
+    }
+  }
+
+  const handlePercent = (pct) => {
+    if (pct === 100) return handleMax()
+    let balStr = extBalances[token.symbol] || '0'
+    let balNum = parseFloat(balStr)
+    if (balNum <= 0) return setAmount('0')
+    let target = balNum * (pct / 100)
+    if (token.symbol === 'ETH' && target > Math.max(0, balNum - 0.0001)) {
+        target = Math.max(0, balNum - 0.0001)
+    }
+    setAmount(target.toFixed(6).replace(/\.?0+$/, ''))
+  }
+
+  const handleDeposit = async () => {
+    if (!isValidAmount || !externalWallet || !embeddedAddress) return
+    setIsSending(true)
+    setError(null)
+    try {
+      const provider = await externalWallet.getEthereumProvider()
+      let tx;
+      
+      if (token.symbol === 'ETH') {
+        tx = await provider.request({
+          method: 'eth_sendTransaction',
+          params: [{
+            from: externalWallet.address,
+            to: embeddedAddress,
+            value: '0x' + parseEther(amount).toString(16),
+          }]
+        })
+      } else {
+        const data = encodeFunctionData({
+          abi: [
+            {
+              "constant": false,
+              "inputs": [
+                { "name": "dst", "type": "address" },
+                { "name": "wad", "type": "uint256" }
+              ],
+              "name": "transfer",
+              "outputs": [{ "name": "", "type": "bool" }],
+              "payable": false,
+              "stateMutability": "nonpayable",
+              "type": "function"
+            }
+          ],
+          functionName: 'transfer',
+          args: [embeddedAddress, parseUnits(amount, token.decimals)]
+        })
+        
+        tx = await provider.request({
+          method: 'eth_sendTransaction',
+          params: [{
+            from: externalWallet.address,
+            to: token.address,
+            data: data
+          }]
+        })
+      }
+      setTxHash(tx)
+    } catch (err) {
+      setError(err?.message || 'Transaction failed')
+    } finally {
+      setIsSending(false)
+    }
+  }
+
   return (
     <div style={modalOverlayStyle} onClick={onClose}>
-      <div style={modalBoxStyle} onClick={e => e.stopPropagation()}>
+      <div style={{...modalBoxStyle, maxHeight: 'calc(100dvh - 40px)', overflowY: 'auto'}} onClick={e => { e.stopPropagation(); setShowTokenSelect(false); }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <h2 style={{ color: '#FFFFFF', fontSize: 18, fontWeight: 700, margin: 0 }}>Deposit</h2>
           <button onClick={onClose} style={closeBtn}>✕</button>
         </div>
 
-        <p style={{ color: '#94A3B8', fontSize: 14, marginBottom: 8 }}>Select a chain to receive your funds</p>
-        <div style={chainSelectStyle}>
-          <img src="/base_logo.webp" alt="Base" style={{ width: 20, height: 20, borderRadius: 4 }} />
-          <span style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 600 }}>Base</span>
-        </div>
-
-        <p style={{ color: '#94A3B8', fontSize: 14, margin: '16px 0 8px' }}>
-          Transfer to your Happy Hour wallet
-        </p>
-
-        <div style={infoBoxStyle}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 6 }}>
-            <span style={{ color: '#94A3B8' }}>Trading Wallet</span>
+        {txHash ? (
+          <div style={{ textAlign: 'center', padding: '24px 0' }}>
+            <div style={{ fontSize: 40, marginBottom: 12 }}>✅</div>
+            <div style={{ color: '#22C55E', fontWeight: 700, fontSize: 16, marginBottom: 8 }}>Transaction Sent!</div>
+            <div style={{ color: '#94A3B8', fontSize: 13, wordBreak: 'break-all' }}>{txHash}</div>
+            <button onClick={onClose} style={{ ...primaryBtn, marginTop: 20 }}>Close</button>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ color: '#E2E8F0', fontFamily: 'monospace', fontSize: 13 }}>
-              {embeddedAddress}
-            </span>
-            <button onClick={handleCopy} style={iconBtn}>
-              {copied
-                ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-              }
-            </button>
-          </div>
-          <p style={{ color: '#94A3B8', fontSize: 12, marginTop: 8 }}>
-            Send coins directly to your trading wallet on Base. Copy your address above.
-          </p>
-        </div>
+        ) : (
+          <>
+            <p style={{ color: '#94A3B8', fontSize: 14, marginBottom: 8 }}>Select a chain to receive your funds</p>
+            <div style={chainSelectStyle}>
+              <img src="/base_logo.webp" alt="Base" style={{ width: 20, height: 20, borderRadius: 4 }} />
+              <span style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 600 }}>Base</span>
+            </div>
+
+            <p style={{ color: '#94A3B8', fontSize: 14, margin: '16px 0 8px' }}>
+              Transfer tokens directly
+            </p>
+
+            <div style={infoBoxStyle}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 6 }}>
+                <span style={{ color: '#94A3B8' }}>HH Embedded Wallet</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ color: '#E2E8F0', fontSize: 13, fontFamily: 'Inter, sans-serif' }}>
+                  {embeddedAddress}
+                </span>
+                <button onClick={handleCopy} style={iconBtn}>
+                  {copied
+                    ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  }
+                </button>
+              </div>
+            </div>
+
+            {/* Separator */}
+            <div style={{ display: 'flex', alignItems: 'center', margin: '24px 0' }}>
+              <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.05)' }} />
+              <div style={{ margin: '0 16px', color: '#64748B', fontSize: 12, fontWeight: 700 }}>OR</div>
+              <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.05)' }} />
+            </div>
+
+            <p style={{ color: '#FFFFFF', fontSize: 16, fontWeight: 700, marginBottom: 16 }}>
+              Deposit from your External Wallet
+            </p>
+
+            {!externalWallet ? (
+              <div style={{ textAlign: 'center', padding: '16px 0', background: 'rgba(255,255,255,0.02)', borderRadius: 12, border: '1px dashed rgba(255,255,255,0.1)' }}>
+                <p style={{ color: '#94A3B8', fontSize: 14, marginBottom: 16 }}>
+                  You need to connect an external wallet to use this feature.
+                </p>
+                <button onClick={onRequireWallet} style={{...primaryBtn, width: 'auto', padding: '10px 20px', fontSize: 14}}>Connect Wallet</button>
+              </div>
+            ) : (
+              <>
+                <div style={{ position: 'relative', marginBottom: 16 }}>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setShowTokenSelect(!showTokenSelect); }}
+                    style={{
+                      ...chainSelectStyle, width: '100%', cursor: 'pointer', justifyContent: 'space-between'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <img src={token.logo} alt={token.symbol} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover' }} />
+                      <span style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 600 }}>{token.symbol}</span>
+                    </div>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                  
+                  {showTokenSelect && (
+                    <div style={{
+                      position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 8,
+                      background: '#1A1D2E', border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: 12, overflow: 'hidden', zIndex: 100,
+                      boxShadow: '0 10px 40px rgba(0,0,0,0.5)'
+                    }}>
+                      {Object.values(TOKENS).map(t => (
+                        <button
+                          key={t.symbol}
+                          onClick={(e) => { e.stopPropagation(); setToken(t); setShowTokenSelect(false); }}
+                          style={{
+                            width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                            padding: '12px 16px', background: 'transparent', border: 'none',
+                            borderBottom: '1px solid rgba(255,255,255,0.05)', cursor: 'pointer'
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                            <img src={t.logo} alt={t.symbol} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover' }} />
+                            <span style={{ color: '#FFFFFF', fontSize: 15, fontWeight: 600 }}>{t.symbol}</span>
+                          </div>
+                          <span style={{ color: '#94A3B8', fontSize: 13 }}>{extBalances[t.symbol] || '0'}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ position: 'relative' }}>
+                  <input
+                    value={amount}
+                    onChange={e => setAmount(e.target.value)}
+                    placeholder="0.00"
+                    type="number"
+                    style={{ ...inputStyle, paddingRight: 60 }}
+                  />
+                  <button 
+                    onClick={handleMax}
+                    style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'rgba(59,130,246,0.15)', color: '#3B82F6', border: 'none', borderRadius: 6, padding: '4px 10px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+                  >
+                    Max
+                  </button>
+                </div>
+                <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                  {['25%', '50%', '100%'].map(p => (
+                    <button key={p} onClick={() => handlePercent(parseInt(p))} style={percentBtn}>{p}</button>
+                  ))}
+                </div>
+
+                {error && <div style={{ color: '#EF4444', fontSize: 13, marginTop: 12 }}>{error}</div>}
+
+                <button
+                  onClick={handleDeposit}
+                  disabled={!isValidAmount || isSending}
+                  style={{ ...primaryBtn, marginTop: 20, opacity: (!isValidAmount || isSending) ? 0.5 : 1 }}
+                >
+                  {isSending ? 'Depositing…' : 'Deposit'}
+                </button>
+              </>
+            )}
+          </>
+        )}
       </div>
     </div>
   )
@@ -696,7 +933,7 @@ export function WalletSection({ onRequireWallet, setTab }) {
 
       {/* Modals */}
       {modal === 'deposit' && (
-        <DepositModal embeddedAddress={embeddedWallet?.address} onClose={() => setModal(null)} />
+        <DepositModal embeddedWallet={embeddedWallet} externalWallet={externalWallet} onRequireWallet={onRequireWallet} onClose={() => setModal(null)} />
       )}
       {modal === 'send' && (
         <SendModal wallet={activeWallet} balances={localBalances} onClose={() => setModal(null)} />
