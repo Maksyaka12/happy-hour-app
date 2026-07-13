@@ -260,10 +260,50 @@ export function WalletSection({ onRequireWallet, setTab }) {
     query: { enabled: !!activeAddress, refetchInterval: 15000 }
   })
 
-  const ethAmt = ethBalance ? parseFloat(ethBalance.formatted).toFixed(4) : '0.0000'
-  const wethAmt = erc20Balances && erc20Balances[0]?.result !== undefined ? formatBalance(erc20Balances[0].result.toString(), 18) : '0.00'
-  const usdcAmt = erc20Balances && erc20Balances[1]?.result !== undefined ? formatBalance(erc20Balances[1].result.toString(), 6) : '0.00'
-  const hhAmt = erc20Balances && erc20Balances[2]?.result !== undefined ? formatBalance(erc20Balances[2].result.toString(), 18) : '0.00'
+  const [localBalances, setLocalBalances] = useState({ ETH: '0.0000', WETH: '0.00', USDC: '0.00', HH: '0.00' })
+  const [prices, setPrices] = useState({ ETH: 0, WETH: 0, USDC: 1, HH: 0 })
+
+  useEffect(() => {
+    fetch('https://api.dexscreener.com/latest/dex/tokens/0x4200000000000000000000000000000000000006,0x8235EdF32a1e10Bd1867ad622915AB613664cbA3')
+      .then(res => res.json())
+      .then(data => {
+         let p = { ETH: 0, WETH: 0, USDC: 1, HH: 0 };
+         data.pairs?.forEach(pair => {
+            if (pair.baseToken.address.toLowerCase() === '0x4200000000000000000000000000000000000006'.toLowerCase()) {
+               p.WETH = parseFloat(pair.priceUsd) || 0;
+               p.ETH = parseFloat(pair.priceUsd) || 0;
+            }
+            if (pair.baseToken.address.toLowerCase() === '0x8235EdF32a1e10Bd1867ad622915AB613664cbA3'.toLowerCase()) {
+               p.HH = parseFloat(pair.priceUsd) || 0;
+            }
+         });
+         setPrices(p);
+      }).catch(console.error);
+  }, []);
+
+  useEffect(() => {
+    if (!activeAddress) {
+      setLocalBalances({ ETH: '0.0000', WETH: '0.00', USDC: '0.00', HH: '0.00' });
+      return;
+    }
+    setLocalBalances(prev => {
+      const newBals = { ...prev };
+      if (ethBalance?.formatted !== undefined) {
+        newBals.ETH = parseFloat(ethBalance.formatted).toFixed(4);
+      }
+      if (erc20Balances) {
+        if (erc20Balances[0]?.result !== undefined) newBals.WETH = formatBalance(erc20Balances[0].result.toString(), 18);
+        if (erc20Balances[1]?.result !== undefined) newBals.USDC = formatBalance(erc20Balances[1].result.toString(), 6);
+        if (erc20Balances[2]?.result !== undefined) newBals.HH = formatBalance(erc20Balances[2].result.toString(), 18);
+      }
+      return newBals;
+    });
+  }, [ethBalance, erc20Balances, activeAddress]);
+
+  const ethAmt = localBalances.ETH;
+  const wethAmt = localBalances.WETH;
+  const usdcAmt = localBalances.USDC;
+  const hhAmt = localBalances.HH;
 
   const handleToggleWallet = () => {
     if (activeWalletType === 'embedded') {
@@ -322,6 +362,22 @@ export function WalletSection({ onRequireWallet, setTab }) {
     )
   }
 
+  const parseVal = (str) => {
+    if (!str) return 0;
+    let n = parseFloat(str.replace(/K|M|B/g, ''));
+    if (str.includes('K')) n *= 1e3;
+    if (str.includes('M')) n *= 1e6;
+    if (str.includes('B')) n *= 1e9;
+    return n || 0;
+  };
+
+  const totalUsd = (
+    parseVal(ethAmt) * prices.ETH +
+    parseVal(wethAmt) * prices.WETH +
+    parseVal(usdcAmt) * prices.USDC +
+    parseVal(hhAmt) * prices.HH
+  );
+
   return (
     <div style={{ width: '100%', maxWidth: 640, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
 
@@ -331,7 +387,9 @@ export function WalletSection({ onRequireWallet, setTab }) {
         {/* Balance */}
         <div style={{ marginBottom: 20 }}>
           <div style={{ fontSize: 13, color: '#94A3B8', marginBottom: 4 }}>Your balance</div>
-          <div style={{ fontSize: 32, fontWeight: 800, color: '#FFFFFF' }}>—</div>
+          <div style={{ fontSize: 32, fontWeight: 800, color: '#FFFFFF' }}>
+            ${totalUsd > 0 ? totalUsd.toFixed(2) : '0.00'}
+          </div>
         </div>
 
         {/* Wallet mode toggle */}
@@ -453,7 +511,7 @@ export function WalletSection({ onRequireWallet, setTab }) {
             </div>
             <div style={{ textAlign: 'right' }}>
               <div style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 600 }}>{hhAmt}</div>
-              <div style={{ fontSize: 12, color: '#94A3B8' }}>—</div>
+              <div style={{ fontSize: 12, color: '#94A3B8' }}>{prices.HH > 0 ? `≈ $${(parseVal(hhAmt) * prices.HH).toFixed(2)}` : '—'}</div>
             </div>
           </div>
 
@@ -467,7 +525,7 @@ export function WalletSection({ onRequireWallet, setTab }) {
             </div>
             <div style={{ textAlign: 'right' }}>
               <div style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 600 }}>{ethAmt}</div>
-              <div style={{ fontSize: 12, color: '#94A3B8' }}>—</div>
+              <div style={{ fontSize: 12, color: '#94A3B8' }}>{prices.ETH > 0 ? `≈ $${(parseVal(ethAmt) * prices.ETH).toFixed(2)}` : '—'}</div>
             </div>
           </div>
 
@@ -481,7 +539,7 @@ export function WalletSection({ onRequireWallet, setTab }) {
             </div>
             <div style={{ textAlign: 'right' }}>
               <div style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 600 }}>{wethAmt}</div>
-              <div style={{ fontSize: 12, color: '#94A3B8' }}>—</div>
+              <div style={{ fontSize: 12, color: '#94A3B8' }}>{prices.WETH > 0 ? `≈ $${(parseVal(wethAmt) * prices.WETH).toFixed(2)}` : '—'}</div>
             </div>
           </div>
 
@@ -495,7 +553,7 @@ export function WalletSection({ onRequireWallet, setTab }) {
             </div>
             <div style={{ textAlign: 'right' }}>
               <div style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 600 }}>{usdcAmt}</div>
-              <div style={{ fontSize: 12, color: '#94A3B8' }}>—</div>
+              <div style={{ fontSize: 12, color: '#94A3B8' }}>{prices.USDC > 0 ? `≈ $${(parseVal(usdcAmt) * prices.USDC).toFixed(2)}` : '—'}</div>
             </div>
           </div>
         </div>
