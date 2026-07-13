@@ -690,7 +690,7 @@ export default function App({ onLogin, onLogout, privyUser, privyWallets = [] })
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   <h3 style={{ fontSize: 16, fontWeight: 600, color: '#FFFFFF', margin: 0 }}>Social Media Managers</h3>
                   <p style={{ fontSize: 14, color: '#94A3B8', margin: 0, lineHeight: 1.5 }}>
-                    Create content across social channels, highlight project updates, write detailed guides & articles, and onboard new users
+                    Create content across social channels, highlight project updates, write guides & articles, coordinate X raids, and onboard new users
                   </p>
                 </div>
               </div>
