@@ -432,24 +432,25 @@ export function WalletSection({ onRequireWallet, setTab }) {
         </div>
 
         {/* Wallet rows */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           {/* Embedded row */}
           <button
             onClick={() => setActiveWalletType('embedded')}
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '10px 12px', borderRadius: 10, border: 'none', cursor: 'pointer',
-              background: activeWalletType === 'embedded' ? 'rgba(59,130,246,0.1)' : 'transparent',
-              transition: 'background 0.15s',
+              padding: 0, border: 'none', cursor: 'pointer',
+              background: 'transparent',
+              transition: 'opacity 0.15s',
+              opacity: activeWalletType === 'embedded' ? 1 : 0.6,
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg,#3B82F6,#8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 11h2"/><path d="M6 3l6-3 6 3"/></svg>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ width: 36, height: 36, borderRadius: 10, overflow: 'hidden', background: activeWalletType === 'embedded' ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: activeWalletType === 'embedded' ? '#3B82F6' : '#94A3B8', flexShrink: 0 }}>
+                <img src="/logo.jfif" alt="HH" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
               <div style={{ textAlign: 'left' }}>
-                <div style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 600 }}>Happy Hour Wallet</div>
-                <div style={{ fontSize: 12, color: '#94A3B8' }}>{short(embeddedWallet?.address)}</div>
+                <div style={{ fontSize: 14, color: activeWalletType === 'embedded' ? '#FFFFFF' : '#94A3B8', fontWeight: 600 }}>HH Embedded Wallet</div>
+                <div style={{ fontSize: 12, color: '#94A3B8', marginTop: 2 }}>{short(embeddedWallet?.address)}</div>
               </div>
             </div>
             <span style={{ fontSize: 13, color: activeWalletType === 'embedded' ? '#FFFFFF' : '#94A3B8', fontWeight: 600 }}>
@@ -462,20 +463,21 @@ export function WalletSection({ onRequireWallet, setTab }) {
             onClick={externalWallet ? () => setActiveWalletType('external') : onRequireWallet}
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '10px 12px', borderRadius: 10, border: 'none', cursor: 'pointer',
-              background: activeWalletType === 'external' ? 'rgba(59,130,246,0.1)' : 'transparent',
-              transition: 'background 0.15s',
+              padding: 0, border: 'none', cursor: 'pointer',
+              background: 'transparent',
+              transition: 'opacity 0.15s',
+              opacity: activeWalletType === 'external' ? 1 : 0.6,
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2"><path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ width: 36, height: 36, borderRadius: 10, overflow: 'hidden', background: activeWalletType === 'external' ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: activeWalletType === 'external' ? '#3B82F6' : '#94A3B8', flexShrink: 0 }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
               </div>
               <div style={{ textAlign: 'left' }}>
-                <div style={{ fontSize: 14, color: externalWallet ? '#FFFFFF' : '#94A3B8', fontWeight: 600 }}>
+                <div style={{ fontSize: 14, color: activeWalletType === 'external' ? '#FFFFFF' : '#94A3B8', fontWeight: 600 }}>
                   {externalWallet ? 'External Wallet' : 'Connect Wallet'}
                 </div>
-                <div style={{ fontSize: 12, color: '#94A3B8' }}>
+                <div style={{ fontSize: 12, color: '#94A3B8', marginTop: 2 }}>
                   {externalWallet ? short(externalWallet.address) : 'Not connected'}
                 </div>
               </div>
@@ -493,7 +495,7 @@ export function WalletSection({ onRequireWallet, setTab }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <div>
             <div style={{ fontSize: 16, fontWeight: 700, color: '#F8FAFC' }}>
-              {activeWalletType === 'embedded' ? 'Happy Hour Wallet' : 'External Wallet'}
+              {activeWalletType === 'embedded' ? 'HH Embedded Wallet' : 'External Wallet'}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
               <span style={{ fontSize: 13, color: '#94A3B8' }}>{short(activeAddress)}</span>
