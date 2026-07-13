@@ -626,7 +626,7 @@ export default function App({ onLogin, onLogout, privyUser, privyWallets = [] })
               width: '100%',
               textAlign: 'left'
             }}>
-              {/* Card 1: Community Managers */}
+              {/* Card 1: Market Managers */}
               <div style={{
                 background: 'rgba(255, 255, 255, 0.02)',
                 border: '1px solid rgba(255, 255, 255, 0.05)',
@@ -648,13 +648,15 @@ export default function App({ onLogin, onLogout, privyUser, privyWallets = [] })
                   flexShrink: 0
                 }}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
                   </svg>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <h3 style={{ fontSize: 16, fontWeight: 600, color: '#FFFFFF', margin: 0 }}>Community Managers</h3>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, color: '#FFFFFF', margin: 0 }}>Market Managers</h3>
                   <p style={{ fontSize: 14, color: '#94A3B8', margin: 0, lineHeight: 1.5 }}>
-                    Moderate and engage our community groups on X and Telegram. Host discussions, guide users, and maintain a highly active, positive environment.
+                    Publish call updates regarding $HH token, analyze market trends, and expand token visibility in crypto communities
                   </p>
                 </div>
               </div>
@@ -688,12 +690,45 @@ export default function App({ onLogin, onLogout, privyUser, privyWallets = [] })
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   <h3 style={{ fontSize: 16, fontWeight: 600, color: '#FFFFFF', margin: 0 }}>Social Media Managers</h3>
                   <p style={{ fontSize: 14, color: '#94A3B8', margin: 0, lineHeight: 1.5 }}>
-                    Maintain content across social channels, highlight project updates/announcements, write detailed guides/articles, and drive user acquisition.
+                    Create content across social channels, highlight project updates/announcements, write detailed guides/articles, and onboard new users
                   </p>
                 </div>
               </div>
 
-              {/* Card 3: Market Leads */}
+              {/* Card 3: Community Managers */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.02)',
+                border: '1px solid rgba(255, 255, 255, 0.05)',
+                borderRadius: 12,
+                padding: 24,
+                display: 'flex',
+                gap: 16,
+                alignItems: 'flex-start'
+              }}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 40,
+                  height: 40,
+                  borderRadius: 8,
+                  background: 'rgba(59, 130, 246, 0.1)',
+                  color: '#3B82F6',
+                  flexShrink: 0
+                }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, color: '#FFFFFF', margin: 0 }}>Community Managers</h3>
+                  <p style={{ fontSize: 14, color: '#94A3B8', margin: 0, lineHeight: 1.5 }}>
+                    Moderate and engage our community groups on X and Telegram. Host discussions, guide users, and maintain a highly active, positive environment.
+                  </p>
+                </div>
+              </div>
+
+              {/* Card 4: Market Lead */}
               <div style={{
                 background: 'rgba(255, 255, 255, 0.02)',
                 border: '1px solid rgba(255, 255, 255, 0.05)',
@@ -721,44 +756,9 @@ export default function App({ onLogin, onLogout, privyUser, privyWallets = [] })
                   </svg>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <h3 style={{ fontSize: 16, fontWeight: 600, color: '#FFFFFF', margin: 0 }}>Market Leads</h3>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, color: '#FFFFFF', margin: 0 }}>Market Lead</h3>
                   <p style={{ fontSize: 14, color: '#94A3B8', margin: 0, lineHeight: 1.5 }}>
-                    Lead marketing call campaigns, highlight updates on native $HH coin, and onboard/manage a team of Market Managers.
-                  </p>
-                </div>
-              </div>
-
-              {/* Card 4: Market Managers */}
-              <div style={{
-                background: 'rgba(255, 255, 255, 0.02)',
-                border: '1px solid rgba(255, 255, 255, 0.05)',
-                borderRadius: 12,
-                padding: 24,
-                display: 'flex',
-                gap: 16,
-                alignItems: 'flex-start'
-              }}>
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: 40,
-                  height: 40,
-                  borderRadius: 8,
-                  background: 'rgba(59, 130, 246, 0.1)',
-                  color: '#3B82F6',
-                  flexShrink: 0
-                }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="18" y1="20" x2="18" y2="10"></line>
-                    <line x1="12" y1="20" x2="12" y2="4"></line>
-                    <line x1="6" y1="20" x2="6" y2="14"></line>
-                  </svg>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <h3 style={{ fontSize: 16, fontWeight: 600, color: '#FFFFFF', margin: 0 }}>Market Managers</h3>
-                  <p style={{ fontSize: 14, color: '#94A3B8', margin: 0, lineHeight: 1.5 }}>
-                    Publish call updates regarding the native $HH token, analyze market trends, and expand token visibility in crypto groups.
+                    Caller Lead of marketing, highlight updates on $HH coin, and onboard/manage a team of Market Managers.
                   </p>
                 </div>
               </div>
