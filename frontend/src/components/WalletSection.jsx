@@ -387,7 +387,7 @@ export function WalletSection({ onRequireWallet, setTab }) {
   );
 
   return (
-    <div style={{ width: '100%', maxWidth: 640, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
+    <div style={{ width: '100%', maxWidth: 640, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 20, fontFamily: 'Inter, sans-serif' }}>
 
       {/* Header card */}
       <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, padding: 24 }}>
@@ -613,6 +613,7 @@ const modalOverlayStyle = {
 const modalBoxStyle = {
   background: '#1A1D2E', borderRadius: 20, padding: 28, width: '100%', maxWidth: 460,
   border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 24px 64px rgba(0,0,0,0.4)',
+  fontFamily: 'Inter, sans-serif'
 }
 const closeBtn = {
   background: 'transparent', border: 'none', cursor: 'pointer', color: '#94A3B8', fontSize: 18, lineHeight: 1,
