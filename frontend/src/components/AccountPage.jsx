@@ -87,9 +87,6 @@ export function AccountPage({ address, basename, privyUser }) {
           <UserAvatar address={address} size={80} profilePictureUrl={privyUser?.twitter?.profilePictureUrl} />
         </div>
         <div style={{ fontSize: 17, fontWeight: 700, color: '#FFFFFF' }}>{displayName}</div>
-        {privyUser?.id && (
-          <div style={{ fontSize: 11, color: '#4B5563', fontFamily: 'monospace' }}>{privyUser.id.slice(0, 24)}…</div>
-        )}
       </div>
 
       {/* Wallets */}
