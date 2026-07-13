@@ -87,7 +87,8 @@ export default function CustomSwapWidget({ width = 400, wallet = null }) {
     <div style={{
       position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 8,
       background: '#1F2230', borderRadius: 16, padding: 8, zIndex: 10,
-      border: '1px solid rgba(255,255,255,0.05)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)'
+      border: '1px solid rgba(255,255,255,0.05)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+      maxHeight: 240, overflowY: 'auto'
     }}>
       {Object.values(tokens).map(t => (
         <div key={t.symbol} onClick={() => { onSelect(t); onClose(); }} style={{

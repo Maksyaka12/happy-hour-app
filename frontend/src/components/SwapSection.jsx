@@ -22,7 +22,6 @@ export default function SwapSection() {
 
   return (
     <div style={{
-      padding: '80px 20px',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
@@ -30,16 +29,6 @@ export default function SwapSection() {
       width: '100%',
       boxSizing: 'border-box'
     }}>
-      <h2 style={{ 
-        color: '#FFFFFF', 
-        fontSize: 28, 
-        marginBottom: 32,
-        fontWeight: 600,
-        fontFamily: 'Inter, sans-serif'
-      }}>
-        Trade $HH directly on the Happy Hour Platform
-      </h2>
-
       <div style={{
         width: '100%',
         maxWidth: 640,

@@ -71,7 +71,6 @@ export function ChartSection() {
       width: '100%',
       maxWidth: 1200,
       margin: '0 auto',
-      padding: '24px',
       display: 'flex',
       flexDirection: 'column',
       gap: 20,
