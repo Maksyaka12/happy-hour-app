@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { useWallets, usePrivy, useCreateWallet } from '@privy-io/react-auth'
 import { useBalance, useReadContract, useReadContracts } from 'wagmi'
-import { parseEther, isAddress } from 'viem'
+import { parseEther, isAddress, encodeFunctionData, parseUnits } from 'viem'
 import { HH_ADDRESS, HH_ABI } from '../config/constants'
 import CustomSwapWidget, { TOKENS } from './CustomSwapWidget'
 
@@ -75,30 +75,86 @@ function DepositModal({ embeddedAddress, onClose }) {
 // ─────────────────────────────────────────
 // Sub-component: Send Modal
 // ─────────────────────────────────────────
-function SendModal({ embeddedWallet, onClose }) {
+function SendModal({ wallet, balances, onClose }) {
+  const [token, setToken] = useState(TOKENS.ETH)
   const [amount, setAmount] = useState('')
   const [recipient, setRecipient] = useState('')
   const [isSending, setIsSending] = useState(false)
   const [txHash, setTxHash] = useState(null)
   const [error, setError] = useState(null)
+  const [showTokenSelect, setShowTokenSelect] = useState(false)
 
   const isValidRecipient = isAddress(recipient)
-  const isValidAmount = amount && !isNaN(parseFloat(amount)) && parseFloat(amount) > 0
+  const numAmt = parseFloat(amount)
+  const isValidAmount = amount && !isNaN(numAmt) && numAmt > 0
+
+  const handleMax = () => {
+    let balStr = balances[token.symbol] || '0'
+    let balNum = parseFloat(balStr)
+    if (balNum <= 0) return setAmount('0')
+    if (token.symbol === 'ETH') {
+      const safeBal = Math.max(0, balNum - 0.0001)
+      setAmount(safeBal.toFixed(6).replace(/\.?0+$/, ''))
+    } else {
+      setAmount(balStr)
+    }
+  }
+
+  const handlePercent = (pct) => {
+    if (pct === 100) return handleMax()
+    let balStr = balances[token.symbol] || '0'
+    let balNum = parseFloat(balStr)
+    if (balNum <= 0) return setAmount('0')
+    let target = balNum * (pct / 100)
+    setAmount(target.toFixed(6).replace(/\.?0+$/, ''))
+  }
 
   const handleSend = async () => {
-    if (!isValidRecipient || !isValidAmount || !embeddedWallet) return
+    if (!isValidRecipient || !isValidAmount || !wallet) return
     setIsSending(true)
     setError(null)
     try {
-      const provider = await embeddedWallet.getEthereumProvider()
-      const tx = await provider.request({
-        method: 'eth_sendTransaction',
-        params: [{
-          from: embeddedWallet.address,
-          to: recipient,
-          value: '0x' + parseEther(amount).toString(16),
-        }]
-      })
+      const provider = await wallet.getEthereumProvider()
+      let tx;
+      
+      if (token.symbol === 'ETH') {
+        tx = await provider.request({
+          method: 'eth_sendTransaction',
+          params: [{
+            from: wallet.address,
+            to: recipient,
+            value: '0x' + parseEther(amount).toString(16),
+          }]
+        })
+      } else {
+        const data = encodeFunctionData({
+          abi: [
+            {
+              "constant": false,
+              "inputs": [
+                { "name": "dst", "type": "address" },
+                { "name": "wad", "type": "uint256" }
+              ],
+              "name": "transfer",
+              "outputs": [{ "name": "", "type": "bool" }],
+              "payable": false,
+              "stateMutability": "nonpayable",
+              "type": "function"
+            }
+          ],
+          functionName: 'transfer',
+          args: [recipient, parseUnits(amount, token.decimals)]
+        })
+        
+        tx = await provider.request({
+          method: 'eth_sendTransaction',
+          params: [{
+            from: wallet.address,
+            to: token.address,
+            data: data
+          }]
+        })
+      }
       setTxHash(tx)
     } catch (err) {
       setError(err?.message || 'Transaction failed')
@@ -109,7 +165,7 @@ function SendModal({ embeddedWallet, onClose }) {
 
   return (
     <div style={modalOverlayStyle} onClick={onClose}>
-      <div style={modalBoxStyle} onClick={e => e.stopPropagation()}>
+      <div style={modalBoxStyle} onClick={e => { e.stopPropagation(); setShowTokenSelect(false); }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <h2 style={{ color: '#FFFFFF', fontSize: 18, fontWeight: 700, margin: 0 }}>Send</h2>
           <button onClick={onClose} style={closeBtn}>✕</button>
@@ -125,22 +181,67 @@ function SendModal({ embeddedWallet, onClose }) {
         ) : (
           <>
             <label style={labelStyle}>Token</label>
-            <div style={chainSelectStyle}>
-              <img src="/logo_happy_hour.png" alt="HH" style={{ width: 20, height: 20, borderRadius: '50%' }} />
-              <span style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 600 }}>ETH</span>
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={(e) => { e.stopPropagation(); setShowTokenSelect(!showTokenSelect); }}
+                style={{
+                  ...chainSelectStyle, width: '100%', cursor: 'pointer', justifyContent: 'space-between'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <img src={token.logo} alt={token.symbol} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover' }} />
+                  <span style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 600 }}>{token.symbol}</span>
+                </div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+              
+              {showTokenSelect && (
+                <div style={{
+                  position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 8,
+                  background: '#1A1D2E', border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: 12, overflow: 'hidden', zIndex: 100,
+                  boxShadow: '0 10px 40px rgba(0,0,0,0.5)'
+                }}>
+                  {Object.values(TOKENS).map(t => (
+                    <button
+                      key={t.symbol}
+                      onClick={(e) => { e.stopPropagation(); setToken(t); setShowTokenSelect(false); }}
+                      style={{
+                        width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                        padding: '12px 16px', background: 'transparent', border: 'none',
+                        borderBottom: '1px solid rgba(255,255,255,0.05)', cursor: 'pointer'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <img src={t.logo} alt={t.symbol} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover' }} />
+                        <span style={{ color: '#FFFFFF', fontSize: 15, fontWeight: 600 }}>{t.symbol}</span>
+                      </div>
+                      <span style={{ color: '#94A3B8', fontSize: 13 }}>{balances[t.symbol] || '0'}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <label style={{ ...labelStyle, marginTop: 16 }}>Amount</label>
-            <input
-              value={amount}
-              onChange={e => setAmount(e.target.value)}
-              placeholder="0.00"
-              type="number"
-              style={inputStyle}
-            />
+            <div style={{ position: 'relative' }}>
+              <input
+                value={amount}
+                onChange={e => setAmount(e.target.value)}
+                placeholder="0.00"
+                type="number"
+                style={{ ...inputStyle, paddingRight: 60 }}
+              />
+              <button 
+                onClick={handleMax}
+                style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'rgba(59,130,246,0.15)', color: '#3B82F6', border: 'none', borderRadius: 6, padding: '4px 10px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+              >
+                Max
+              </button>
+            </div>
             <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
               {['25%', '50%', '100%'].map(p => (
-                <button key={p} style={percentBtn}>{p}</button>
+                <button key={p} onClick={() => handlePercent(parseInt(p))} style={percentBtn}>{p}</button>
               ))}
             </div>
 
@@ -598,7 +699,7 @@ export function WalletSection({ onRequireWallet, setTab }) {
         <DepositModal embeddedAddress={embeddedWallet?.address} onClose={() => setModal(null)} />
       )}
       {modal === 'send' && (
-        <SendModal embeddedWallet={embeddedWallet} onClose={() => setModal(null)} />
+        <SendModal wallet={activeWallet} balances={localBalances} onClose={() => setModal(null)} />
       )}
       {modal === 'swap' && (
         <SwapModal onClose={() => setModal(null)} wallet={activeWallet} />
