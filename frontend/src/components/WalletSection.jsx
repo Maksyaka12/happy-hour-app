@@ -448,8 +448,8 @@ export function WalletSection({ onRequireWallet, setTab }) {
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 11h2"/><path d="M6 3l6-3 6 3"/></svg>
               </div>
               <div style={{ textAlign: 'left' }}>
-                <div style={{ fontSize: 13, color: '#FFFFFF', fontWeight: 600 }}>Happy Hour Wallet</div>
-                <div style={{ fontSize: 11, color: '#94A3B8', fontFamily: 'monospace' }}>{short(embeddedWallet?.address)}</div>
+                <div style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 600 }}>Happy Hour Wallet</div>
+                <div style={{ fontSize: 12, color: '#94A3B8' }}>{short(embeddedWallet?.address)}</div>
               </div>
             </div>
             <span style={{ fontSize: 13, color: activeWalletType === 'embedded' ? '#FFFFFF' : '#94A3B8', fontWeight: 600 }}>
@@ -472,10 +472,10 @@ export function WalletSection({ onRequireWallet, setTab }) {
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2"><path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
               </div>
               <div style={{ textAlign: 'left' }}>
-                <div style={{ fontSize: 13, color: externalWallet ? '#FFFFFF' : '#94A3B8', fontWeight: 600 }}>
+                <div style={{ fontSize: 14, color: externalWallet ? '#FFFFFF' : '#94A3B8', fontWeight: 600 }}>
                   {externalWallet ? 'External Wallet' : 'Connect Wallet'}
                 </div>
-                <div style={{ fontSize: 11, color: '#94A3B8', fontFamily: 'monospace' }}>
+                <div style={{ fontSize: 12, color: '#94A3B8' }}>
                   {externalWallet ? short(externalWallet.address) : 'Not connected'}
                 </div>
               </div>
@@ -492,11 +492,11 @@ export function WalletSection({ onRequireWallet, setTab }) {
         {/* Wallet address header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <div>
-            <div style={{ fontSize: 12, color: '#94A3B8' }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#F8FAFC' }}>
               {activeWalletType === 'embedded' ? 'Happy Hour Wallet' : 'External Wallet'}
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
-              <span style={{ fontSize: 13, color: '#E2E8F0', fontFamily: 'monospace' }}>{short(activeAddress)}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+              <span style={{ fontSize: 13, color: '#94A3B8' }}>{short(activeAddress)}</span>
               <button onClick={handleCopyAddr} style={iconBtn}>
                 {addrCopied
                   ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
