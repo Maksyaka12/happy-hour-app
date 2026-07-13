@@ -58,7 +58,8 @@ export function Header({ tab, address, isConnected, displayName, isClubMember, h
     account: 'Account',
     hhIntro: '$HH',
     hhChart: '$HH Chart',
-    hhSwap: '$HH Swap'
+    hhSwap: '$HH Swap',
+    wallet: 'Wallet'
   }
 
   return (

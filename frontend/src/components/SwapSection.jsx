@@ -33,30 +33,24 @@ export default function SwapSection() {
       <h2 style={{ 
         color: '#FFFFFF', 
         fontSize: 28, 
-        marginBottom: 8,
+        marginBottom: 32,
         fontWeight: 600,
         fontFamily: 'Inter, sans-serif'
       }}>
-        Swap $HH
+        Trade $HH directly on the Happy Hour Platform
       </h2>
-      <p style={{ 
-        color: '#8A8F9E', 
-        fontSize: 16, 
-        marginBottom: 32,
-        maxWidth: 400,
-        textAlign: 'center',
-        fontFamily: 'Inter, sans-serif'
-      }}>
-        Trade your ETH or USDC for $HH tokens directly via Uniswap on the Base network.
-      </p>
 
       <div style={{
+        width: '100%',
+        maxWidth: 640,
+        margin: '0 auto',
         padding: '24px',
         background: 'rgba(26, 29, 36, 0.4)',
         borderRadius: 24,
-        border: '1px solid rgba(193, 196, 205, 0.1)'
+        border: '1px solid rgba(193, 196, 205, 0.1)',
+        boxSizing: 'border-box'
       }}>
-        <CustomSwapWidget width={400} wallet={activeWallet} />
+        <CustomSwapWidget width="100%" wallet={activeWallet} />
       </div>
     </div>
   );
