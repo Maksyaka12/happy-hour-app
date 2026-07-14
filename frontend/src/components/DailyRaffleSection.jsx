@@ -391,13 +391,7 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
   }
 
   return (
-    <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 24, padding: '24px 20px 120px', animation: 'fadeIn 0.3s ease-out', color: '#FFFFFF', fontFamily: "'Inter', sans-serif" }}>
-
-      {/* Header section */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: '0 8px' }}>
-        <h1 style={{ fontSize: 24, fontWeight: 700, margin: 0, color: '#F8FAFC' }}>Big Daily Lottery</h1>
-        <div style={{ fontSize: 14, color: '#94A3B8' }}>Participate in the daily draw to win massive $HH prizes.</div>
-      </div>
+    <div style={{ animation: 'fadeIn 0.3s ease-out', width: '100%', maxWidth: 1200, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 24, paddingBottom: 120, color: '#FFFFFF', fontFamily: "'Inter', sans-serif" }}>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
         
@@ -417,8 +411,8 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
             minHeight: 320
           }}>
             {/* Glow Effects */}
-            <div style={{ position: 'absolute', top: '-20%', left: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
-            <div style={{ position: 'absolute', bottom: '-20%', right: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', top: '-20%', left: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', bottom: '-20%', right: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
 
             {/* Content Left */}
             <div className="raffle-hero-padding" style={{ flex: 1, padding: '32px 24px', position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', gap: 16 }}>
