@@ -399,9 +399,9 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
         <div style={{ fontSize: 14, color: '#94A3B8' }}>Participate in the daily draw to win massive $HH prizes.</div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 24 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
         
-        {/* Left Column */}
+        {/* Top Cards */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
           {/* Hero Card */}
           <div style={{
@@ -523,7 +523,7 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
           </div>
         </div>
 
-        {/* Right Column */}
+        {/* Bottom Cards */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
           {/* Last Winner */}
           {lastWinner && (
