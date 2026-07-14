@@ -403,53 +403,70 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
         
         {/* Top Cards */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-          {/* Hero Card */}
+          {/* Hero Banner */}
           <div style={{
-            background: cardBg,
-            border: cardBorder,
-            borderRadius: cardRadius,
-            padding: 24,
+            width: '100%',
+            background: 'linear-gradient(135deg, rgba(16,18,27,1) 0%, rgba(20,22,35,1) 100%)',
+            borderRadius: 24,
+            position: 'relative',
+            overflow: 'hidden',
+            border: '1px solid rgba(255,255,255,0.05)',
             display: 'flex',
-            flexDirection: 'column',
-            gap: 20
+            flexDirection: 'row',
+            alignItems: 'center',
+            minHeight: 320
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#F8FAFC' }}>
-                Daily Raffle · Round #{dailyRound}
-              </div>
-              <div style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#34D399', padding: '4px 10px', borderRadius: 8, fontSize: 11, fontWeight: 700, border: '1px solid rgba(16, 185, 129, 0.2)' }}>
-                VRF PROVED
-              </div>
-            </div>
+            {/* Glow Effects */}
+            <div style={{ position: 'absolute', top: '-20%', left: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', bottom: '-20%', right: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-              {/* Prize Pool */}
-              <div style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 16, padding: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estimated Prize</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <img src="/logo.jfif" alt="" style={{ width: 28, height: 28, borderRadius: '50%' }} />
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ fontSize: 20, fontWeight: 700, color: '#FFFFFF', lineHeight: 1 }}>
-                      {formatConcise(dailyPool)} $HH
-                    </div>
-                    <div style={{ fontSize: 12, color: '#94A3B8', fontWeight: 600, marginTop: 4 }}>
-                      ≈${(dailyPool * hhPrice).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+            {/* Content Left */}
+            <div style={{ flex: 1, padding: '40px 48px', position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+                <span style={{
+                  background: 'rgba(59, 130, 246, 0.15)', color: '#3B82F6', padding: '4px 12px', borderRadius: 12, fontSize: 11, fontWeight: 700, border: '1px solid rgba(59, 130, 246, 0.3)'
+                }}>Sponsored by {dailySponsor}</span>
+                <span style={{
+                  background: 'rgba(16, 185, 129, 0.1)', color: '#34D399', padding: '4px 12px', borderRadius: 12, fontSize: 11, fontWeight: 700, border: '1px solid rgba(16, 185, 129, 0.2)'
+                }}>VRF PROVED</span>
+              </div>
+              <h1 style={{ fontSize: 36, fontWeight: 600, color: '#FFFFFF', lineHeight: 1.1, margin: 0, fontFamily: "'Inter', sans-serif", letterSpacing: '-0.5px' }}>
+                Daily Raffle · Round #{dailyRound}
+              </h1>
+              
+              <div style={{ display: 'flex', gap: 32, marginTop: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+                {/* Prize Pool */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estimated Prize</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <img src="/logo.jfif" alt="" style={{ width: 36, height: 36, borderRadius: '50%', boxShadow: '0 0 12px rgba(255,255,255,0.1)' }} />
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <div style={{ fontSize: 28, fontWeight: 700, color: '#FFFFFF', lineHeight: 1 }}>
+                        {formatConcise(dailyPool)} $HH
+                      </div>
+                      <div style={{ fontSize: 14, color: '#10B981', fontWeight: 600, marginTop: 4 }}>
+                        ≈${(dailyPool * hhPrice).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Timer */}
-              <div style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 16, padding: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Time Left</div>
-                <div style={{ fontSize: 26, fontWeight: 700, color: dailyTimeRemaining > 0 ? '#FFFFFF' : '#FC401F', fontVariantNumeric: 'tabular-nums', lineHeight: 1.2 }}>
-                  {dailyTimeRemaining > 0 ? new Date(dailyTimeRemaining * 1000).toISOString().substr(11, 8) : '00:00:00'}
+                <div style={{ width: 1, height: 50, background: 'rgba(255,255,255,0.1)' }} />
+
+                {/* Timer */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Time Left</div>
+                  <div style={{ fontSize: 36, fontWeight: 700, color: dailyTimeRemaining > 0 ? '#FFFFFF' : '#FC401F', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
+                    {dailyTimeRemaining > 0 ? new Date(dailyTimeRemaining * 1000).toISOString().substr(11, 8) : '00:00:00'}
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div style={{ fontSize: 13, color: '#64748B', display: 'flex', alignItems: 'center', gap: 6 }}>
-              🤝 Sponsor: <span style={{ color: '#E2E8F0', fontWeight: 600 }}>{dailySponsor}</span>
+            {/* Graphic Right */}
+            <div style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '40%', minHeight: 320, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', zIndex: 1 }}>
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(20,22,35,1) 0%, transparent 100%)', zIndex: 2 }} />
+              <img src="/logo.jfif" alt="Raffle" style={{ height: '150%', width: '100%', objectFit: 'cover', opacity: 0.15, transform: 'translateX(20%)', zIndex: 1 }} />
             </div>
           </div>
 
