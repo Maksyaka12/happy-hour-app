@@ -879,7 +879,7 @@ export default function App({ onLogin, onLogout, privyUser, privyWallets = [] })
           
           {/* Scrollable Content Wrapper */}
           <div className="dark-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '32px 16px 64px', boxSizing: 'border-box' }} id="main-content-scroll">
-            <div style={{ maxWidth: ['contests', 'earn', 'hhChart'].includes(tab) ? 1200 : ['terms', 'privacy', 'affiliate', 'skills', 'x402', 'agentChat'].includes(tab) ? 800 : 640, margin: '0 auto', position: 'relative' }}>
+            <div style={{ maxWidth: ['contests', 'earn', 'hhChart', 'dailyRaffle'].includes(tab) ? 1200 : ['terms', 'privacy', 'affiliate', 'skills', 'x402', 'agentChat'].includes(tab) ? 800 : 640, margin: '0 auto', position: 'relative' }}>
               {renderTabContent()}
             </div>
           </div>
