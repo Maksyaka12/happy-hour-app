@@ -429,8 +429,8 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
               </h1>
               
               <div className="raffle-stat-gap" style={{ display: 'flex', gap: 32, marginTop: 12, flexWrap: 'wrap', alignItems: 'flex-start' }}>
-                {/* Prize Pool */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {/* Prize Pool Plate */}
+                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 16, padding: '16px 24px', backdropFilter: 'blur(12px)', display: 'flex', flexDirection: 'column', gap: 8 }}>
                   <div style={{ fontSize: 12, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estimated Prize</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <img src="/logo.jfif" alt="" style={{ width: 36, height: 36, borderRadius: '50%', boxShadow: '0 0 12px rgba(255,255,255,0.1)' }} />
@@ -445,10 +445,8 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
                   </div>
                 </div>
 
-                <div style={{ width: 1, height: 50, background: 'rgba(255,255,255,0.1)' }} />
-
-                {/* Timer */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {/* Timer Plate */}
+                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 16, padding: '16px 24px', backdropFilter: 'blur(12px)', display: 'flex', flexDirection: 'column', gap: 8 }}>
                   <div style={{ fontSize: 12, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Time Left</div>
                   <div className="raffle-timer-value" style={{ fontSize: 36, fontWeight: 700, color: dailyTimeRemaining > 0 ? '#FFFFFF' : '#FC401F', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
                     {dailyTimeRemaining > 0 ? new Date(dailyTimeRemaining * 1000).toISOString().substr(11, 8) : '00:00:00'}
@@ -458,8 +456,7 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
             </div>
 
             {/* Graphic Right */}
-            <div className="desktop-only" style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '50%', minHeight: 320, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', zIndex: 1 }}>
-              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(20,22,35,1) 0%, transparent 100%)', zIndex: 2 }} />
+            <div className="desktop-only" style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '50%', minHeight: 320, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', zIndex: 1, mixBlendMode: 'screen' }}>
               <img src="/daily_raffle_banner_graphic.png" alt="Raffle Graphic" style={{ height: '100%', width: '100%', objectFit: 'cover', maskImage: 'linear-gradient(to left, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%)', WebkitMaskImage: 'linear-gradient(to left, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%)', zIndex: 1 }} />
             </div>
           </div>
