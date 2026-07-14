@@ -421,7 +421,7 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
             <div style={{ position: 'absolute', bottom: '-20%', right: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
 
             {/* Content Left */}
-            <div style={{ flex: 1, padding: '40px 48px', position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ flex: 1, padding: '32px 24px', position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
                 <span style={{
                   background: 'rgba(59, 130, 246, 0.15)', color: '#3B82F6', padding: '4px 12px', borderRadius: 12, fontSize: 11, fontWeight: 700, border: '1px solid rgba(59, 130, 246, 0.3)'
@@ -430,11 +430,11 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
                   background: 'rgba(16, 185, 129, 0.1)', color: '#34D399', padding: '4px 12px', borderRadius: 12, fontSize: 11, fontWeight: 700, border: '1px solid rgba(16, 185, 129, 0.2)'
                 }}>VRF PROVED</span>
               </div>
-              <h1 style={{ fontSize: 36, fontWeight: 600, color: '#FFFFFF', lineHeight: 1.1, margin: 0, fontFamily: "'Inter', sans-serif", letterSpacing: '-0.5px' }}>
+              <h1 style={{ fontSize: 32, fontWeight: 600, color: '#FFFFFF', lineHeight: 1.2, margin: 0, fontFamily: "'Inter', sans-serif", letterSpacing: '-0.5px' }}>
                 Daily Raffle · Round #{dailyRound}
               </h1>
               
-              <div style={{ display: 'flex', gap: 32, marginTop: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: 32, marginTop: 12, flexWrap: 'wrap', alignItems: 'flex-start' }}>
                 {/* Prize Pool */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   <div style={{ fontSize: 12, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estimated Prize</div>
@@ -445,7 +445,7 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
                         {formatConcise(dailyPool)} $HH
                       </div>
                       <div style={{ fontSize: 14, color: '#10B981', fontWeight: 600, marginTop: 4 }}>
-                        ≈${(dailyPool * hhPrice).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                        ≈${(dailyPool * (hhPrice || 0)).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                       </div>
                     </div>
                   </div>
@@ -464,9 +464,9 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
             </div>
 
             {/* Graphic Right */}
-            <div style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '40%', minHeight: 320, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', zIndex: 1 }}>
+            <div className="desktop-only" style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '40%', minHeight: 320, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', zIndex: 1 }}>
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(20,22,35,1) 0%, transparent 100%)', zIndex: 2 }} />
-              <img src="/logo.jfif" alt="Raffle" style={{ height: '150%', width: '100%', objectFit: 'cover', opacity: 0.15, transform: 'translateX(20%)', zIndex: 1 }} />
+              <img src="/box1.png" alt="Raffle" style={{ height: '120%', width: '100%', objectFit: 'contain', opacity: 0.15, transform: 'translateX(20%)', zIndex: 1 }} />
             </div>
           </div>
 
@@ -554,6 +554,7 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
                 padding: 20,
                 display: 'flex',
                 alignItems: 'center',
+                flexWrap: 'wrap',
                 gap: 16
               }}>
                 <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(59,130,246,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, flexShrink: 0 }}>🏆</div>
@@ -569,7 +570,7 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
                   </div>
                   {isHH && (
                     <div style={{ fontSize: 12, color: '#34D399', fontWeight: 600 }}>
-                      ≈${(parseFloat(lastWinner.amount) * hhPrice).toFixed(2)}
+                      ≈${(parseFloat(lastWinner.amount) * (hhPrice || 0)).toFixed(2)}
                     </div>
                   )}
                   <div style={{ fontSize: 12, color: '#64748B' }}>
