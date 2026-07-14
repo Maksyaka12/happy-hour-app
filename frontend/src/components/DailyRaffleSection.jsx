@@ -330,24 +330,9 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
 
 
   const accentColor = isHH ? '#3B82F6' : '#10B981'
-  const lightAccentColor = isHH ? '#60A5FA' : '#34D399'
-  const timerColor = isClosed ? '#FC401F' : '#FFFFFF'
-  const gradientColor = isHH 
-    ? 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)' 
-    : 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
-  const glowColor = isHH ? 'rgba(59, 130, 246, 0.25)' : 'rgba(16, 185, 129, 0.25)'
-  const hueFilter = isHH
-    ? 'hue-rotate(0deg) brightness(0.4) contrast(1.15)' 
-    : 'hue-rotate(200deg) brightness(0.4) contrast(1.15)'
-
-  const heroHueFilter = isHH
-    ? 'hue-rotate(0deg) brightness(0.68) contrast(1.1)' 
-    : 'hue-rotate(200deg) brightness(0.68) contrast(1.1)'
-
-  const cardBg = 'rgba(23, 25, 35, 0.65)'
-  const heroCardBg = 'rgba(23, 25, 35, 0.65)'
-  const cardBorder = '1px solid rgba(255, 255, 255, 0.05)'
-  const cardShadow = 'none'
+  const cardBg = 'rgba(255, 255, 255, 0.03)'
+  const cardBorder = '1px solid rgba(255, 255, 255, 0.08)'
+  const cardRadius = 24
 
   // ── Send USDC or HH ────────────────────────────────────────
   const sendBet = useCallback((amount) => {
@@ -406,154 +391,98 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
   }
 
   return (
-    <div style={{ maxWidth: 640, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 12, padding: '12px 12px 120px', animation: 'fadeIn 0.3s ease-out' }}>
+    <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 24, padding: '24px 20px 120px', animation: 'fadeIn 0.3s ease-out', color: '#FFFFFF', fontFamily: "'Inter', sans-serif" }}>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, animation: 'fadeIn 0.3s ease-out' }}>
-          {/* Daily Raffle Hero Card */}
+      {/* Header section */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: '0 8px' }}>
+        <h1 style={{ fontSize: 24, fontWeight: 700, margin: 0, color: '#F8FAFC' }}>Big Daily Lottery</h1>
+        <div style={{ fontSize: 14, color: '#94A3B8' }}>Participate in the daily draw to win massive $HH prizes.</div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 24 }}>
+        
+        {/* Left Column */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          {/* Hero Card */}
           <div style={{
-            background: heroCardBg,
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
+            background: cardBg,
             border: cardBorder,
-            borderRadius: 20,
-            padding: '20px 18px 16px',
-            marginBottom: 12,
-            boxShadow: cardShadow,
-            position: 'relative',
-            overflow: 'hidden'
+            borderRadius: cardRadius,
+            padding: 24,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 20
           }}>
-
-            {/* Colored radial gradient glow removed as per strict specs */}
-
-            <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-              <div style={{ fontSize: 14.5, fontWeight: 900, color: '#FFFFFF', letterSpacing: '0.2px', textTransform: 'uppercase', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: '#F8FAFC' }}>
                 Daily Raffle · Round #{dailyRound}
               </div>
-              <span style={{
-                background: 'rgba(16, 185, 129, 0.15)',
-                color: '#34D399',
-                padding: '3px 8px',
-                borderRadius: 8,
-                fontSize: 10,
-                fontWeight: 800,
-                border: '1px solid rgba(16, 185, 129, 0.25)',
-                fontFamily: "'Outfit', 'Inter', sans-serif"
-              }}>
+              <div style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#34D399', padding: '4px 10px', borderRadius: 8, fontSize: 11, fontWeight: 700, border: '1px solid rgba(16, 185, 129, 0.2)' }}>
                 VRF PROVED
-              </span>
+              </div>
             </div>
 
-            {/* Two Plates Layout */}
-            <div style={{
-              position: 'relative',
-              zIndex: 2,
-              display: 'grid',
-              gridTemplateColumns: '1.2fr 0.8fr',
-              gap: 12,
-              marginBottom: 16
-            }}>
-              {/* Left Plate: Prize Pool */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-                <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.5px', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-                  ESTIMATED PRIZE
-                </span>
-                <div style={{
-                  background: 'rgba(23, 25, 35, 0.65)',
-                  backdropFilter: 'blur(8px)',
-                  WebkitBackdropFilter: 'blur(8px)',
-                  border: '1px solid rgba(255, 255, 255, 0.05)',
-                  borderRadius: 16,
-                  height: 52,
-                  padding: '0 12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  boxShadow: 'none'
-                }}>
-                  <img src="/logo.jfif" alt="" style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover' }} />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              {/* Prize Pool */}
+              <div style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 16, padding: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estimated Prize</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <img src="/logo.jfif" alt="" style={{ width: 28, height: 28, borderRadius: '50%' }} />
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span style={{ fontSize: 15, fontWeight: 700, color: '#FFFFFF', fontFamily: "'Outfit', 'Inter', sans-serif", lineHeight: 1.1, fontVariantNumeric: 'tabular-nums' }}>
+                    <div style={{ fontSize: 20, fontWeight: 700, color: '#FFFFFF', lineHeight: 1 }}>
                       {formatConcise(dailyPool)} $HH
-                    </span>
-                    <span style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.45)', fontWeight: 700, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                    </div>
+                    <div style={{ fontSize: 12, color: '#94A3B8', fontWeight: 600, marginTop: 4 }}>
                       ≈${(dailyPool * hhPrice).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                    </span>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Right Plate: Timer */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-                <span style={{ fontSize: 10, fontWeight: 800, color: '#A0AEC0', letterSpacing: '0.5px', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-                  TIME LEFT
-                </span>
-                <div style={{
-                  background: 'rgba(23, 25, 35, 0.65)',
-                  backdropFilter: 'blur(8px)',
-                  WebkitBackdropFilter: 'blur(8px)',
-                  border: '1px solid rgba(255, 255, 255, 0.05)',
-                  borderRadius: 16,
-                  height: 52,
-                  padding: '0 12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: 'none'
-                }}>
-                  <span style={{
-                    fontFamily: "'Barlow Condensed', sans-serif",
-                    fontSize: 24,
-                    fontWeight: 700,
-                    color: '#FFFFFF',
-                    fontVariantNumeric: 'tabular-nums'
-                  }}>
-                    {dailyTimeRemaining > 0 ? new Date(dailyTimeRemaining * 1000).toISOString().substr(11, 8) : '00:00:00'}
-                  </span>
+              {/* Timer */}
+              <div style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 16, padding: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Time Left</div>
+                <div style={{ fontSize: 26, fontWeight: 700, color: dailyTimeRemaining > 0 ? '#FFFFFF' : '#FC401F', fontVariantNumeric: 'tabular-nums', lineHeight: 1.2 }}>
+                  {dailyTimeRemaining > 0 ? new Date(dailyTimeRemaining * 1000).toISOString().substr(11, 8) : '00:00:00'}
                 </div>
               </div>
             </div>
 
-            {/* Sponsor block */}
-            <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
-              <span style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.6)', fontWeight: 600, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-                🤝 Sponsor: <span style={{ color: '#FFFFFF', fontWeight: 800 }}>{dailySponsor}</span>
-              </span>
+            <div style={{ fontSize: 13, color: '#64748B', display: 'flex', alignItems: 'center', gap: 6 }}>
+              🤝 Sponsor: <span style={{ color: '#E2E8F0', fontWeight: 600 }}>{dailySponsor}</span>
             </div>
           </div>
 
           {/* Eligibility Card */}
           <div style={{
-            background: 'rgba(23, 25, 35, 0.65)',
-            backdropFilter: 'blur(8px)',
-            WebkitBackdropFilter: 'blur(8px)',
-            borderRadius: 16,
-            padding: '16px 18px 14px',
-            marginBottom: 12,
-            boxShadow: 'none',
-            border: isDailyEligible ? '1px solid rgba(16, 185, 129, 0.35)' : '1px solid rgba(255, 255, 255, 0.05)',
+            background: cardBg,
+            border: isDailyEligible ? '1px solid rgba(16, 185, 129, 0.3)' : cardBorder,
+            borderRadius: cardRadius,
+            padding: 24,
             display: 'flex',
             flexDirection: 'column',
-            gap: 12
+            gap: 16
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <div>
-                <div style={{ fontSize: 14.5, fontWeight: 900, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span>{isDailyEligible ? '🟢 Eligible' : '⚪ Not Eligible'}</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <div style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  {isDailyEligible ? '🟢 Eligible for Draw' : '⚪ Not Eligible'}
                 </div>
-                <div style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.6)', marginTop: 4, fontWeight: 650, lineHeight: 1.3 }}>
+                <div style={{ fontSize: 13, color: '#94A3B8', lineHeight: 1.5, maxWidth: 280 }}>
                   {isDailyEligible 
                     ? "You are automatically entered into today's daily draw!" 
                     : "Buy at least 1 ticket in the hourly raffle today to qualify for the daily draw."
                   }
                 </div>
               </div>
+              
               {isDailyEligible && (
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: '#10B981', fontFamily: "'Barlow Condensed', sans-serif", fontVariantNumeric: 'tabular-nums' }}>
+                <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <div style={{ fontSize: 20, fontWeight: 700, color: '#10B981' }}>
                     {dailyUserTickets} TICKET{dailyUserTickets > 1 ? 'S' : ''}
                   </div>
-                  <div style={{ fontSize: 8.5, color: 'rgba(255,255,255,0.5)', fontWeight: 700 }}>
-                    weighted weight
+                  <div style={{ fontSize: 11, color: '#64748B', fontWeight: 600, textTransform: 'uppercase' }}>
+                    Weighted chance
                   </div>
                 </div>
               )}
@@ -564,168 +493,101 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
                 type="button"
                 onClick={() => {}}
                 style={{
-                  width: '100%',
-                  padding: '10px 12px',
-                  borderRadius: 16,
-                  border: 'none',
-                  background: '#0000FF',
-                  color: '#FFFFFF',
-                  fontSize: 12.5,
-                  fontWeight: 500,
-                  cursor: 'pointer',
-                  textAlign: 'center'
+                  width: '100%', padding: '12px', borderRadius: 12, border: 'none', background: '#3B82F6', color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', marginTop: 8
                 }}
               >
-                Buy Ticket in $HH Raffle
+                Buy Ticket in Hourly Raffle
               </button>
             )}
-          </div>
 
-          {/* Trigger draw button (Overdue state check) */}
-          {dailyTimeRemaining === 0 && (
-            <button
-              type="button"
-              onClick={triggerDailyDraw}
-              style={{
-                width: '100%',
-                padding: '12px 14px',
-                borderRadius: 16,
-                border: '1px solid rgba(255, 255, 255, 0.05)',
-                background: '#0000FF',
-                color: '#FFFFFF',
-                fontSize: 13.5,
-                fontWeight: 500,
-                cursor: 'pointer',
-                textAlign: 'center',
-                boxShadow: 'none'
-              }}
-            >
-              🎯 Trigger Daily Draw (VRF)
-            </button>
+            {dailyTimeRemaining === 0 && (
+              <button
+                type="button"
+                onClick={triggerDailyDraw}
+                style={{
+                  width: '100%', padding: '12px', borderRadius: 12, border: 'none', background: '#3B82F6', color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', marginTop: 8
+                }}
+              >
+                🎯 Trigger Daily Draw (VRF)
+              </button>
+            )}
+            
+            <div style={{ textAlign: 'center', marginTop: 4 }}>
+              <span 
+                onClick={simulateDailyEligibility}
+                style={{ fontSize: 11, fontWeight: 600, color: '#64748B', cursor: 'pointer', textDecoration: 'underline' }}
+              >
+                [Dev] Simulate eligibility (10 tickets)
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          {/* Last Winner */}
+          {lastWinner && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: '#F8FAFC' }}>Last Winner</div>
+              <div style={{
+                background: cardBg,
+                border: cardBorder,
+                borderTop: `3px solid ${accentColor}`,
+                borderRadius: cardRadius,
+                padding: 20,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 16
+              }}>
+                <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(59,130,246,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, flexShrink: 0 }}>🏆</div>
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF' }}>{lastWinner.name}</div>
+                  <div style={{ fontSize: 13, color: '#94A3B8' }}>
+                    Win chance: <span style={{ color: '#FFFFFF', fontWeight: 600 }}>{lastWinner.chance}%</span>
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <div style={{ fontSize: 18, fontWeight: 700, color: '#10B981' }}>
+                    +{isHH ? `${formatConcise(parseFloat(lastWinner.amount))} $HH` : `${lastWinner.amount} USDC`}
+                  </div>
+                  {isHH && (
+                    <div style={{ fontSize: 12, color: '#34D399', fontWeight: 600 }}>
+                      ≈${(parseFloat(lastWinner.amount) * hhPrice).toFixed(2)}
+                    </div>
+                  )}
+                  <div style={{ fontSize: 12, color: '#64748B' }}>
+                    of {isHH ? `${formatConcise(parseFloat(lastWinner.pot))} $HH` : `${lastWinner.pot} USDC`}
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
 
-          {/* Local simulation button for dev testing */}
-          <div style={{ textAlign: 'center', marginTop: 4 }}>
-            <span 
-              onClick={simulateDailyEligibility}
-              style={{ 
-                fontSize: 8.5, 
-                fontWeight: 800, 
-                color: 'rgba(255,255,255,0.3)', 
-                cursor: 'pointer',
-                textDecoration: 'underline'
-              }}
-            >
-              [Dev] Simulate eligibility (10 tickets)
-            </span>
-          </div>
-        </div>
-
-
-      {/* Last winner */}
-      {lastWinner && (
-        <div style={{ marginBottom: 16 }}>
-          <div style={{
-            fontFamily: "'Outfit', 'Inter', sans-serif",
-            fontSize: 11.5,
-            color: '#4A5568',
-            fontWeight: 800,
-            letterSpacing: '0.6px',
-            marginBottom: 8,
-            textTransform: 'uppercase'
-          }}>
-            Last Winner
-          </div>
-          <div style={{
-            background: cardBg,
-            border: cardBorder,
-            borderTop: `3px solid ${accentColor}`,
-            borderRadius: 14,
-            padding: '14px 16px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-            boxShadow: cardShadow,
-          }}>
-            <div style={{
-              width: 38,
-              height: 38,
-              borderRadius: '50%',
-              background: glowColor.replace('0.25', '0.15'),
-              border: `1.5px solid ${accentColor}`,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 18,
-              flexShrink: 0,
-            }}>🏆</div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 9, color: '#A0AEC0', fontWeight: 800, marginBottom: 3, letterSpacing: '0.5px', fontFamily: "'Outfit', 'Inter', sans-serif" }}>LAST WINNER</div>
-              <div style={{ fontSize: 13, fontWeight: 800, color: '#FFFFFF', fontFamily: "'Outfit', 'Inter', sans-serif" }}>{lastWinner.name}</div>
-              <div style={{ fontSize: 9.5, color: '#A0AEC0', fontWeight: 700, marginTop: 1, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-                Win chance: <span style={{ color: '#FFFFFF', fontWeight: 800 }}>{lastWinner.chance}%</span>
-              </div>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 18, fontWeight: 700, color: '#FFFFFF', fontVariantNumeric: 'tabular-nums' }}>
-                +{isHH ? `${formatConcise(parseFloat(lastWinner.amount))} $HH` : `${lastWinner.amount} USDC`}
-              </div>
-              {isHH && (
-                <div style={{ fontSize: 10, color: '#10B981', fontWeight: 500, marginTop: 1, fontFamily: "'Outfit', 'Inter', sans-serif", fontVariantNumeric: 'tabular-nums' }}>
-                  ≈$${(parseFloat(lastWinner.amount) * hhPrice).toFixed(2)}
+          {/* How it works */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#F8FAFC' }}>How it works</div>
+            <div style={{ background: cardBg, border: cardBorder, borderRadius: cardRadius, padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {[
+                ['How long does each round last?',   'Each round runs exactly 60 minutes.'],
+                ['When do deposits close?',           'Deposits close 3 minutes before the draw.'],
+                ['How is the winner selected?',       'Secure random selection, lucky-based. Anyone with 1+ ticket can win. More tickets = more chances.'],
+                ['How many points do I get?', (
+                  <>Raffle winner receives <strong style={{ color: '#10B981' }}>1 HP</strong></>
+                )],
+                ['What happens if I’m the only player in a round?', (
+                  <>You will receive a 100% refund and <strong style={{ color: '#10B981' }}>1 HP</strong> as the winner.</>
+                )],
+                ['How much does the winner receive?', isHH ? `Winner takes 85% of the total pot. The remaining 15% is burned.` : `Winner takes 85% of the total pot. The remaining 15% goes to the foundation for future rewards.`],
+                ['When are winnings paid?',           'Automatically after the draw, directly to the winner\'s wallet.'],
+                ['Can I deposit multiple times?',     'Yes! Multiple deposits per round are allowed and all contribute to your ticket count.'],
+              ].map(([q, a], i) => (
+                <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: '#FFFFFF' }}>{q}</div>
+                  <div style={{ fontSize: 13, color: '#94A3B8', lineHeight: 1.5 }}>{a}</div>
                 </div>
-              )}
-              <div style={{ fontSize: 9, color: '#A0AEC0', fontWeight: 600, marginTop: 2, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-                of {isHH ? `${formatConcise(parseFloat(lastWinner.pot))} $HH` : `${lastWinner.pot} USDC`}
-              </div>
+              ))}
             </div>
           </div>
-        </div>
-      )}
-
-      {/* How it works */}
-      <div style={{ marginBottom: 16 }}>
-        <div style={{
-          fontFamily: "'Outfit', 'Inter', sans-serif",
-          fontSize: 11.5,
-          color: '#4A5568',
-          fontWeight: 800,
-          letterSpacing: '0.6px',
-          marginBottom: 8,
-          textTransform: 'uppercase'
-        }}>
-          How it works
-        </div>
-        <div style={{
-          background: cardBg,
-          border: cardBorder,
-          borderRadius: 16,
-          padding: '16px 18px',
-          boxShadow: cardShadow,
-        }}>
-          {[
-            ['How long does each round last?',   'Each round runs exactly 60 minutes.'],
-            ['When do deposits close?',           'Deposits close 3 minutes before the draw.'],
-            ['How is the winner selected?',       'Secure random selection, lucky-based. Anyone with 1+ ticket can win. More tickets = more chances.'],
-            ['How many points do I get?', (
-              <>
-                Raffle winner receives <strong style={{ color: '#10B981' }}>1 HP</strong> 
-              </>
-            )],
-            ['What happens if I’m the only player in a round?', (
-              <>
-                You will receive a 100% refund and <strong style={{ color: '#10B981' }}>1 HP</strong> as the winner.
-              </>
-            )],
-            ['How much does the winner receive?', isHH ? `Winner takes 85% of the total pot. The remaining 15% is burned.` : `Winner takes 85% of the total pot. The remaining 15% goes to the foundation for future rewards.`],
-            ['When are winnings paid?',           'Automatically after the draw, directly to the winner\'s wallet.'],
-            ['Can I deposit multiple times?',     'Yes! Multiple deposits per round are allowed and all contribute to your ticket count.'],
-          ].map(([q, a], i, arr) => (
-            <div key={i} style={{ marginBottom: i < arr.length - 1 ? 14 : 0 }}>
-              <div style={{ fontSize: 11.5, fontWeight: 500, color: '#FFFFFF', marginBottom: 4, fontFamily: "'Outfit', 'Inter', sans-serif" }}>{q}</div>
-              <div style={{ fontSize: 10, color: '#A0AEC0', lineHeight: 1.6, fontWeight: 400, fontFamily: "'Outfit', 'Inter', sans-serif" }}>{a}</div>
-            </div>
-          ))}
         </div>
       </div>
 
