@@ -457,7 +457,7 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
 
             {/* Graphic Right */}
             <div className="desktop-only" style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '50%', minHeight: 320, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', zIndex: 1 }}>
-              <img src="/staking_banner_graphic.png" alt="Raffle Graphic" style={{ height: '100%', width: '100%', objectFit: 'cover', filter: 'hue-rotate(220deg)', transform: 'scaleX(-1) scaleY(-1)', maskImage: 'linear-gradient(to left, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%)', WebkitMaskImage: 'linear-gradient(to left, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%)', zIndex: 1 }} />
+              <img src="/staking_banner_graphic.png" alt="Raffle Graphic" style={{ height: '100%', width: '100%', objectFit: 'cover', maskImage: 'linear-gradient(to left, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%)', WebkitMaskImage: 'linear-gradient(to left, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%)' }} />
             </div>
           </div>
 
