@@ -123,6 +123,28 @@ export const CSS = `
     #main-content-scroll {
       padding: 16px 12px 64px !important;
     }
+
+    /* Daily Raffle Mobile Adjustments */
+    .raffle-hero-padding {
+      padding: 24px 16px !important;
+      min-height: auto !important;
+    }
+    .raffle-hero-title {
+      font-size: 24px !important;
+    }
+    .raffle-stat-gap {
+      gap: 16px !important;
+    }
+    .raffle-stat-value {
+      font-size: 22px !important;
+    }
+    .raffle-timer-value {
+      font-size: 26px !important;
+    }
+    .raffle-hero-badge {
+      font-size: 10px !important;
+      padding: 3px 8px !important;
+    }
   }
 
   @media (min-width: 769px) {
