@@ -570,72 +570,7 @@ export function RaffleSection({ address, basename, onRequireWallet }) {
 
 
 
-          {/* Bet buttons */}
-          <div style={{ marginBottom: 16 }}>
-            <div style={{
-              fontFamily: "'Outfit', 'Inter', sans-serif",
-              fontSize: 11.5,
-              color: '#4A5568',
-              fontWeight: 800,
-              letterSpacing: '0.6px',
-              marginBottom: 8,
-              textTransform: 'uppercase'
-            }}>
-              Place Your Bet
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-              {BET_OPTS.map(a => (
-                <button
-                  key={a}
-                  type="button"
-                  onClick={() => onBetClick(a)}
-                  disabled={isClosed || isPending || isConfirming}
-                  style={{
-                    background: '#222533', 
-                    border: '1px solid rgba(255, 255, 255, 0.05)',
-                    borderRadius: 16,
-                    padding: '12px 6px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 3,
-                    boxShadow: 'none', 
-                    cursor: 'pointer',
-                    opacity: isClosed ? 0.45 : 1,
-                    transition: 'all 0.2s',
-                    outline: 'none'
-                  }}
-                >
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 4,
-                    fontFamily: "'Barlow Condensed', sans-serif",
-                    fontSize: 16,
-                    fontWeight: 700,
-                    color: '#FFFFFF',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.3px',
-                    fontVariantNumeric: 'tabular-nums'
-                  }}>
-                    {isHH ? formatConcise(a / hhPrice) : a}
-                    <img
-                      src={isHH ? "/logo.jfif" : "/usdc-logo.png"}
-                      alt=""
-                      style={{
-                        width: 14,
-                        height: 14,
-                        borderRadius: isHH ? '50%' : 'none',
-                        objectFit: 'cover'
-                      }}
-                    />
-                  </div>
-                  <div style={{ fontSize: 8.5, color: '#E5E7EB', fontWeight: 800, fontFamily: "'Outfit', 'Inter', sans-serif", marginTop: 2 }}>
-                    {isHH ? `≈$${a} · ` : ''}{Math.round(a / TICKET_UNIT)} TICKET{Math.round(a / TICKET_UNIT) > 1 ? 'S' : ''}
-                  </div>
-                </button>
+
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
             {/* Left Column: Actions & Winner */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -832,7 +767,6 @@ export function RaffleSection({ address, basename, onRequireWallet }) {
                           {displayTotalPot > 0 ? (p.amount / displayTotalPot * 100).toFixed(1) : 0}%
                         </span>
                       </div>
-                    </div>
                     </div>
                   </div>
                 ))}
