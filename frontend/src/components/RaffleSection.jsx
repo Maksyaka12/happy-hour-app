@@ -31,8 +31,7 @@ const pColor  = (addr) => {
 const fmt = (ms) => {
   const s = Math.max(0, Math.floor(ms / 1000))
   const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), ss = s % 60
-  if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(ss).padStart(2, '0')}`
-  return `${String(m).padStart(2, '0')}:${String(ss).padStart(2, '0')}`
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(ss).padStart(2, '0')}`
 }
 
 const formatConcise = (num) => {
@@ -406,128 +405,110 @@ export function RaffleSection({ address, basename, onRequireWallet }) {
   }
 
   return (
-    <div style={{ maxWidth: 640, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 12, padding: '12px 12px 120px', animation: 'fadeIn 0.3s ease-out' }}>
+    <div style={{ width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 24, padding: '24px', animation: 'fadeIn 0.3s ease-out' }}>
 
       {/* Raffle View Split */}
       {isHH && (
         <>
-          {/* Hero card */}
-          <div className="card-strict" style={{
-            background: heroCardBg,
-            backdropFilter: 'blur(8px)',
-            WebkitBackdropFilter: 'blur(8px)',
-            border: cardBorder,
-            borderRadius: 16,
-            padding: '20px 18px 16px',
-            marginBottom: 12,
-            boxShadow: cardShadow,
+          {/* Hero Banner */}
+          <div style={{
+            width: '100%',
+            background: 'linear-gradient(135deg, rgba(16,18,27,1) 0%, rgba(20,22,35,1) 100%)',
+            borderRadius: 24,
             position: 'relative',
-            overflow: 'hidden'
+            border: '1px solid rgba(255,255,255,0.05)',
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            minHeight: 320,
+            marginBottom: 24
           }}>
-            {/* Removed White overlay dot & radial gradient glow as per strict specs */}
-
-            <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-              <div style={{ fontSize: 24, fontWeight: 600, color: '#FFFFFF', letterSpacing: '0.2px', textTransform: 'uppercase', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-                Round #${displayRound?.id ?? '—'} Raffle
-              </div>
-              <span style={{
-                background: isClosed ? 'rgba(252, 64, 31, 0.1)' : 'rgba(16, 185, 129, 0.15)',
-                color: isClosed ? '#FC401F' : '#10B981',
-                padding: '0 8px',
-                height: 24,
-                display: 'flex',
-                alignItems: 'center',
-                borderRadius: 8,
-                fontSize: 13,
-                fontWeight: 600,
-                border: isClosed ? '1px solid rgba(252, 64, 31, 0.25)' : '1px solid rgba(16, 185, 129, 0.25)',
-                fontFamily: "'Outfit', 'Inter', sans-serif"
-              }}>
-                {isClosed ? 'DEPOSITS CLOSED' : 'ACTIVE'}
-              </span>
+            {/* Glow Effects (Contained) */}
+            <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: 24, pointerEvents: 'none' }}>
+              <div style={{ position: 'absolute', top: '-20%', left: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)', filter: 'blur(40px)' }} />
+              <div style={{ position: 'absolute', bottom: '-20%', left: '30%', width: '40%', height: '50%', background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%)', filter: 'blur(40px)' }} />
+              <div style={{ position: 'absolute', top: 0, right: 0, width: '45%', height: '100%', background: 'radial-gradient(circle at right, rgba(59, 130, 246, 0.08) 0%, transparent 60%)' }} />
             </div>
 
-            {/* Two Plates Layout */}
-            <div style={{
-              position: 'relative',
-              zIndex: 2,
-              display: 'grid',
-              gridTemplateColumns: '1.2fr 0.8fr',
-              gap: 12,
-              marginBottom: 16
-            }}>
-              {/* Left Plate: Prize Pool */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-                <span style={{ fontSize: 13, fontWeight: 500, color: '#A0AEC0', letterSpacing: '0.5px', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-                  PRIZE POOL
-                </span>
-                <div style={{
-                  background: 'rgba(23, 25, 35, 0.65)',
-                  backdropFilter: 'blur(8px)',
-                  WebkitBackdropFilter: 'blur(8px)',
-                  border: '1px solid rgba(255, 255, 255, 0.05)',
-                  borderRadius: 16,
-                  height: 52,
-                  padding: '0 12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  boxShadow: 'none'
+            {/* Content Left */}
+            <div className="raffle-hero-padding" style={{ flex: 1, padding: '32px 24px', position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+                <div className="raffle-hero-badge" style={{
+                  background: isClosed ? 'rgba(252, 64, 31, 0.1)' : 'rgba(16, 185, 129, 0.15)',
+                  color: isClosed ? '#FC401F' : '#10B981',
+                  padding: '6px 14px', borderRadius: 12, fontSize: 11, fontWeight: 700,
+                  border: isClosed ? '1px solid rgba(252, 64, 31, 0.25)' : '1px solid rgba(16, 185, 129, 0.25)',
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  fontFamily: "'Outfit', 'Inter', sans-serif"
                 }}>
-                  <img src={isHH ? "/logo.jfif" : "/usdc-logo.png"} alt="" style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover' }} />
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span style={{ fontSize: 28, fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: '#FFFFFF', fontFamily: "'Outfit', 'Inter', sans-serif", lineHeight: 1.1 }}>
-                      {isHH ? `${formatConcise(displayTotalPot)} $HH` : `${displayTotalPot.toFixed(2)} USDC`}
-                    </span>
-                    <span style={{ fontSize: 13, color: 'rgba(255, 255, 255, 0.45)', fontWeight: 500, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-                      {isHH ? `≈$${(displayTotalPot * hhPrice).toFixed(2)}` : `≈$${displayTotalPot.toFixed(2)}`}
-                    </span>
+                  {isClosed ? 'DEPOSITS CLOSED' : 'ACTIVE'}
+                </div>
+              </div>
+              
+              <h1 className="raffle-hero-title" style={{ fontSize: 36, fontWeight: 700, color: '#FFFFFF', lineHeight: 1.2, margin: 0, fontFamily: "'Inter', sans-serif", letterSpacing: '-0.5px' }}>
+                Hourly Lottery · Round #{displayRound?.id ?? '—'}
+              </h1>
+              
+              <div className="raffle-stat-gap" style={{ display: 'flex', gap: 32, marginTop: 12, flexWrap: 'wrap', alignItems: 'flex-start' }}>
+                {/* Total Pot Plate */}
+                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 16, padding: '16px 32px', minWidth: 200, backdropFilter: 'blur(12px)', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Pot</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <img src="/logo.jfif" alt="" style={{ width: 36, height: 36, borderRadius: '50%', boxShadow: '0 0 12px rgba(255,255,255,0.1)' }} />
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <div className="raffle-stat-value" style={{ fontSize: 28, fontWeight: 700, color: '#FFFFFF', lineHeight: 1 }}>
+                        {Number(displayTotalPot).toLocaleString('en-US')} $HH
+                      </div>
+                      <div style={{ fontSize: 14, color: '#10B981', fontWeight: 600, marginTop: 4 }}>
+                        ≈${(displayTotalPot * hhPrice).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                      </div>
+                    </div>
                   </div>
                 </div>
+
+                {/* My Position Plate */}
+                {displayMyEntry && (
+                  <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 16, padding: '16px 32px', minWidth: 200, backdropFilter: 'blur(12px)', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>My Position</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <div className="raffle-stat-value" style={{ fontSize: 28, fontWeight: 700, color: '#FFFFFF', lineHeight: 1 }}>
+                          {displayMyTickets} Tickets
+                        </div>
+                        <div style={{ fontSize: 14, color: '#3B82F6', fontWeight: 600, marginTop: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                          Chance: {displayMyChance}%
+                          {winChanceBoost > 0 && <span style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#10B981', padding: '2px 6px', borderRadius: 6, fontSize: 10, fontWeight: 700 }}>+{winChanceBoost}% Boost</span>}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* Right Plate: Timer */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-                <span style={{ fontSize: 13, fontWeight: 500, color: '#A0AEC0', letterSpacing: '0.5px', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-                  {isClosed ? 'DRAWS IN' : 'TIME LEFT'}
-                </span>
-                <div style={{
-                  background: 'rgba(23, 25, 35, 0.65)',
-                  backdropFilter: 'blur(8px)',
-                  WebkitBackdropFilter: 'blur(8px)',
-                  border: '1px solid rgba(255, 255, 255, 0.05)',
-                  borderRadius: 16,
-                  height: 52,
-                  padding: '0 12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: 'none'
-                }}>
-                  <span style={{
-                    fontFamily: "'Barlow Condensed', sans-serif",
-                    fontSize: 24,
-                    fontWeight: 700,
-                    color: timerColor,
-                    fontVariantNumeric: 'tabular-nums'
-                  }}>
-                    {fmt(msLeft)}
+              <div style={{ position: 'relative', zIndex: 2, marginTop: 24, maxWidth: 480 }}>
+                <PBar participants={displayParticipants} totalPot={displayTotalPot} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10, flexWrap: 'wrap', gap: 4 }}>
+                  <span style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.6)', fontWeight: 600, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                    👥 {displayParticipants.length} players · {displayParticipants.reduce((s, p) => s + (p.tickets || 0), 0)} tickets
                   </span>
                 </div>
               </div>
             </div>
 
-            <div style={{ position: 'relative', zIndex: 2 }}>
-              <PBar participants={displayParticipants} totalPot={displayTotalPot} />
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10, flexWrap: 'wrap', gap: 4 }}>
-                <span style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.6)', fontWeight: 600, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-                  👥 {displayParticipants.length} players · {displayParticipants.reduce((s, p) => s + (p.tickets || 0), 0)} tickets
-                </span>
-                {displayMyEntry && (
-                  <span style={{ fontSize: 11, color: '#FFFFFF', fontWeight: 500, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-                    Your chance: <span style={{ color: '#FFFFFF', fontVariantNumeric: 'tabular-nums' }}>{displayMyChance}%</span>
-                  </span>
-                )}
+            {/* Big Timer Right */}
+            <div className="desktop-only" style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '45%', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: '32px 48px', background: 'rgba(255,255,255,0.02)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 32, boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '2px' }}>
+                  {isClosed ? 'DRAWS IN' : 'TIME TO DRAW'}
+                </div>
+                <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 64, fontWeight: 700, color: timerColor, letterSpacing: '2px', lineHeight: 1, textShadow: `0 0 20px ${isClosed ? 'rgba(252, 64, 31, 0.3)' : 'rgba(255,255,255,0.2)'}` }}>
+                  {fmt(msLeft)}
+                </div>
+                <div style={{ display: 'flex', gap: 32, opacity: 0.5 }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: '#FFF', letterSpacing: '1px' }}>HOURS</div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: '#FFF', letterSpacing: '1px' }}>MINS</div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: '#FFF', letterSpacing: '1px' }}>SECS</div>
+                </div>
               </div>
             </div>
           </div>
@@ -587,53 +568,7 @@ export function RaffleSection({ address, basename, onRequireWallet }) {
             </div>
           )}
 
-          {/* My position */}
-          {displayMyEntry && (
-            <div style={{
-              background: cardBg,
-              border: cardBorder, 
-              borderLeft: `4px solid ${accentColor}`,
-              borderRadius: 14,
-              padding: '12px 16px',
-              marginBottom: 16,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              boxShadow: cardShadow,
-            }}>
-              <div>
-                <div style={{ fontSize: 9, color: '#A0AEC0', fontWeight: 800, marginBottom: 4, letterSpacing: '0.5px', textTransform: 'uppercase', fontFamily: "'Outfit', 'Inter', sans-serif" }}>YOUR POSITION</div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF', fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-                  {displayMyTickets} tickets · <span style={{ color: '#FFFFFF' }}>
-                    {isHH ? `${formatConcise(displayMyAmount)} $HH` : `${displayMyAmount.toFixed(2)} USDC`}
-                  </span>
-                  <span style={{ fontSize: 10.5, color: '#A0AEC0', marginLeft: 6, fontWeight: 500 }}>
-                    {isHH ? `≈$${(displayMyAmount * hhPrice).toFixed(2)}` : `≈$${displayMyAmount.toFixed(2)}`}
-                  </span>
-                </div>
-              </div>
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-end',
-              }}>
-                {winChanceBoost > 0 && (
-                  <div style={{ fontSize: 10, fontWeight: 900, color: '#10B981', backgroundColor: 'rgba(16, 185, 129, 0.15)', padding: '2px 6px', borderRadius: 6, marginBottom: 4 }}>
-                    +{winChanceBoost}% Boost
-                  </div>
-                )}
-                <div style={{
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: 26,
-                  fontWeight: 700,
-                  color: '#FFFFFF',
-                  fontVariantNumeric: 'tabular-nums'
-                }}>
-                  {displayMyChance}%
-                </div>
-              </div>
-            </div>
-          )}
+
 
           {/* Bet buttons */}
           <div style={{ marginBottom: 16 }}>
@@ -701,32 +636,175 @@ export function RaffleSection({ address, basename, onRequireWallet }) {
                     {isHH ? `≈$${a} · ` : ''}{Math.round(a / TICKET_UNIT)} TICKET{Math.round(a / TICKET_UNIT) > 1 ? 'S' : ''}
                   </div>
                 </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Participants */}
-          {displayParticipants.length > 0 && (
-            <div style={{ marginBottom: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
+            {/* Left Column: Actions & Winner */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+              
+              {/* Bet buttons */}
               <div style={{
-                fontFamily: "'Outfit', 'Inter', sans-serif",
-                fontSize: 11.5,
-                color: '#4A5568',
-                fontWeight: 800,
-                letterSpacing: '0.6px',
-                marginBottom: 8,
-                textTransform: 'uppercase'
+                background: 'rgba(23, 25, 35, 0.65)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                border: '1px solid rgba(255, 255, 255, 0.05)',
+                borderRadius: 24,
+                padding: '24px'
               }}>
-                Participants
+                <div style={{
+                  fontFamily: "'Outfit', 'Inter', sans-serif",
+                  fontSize: 14,
+                  color: '#FFFFFF',
+                  fontWeight: 700,
+                  letterSpacing: '0.5px',
+                  marginBottom: 16,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8
+                }}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#3B82F6', boxShadow: '0 0 10px #3B82F6' }} />
+                  PLACE YOUR BET
+                </div>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+                  {BET_OPTS.map(a => (
+                    <button
+                      key={a}
+                      type="button"
+                      onClick={() => onBetClick(a)}
+                      disabled={isClosed || isPending || isConfirming}
+                      style={{
+                        background: 'rgba(255,255,255,0.03)', 
+                        border: '1px solid rgba(255, 255, 255, 0.05)',
+                        borderRadius: 16,
+                        padding: '16px 8px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 6,
+                        cursor: isClosed ? 'not-allowed' : 'pointer',
+                        opacity: isClosed ? 0.5 : 1,
+                        transition: 'all 0.2s ease',
+                        outline: 'none'
+                      }}
+                      onMouseEnter={(e) => { if (!isClosed) e.currentTarget.style.background = 'rgba(255,255,255,0.08)' }}
+                      onMouseLeave={(e) => { if (!isClosed) e.currentTarget.style.background = 'rgba(255,255,255,0.03)' }}
+                    >
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 6,
+                        fontFamily: "'Barlow Condensed', sans-serif",
+                        fontSize: 20,
+                        fontWeight: 700,
+                        color: '#FFFFFF',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px',
+                        fontVariantNumeric: 'tabular-nums'
+                      }}>
+                        {isHH ? formatConcise(a / hhPrice) : a}
+                        <img
+                          src={isHH ? "/logo.jfif" : "/usdc-logo.png"}
+                          alt=""
+                          style={{
+                            width: 16,
+                            height: 16,
+                            borderRadius: isHH ? '50%' : 'none',
+                            objectFit: 'cover'
+                          }}
+                        />
+                      </div>
+                      <div style={{ fontSize: 11, color: '#94A3B8', fontWeight: 600, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                        {isHH && <span style={{color: '#10B981'}}>≈${a}</span>}
+                        {isHH && ' · '}
+                        <span style={{color: '#fff'}}>{Math.round(a / TICKET_UNIT)} TICKET{Math.round(a / TICKET_UNIT) > 1 ? 'S' : ''}</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
               </div>
+              {/* Last winner (moved inside left column) */}
+              {lastWinner && (
+                <div style={{
+                  background: 'rgba(23, 25, 35, 0.65)',
+                  backdropFilter: 'blur(12px)',
+                  WebkitBackdropFilter: 'blur(12px)',
+                  border: '1px solid rgba(255, 255, 255, 0.05)',
+                  borderTop: `3px solid #10B981`,
+                  borderRadius: 24,
+                  padding: '20px 24px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 16,
+                }}>
+                  <div style={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: '50%',
+                    background: 'rgba(16, 185, 129, 0.15)',
+                    border: `2px solid #10B981`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 24,
+                    flexShrink: 0,
+                  }}>🏆</div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 11, color: '#94A3B8', fontWeight: 800, marginBottom: 4, letterSpacing: '1px', fontFamily: "'Outfit', 'Inter', sans-serif" }}>LAST WINNER</div>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF', fontFamily: "'Outfit', 'Inter', sans-serif" }}>{lastWinner.name}</div>
+                    <div style={{ fontSize: 12, color: '#94A3B8', fontWeight: 600, marginTop: 2, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
+                      Win chance: <span style={{ color: '#FFFFFF', fontWeight: 800 }}>{lastWinner.chance}%</span>
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 24, fontWeight: 700, color: '#10B981', fontVariantNumeric: 'tabular-nums' }}>
+                      +{isHH ? `${formatConcise(parseFloat(lastWinner.amount))} $HH` : `${lastWinner.amount} USDC`}
+                    </div>
+                    {isHH && (
+                      <div style={{ fontSize: 12, color: '#A0AEC0', fontWeight: 600, marginTop: 2, fontFamily: "'Outfit', 'Inter', sans-serif", fontVariantNumeric: 'tabular-nums' }}>
+                        ≈ ${(parseFloat(lastWinner.amount) * hhPrice).toFixed(2)}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Right Column: Participants */}
+            {displayParticipants.length > 0 && (
               <div style={{
-                background: cardBg,
-                border: cardBorder,
-                borderTop: `3px solid ${accentColor}`,
-                borderRadius: 14,
-                overflow: 'hidden',
-                boxShadow: cardShadow,
+                background: 'rgba(23, 25, 35, 0.65)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                border: '1px solid rgba(255, 255, 255, 0.05)',
+                borderRadius: 24,
+                padding: '24px',
+                display: 'flex',
+                flexDirection: 'column'
               }}>
+                <div style={{
+                  fontFamily: "'Outfit', 'Inter', sans-serif",
+                  fontSize: 14,
+                  color: '#FFFFFF',
+                  fontWeight: 700,
+                  letterSpacing: '0.5px',
+                  marginBottom: 16,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8
+                }}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 10px #10B981' }} />
+                  RECENT PARTICIPANTS
+                </div>
+                
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 8,
+                  overflowY: 'auto',
+                  maxHeight: '400px',
+                  paddingRight: '8px'
+                }}>
                 {displayParticipants.map((p, i) => (
                   <div key={i} style={{
                     display: 'flex',
@@ -755,73 +833,14 @@ export function RaffleSection({ address, basename, onRequireWallet }) {
                         </span>
                       </div>
                     </div>
+                    </div>
                   </div>
                 ))}
-              </div>
-            </div>
-          )}
-        </>
-      )}
-
-      {/* Last winner */}
-      {lastWinner && (
-        <div style={{ marginBottom: 16 }}>
-          <div style={{
-            fontFamily: "'Outfit', 'Inter', sans-serif",
-            fontSize: 11.5,
-            color: '#4A5568',
-            fontWeight: 800,
-            letterSpacing: '0.6px',
-            marginBottom: 8,
-            textTransform: 'uppercase'
-          }}>
-            Last Winner
-          </div>
-          <div style={{
-            background: cardBg,
-            border: cardBorder,
-            borderTop: `3px solid ${accentColor}`,
-            borderRadius: 14,
-            padding: '14px 16px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-            boxShadow: cardShadow,
-          }}>
-            <div style={{
-              width: 38,
-              height: 38,
-              borderRadius: '50%',
-              background: glowColor.replace('0.25', '0.15'),
-              border: `1.5px solid ${accentColor}`,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 18,
-              flexShrink: 0,
-            }}>🏆</div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 9, color: '#A0AEC0', fontWeight: 800, marginBottom: 3, letterSpacing: '0.5px', fontFamily: "'Outfit', 'Inter', sans-serif" }}>LAST WINNER</div>
-              <div style={{ fontSize: 13, fontWeight: 800, color: '#FFFFFF', fontFamily: "'Outfit', 'Inter', sans-serif" }}>{lastWinner.name}</div>
-              <div style={{ fontSize: 9.5, color: '#A0AEC0', fontWeight: 700, marginTop: 1, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-                Win chance: <span style={{ color: '#FFFFFF', fontWeight: 800 }}>{lastWinner.chance}%</span>
-              </div>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 18, fontWeight: 700, color: '#FFFFFF', fontVariantNumeric: 'tabular-nums' }}>
-                +{isHH ? `${formatConcise(parseFloat(lastWinner.amount))} $HH` : `${lastWinner.amount} USDC`}
-              </div>
-              {isHH && (
-                <div style={{ fontSize: 10, color: '#10B981', fontWeight: 500, marginTop: 1, fontFamily: "'Outfit', 'Inter', sans-serif", fontVariantNumeric: 'tabular-nums' }}>
-                  ≈$${(parseFloat(lastWinner.amount) * hhPrice).toFixed(2)}
                 </div>
-              )}
-              <div style={{ fontSize: 9, color: '#A0AEC0', fontWeight: 600, marginTop: 2, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-                of {isHH ? `${formatConcise(parseFloat(lastWinner.pot))} $HH` : `${lastWinner.pot} USDC`}
               </div>
-            </div>
+            )}
           </div>
-        </div>
+        </>
       )}
 
       {/* How it works */}
