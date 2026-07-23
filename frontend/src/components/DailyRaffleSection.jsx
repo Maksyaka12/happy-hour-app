@@ -479,7 +479,7 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
                   <span>{dailySponsor}</span>
                   <span style={{ background: 'rgba(59, 130, 246, 0.2)', width: 16, height: 16, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10 }}>ℹ</span>
                   <div className="hh-tooltip-text">
-                    The lottery sponsor can be any project, a member of the Base Ecosystem. The reward pool can be formed from any ERC-20 / B20 tokens on Base.
+                    The lottery sponsor can be any project / member of the Base Ecosystem. The reward pool can be formed from any ERC-20 / B20 tokens on Base.
                   </div>
                 </div>
 
@@ -489,7 +489,7 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
                   VRF proved by ChainLink
                   <span style={{ background: 'rgba(16, 185, 129, 0.2)', width: 16, height: 16, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10 }}>ℹ</span>
                   <div className="hh-tooltip-text">
-                    What Is a Verifiable Random Function (VRF)? A verifiable random function is a cryptographic function that takes a series of inputs, computes them, and produces a pseudorandom output, along with a proof of authenticity that can be verified by anyone. Powered by ChainLink.
+                    VRF - A verifiable random function is a cryptographic function that takes a series of inputs, computes them, and produces a pseudorandom output, along with a proof of authenticity that can be verified by anyone. Powered by ChainLink.
                   </div>
                 </div>
               </div>
@@ -498,9 +498,9 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
                 Daily Lottery · Round #{dailyRound}
               </h1>
               
-              <div className="raffle-stat-gap" style={{ display: 'flex', gap: 32, marginTop: 12, flexWrap: 'wrap', alignItems: 'flex-start', width: '100%' }}>
+              <div className="raffle-stat-gap" style={{ display: 'flex', gap: 32, marginTop: 12, flexWrap: 'wrap', alignItems: 'flex-start' }}>
                 {/* Prize Pool Plate */}
-                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 16, padding: '16px 32px', width: '100%', backdropFilter: 'blur(12px)', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 16, padding: '16px 32px', minWidth: 380, backdropFilter: 'blur(12px)', display: 'flex', flexDirection: 'column', gap: 8 }}>
                   <div style={{ fontSize: 12, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Prize Pool</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <img src="/logo.jfif" alt="" style={{ width: 36, height: 36, borderRadius: '50%', boxShadow: '0 0 12px rgba(255,255,255,0.1)' }} />
