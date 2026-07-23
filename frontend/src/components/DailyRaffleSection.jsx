@@ -39,15 +39,15 @@ const formatConcise = (num) => {
   const n = parseFloat(num || 0)
   if (n >= 1e9) {
     const val = (n / 1e9).toFixed(2)
-    return val.endsWith('.00') ? val.slice(0, -3) + 'b' : val.endsWith('0') ? val.slice(0, -1) + 'b' : val + 'b'
+    return val.endsWith('.00') ? val.slice(0, -3) + 'B' : val.endsWith('0') ? val.slice(0, -1) + 'B' : val + 'B'
   }
   if (n >= 1e6) {
     const val = (n / 1e6).toFixed(2)
-    return val.endsWith('.00') ? val.slice(0, -3) + 'm' : val.endsWith('0') ? val.slice(0, -1) + 'm' : val + 'm'
+    return val.endsWith('.00') ? val.slice(0, -3) + 'M' : val.endsWith('0') ? val.slice(0, -1) + 'M' : val + 'M'
   }
   if (n >= 1e3) {
     const val = (n / 1e3).toFixed(2)
-    return val.endsWith('.00') ? val.slice(0, -3) + 'k' : val.endsWith('0') ? val.slice(0, -1) + 'k' : val + 'k'
+    return val.endsWith('.00') ? val.slice(0, -3) + 'K' : val.endsWith('0') ? val.slice(0, -1) + 'K' : val + 'K'
   }
   return n.toFixed(2).replace(/\.00$/, '')
 }
@@ -424,9 +424,10 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
         padding: 12px;
         position: absolute;
         z-index: 100;
-        bottom: 125%;
+        top: 100%;
+        margin-top: 10px;
         left: 50%;
-        margin-left: -140px;
+        transform: translateX(-50%);
         opacity: 0;
         transition: opacity 0.2s;
         font-size: 11px;
@@ -454,17 +455,18 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
             background: 'linear-gradient(135deg, rgba(16,18,27,1) 0%, rgba(20,22,35,1) 100%)',
             borderRadius: 24,
             position: 'relative',
-            overflow: 'hidden',
             border: '1px solid rgba(255,255,255,0.05)',
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
             minHeight: 320
           }}>
-            {/* Glow Effects */}
-            <div style={{ position: 'absolute', top: '-20%', left: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
-            <div style={{ position: 'absolute', bottom: '-20%', left: '30%', width: '40%', height: '50%', background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
-            <div style={{ position: 'absolute', top: 0, right: 0, width: '45%', height: '100%', background: 'radial-gradient(circle at right, rgba(59, 130, 246, 0.08) 0%, transparent 60%)', pointerEvents: 'none' }} />
+            {/* Glow Effects (Contained) */}
+            <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: 24, pointerEvents: 'none' }}>
+              <div style={{ position: 'absolute', top: '-20%', left: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)', filter: 'blur(40px)' }} />
+              <div style={{ position: 'absolute', bottom: '-20%', left: '30%', width: '40%', height: '50%', background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%)', filter: 'blur(40px)' }} />
+              <div style={{ position: 'absolute', top: 0, right: 0, width: '45%', height: '100%', background: 'radial-gradient(circle at right, rgba(59, 130, 246, 0.08) 0%, transparent 60%)' }} />
+            </div>
 
             {/* Content Left */}
             <div className="raffle-hero-padding" style={{ flex: 1, padding: '32px 24px', position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -498,8 +500,8 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
               
               <div className="raffle-stat-gap" style={{ display: 'flex', gap: 32, marginTop: 12, flexWrap: 'wrap', alignItems: 'flex-start' }}>
                 {/* Prize Pool Plate */}
-                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 16, padding: '16px 24px', backdropFilter: 'blur(12px)', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estimated Prize</div>
+                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 16, padding: '16px 32px', minWidth: 240, backdropFilter: 'blur(12px)', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Prize Pool</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <img src="/logo.jfif" alt="" style={{ width: 36, height: 36, borderRadius: '50%', boxShadow: '0 0 12px rgba(255,255,255,0.1)' }} />
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
