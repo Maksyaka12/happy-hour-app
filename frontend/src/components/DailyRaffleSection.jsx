@@ -60,6 +60,19 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
   const [txModal,      setTxModal]      = useState(null) // { amount }
   const [spinData, setSpinData] = useState(null)
 
+  // Galxe-style Social Tasks
+  const [xVerified, setXVerified] = useState(false)
+  const [xVerifying, setXVerifying] = useState(false)
+
+  const handleVerifyX = () => {
+    setXVerifying(true)
+    window.open('https://x.com/happyhour_base', '_blank')
+    setTimeout(() => {
+      setXVerifying(false)
+      setXVerified(true)
+    }, 3500)
+  }
+
   const [hhPrice, setHhPrice] = useState(0.00025)
 
   // Fetch HH price from DexScreener
@@ -182,7 +195,9 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
   })
 
   const isDailyEligible = isDailyEligibleRaw !== undefined ? isDailyEligibleRaw : simulatedDailyEligible
-  const dailyUserTickets = dailyUserTicketsRaw !== undefined ? Number(dailyUserTicketsRaw) : simulatedDailyTickets
+  const baseTickets = dailyUserTicketsRaw !== undefined ? Number(dailyUserTicketsRaw) : simulatedDailyTickets
+  const bonusTickets = (isDailyEligible && xVerified) ? 1 : 0
+  const dailyUserTickets = baseTickets + bonusTickets
   const dailyPool = dailyPoolRaw !== undefined ? Number(formatUnits(dailyPoolRaw, 18)) : 10000000 // default 10M HH
   const dailyTimeRemaining = dailyTimeRemainingRaw !== undefined ? Number(dailyTimeRemainingRaw) : 0
   const dailySponsor = dailySponsorRaw || 'Happy Hour'
@@ -392,6 +407,42 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
 
   return (
     <div style={{ animation: 'fadeIn 0.3s ease-out', width: '100%', maxWidth: 1200, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 24, paddingBottom: 120, color: '#FFFFFF', fontFamily: "'Inter', sans-serif" }}>
+      <style>
+      {`
+      .hh-tooltip {
+        position: relative;
+        display: inline-flex;
+        cursor: help;
+      }
+      .hh-tooltip .hh-tooltip-text {
+        visibility: hidden;
+        width: 280px;
+        background-color: rgba(15, 23, 42, 0.95);
+        color: #fff;
+        text-align: left;
+        border-radius: 12px;
+        padding: 12px;
+        position: absolute;
+        z-index: 100;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -140px;
+        opacity: 0;
+        transition: opacity 0.2s;
+        font-size: 11px;
+        font-weight: 500;
+        line-height: 1.5;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        border: 1px solid rgba(255,255,255,0.1);
+        font-family: 'Inter', sans-serif;
+        pointer-events: none;
+      }
+      .hh-tooltip:hover .hh-tooltip-text {
+        visibility: visible;
+        opacity: 1;
+      }
+      `}
+      </style>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
         
@@ -412,20 +463,37 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
           }}>
             {/* Glow Effects */}
             <div style={{ position: 'absolute', top: '-20%', left: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
-            <div style={{ position: 'absolute', bottom: '-20%', right: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', bottom: '-20%', left: '30%', width: '40%', height: '50%', background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', top: 0, right: 0, width: '45%', height: '100%', background: 'radial-gradient(circle at right, rgba(59, 130, 246, 0.08) 0%, transparent 60%)', pointerEvents: 'none' }} />
 
             {/* Content Left */}
             <div className="raffle-hero-padding" style={{ flex: 1, padding: '32px 24px', position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-                <span className="raffle-hero-badge" style={{
-                  background: 'rgba(59, 130, 246, 0.15)', color: '#3B82F6', padding: '4px 12px', borderRadius: 12, fontSize: 11, fontWeight: 700, border: '1px solid rgba(59, 130, 246, 0.3)'
-                }}>Sponsored by {dailySponsor}</span>
-                <span className="raffle-hero-badge" style={{
-                  background: 'rgba(16, 185, 129, 0.1)', color: '#34D399', padding: '4px 12px', borderRadius: 12, fontSize: 11, fontWeight: 700, border: '1px solid rgba(16, 185, 129, 0.2)'
-                }}>VRF PROVED</span>
+                <div className="raffle-hero-badge hh-tooltip" style={{
+                  background: 'rgba(59, 130, 246, 0.15)', color: '#3B82F6', padding: '6px 14px', borderRadius: 12, fontSize: 11, fontWeight: 700, border: '1px solid rgba(59, 130, 246, 0.3)', display: 'flex', alignItems: 'center', gap: 6
+                }}>
+                  <span>Sponsored by</span>
+                  <img src="/logo.jfif" alt="sponsor logo" style={{ width: 14, height: 14, borderRadius: '50%' }} />
+                  <span>{dailySponsor}</span>
+                  <span style={{ background: 'rgba(59, 130, 246, 0.2)', width: 16, height: 16, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10 }}>ℹ</span>
+                  <div className="hh-tooltip-text">
+                    The lottery sponsor can be any project, a member of the Base Ecosystem. The reward pool can be formed from any ERC-20 / B20 tokens on Base.
+                  </div>
+                </div>
+
+                <div className="raffle-hero-badge hh-tooltip" style={{
+                  background: 'rgba(16, 185, 129, 0.1)', color: '#34D399', padding: '6px 14px', borderRadius: 12, fontSize: 11, fontWeight: 700, border: '1px solid rgba(16, 185, 129, 0.2)', display: 'flex', alignItems: 'center', gap: 6
+                }}>
+                  VRF proved by ChainLink
+                  <span style={{ background: 'rgba(16, 185, 129, 0.2)', width: 16, height: 16, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10 }}>ℹ</span>
+                  <div className="hh-tooltip-text">
+                    What Is a Verifiable Random Function (VRF)? A verifiable random function is a cryptographic function that takes a series of inputs, computes them, and produces a pseudorandom output, along with a proof of authenticity that can be verified by anyone. Powered by ChainLink.
+                  </div>
+                </div>
               </div>
-              <h1 className="raffle-hero-title" style={{ fontSize: 32, fontWeight: 600, color: '#FFFFFF', lineHeight: 1.2, margin: 0, fontFamily: "'Inter', sans-serif", letterSpacing: '-0.5px' }}>
-                Daily Raffle · Round #{dailyRound}
+              
+              <h1 className="raffle-hero-title" style={{ fontSize: 36, fontWeight: 700, color: '#FFFFFF', lineHeight: 1.2, margin: 0, fontFamily: "'Inter', sans-serif", letterSpacing: '-0.5px' }}>
+                Daily Lottery · Round #{dailyRound}
               </h1>
               
               <div className="raffle-stat-gap" style={{ display: 'flex', gap: 32, marginTop: 12, flexWrap: 'wrap', alignItems: 'flex-start' }}>
@@ -444,89 +512,112 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
                     </div>
                   </div>
                 </div>
-
-                {/* Timer Plate */}
-                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 16, padding: '16px 24px', backdropFilter: 'blur(12px)', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Time Left</div>
-                  <div className="raffle-timer-value" style={{ fontSize: 36, fontWeight: 700, color: dailyTimeRemaining > 0 ? '#FFFFFF' : '#FC401F', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
-                    {dailyTimeRemaining > 0 ? new Date(dailyTimeRemaining * 1000).toISOString().substr(11, 8) : '00:00:00'}
-                  </div>
-                </div>
               </div>
             </div>
 
-            {/* Graphic Right */}
-            <div className="desktop-only" style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '50%', minHeight: 320, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', zIndex: 1 }}>
-              <img src="/staking_banner_graphic.png" alt="Raffle Graphic" style={{ height: '100%', width: '100%', objectFit: 'cover', maskImage: 'linear-gradient(to left, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%)', WebkitMaskImage: 'linear-gradient(to left, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%)' }} />
+            {/* Big Timer Right */}
+            <div className="desktop-only" style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '45%', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: '32px 48px', background: 'rgba(255,255,255,0.02)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 32, boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
+                <div style={{ fontSize: 14, fontWeight: 700, color: '#3B82F6', textTransform: 'uppercase', letterSpacing: '2px' }}>Time to Draw</div>
+                <div className="raffle-timer-value" style={{ fontSize: 56, fontWeight: 900, color: dailyTimeRemaining > 0 ? '#FFFFFF' : '#FC401F', fontVariantNumeric: 'tabular-nums', lineHeight: 1, textShadow: dailyTimeRemaining > 0 ? '0 0 30px rgba(59, 130, 246, 0.4)' : '0 0 30px rgba(252, 64, 31, 0.4)' }}>
+                  {dailyTimeRemaining > 0 ? new Date(dailyTimeRemaining * 1000).toISOString().substr(11, 8) : '00:00:00'}
+                </div>
+                <div style={{ display: 'flex', gap: 24, color: '#94A3B8', fontSize: 12, fontWeight: 600, marginTop: -4 }}>
+                  <span style={{ width: 44, textAlign: 'center' }}>HOURS</span>
+                  <span style={{ width: 44, textAlign: 'center' }}>MINS</span>
+                  <span style={{ width: 44, textAlign: 'center' }}>SECS</span>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Eligibility Card */}
+          {/* Eligibility Tasks (Galxe Style) */}
           <div style={{
             background: cardBg,
-            border: isDailyEligible ? '1px solid rgba(16, 185, 129, 0.3)' : cardBorder,
+            border: cardBorder,
             borderRadius: cardRadius,
-            padding: 24,
+            padding: 0,
             display: 'flex',
             flexDirection: 'column',
-            gap: 16
+            overflow: 'hidden'
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                <div style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: 8 }}>
-                  {isDailyEligible ? '🟢 Eligible for Draw' : '⚪ Not Eligible'}
-                </div>
-                <div style={{ fontSize: 13, color: '#94A3B8', lineHeight: 1.5, maxWidth: 280 }}>
-                  {isDailyEligible 
-                    ? "You are automatically entered into today's daily draw!" 
-                    : "Buy at least 1 ticket in the hourly raffle today to qualify for the daily draw."
-                  }
-                </div>
-              </div>
-              
-              {isDailyEligible && (
-                <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: 4 }}>
-                  <div style={{ fontSize: 20, fontWeight: 700, color: '#10B981' }}>
-                    {dailyUserTickets} TICKET{dailyUserTickets > 1 ? 'S' : ''}
-                  </div>
-                  <div style={{ fontSize: 11, color: '#64748B', fontWeight: 600, textTransform: 'uppercase' }}>
-                    Weighted chance
-                  </div>
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF' }}>Eligibility Tasks</div>
+              {dailyUserTickets > 0 && (
+                <div style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34D399', padding: '4px 12px', borderRadius: 12, fontSize: 12, fontWeight: 800 }}>
+                  {dailyUserTickets} TICKET{dailyUserTickets > 1 ? 'S' : ''}
                 </div>
               )}
             </div>
-
-            {!isDailyEligible && (
-              <button
-                type="button"
-                onClick={() => {}}
-                style={{
-                  width: '100%', padding: '12px', borderRadius: 12, border: 'none', background: '#3B82F6', color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', marginTop: 8
-                }}
-              >
-                Buy Ticket in Hourly Raffle
-              </button>
-            )}
-
-            {dailyTimeRemaining === 0 && (
-              <button
-                type="button"
-                onClick={triggerDailyDraw}
-                style={{
-                  width: '100%', padding: '12px', borderRadius: 12, border: 'none', background: '#3B82F6', color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', marginTop: 8
-                }}
-              >
-                🎯 Trigger Daily Draw (VRF)
-              </button>
-            )}
             
-            <div style={{ textAlign: 'center', marginTop: 4 }}>
-              <span 
-                onClick={simulateDailyEligibility}
-                style={{ fontSize: 11, fontWeight: 600, color: '#64748B', cursor: 'pointer', textDecoration: 'underline' }}
-              >
-                [Dev] Simulate eligibility (10 tickets)
-              </span>
+            {/* Task 1: Buy Hourly Ticket */}
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
+                  🎫
+                </div>
+                <div>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: '#FFFFFF' }}>Buy Hourly Ticket</div>
+                  <div style={{ fontSize: 13, color: '#94A3B8', marginTop: 2 }}>Buy at least 1 ticket in the hourly raffle today</div>
+                </div>
+              </div>
+              <div style={{ flexShrink: 0 }}>
+                {isDailyEligible ? (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#10B981', fontSize: 14, fontWeight: 700 }}>
+                    <span style={{ fontSize: 18 }}>✓</span> Verified
+                  </div>
+                ) : (
+                  <button type="button" onClick={() => {}} style={{ padding: '8px 20px', borderRadius: 12, border: 'none', background: '#3B82F6', color: '#FFFFFF', fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: '0.2s', boxShadow: '0 4px 12px rgba(59, 130, 246, 0.2)' }}>
+                    Go
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Task 2: Follow on X */}
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, opacity: isDailyEligible ? 1 : 0.5, pointerEvents: isDailyEligible ? 'auto' : 'none' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
+                  𝕏
+                </div>
+                <div>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: 8 }}>
+                    Follow @happyhour_base
+                    <span style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#34D399', fontSize: 10, fontWeight: 800, padding: '2px 8px', borderRadius: 8 }}>+1 Ticket</span>
+                  </div>
+                  <div style={{ fontSize: 13, color: '#94A3B8', marginTop: 2 }}>{isDailyEligible ? 'Follow our official X account to get a bonus ticket' : 'Requires completing the first task'}</div>
+                </div>
+              </div>
+              <div style={{ flexShrink: 0 }}>
+                {xVerified ? (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#10B981', fontSize: 14, fontWeight: 700 }}>
+                    <span style={{ fontSize: 18 }}>✓</span> Verified
+                  </div>
+                ) : (
+                  <button type="button" onClick={handleVerifyX} disabled={xVerifying} style={{ padding: '8px 20px', borderRadius: 12, border: 'none', background: xVerifying ? 'rgba(255,255,255,0.1)' : '#FFFFFF', color: xVerifying ? '#94A3B8' : '#0F172A', fontSize: 13, fontWeight: 700, cursor: xVerifying ? 'wait' : 'pointer', transition: '0.2s', boxShadow: xVerifying ? 'none' : '0 4px 12px rgba(255,255,255,0.1)' }}>
+                    {xVerifying ? 'Verifying...' : 'Verify'}
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Status / Triggers */}
+            <div style={{ padding: '16px 24px', background: 'rgba(255,255,255,0.02)', display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {dailyTimeRemaining === 0 && (
+                <button
+                  type="button"
+                  onClick={triggerDailyDraw}
+                  style={{ width: '100%', padding: '12px', borderRadius: 12, border: 'none', background: '#10B981', color: '#FFFFFF', fontSize: 14, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 12px rgba(16, 185, 129, 0.2)' }}
+                >
+                  🎯 Trigger Daily Draw (VRF)
+                </button>
+              )}
+              
+              <div style={{ textAlign: 'center' }}>
+                <span onClick={simulateDailyEligibility} style={{ fontSize: 11, fontWeight: 600, color: '#64748B', cursor: 'pointer', textDecoration: 'underline' }}>
+                  [Dev] Simulate eligibility (10 tickets)
+                </span>
+              </div>
             </div>
           </div>
         </div>
