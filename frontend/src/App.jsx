@@ -24,6 +24,7 @@ import { Header } from './components/Header'
 import { DailyRaffleSection } from './components/DailyRaffleSection'
 import { ComingSoonScreen } from './components/ComingSoonScreen'
 import SwapSection from './components/SwapSection'
+import { AdminPage } from './components/AdminPage'
 
 const short = (a) => (a ? `${a.slice(0, 6)}\u2026${a.slice(-4)}` : '\u2014')
 
@@ -69,6 +70,7 @@ const URL_TO_TAB = {
   '/hh-chart': 'hhChart',
   '/hh-swap': 'hhSwap',
   '/wallet': 'wallet',
+  '/admin': 'admin',
 }
 
 const TAB_TO_URL = Object.fromEntries(Object.entries(URL_TO_TAB).map(([k, v]) => [v, k]))
@@ -89,6 +91,7 @@ TAB_TO_URL['hhIntro'] = '/hh-intro'
 TAB_TO_URL['hhChart'] = '/hh-chart'
 TAB_TO_URL['hhSwap'] = '/hh-swap'
 TAB_TO_URL['wallet'] = '/wallet'
+TAB_TO_URL['admin'] = '/admin'
 
 function useAppRouter() {
   const [tab, setTabState] = useState(() => {
@@ -365,6 +368,8 @@ export default function App({ onLogin, onLogout, privyUser, privyWallets = [] })
     }
 
     switch (tab) {
+      case 'admin':
+        return <AdminPage />
       case 'home':
         return <ProfileSection address={effectiveAddress} basename={basename} totalUsers={totalUsers} setTab={setTab} onRequireWallet={handleRequireWallet} onLogout={handleLogout} />
       case 'raffle':

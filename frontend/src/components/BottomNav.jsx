@@ -49,13 +49,24 @@ const NAV_ICONS = {
   ),
 }
 
-export function BottomNav({ tab, setTab }) {
+export function BottomNav({ tab, setTab, isAdmin }) {
   const tabs = [
     { id: 'raffle',   label: 'Raffle',    icon: NAV_ICONS.raffle },
     { id: 'contests', label: 'Campaigns', icon: NAV_ICONS.contests },
     { id: 'earn',     label: 'Staking',   icon: NAV_ICONS.earn },
     { id: 'home',     label: 'Profile',   icon: NAV_ICONS.home },
   ]
+  if (isAdmin) {
+    tabs.push({
+      id: 'admin',
+      label: 'Admin',
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        </svg>
+      )
+    })
+  }
 
   // Base App bug fixed, no offset needed
   const bottomOffset = 0
