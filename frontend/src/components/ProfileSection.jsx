@@ -515,162 +515,104 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
     <div style={{ animation: 'fadeIn 0.3s ease-out', width: '100%', maxWidth: 1200, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 24, paddingBottom: 120, color: '#FFFFFF', fontFamily: "'Inter', sans-serif" }}>
       
       {/* Profile Hero Banner */}
-      <div
-        style={{
-          background: 'linear-gradient(135deg, rgba(16,18,27,1) 0%, rgba(20,22,35,1) 100%)',
-          borderRadius: 24,
-          padding: '40px 48px',
-          position: 'relative',
-          overflow: 'hidden',
-          border: '1px solid rgba(255,255,255,0.05)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 24
-        }}
-      >
-        {/* Top row: Identity and Disconnect */}
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <div style={{
+        width: '100%',
+        background: 'linear-gradient(135deg, rgba(16,18,27,1) 0%, rgba(20,22,35,1) 100%)',
+        borderRadius: 24,
+        position: 'relative',
+        border: '1px solid rgba(255,255,255,0.05)',
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        minHeight: 320,
+        marginBottom: 24
+      }}>
+        {/* Glow Effects (Contained) */}
+        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: 24, pointerEvents: 'none' }}>
+          <div style={{ position: 'absolute', top: '-20%', left: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)', filter: 'blur(40px)' }} />
+          <div style={{ position: 'absolute', bottom: '-20%', left: '30%', width: '40%', height: '50%', background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%)', filter: 'blur(40px)' }} />
+          <div style={{ position: 'absolute', top: 0, right: 0, width: '45%', height: '100%', background: 'radial-gradient(circle at right, rgba(59, 130, 246, 0.08) 0%, transparent 60%)' }} />
+        </div>
+
+        {/* Content Left */}
+        <div style={{ flex: 1, padding: '32px 48px', position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
             <div style={{
-              width: 56,
-              height: 56,
-              borderRadius: '50%',
-              overflow: 'hidden',
-              border: '2px solid rgba(255,255,255,0.2)',
-              background: 'rgba(255,255,255,0.1)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
+              background: isClubMember ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.1)',
+              color: isClubMember ? '#10B981' : '#94A3B8',
+              padding: '6px 14px', borderRadius: 12, fontSize: 11, fontWeight: 700,
+              border: isClubMember ? '1px solid rgba(16, 185, 129, 0.25)' : '1px solid rgba(255, 255, 255, 0.1)',
+              display: 'flex', alignItems: 'center', gap: 6,
+              fontFamily: "'Outfit', 'Inter', sans-serif"
             }}>
-              <UserAvatar address={address} size={56} profilePictureUrl={privyUser?.twitter?.profilePictureUrl} />
+              {isClubMember && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', animation: 'blinkDot 1s infinite' }} />}
+              {isClubMember ? 'HAPPY CLUB MEMBER' : 'STANDARD USER'}
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <div style={{ fontSize: 20, fontWeight: 900, color: '#FFFFFF', letterSpacing: '-0.3px', fontFamily: "'Outfit', sans-serif" }}>
+          </div>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+            <div style={{
+              width: 80, height: 80, borderRadius: '50%', overflow: 'hidden', border: '3px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.1)'
+            }}>
+              <UserAvatar address={address} size={80} profilePictureUrl={privyUser?.twitter?.profilePictureUrl} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <h1 style={{ fontSize: 36, fontWeight: 700, color: '#FFFFFF', lineHeight: 1.2, margin: 0, fontFamily: "'Inter', sans-serif", letterSpacing: '-0.5px' }}>
                 {basename || short(address)}
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                {isClubMember ? (
-                  <div style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#10B981', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '2px 8px', borderRadius: 8, fontSize: 11, fontWeight: 800 }}>
-                    Happy Club Member
-                  </div>
-                ) : (
-                  <div style={{ background: 'rgba(255, 255, 255, 0.1)', color: '#94A3B8', border: '1px solid rgba(255, 255, 255, 0.1)', padding: '2px 8px', borderRadius: 8, fontSize: 11, fontWeight: 700 }}>
-                    Standard User
-                  </div>
-                )}
+              </h1>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <button
+                  onClick={() => onLogout ? onLogout() : disconnect()}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', color: '#FFFFFF', borderRadius: 12, padding: '6px 16px', fontSize: 11, fontWeight: 800, cursor: 'pointer', transition: 'all 0.2s ease', outline: 'none'
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'; }}
+                >
+                  DISCONNECT
+                </button>
               </div>
             </div>
           </div>
           
-          <button
-            onClick={() => onLogout ? onLogout() : disconnect()}
-            style={{
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              color: '#FFFFFF',
-              borderRadius: 12,
-              padding: '8px 16px',
-              fontSize: 11.5,
-              fontWeight: 800,
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              outline: 'none'
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'; }}
-          >
-            DISCONNECT
-          </button>
+          {/* My Badges */}
+          {(isHolder || isStaker) && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12 }}>
+              <div style={{ fontSize: 11, fontWeight: 900, color: 'rgba(255,255,255,0.6)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+                My Badges
+              </div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {isHolder && (
+                  <div style={{ background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '6px 12px', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ fontSize: 14 }}>✨</span>
+                    <span style={{ fontSize: 12, fontWeight: 900, color: '#10B981', fontFamily: "'Outfit', 'Inter', sans-serif" }}>Happy Holder</span>
+                  </div>
+                )}
+                {isStaker && (
+                  <div style={{ background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '6px 12px', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ fontSize: 14 }}>✨</span>
+                    <span style={{ fontSize: 12, fontWeight: 900, color: '#10B981', fontFamily: "'Outfit', 'Inter', sans-serif" }}>Happy Staker</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Divider */}
-        <div style={{ position: 'relative', zIndex: 1, height: 1, background: 'rgba(255,255,255,0.1)', margin: '0' }} />
-
-        {/* Two-column balance stats */}
-        <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-          {/* HP Balance */}
-          <div style={{
-            background: '#1A1C24',
-            padding: '24px',
-            borderRadius: 16,
-            border: '1px solid rgba(255, 255, 255, 0.05)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 4
-          }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#94A3B8' }}>Loyalty Balance</div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-              <span style={{ fontSize: 32, fontWeight: 900, color: '#fff', fontFamily: "'Outfit', sans-serif" }}>
-                {userStats.points.toLocaleString()}
-              </span>
-              <span style={{ fontSize: 16, fontWeight: 900, color: '#A5B4FC' }}>HP</span>
+        {/* Big Timer Right -> Loyalty Points Right */}
+        <div className="desktop-only" style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '45%', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: '32px 48px', background: 'rgba(255,255,255,0.02)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 32, boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '2px' }}>
+              LOYALTY BALANCE
             </div>
-          </div>
-
-          {/* $HH Wallet Balance */}
-          <div style={{
-            background: '#1A1C24',
-            padding: '24px',
-            borderRadius: 16,
-            border: '1px solid rgba(255, 255, 255, 0.05)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 4
-          }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#94A3B8' }}>Wallet Balance</div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-              <span style={{ fontSize: 32, fontWeight: 900, color: '#fff', fontFamily: "'Outfit', sans-serif" }}>
-                {formatConcise(walletBalance)}
-              </span>
-              <span style={{ fontSize: 16, fontWeight: 900, color: '#A5B4FC' }}>$HH</span>
+            <div style={{ fontFamily: "'Outfit', 'Inter', sans-serif", fontSize: 64, fontWeight: 700, color: '#FFFFFF', letterSpacing: '2px', lineHeight: 1, textShadow: '0 0 20px rgba(255,255,255,0.2)' }}>
+              {userStats.points.toLocaleString()}
+            </div>
+            <div style={{ display: 'flex', gap: 32, opacity: 0.5 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#FFF', letterSpacing: '1px' }}>HP EARNED</div>
             </div>
           </div>
         </div>
-
-        {/* My Badges */}
-        {(isHolder || isStaker) && (
-          <div style={{
-            position: 'relative',
-            zIndex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 8
-          }}>
-            <div style={{ fontSize: 11, fontWeight: 900, color: 'rgba(255,255,255,0.6)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-              My Badges
-            </div>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {isHolder && (
-                <div style={{
-                  background: 'rgba(16, 185, 129, 0.15)',
-                  border: '1px solid rgba(16, 185, 129, 0.3)',
-                  padding: '6px 12px',
-                  borderRadius: 12,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6
-                }}>
-                  <span style={{ fontSize: 14 }}>✨</span>
-                  <span style={{ fontSize: 12, fontWeight: 900, color: '#10B981', fontFamily: "'Outfit', 'Inter', sans-serif" }}>Happy Holder</span>
-                </div>
-              )}
-              {isStaker && (
-                <div style={{
-                  background: 'rgba(16, 185, 129, 0.15)',
-                  border: '1px solid rgba(16, 185, 129, 0.3)',
-                  padding: '6px 12px',
-                  borderRadius: 12,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6
-                }}>
-                  <span style={{ fontSize: 14 }}>✨</span>
-                  <span style={{ fontSize: 12, fontWeight: 900, color: '#10B981', fontFamily: "'Outfit', 'Inter', sans-serif" }}>Happy Staker</span>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Daily Check-in Card — full width, moved from EarnSection */}
