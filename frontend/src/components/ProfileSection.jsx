@@ -63,6 +63,71 @@ const safeParseUnits = (amountStr, decimals = 18) => {
 
 export function ProfileSection({ address, basename, totalUsers, setTab, onRequireWallet, onLogout }) {
   const { user: privyUser } = usePrivy()
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useDisconnect, useWriteContract, useBalance, useReadContract, useChainId, useSwitchChain } from 'wagmi'
+import { usePrivy, useWallets } from '@privy-io/react-auth'
+import { formatUnits, parseUnits, encodeFunctionData } from 'viem'
+import { base } from 'wagmi/chains'
+import { APP_URL, FOUNDATION, CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI, HH_MANAGER_ADDRESS, STAKING_ADDRESS, STAKING_ABI, MEMBERSHIP_ADDRESS, MEMBERSHIP_ABI } from '../config/constants'
+import { db } from '../config/supabase'
+import { UserAvatar } from './UserAvatar'
+import { HistorySection } from './HistorySection'
+import { useBuilderWrite } from '../hooks/useBuilderWrite'
+import { TxModal } from './TxModal'
+
+const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
+
+const formatNumber = (num, decimals = 2) => {
+  return parseFloat(num || 0).toLocaleString('en-US', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
+  })
+}
+
+const formatConcise = (num) => {
+  const n = parseFloat(num || 0)
+  if (n >= 1e9) {
+    const val = (n / 1e9).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'b' : val.endsWith('0') ? val.slice(0, -1) + 'b' : val + 'b'
+  }
+  if (n >= 1e6) {
+    const val = (n / 1e6).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'm' : val.endsWith('0') ? val.slice(0, -1) + 'm' : val + 'm'
+  }
+  if (n >= 1e3) {
+    const val = (n / 1e3).toFixed(2)
+    return val.endsWith('.00') ? val.slice(0, -3) + 'k' : val.endsWith('0') ? val.slice(0, -1) + 'k' : val + 'k'
+  }
+  return n.toFixed(2).replace(/\.00$/, '')
+}
+
+const formatExactOrConcise = (balanceData) => {
+  if (!balanceData) return '0.00';
+  const num = parseFloat(balanceData.formatted);
+  return num.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 6
+  });
+}
+
+const safeParseUnits = (amountStr, decimals = 18) => {
+  if (!amountStr || isNaN(amountStr)) return 0n;
+  const parts = amountStr.trim().split('.');
+  let processed = amountStr.trim();
+  if (parts.length > 1) {
+    processed = `${parts[0]}.${parts[1].slice(0, decimals)}`;
+  }
+  try {
+    return parseUnits(processed, decimals);
+  } catch (e) {
+    console.error("Error parsing units:", e);
+    return 0n;
+  }
+}
+
+
+export function ProfileSection({ address, basename, totalUsers, setTab, onRequireWallet, onLogout }) {
+  const { user: privyUser } = usePrivy()
   const { disconnect } = useDisconnect()
   const { wallets } = useWallets()
   const { writeContract: wagmiWriteContract } = useWriteContract()
@@ -70,7 +135,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
   // DexScreener States
   const [hhPrice, setHhPrice] = useState(0.00025)
   const [priceChange, setPriceChange] = useState(8.4)
-
+  
   // Happy Club Purchase States
   const [showClubModal, setShowClubModal] = useState(false)
   const [clubModalDuration, setClubModalDuration] = useState(30)
@@ -79,6 +144,25 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
   const [clubIsSending, setClubIsSending] = useState(false)
   const [clubTxHash, setClubTxHash] = useState(null)
   const [clubError, setClubError] = useState(null)
+  const [showClubPlanSelect, setShowClubPlanSelect] = useState(false)
+  const [showClubWalletSelect, setShowClubWalletSelect] = useState(false)
+  const [showClubTokenSelect, setShowClubTokenSelect] = useState(false)
+
+  const CLUB_TOKENS = {
+    usdc: { symbol: 'USDC', logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png' },
+    eth: { symbol: 'ETH', logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png' },
+    hh: { symbol: 'HH', logo: '/logo.jfif' }
+  }
+
+  const CLUB_PLANS = [
+    { value: 30, label: '30 Days (1 mo)' },
+    { value: 365, label: '365 Days (Save 20%)' }
+  ]
+
+  const CLUB_WALLETS = [
+    { id: 'embedded', label: 'Embedded Wallet' },
+    { id: 'external', label: 'External Wallet' }
+  ]
 
   // Wallets logic
   const embeddedWallet = wallets.find(w => w.walletClientType === 'privy')
@@ -873,11 +957,11 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
 
       {/* Happy Club Payment Modal */}
       {showClubModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }} onClick={() => setShowClubModal(false)}>
-          <div style={{ background: '#11131F', borderRadius: 24, padding: 24, width: 400, maxWidth: '90%', border: '1px solid rgba(255,255,255,0.1)', fontFamily: "'Inter', sans-serif" }} onClick={e => e.stopPropagation()}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000, padding: 16 }} onClick={() => { setShowClubModal(false); setShowClubPlanSelect(false); setShowClubWalletSelect(false); setShowClubTokenSelect(false); }}>
+          <div style={{ background: '#1A1D2E', borderRadius: 20, padding: 28, width: '100%', maxWidth: 460, border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 24px 64px rgba(0,0,0,0.4)', fontFamily: 'Inter, sans-serif' }} onClick={e => { e.stopPropagation(); setShowClubPlanSelect(false); setShowClubWalletSelect(false); setShowClubTokenSelect(false); }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <h2 style={{ color: '#FFFFFF', fontSize: 18, fontWeight: 700, margin: 0 }}>Happy Club Membership</h2>
-              <button onClick={() => setShowClubModal(false)} style={{ background: 'transparent', border: 'none', color: '#94A3B8', fontSize: 20, cursor: 'pointer' }}>✕</button>
+              <h2 style={{ color: '#FFFFFF', fontSize: 18, fontWeight: 700, margin: 0 }}>Happy Club</h2>
+              <button onClick={() => setShowClubModal(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#94A3B8', fontSize: 18, lineHeight: 1 }}>✕</button>
             </div>
             
             {clubTxHash ? (
@@ -885,76 +969,114 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
                 <div style={{ fontSize: 40, marginBottom: 12 }}>✅</div>
                 <div style={{ color: '#22C55E', fontWeight: 700, fontSize: 16, marginBottom: 8 }}>Payment Sent!</div>
                 <div style={{ color: '#94A3B8', fontSize: 13, fontFamily: 'monospace', wordBreak: 'break-all' }}>{clubTxHash}</div>
-                <button onClick={() => { setShowClubModal(false); setClubTxHash(null); }} style={{ width: '100%', background: '#3B82F6', color: '#FFF', border: 'none', padding: '14px', borderRadius: 12, marginTop: 24, cursor: 'pointer', fontWeight: 600 }}>Close</button>
+                <button onClick={() => { setShowClubModal(false); setClubTxHash(null); }} style={{ width: '100%', background: '#3B82F6', color: '#FFFFFF', border: 'none', borderRadius: 12, padding: '14px 0', fontSize: 15, fontWeight: 700, cursor: 'pointer', marginTop: 20 }}>Close</button>
               </div>
             ) : (
               <>
-                {/* Duration */}
-                <div style={{ marginBottom: 16 }}>
-                  <label style={{ display: 'block', color: '#94A3B8', fontSize: 13, marginBottom: 8, fontWeight: 600 }}>Plan</label>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <button 
-                      onClick={() => setClubModalDuration(30)}
-                      style={{ flex: 1, padding: '12px', borderRadius: 12, border: clubModalDuration === 30 ? '1px solid #3B82F6' : '1px solid rgba(255,255,255,0.1)', background: clubModalDuration === 30 ? 'rgba(59,130,246,0.1)' : 'rgba(255,255,255,0.02)', color: '#FFF', cursor: 'pointer', fontWeight: 600, fontSize: 13 }}
-                    >
-                      30 Days
-                    </button>
-                    <button 
-                      onClick={() => setClubModalDuration(365)}
-                      style={{ flex: 1, padding: '12px', borderRadius: 12, border: clubModalDuration === 365 ? '1px solid #3B82F6' : '1px solid rgba(255,255,255,0.1)', background: clubModalDuration === 365 ? 'rgba(59,130,246,0.1)' : 'rgba(255,255,255,0.02)', color: '#FFF', cursor: 'pointer', fontWeight: 600, fontSize: 13 }}
-                    >
-                      365 Days <span style={{ color: '#F59E0B', fontSize: 11 }}>(-20%)</span>
-                    </button>
-                  </div>
-                </div>
+                <p style={{ color: '#94A3B8', fontSize: 14, marginBottom: 16 }}>Select your subscription plan and payment method</p>
 
-                {/* Wallet mode toggle */}
-                <div style={{ marginBottom: 16 }}>
-                  <label style={{ display: 'block', color: '#94A3B8', fontSize: 13, marginBottom: 8, fontWeight: 600 }}>Wallet mode</label>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', background: 'rgba(255,255,255,0.03)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <div>
-                      <div style={{ fontSize: 14, color: '#F8FAFC', fontWeight: 600 }}>{clubModalWalletType === 'embedded' ? 'Embedded Wallet' : 'External Wallet'}</div>
-                    </div>
-                    <button
-                      onClick={() => setClubModalWalletType(prev => prev === 'embedded' ? 'external' : 'embedded')}
-                      style={{
-                        position: 'relative', width: 44, height: 24, background: clubModalWalletType === 'external' ? '#3B82F6' : 'rgba(255,255,255,0.15)', borderRadius: 12, border: 'none', cursor: 'pointer', transition: 'background 0.2s', padding: 0,
-                      }}
-                    >
-                      <div style={{ position: 'absolute', top: 3, left: clubModalWalletType === 'external' ? 23 : 3, width: 18, height: 18, background: '#FFFFFF', borderRadius: '50%', transition: 'left 0.2s' }} />
-                    </button>
-                  </div>
-                  {!activeClubWallet && (
-                    <div style={{ color: '#F59E0B', fontSize: 12, marginTop: 4 }}>
-                      {clubModalWalletType === 'external' ? 'No external wallet found. Connect one in Account settings.' : 'No embedded wallet found.'}
+                {/* Plan Selector */}
+                <label style={{ display: 'block', fontSize: 14, color: '#94A3B8', marginBottom: 8 }}>Plan</label>
+                <div style={{ position: 'relative', marginBottom: 16 }}>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setShowClubPlanSelect(!showClubPlanSelect); setShowClubWalletSelect(false); setShowClubTokenSelect(false); }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 14px', background: 'rgba(255,255,255,0.05)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)', width: '100%', cursor: 'pointer', justifyContent: 'space-between' }}
+                  >
+                    <span style={{ color: '#FFFFFF', fontSize: 15, fontWeight: 600 }}>
+                      {CLUB_PLANS.find(p => p.value === clubModalDuration)?.label}
+                    </span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                  
+                  {showClubPlanSelect && (
+                    <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 8, background: '#1A1D2E', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, overflow: 'hidden', zIndex: 100, boxShadow: '0 10px 40px rgba(0,0,0,0.5)' }}>
+                      {CLUB_PLANS.map(p => (
+                        <button
+                          key={p.value}
+                          onClick={(e) => { e.stopPropagation(); setClubModalDuration(p.value); setShowClubPlanSelect(false); }}
+                          style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', background: 'transparent', border: 'none', borderBottom: '1px solid rgba(255,255,255,0.05)', cursor: 'pointer' }}
+                        >
+                          <span style={{ color: '#FFFFFF', fontSize: 15, fontWeight: 600 }}>{p.label}</span>
+                        </button>
+                      ))}
                     </div>
                   )}
                 </div>
 
-                {/* Token */}
-                <div style={{ marginBottom: 24 }}>
-                  <label style={{ display: 'block', color: '#94A3B8', fontSize: 13, marginBottom: 8, fontWeight: 600 }}>Pay with</label>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    {['usdc', 'eth', 'hh'].map(t => (
-                      <button
-                        key={t}
-                        onClick={() => setClubModalToken(t)}
-                        style={{
-                          flex: 1, padding: '12px 0', borderRadius: 12, border: clubModalToken === t ? '1px solid #3B82F6' : '1px solid rgba(255,255,255,0.1)', background: clubModalToken === t ? 'rgba(59,130,246,0.1)' : 'rgba(255,255,255,0.02)', color: '#FFF', cursor: 'pointer', fontWeight: 600, fontSize: 13, textTransform: 'uppercase'
-                        }}
-                      >
-                        {t}
-                      </button>
-                    ))}
-                  </div>
+                {/* Wallet Selector */}
+                <label style={{ display: 'block', fontSize: 14, color: '#94A3B8', marginBottom: 8 }}>Pay from Wallet</label>
+                <div style={{ position: 'relative', marginBottom: 16 }}>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setShowClubWalletSelect(!showClubWalletSelect); setShowClubPlanSelect(false); setShowClubTokenSelect(false); }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 14px', background: 'rgba(255,255,255,0.05)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)', width: '100%', cursor: 'pointer', justifyContent: 'space-between' }}
+                  >
+                    <span style={{ color: '#FFFFFF', fontSize: 15, fontWeight: 600 }}>
+                      {CLUB_WALLETS.find(w => w.id === clubModalWalletType)?.label}
+                    </span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                  
+                  {showClubWalletSelect && (
+                    <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 8, background: '#1A1D2E', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, overflow: 'hidden', zIndex: 100, boxShadow: '0 10px 40px rgba(0,0,0,0.5)' }}>
+                      {CLUB_WALLETS.map(w => (
+                        <button
+                          key={w.id}
+                          onClick={(e) => { e.stopPropagation(); setClubModalWalletType(w.id); setShowClubWalletSelect(false); }}
+                          style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', background: 'transparent', border: 'none', borderBottom: '1px solid rgba(255,255,255,0.05)', cursor: 'pointer' }}
+                        >
+                          <span style={{ color: '#FFFFFF', fontSize: 15, fontWeight: 600 }}>{w.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {!activeClubWallet && (
+                    <div style={{ color: '#EF4444', fontSize: 13, marginTop: 8 }}>
+                      {clubModalWalletType === 'external' ? 'No external wallet found. Please link one in Account settings.' : 'No embedded wallet found.'}
+                    </div>
+                  )}
                 </div>
 
-                {/* Amount */}
-                <div style={{ background: 'rgba(0,0,0,0.2)', padding: 16, borderRadius: 12, marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ color: '#94A3B8', fontSize: 14 }}>Amount to pay</span>
-                  <span style={{ color: '#FFF', fontSize: 18, fontWeight: 700 }}>
-                    {clubModalToken === 'hh' ? formatConcise((hhPriceMember * clubModalDuration) / 30) : clubModalToken === 'usdc' ? ((usdcPriceMember * clubModalDuration) / 30).toFixed(0) : ((ethPriceMember * clubModalDuration) / 30).toFixed(4)} {clubModalToken.toUpperCase()}
-                  </span>
+                {/* Token Selector */}
+                <label style={{ display: 'block', fontSize: 14, color: '#94A3B8', marginBottom: 8 }}>Token</label>
+                <div style={{ position: 'relative', marginBottom: 16 }}>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setShowClubTokenSelect(!showClubTokenSelect); setShowClubPlanSelect(false); setShowClubWalletSelect(false); }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 14px', background: 'rgba(255,255,255,0.05)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)', width: '100%', cursor: 'pointer', justifyContent: 'space-between' }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <img src={CLUB_TOKENS[clubModalToken].logo} alt={CLUB_TOKENS[clubModalToken].symbol} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover' }} />
+                      <span style={{ color: '#FFFFFF', fontSize: 15, fontWeight: 600 }}>{CLUB_TOKENS[clubModalToken].symbol}</span>
+                    </div>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                  
+                  {showClubTokenSelect && (
+                    <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 8, background: '#1A1D2E', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, overflow: 'hidden', zIndex: 100, boxShadow: '0 10px 40px rgba(0,0,0,0.5)' }}>
+                      {Object.values(CLUB_TOKENS).map(t => (
+                        <button
+                          key={t.symbol}
+                          onClick={(e) => { e.stopPropagation(); setClubModalToken(t.symbol.toLowerCase()); setShowClubTokenSelect(false); }}
+                          style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', background: 'transparent', border: 'none', borderBottom: '1px solid rgba(255,255,255,0.05)', cursor: 'pointer' }}
+                        >
+                          <img src={t.logo} alt={t.symbol} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover' }} />
+                          <span style={{ color: '#FFFFFF', fontSize: 15, fontWeight: 600 }}>{t.symbol}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Amount (Readonly) */}
+                <label style={{ display: 'block', fontSize: 14, color: '#94A3B8', marginBottom: 8 }}>Amount</label>
+                <div style={{ position: 'relative', marginBottom: 24 }}>
+                  <input
+                    value={clubModalToken === 'hh' ? formatConcise((hhPriceMember * clubModalDuration) / 30) : clubModalToken === 'usdc' ? ((usdcPriceMember * clubModalDuration) / 30).toFixed(0) : ((ethPriceMember * clubModalDuration) / 30).toFixed(4)}
+                    readOnly
+                    style={{ width: '100%', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 10, padding: '12px 14px', color: '#FFFFFF', fontSize: 15, boxSizing: 'border-box', outline: 'none', fontFamily: 'inherit', fontWeight: 600 }}
+                  />
+                  <div style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8', fontSize: 14, fontWeight: 600 }}>
+                    {CLUB_TOKENS[clubModalToken].symbol}
+                  </div>
                 </div>
 
                 {clubError && <div style={{ color: '#EF4444', fontSize: 13, marginBottom: 16 }}>{clubError}</div>}
@@ -962,18 +1084,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
                 <button
                   onClick={handleBuyMembership}
                   disabled={clubIsSending || !activeClubWallet}
-                  style={{
-                    width: '100%',
-                    padding: '14px',
-                    background: '#3B82F6',
-                    color: '#FFF',
-                    border: 'none',
-                    borderRadius: 12,
-                    fontSize: 15,
-                    fontWeight: 700,
-                    cursor: clubIsSending || !activeClubWallet ? 'not-allowed' : 'pointer',
-                    opacity: clubIsSending || !activeClubWallet ? 0.5 : 1
-                  }}
+                  style={{ width: '100%', background: '#3B82F6', color: '#FFFFFF', border: 'none', borderRadius: 12, padding: '14px 0', fontSize: 15, fontWeight: 700, cursor: clubIsSending || !activeClubWallet ? 'not-allowed' : 'pointer', opacity: (clubIsSending || !activeClubWallet) ? 0.5 : 1 }}
                 >
                   {clubIsSending ? 'Processing...' : 'Confirm Payment'}
                 </button>
