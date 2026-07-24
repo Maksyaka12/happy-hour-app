@@ -548,7 +548,7 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
             <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF' }}>Eligibility Tasks</div>
-                <div className="status-dot blinking" style={{ background: '#10B981', boxShadow: '0 0 12px rgba(16, 185, 129, 0.4)' }}></div>
+                <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#FFFFFF', animation: 'blinkDot 1s infinite', boxShadow: '0 0 12px rgba(255,255,255,0.4)' }}></div>
               </div>
               {dailyUserTickets > 0 && (
                 <div style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34D399', padding: '4px 12px', borderRadius: 12, fontSize: 12, fontWeight: 800 }}>
@@ -567,7 +567,7 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
                 </div>
                 <div>
                   <div style={{ fontSize: 15, fontWeight: 600, color: '#FFFFFF' }}>Buy Hourly Ticket</div>
-                  <div style={{ fontSize: 13, color: '#94A3B8', marginTop: 2 }}>Buy at least 1 ticket in the hourly raffle today</div>
+                  <div style={{ fontSize: 13, color: '#94A3B8', marginTop: 2 }}>Buy at least 1 ticket in the hourly lottery today</div>
                 </div>
               </div>
               <div style={{ flexShrink: 0 }}>
