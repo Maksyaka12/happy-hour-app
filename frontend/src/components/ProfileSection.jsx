@@ -517,7 +517,6 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
       {/* Profile Hero Banner */}
       <div
         style={{
-        style={{
           background: 'var(--card-bg)',
           backdropFilter: 'blur(12px)',
           borderRadius: 24,
