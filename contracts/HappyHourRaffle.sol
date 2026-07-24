@@ -31,6 +31,7 @@ contract HappyHourRaffle {
 
     // Pool and tickets per round
     mapping(uint256 => uint256) public roundPool;
+    mapping(uint256 => uint256) public roundTicketPrice;
     mapping(uint256 => mapping(address => uint256)) public userTickets;
     mapping(uint256 => address[]) public roundParticipants;
     mapping(uint256 => mapping(address => bool)) public isParticipant;
@@ -66,11 +67,13 @@ contract HappyHourRaffle {
      * @param amount Amount of HH tokens to deposit.
      */
     function deposit(uint256 amount) external {
-        require(amount >= tokensPerTicket, "Minimum 1 ticket required");
+        uint256 currentPrice = roundTicketPrice[currentRound];
+        require(currentPrice > 0, "Price not set for round");
+        require(amount >= currentPrice, "Minimum 1 ticket required");
         require(block.timestamp < roundEndTime, "Round ended, wait for next");
 
-        uint256 tickets = amount / tokensPerTicket;
-        uint256 cost = tickets * tokensPerTicket;
+        uint256 tickets = amount / currentPrice;
+        uint256 cost = tickets * currentPrice;
         uint256 excess = amount - cost;
 
         // Transfer exact cost from user
@@ -134,6 +137,7 @@ contract HappyHourRaffle {
     function _startNewRound() internal {
         currentRound++;
         roundEndTime = block.timestamp + roundDuration;
+        roundTicketPrice[currentRound] = tokensPerTicket;
         emit RoundStarted(currentRound, roundEndTime);
     }
 
@@ -160,6 +164,10 @@ contract HappyHourRaffle {
     }
 
     function getTicketPrice() external view returns (uint256) {
+        return roundTicketPrice[currentRound];
+    }
+    
+    function getNextTicketPrice() external view returns (uint256) {
         return tokensPerTicket;
     }
 
