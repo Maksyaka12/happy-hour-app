@@ -510,13 +510,6 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
     setRefLoading(false)
   }
 
-  // Filtered Tokens for Modal search
-  const filteredTokens = useMemo(() => {
-    return sortedTokens.filter(t => 
-      t.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      t.name.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  }, [sortedTokens, searchQuery])
 
   return (
     <div style={{ animation: 'fadeIn 0.3s ease-out', width: '100%', maxWidth: 1200, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 24, paddingBottom: 120, color: '#FFFFFF', fontFamily: "'Inter', sans-serif" }}>
