@@ -530,24 +530,17 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
         {/* Glow Effects (Contained) */}
         <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: 24, pointerEvents: 'none' }}>
           <div style={{ position: 'absolute', top: '-20%', left: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)', filter: 'blur(40px)' }} />
-          <div style={{ position: 'absolute', bottom: '-20%', left: '30%', width: '40%', height: '50%', background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%)', filter: 'blur(40px)' }} />
+          <div style={{ position: 'absolute', bottom: '-20%', left: '30%', width: '40%', height: '50%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)', filter: 'blur(40px)' }} />
           <div style={{ position: 'absolute', top: 0, right: 0, width: '45%', height: '100%', background: 'radial-gradient(circle at right, rgba(59, 130, 246, 0.08) 0%, transparent 60%)' }} />
         </div>
 
         {/* Content Left */}
         <div style={{ flex: 1, padding: '32px 48px', position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-            <div style={{
-              background: isClubMember ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.1)',
-              color: isClubMember ? '#10B981' : '#94A3B8',
-              padding: '6px 14px', borderRadius: 12, fontSize: 11, fontWeight: 700,
-              border: isClubMember ? '1px solid rgba(16, 185, 129, 0.25)' : '1px solid rgba(255, 255, 255, 0.1)',
-              display: 'flex', alignItems: 'center', gap: 6,
-              fontFamily: "'Outfit', 'Inter', sans-serif"
-            }}>
-              {isClubMember && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', animation: 'blinkDot 1s infinite' }} />}
-              {isClubMember ? 'HAPPY CLUB MEMBER' : 'STANDARD USER'}
-            </div>
+          {/* Top Blue Badge */}
+          <div style={{ display: 'flex' }}>
+            <span style={{
+              background: 'rgba(59, 130, 246, 0.15)', color: '#3B82F6', padding: '4px 12px', borderRadius: 12, fontSize: 11, fontWeight: 700, border: '1px solid rgba(59, 130, 246, 0.3)'
+            }}>Happy Hour: User Card</span>
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
@@ -560,17 +553,19 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
               <h1 style={{ fontSize: 36, fontWeight: 700, color: '#FFFFFF', lineHeight: 1.2, margin: 0, fontFamily: "'Inter', sans-serif", letterSpacing: '-0.5px' }}>
                 {basename || short(address)}
               </h1>
+              {/* Moved Status Badge */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <button
-                  onClick={() => onLogout ? onLogout() : disconnect()}
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', color: '#FFFFFF', borderRadius: 12, padding: '6px 16px', fontSize: 11, fontWeight: 800, cursor: 'pointer', transition: 'all 0.2s ease', outline: 'none'
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'; }}
-                >
-                  DISCONNECT
-                </button>
+                <div style={{
+                  background: isClubMember ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.1)',
+                  color: isClubMember ? '#10B981' : '#94A3B8',
+                  padding: '6px 14px', borderRadius: 12, fontSize: 11, fontWeight: 700,
+                  border: isClubMember ? '1px solid rgba(16, 185, 129, 0.25)' : '1px solid rgba(255, 255, 255, 0.1)',
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  fontFamily: "'Outfit', 'Inter', sans-serif"
+                }}>
+                  {isClubMember && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', animation: 'blinkDot 1s infinite' }} />}
+                  {isClubMember ? 'HAPPY CLUB MEMBER' : 'STANDARD USER'}
+                </div>
               </div>
             </div>
           </div>

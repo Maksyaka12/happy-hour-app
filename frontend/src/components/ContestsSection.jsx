@@ -1435,7 +1435,7 @@ export function ContestsSection({ setTab, address, initialContest = null, onClea
         <div style={{ flex: 1, padding: '40px 48px', position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div style={{ display: 'flex' }}>
             <span style={{
-              background: 'rgba(168, 85, 247, 0.15)', color: '#A855F7', padding: '4px 12px', borderRadius: 12, fontSize: 11, fontWeight: 700, border: '1px solid rgba(168, 85, 247, 0.3)'
+              background: 'rgba(59, 130, 246, 0.15)', color: '#3B82F6', padding: '4px 12px', borderRadius: 12, fontSize: 11, fontWeight: 700, border: '1px solid rgba(59, 130, 246, 0.3)'
             }}>Happy Hour: Campaigns</span>
           </div>
           <h1 style={{ fontSize: 36, fontWeight: 600, color: '#FFFFFF', lineHeight: 1.1, margin: 0, fontFamily: "'Inter', sans-serif", letterSpacing: '-0.5px' }}>
