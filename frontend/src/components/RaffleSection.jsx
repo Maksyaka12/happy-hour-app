@@ -641,48 +641,40 @@ export function RaffleSection({ address, basename, onRequireWallet }) {
                   ))}
                 </div>
               </div>
-              {/* Last winner (moved inside left column) */}
+              {/* Last winner (styled like Big Daily Lottery) */}
               {lastWinner && (
-                <div style={{
-                  background: 'rgba(23, 25, 35, 0.65)',
-                  backdropFilter: 'blur(12px)',
-                  WebkitBackdropFilter: 'blur(12px)',
-                  border: '1px solid rgba(255, 255, 255, 0.05)',
-                  borderTop: `3px solid #10B981`,
-                  borderRadius: 24,
-                  padding: '20px 24px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 16,
-                }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: '#F8FAFC' }}>Last Winner</div>
                   <div style={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: '50%',
-                    background: 'rgba(16, 185, 129, 0.15)',
-                    border: `2px solid #10B981`,
+                    background: 'rgba(23, 25, 35, 0.65)',
+                    backdropFilter: 'blur(12px)',
+                    WebkitBackdropFilter: 'blur(12px)',
+                    border: '1px solid rgba(255, 255, 255, 0.05)',
+                    borderTop: `3px solid #10B981`,
+                    borderRadius: 24,
+                    padding: 20,
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 24,
-                    flexShrink: 0,
-                  }}>🏆</div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 11, color: '#94A3B8', fontWeight: 800, marginBottom: 4, letterSpacing: '1px', fontFamily: "'Outfit', 'Inter', sans-serif" }}>LAST WINNER</div>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF', fontFamily: "'Outfit', 'Inter', sans-serif" }}>{lastWinner.name}</div>
-                    <div style={{ fontSize: 12, color: '#94A3B8', fontWeight: 600, marginTop: 2, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-                      Win chance: <span style={{ color: '#FFFFFF', fontWeight: 800 }}>{lastWinner.chance}%</span>
-                    </div>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 24, fontWeight: 700, color: '#10B981', fontVariantNumeric: 'tabular-nums' }}>
-                      +{isHH ? `${formatConcise(parseFloat(lastWinner.amount))} $HH` : `${lastWinner.amount} USDC`}
-                    </div>
-                    {isHH && (
-                      <div style={{ fontSize: 12, color: '#A0AEC0', fontWeight: 600, marginTop: 2, fontFamily: "'Outfit', 'Inter', sans-serif", fontVariantNumeric: 'tabular-nums' }}>
-                        ≈ ${(parseFloat(lastWinner.amount) * hhPrice).toFixed(2)}
+                    flexWrap: 'wrap',
+                    gap: 16
+                  }}>
+                    <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(59,130,246,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, flexShrink: 0 }}>🏆</div>
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                      <div style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF' }}>{lastWinner.name}</div>
+                      <div style={{ fontSize: 13, color: '#94A3B8' }}>
+                        Win chance: <span style={{ color: '#FFFFFF', fontWeight: 600 }}>{lastWinner.chance}%</span>
                       </div>
-                    )}
+                    </div>
+                    <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                      <div style={{ fontSize: 20, fontWeight: 800, color: '#10B981' }}>
+                        +{isHH ? `${formatConcise(parseFloat(lastWinner.amount))} $HH` : `${lastWinner.amount} USDC`}
+                      </div>
+                      {isHH && (
+                        <div style={{ fontSize: 12, color: '#94A3B8' }}>
+                          ≈${(parseFloat(lastWinner.amount) * hhPrice).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
