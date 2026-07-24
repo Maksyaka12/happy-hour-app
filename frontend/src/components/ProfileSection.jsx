@@ -128,62 +128,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
     }
   })
 
-  const [simulatedUsdcBalance, setSimulatedUsdcBalance] = useState(() => {
-    try {
-      return parseFloat(localStorage.getItem('usdc_simulated_wallet') || '500')
-    } catch {
-      return 500
-    }
-  })
 
-  // List of swap-eligible tokens in Base Network
-  const swapTokens = [
-    { symbol: 'ETH', name: 'Ethereum', logo: '/eth-logo.png', logoBg: '#627EEA', priceUsd: 3500.00, balanceKey: 'eth_simulated_wallet', defaultBalance: 0.15 },
-    { symbol: 'USDC', name: 'USD Coin', logo: '/usdc-logo.png', priceUsd: 1.00, balanceKey: 'usdc_simulated_wallet', defaultBalance: 500.00 },
-    { symbol: 'WETH', name: 'Wrapped Ether', logo: '/weth-logo.png', logoBg: '#8C8C8C', priceUsd: 3500.00, balanceKey: 'weth_simulated_wallet', defaultBalance: 0.05 },
-  ]
-
-  // Read real native ETH balance
-  const { data: ethBalanceRaw } = useBalance({
-    address: address ? address : undefined,
-    query: { enabled: !!address, refetchInterval: 15000 }
-  })
-  const realEthBalance = ethBalanceRaw !== undefined
-    ? parseFloat(ethBalanceRaw.formatted)
-    : 0.15
-
-  // Read real contract balance for USDC
-  const { data: usdcBalanceRaw } = useReadContract({
-    address: USDC_ADDRESS,
-    abi: USDC_ABI,
-    functionName: 'balanceOf',
-    args: address ? [address] : undefined,
-    query: { enabled: !!address, refetchInterval: 15000 }
-  })
-  const realUsdcBalance = usdcBalanceRaw !== undefined
-    ? parseFloat(formatUnits(usdcBalanceRaw, 6))
-    : simulatedUsdcBalance
-
-  // Read real WETH balance (WETH address is 0x4200000000000000000000000000000000000006 on Base)
-  const WETH_ADDRESS = '0x4200000000000000000000000000000000000006'
-  const { data: wethBalanceRaw } = useReadContract({
-    address: WETH_ADDRESS,
-    abi: USDC_ABI,
-    functionName: 'balanceOf',
-    args: address ? [address] : undefined,
-    query: { enabled: !!address, refetchInterval: 15000 }
-  })
-  const realWethBalance = wethBalanceRaw !== undefined
-    ? parseFloat(formatUnits(wethBalanceRaw, 18))
-    : 0.05
-
-  const tokenBalances = useMemo(() => {
-    return {
-      ETH: realEthBalance,
-      USDC: realUsdcBalance,
-      WETH: realWethBalance,
-    }
-  }, [realEthBalance, realUsdcBalance, realWethBalance])
 
   // Read real contract balance
   const { data: hhBalanceRaw } = useReadContract({
@@ -295,138 +240,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
   const { switchChain } = useSwitchChain()
   const { data: checkinTxHash, writeContract: writeCheckin, isPending: isCheckinPending, isConfirming: isCheckinConfirming, isSuccess: isCheckinSuccess, error: checkinWriteError, reset: resetCheckin } = useBuilderWrite()
 
-  // Swap Widget states
-  const [isBuying, setIsBuying] = useState(true) // true: SelectToken -> $HH, false: $HH -> SelectToken
-  const [payAmount, setPayAmount] = useState('')
-  const [receiveAmount, setReceiveAmount] = useState('')
-  const [txStep, setTxStep] = useState(null) // 'action_signing' | 'action_pending' | 'success' | 'redirected' | null
-  const [swapError, setSwapError] = useState('')
-  const [uniswapUrl, setUniswapUrl] = useState('')
-  
-  // Selectable Token State (defaults to USDC)
-  const [selectedSymbol, setSelectedSymbol] = useState('USDC')
-  const [isSelectorOpen, setIsSelectorOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
 
-  // Sort tokens by descending USD Value
-  const sortedTokens = useMemo(() => {
-    return swapTokens.map(t => {
-      const bal = tokenBalances[t.symbol] ?? t.defaultBalance
-      return {
-        ...t,
-        balance: bal,
-        usdValue: bal * t.priceUsd
-      }
-    }).sort((a, b) => b.usdValue - a.usdValue)
-  }, [tokenBalances])
-
-  const activeSelectedToken = useMemo(() => {
-    return sortedTokens.find(t => t.symbol === selectedSymbol) || sortedTokens[0]
-  }, [sortedTokens, selectedSymbol])
-
-  // Handle Input Changes
-  const handlePayChange = (val) => {
-    setPayAmount(val)
-    if (!val || isNaN(val)) {
-      setReceiveAmount('')
-      return
-    }
-    const pay = parseFloat(val)
-    if (isBuying) {
-      // Token -> $HH
-      const hhAmt = (pay * activeSelectedToken.priceUsd) / hhPrice
-      setReceiveAmount(hhAmt.toFixed(2))
-    } else {
-      // $HH -> Token
-      const tokenAmt = (pay * hhPrice) / activeSelectedToken.priceUsd
-      const decimals = activeSelectedToken.symbol === 'ETH' || activeSelectedToken.symbol === 'WETH' ? 6 : 2
-      setReceiveAmount(tokenAmt.toFixed(decimals))
-    }
-  }
-
-  const handlePercentClick = (pct) => {
-    const maxBal = isBuying 
-      ? (tokenBalances[activeSelectedToken.symbol] ?? 0)
-      : walletBalance;
-
-    let multiplier = 0.25;
-    if (pct === '50%') multiplier = 0.50;
-    if (pct === 'MAX') multiplier = 1.0;
-
-    const val = maxBal * multiplier;
-    // Truncate to 2 decimal places (floor, NOT round) to avoid "insufficient balance" errors
-    const truncated = Math.floor(val * 100) / 100;
-    handlePayChange(truncated.toFixed(2));
-  }
-
-  const handleReceiveChange = (val) => {
-    setReceiveAmount(val)
-    if (!val || isNaN(val)) {
-      setPayAmount('')
-      return
-    }
-    const recv = parseFloat(val)
-    if (isBuying) {
-      // Token -> $HH
-      const tokenAmt = (recv * hhPrice) / activeSelectedToken.priceUsd
-      const decimals = activeSelectedToken.symbol === 'ETH' || activeSelectedToken.symbol === 'WETH' ? 6 : 2
-      setPayAmount(tokenAmt.toFixed(decimals))
-    } else {
-      // $HH -> Token
-      const hhAmt = (recv * activeSelectedToken.priceUsd) / hhPrice
-      setPayAmount(hhAmt.toFixed(2))
-    }
-  }
-
-  const handleSwapDirection = () => {
-    setIsBuying(!isBuying)
-    setPayAmount('')
-    setReceiveAmount('')
-    setSwapError('')
-  }
-
-  const handleSwapExecute = () => {
-    if (!address) {
-      if (onRequireWallet) onRequireWallet()
-      return
-    }
-    setSwapError('')
-    const pay = parseFloat(payAmount)
-    const recv = parseFloat(receiveAmount)
-    if (isNaN(pay) || pay <= 0) {
-      setSwapError('Please enter a valid amount.')
-      return
-    }
-
-    const tokenBal = tokenBalances[activeSelectedToken.symbol] ?? activeSelectedToken.defaultBalance
-
-    if (isBuying) {
-      if (pay > tokenBal) {
-        setSwapError(`Insufficient ${activeSelectedToken.symbol} balance.`)
-        return
-      }
-    } else {
-      if (pay > walletBalance) {
-        setSwapError('Insufficient $HH balance.')
-        return
-      }
-    }
-
-    const inputToken = isBuying 
-      ? (activeSelectedToken.symbol === 'ETH' ? 'ETH' : USDC_ADDRESS) 
-      : HH_ADDRESS
-    const outputToken = isBuying 
-      ? HH_ADDRESS 
-      : (activeSelectedToken.symbol === 'ETH' ? 'ETH' : USDC_ADDRESS)
-    const url = `https://app.uniswap.org/swap?inputCurrency=${inputToken}&outputCurrency=${outputToken}&chain=base`
-    
-    setUniswapUrl(url)
-    window.open(url, '_blank', 'noopener,noreferrer')
-    
-    setPayAmount('')
-    setReceiveAmount('')
-    setTxStep('redirected')
-  }
 
   // Diagnostic Simulation State
   const [simulatedUsers, setSimulatedUsers] = useState([])
@@ -705,30 +519,29 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
   }, [sortedTokens, searchQuery])
 
   return (
-    <div style={{ paddingBottom: 120, padding: '0 12px 120px', position: 'relative' }}>
+    <div style={{ animation: 'fadeIn 0.3s ease-out', width: '100%', maxWidth: 1200, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 24, paddingBottom: 120, color: '#FFFFFF', fontFamily: "'Inter', sans-serif" }}>
       
-
-      {/* Crystal Clear Player Passport */}
+      {/* Profile Hero Banner */}
       <div
         style={{
           background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover',
           borderRadius: 24,
-          padding: '24px 20px',
-          marginBottom: 16,
+          padding: '24px 32px',
           position: 'relative',
           overflow: 'hidden',
           boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-          border: '1px solid var(--border)',
+          border: '1px solid var(--card-border)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 24
         }}
       >
-
-        {/* Top Bar: Player Identity Passport */}
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-          {/* Avatar & User Address/Basename */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        {/* Top row: Identity and Disconnect */}
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <div style={{
-              width: 44,
-              height: 44,
+              width: 56,
+              height: 56,
               borderRadius: '50%',
               overflow: 'hidden',
               border: '2px solid rgba(255,255,255,0.2)',
@@ -737,16 +550,26 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
               alignItems: 'center',
               justifyContent: 'center'
             }}>
-              <UserAvatar address={address} size={44} profilePictureUrl={privyUser?.twitter?.profilePictureUrl} />
+              <UserAvatar address={address} size={56} profilePictureUrl={privyUser?.twitter?.profilePictureUrl} />
             </div>
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 900, color: '#fff', letterSpacing: -0.3 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <div style={{ fontSize: 20, fontWeight: 900, color: '#fff', letterSpacing: -0.3, fontFamily: "'Inter', sans-serif" }}>
                 {basename || short(address)}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                {isClubMember ? (
+                  <div style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#10B981', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '2px 8px', borderRadius: 8, fontSize: 11, fontWeight: 800 }}>
+                    Happy Club Member
+                  </div>
+                ) : (
+                  <div style={{ background: 'rgba(255, 255, 255, 0.1)', color: '#94A3B8', border: '1px solid rgba(255, 255, 255, 0.1)', padding: '2px 8px', borderRadius: 8, fontSize: 11, fontWeight: 700 }}>
+                    Standard User
+                  </div>
+                )}
               </div>
             </div>
           </div>
           
-          {/* Disconnect Button */}
           <button
             onClick={() => onLogout ? onLogout() : disconnect()}
             style={{
@@ -755,9 +578,9 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
               border: '1px solid rgba(255,255,255,0.1)',
               color: 'rgba(255,255,255,0.9)',
               borderRadius: 50,
-              padding: '6px 14px',
-              fontSize: 9,
-              fontWeight: 900,
+              padding: '8px 16px',
+              fontSize: 11,
+              fontWeight: 800,
               cursor: 'pointer',
               transition: 'all 0.2s ease',
               outline: 'none'
@@ -768,59 +591,49 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
         </div>
 
         {/* Divider */}
-        <div style={{ position: 'relative', zIndex: 1, height: 1, background: 'rgba(255,255,255,0.15)', margin: '16px 0' }} />
+        <div style={{ position: 'relative', zIndex: 1, height: 1, background: 'rgba(255,255,255,0.1)', margin: '0' }} />
 
         {/* Two-column balance stats */}
-        <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           {/* HP Balance */}
           <div style={{
-            background: 'rgba(255, 255, 255, 0.05)',
+            background: 'var(--card-bg)',
             backdropFilter: 'blur(12px)',
-            padding: '16px 14px',
-            borderRadius: 16,
-            border: '1px solid rgba(255,255,255,0.08)',
+            padding: '20px',
+            borderRadius: 'var(--card-radius)',
+            border: '1px solid var(--card-border)',
             boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 2
+            gap: 4
           }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#94A3B8' }}>Loyalty Balance</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
               <span style={{ fontSize: 32, fontWeight: 900, color: '#fff', fontFamily: "'Barlow Condensed',sans-serif" }}>
                 {userStats.points.toLocaleString()}
               </span>
-              <span style={{ fontSize: 14, fontWeight: 900, color: '#A5B4FC' }}>HP</span>
-            </div>
-            <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255, 255, 255, 0.48)' }}>
-              app points
+              <span style={{ fontSize: 16, fontWeight: 900, color: '#A5B4FC' }}>HP</span>
             </div>
           </div>
 
           {/* $HH Wallet Balance */}
           <div style={{
-            background: 'rgba(255, 255, 255, 0.05)',
+            background: 'var(--card-bg)',
             backdropFilter: 'blur(12px)',
-            padding: '16px 14px',
-            borderRadius: 16,
-            border: '1px solid rgba(255,255,255,0.08)',
+            padding: '20px',
+            borderRadius: 'var(--card-radius)',
+            border: '1px solid var(--card-border)',
             boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 2
+            gap: 4
           }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#94A3B8' }}>Wallet Balance</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
               <span style={{ fontSize: 32, fontWeight: 900, color: '#fff', fontFamily: "'Barlow Condensed',sans-serif" }}>
                 {formatConcise(walletBalance)}
               </span>
-              <span style={{ fontSize: 14, fontWeight: 900, color: '#A5B4FC' }}>$HH</span>
-            </div>
-            <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255, 255, 255, 0.48)' }}>
-              ≈${walletBalance * hhPrice >= 0.01 
-                ? (walletBalance * hhPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-                : (walletBalance * hhPrice).toFixed(4)}
+              <span style={{ fontSize: 16, fontWeight: 900, color: '#A5B4FC' }}>$HH</span>
             </div>
           </div>
         </div>
@@ -830,7 +643,6 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
           <div style={{
             position: 'relative',
             zIndex: 1,
-            marginTop: 16,
             display: 'flex',
             flexDirection: 'column',
             gap: 8
@@ -870,351 +682,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
             </div>
           </div>
         )}
-      </div>
 
-      {/* Premium Base App Style Swap Widget — Compact & Elegant */}
-      <div style={{
-        borderRadius: 24,
-        padding: '16px 16px 14px',
-        marginBottom: 16,
-        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-        position: 'relative',
-        overflow: 'hidden',
-        border: '1px solid var(--border)',
-        background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover'
-      }}>
-
-        {/* Content Container */}
-        <div style={{ position: 'relative', zIndex: 2 }}>
-          {/* Swap Panel Stack */}
-          <div style={{ position: 'relative' }}>
-            
-            {/* FROM FIELD */}
-            <div style={{
-              background: 'rgba(255, 255, 255, 0.06)',
-              backdropFilter: 'blur(8px)',
-              borderRadius: 18,
-              padding: '10px 14px 8px',
-              marginBottom: 4,
-              border: '1px solid rgba(255, 255, 255, 0.08)'
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, fontWeight: 800, color: 'rgba(255, 255, 255, 0.6)', marginBottom: 4 }}>
-                <span>From</span>
-                <span>
-                  Balance: {isBuying 
-                    ? `${formatConcise(tokenBalances[activeSelectedToken.symbol])} ${activeSelectedToken.symbol}` 
-                    : `${formatConcise(walletBalance)} $HH`}
-                </span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <input
-                  type="number"
-                  placeholder="0.00"
-                  value={payAmount}
-                  onChange={(e) => handlePayChange(e.target.value)}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    fontSize: 20,
-                    fontWeight: 800,
-                    color: '#FFFFFF',
-                    width: '55%',
-                    fontFamily: 'monospace'
-                  }}
-                />
-                
-                {/* Right Stack: Token Selector + Percentage shortcuts */}
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
-                  {isBuying ? (
-                    <button
-                      onClick={() => setIsSelectorOpen(true)}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: 6,
-                        background: 'rgba(255, 255, 255, 0.1)',
-                        padding: '6px 0',
-                        borderRadius: 10,
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        boxShadow: '0 2px 4px rgba(0,0,0,0.01)',
-                        cursor: 'pointer',
-                        outline: 'none',
-                        transition: 'all 0.2s',
-                        height: 30,
-                        width: 100,
-                        boxSizing: 'border-box'
-                      }}
-                      onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
-                      onMouseLeave={e => e.currentTarget.style.transform = 'none'}
-                    >
-                      {activeSelectedToken.logo.startsWith('/') ? (
-                        <img src={activeSelectedToken.logo} alt="" style={{ width: 16, height: 16, borderRadius: '50%' }} />
-                      ) : (
-                        <span style={{
-                          width: 16, height: 16, borderRadius: '50%',
-                          background: activeSelectedToken.logoBg || '#8C8C8C',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: 9, color: '#fff'
-                        }}>
-                          {activeSelectedToken.logo}
-                        </span>
-                      )}
-                      <span style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF' }}>{activeSelectedToken.symbol}</span>
-                      <span style={{ fontSize: 7, color: 'rgba(255, 255, 255, 0.6)' }}>▼</span>
-                    </button>
-                  ) : (
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 6,
-                      background: 'rgba(0, 82, 255, 0.25)',
-                      padding: '6px 0',
-                      borderRadius: 10,
-                      boxShadow: '0 2px 8px rgba(0,82,255,0.15)',
-                      border: '1px solid rgba(0, 82, 255, 0.4)',
-                      height: 30,
-                      width: 100,
-                      boxSizing: 'border-box'
-                    }}>
-                      <img src="/logo.jfif" alt="" style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover' }} />
-                      <span style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF' }}>$HH</span>
-                      <span style={{ fontSize: 7, color: 'transparent', userSelect: 'none' }}>▼</span>
-                    </div>
-                  )}
-
-                  {/* Percentage buttons shortcut row */}
-                  <div style={{ display: 'flex', gap: 3 }}>
-                    {['25%', '50%', 'MAX'].map(pct => (
-                      <button
-                        key={pct}
-                        onClick={() => handlePercentClick(pct)}
-                        style={{
-                          background: 'rgba(255,255,255,0.08)',
-                          border: '1px solid rgba(255,255,255,0.12)',
-                          color: 'rgba(255,255,255,0.7)',
-                          fontSize: 7.5,
-                          fontWeight: 900,
-                          padding: '1px 4px',
-                          borderRadius: 6,
-                          cursor: 'pointer',
-                          transition: 'all 0.2s',
-                          outline: 'none'
-                        }}
-                        onMouseEnter={e => {
-                          e.currentTarget.style.background = 'rgba(255,255,255,0.18)';
-                          e.currentTarget.style.color = '#FFFFFF';
-                        }}
-                        onMouseLeave={e => {
-                          e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
-                          e.currentTarget.style.color = 'rgba(255,255,255,0.7)';
-                        }}
-                      >
-                        {pct}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.4)', marginTop: 2, fontFamily: 'monospace' }}>
-                {payAmount ? `~$${formatNumber(parseFloat(payAmount) * (isBuying ? activeSelectedToken.priceUsd : hhPrice), 2)}` : '$0.00'}
-              </div>
-            </div>
-
-            {/* Direction Switcher Button in middle */}
-            <div style={{ display: 'flex', justifyContent: 'center', margin: '-12px 0', position: 'relative', zIndex: 10 }}>
-              <button
-                onClick={handleSwapDirection}
-                style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: '50%',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 14,
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-                  color: '#FFFFFF',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  outline: 'none'
-                }}
-                onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1) rotate(180deg)'}
-                onMouseLeave={e => e.currentTarget.style.transform = 'none'}
-              >
-                ⇅
-              </button>
-            </div>
-
-            {/* TO FIELD */}
-            <div style={{
-              background: 'rgba(255, 255, 255, 0.06)',
-              backdropFilter: 'blur(8px)',
-              borderRadius: 18,
-              padding: '10px 14px 8px',
-              marginTop: 4,
-              border: '1px solid rgba(255, 255, 255, 0.08)'
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, fontWeight: 800, color: 'rgba(255, 255, 255, 0.6)', marginBottom: 4 }}>
-                <span>To</span>
-                <span>
-                  Balance: {isBuying 
-                    ? `${formatConcise(walletBalance)} $HH` 
-                    : `${formatConcise(tokenBalances[activeSelectedToken.symbol])} ${activeSelectedToken.symbol}`}
-                </span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <input
-                  type="number"
-                  placeholder="0.00"
-                  value={receiveAmount}
-                  onChange={(e) => handleReceiveChange(e.target.value)}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    fontSize: 20,
-                    fontWeight: 800,
-                    color: '#FFFFFF',
-                    width: '55%',
-                    fontFamily: 'monospace'
-                  }}
-                />
-
-                {!isBuying ? (
-                  <button
-                    onClick={() => setIsSelectorOpen(true)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 6,
-                      background: 'rgba(255, 255, 255, 0.1)',
-                      padding: '6px 0',
-                      borderRadius: 10,
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.01)',
-                      cursor: 'pointer',
-                      outline: 'none',
-                      transition: 'all 0.2s',
-                      height: 30,
-                      width: 100,
-                      boxSizing: 'border-box'
-                    }}
-                    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
-                    onMouseLeave={e => e.currentTarget.style.transform = 'none'}
-                  >
-                    {activeSelectedToken.logo.startsWith('/') ? (
-                      <img src={activeSelectedToken.logo} alt="" style={{ width: 16, height: 16, borderRadius: '50%' }} />
-                    ) : (
-                      <span style={{
-                        width: 16, height: 16, borderRadius: '50%',
-                        background: activeSelectedToken.logoBg || '#8C8C8C',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 9, color: '#fff'
-                      }}>
-                        {activeSelectedToken.logo}
-                      </span>
-                    )}
-                    <span style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF' }}>{activeSelectedToken.symbol}</span>
-                    <span style={{ fontSize: 7, color: 'rgba(255, 255, 255, 0.6)' }}>▼</span>
-                  </button>
-                ) : (
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 6,
-                    background: 'rgba(0, 82, 255, 0.25)',
-                    padding: '6px 0',
-                    borderRadius: 10,
-                    boxShadow: '0 2px 8px rgba(0,82,255,0.15)',
-                    border: '1px solid rgba(0, 82, 255, 0.4)',
-                    height: 30,
-                    width: 100,
-                    boxSizing: 'border-box'
-                  }}>
-                    <img src="/logo.jfif" alt="" style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover' }} />
-                    <span style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF' }}>$HH</span>
-                    <span style={{ fontSize: 7, color: 'transparent', userSelect: 'none' }}>▼</span>
-                  </div>
-                )}
-              </div>
-              <div style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.4)', marginTop: 2, fontFamily: 'monospace' }}>
-                {receiveAmount ? `~$${formatNumber(parseFloat(receiveAmount) * (isBuying ? hhPrice : activeSelectedToken.priceUsd), 2)}` : '$0.00'}
-              </div>
-            </div>
-          </div>
-
-          {/* Compact Price / Information Line */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginTop: 8,
-            padding: '0 4px',
-            fontSize: 9.5,
-            fontWeight: 800,
-            color: 'rgba(255, 255, 255, 0.6)'
-          }}>
-            <span>1 $HH = ${formatNumber(hhPrice, 8)}</span>
-            <span style={{ color: priceChange >= 0 ? '#10B981' : '#EF4444' }}>
-              {priceChange >= 0 ? '▲' : '▼'} {priceChange}% (24h)
-            </span>
-          </div>
-
-          {swapError && (
-            <div style={{ marginTop: 8, padding: 8, background: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.4)', borderRadius: 12, color: '#FCA5A5', fontSize: 10.5, fontWeight: 700 }}>
-              ⚠️ {swapError}
-            </div>
-          )}
-
-          {/* Action Button */}
-          <button
-            onClick={handleSwapExecute}
-            style={{
-              width: '100%',
-              padding: '11px',
-              background: '#3B82F6',
-              color: '#13141F',
-              border: 'none',
-              borderRadius: 10,
-              fontSize: 13,
-              fontWeight: 800,
-              cursor: 'pointer',
-              boxShadow: '0 4px 12px rgba(59, 130, 246, 0.25)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 6,
-              marginTop: 10,
-              marginBottom: 8,
-              transition: 'all 0.2s',
-              outline: 'none'
-            }}
-            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
-            onMouseLeave={e => e.currentTarget.style.transform = 'none'}
-          >
-            <span>
-              Swap {isBuying ? activeSelectedToken.symbol : '$HH'} ⇄ {isBuying ? '$HH' : activeSelectedToken.symbol}
-            </span>
-          </button>
-
-          {/* Uniswap direct link */}
-          <a
-            href="https://app.uniswap.org/swap?inputCurrency=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913&outputCurrency=0x8235edf32a1e10bd1867ad622915ab613664cba3&chain=base"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ textDecoration: 'none', display: 'block', textAlign: 'center', fontSize: 9.5, fontWeight: 800, color: '#F472B6', marginTop: 6 }}
-          >
-            Trade directly on Uniswap 🦄
-          </a>
-        </div>
-      </div>
 
       {/* Daily Check-in Card — full width, moved from EarnSection */}
       <div id="daily-checkin-card" style={{
