@@ -605,9 +605,9 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
         </div>
       </div>
 
-      {/* Daily Check-in Card — full width, premium design */}
+      {/* Daily Check-in Card — dark theme */}
       <div id="daily-checkin-card" style={{
-        background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.5) 0%, rgba(15, 23, 42, 0.5) 100%)',
+        background: 'var(--card-bg)',
         borderRadius: 24,
         padding: '32px 40px',
         marginBottom: 24,
@@ -615,14 +615,9 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
         flexDirection: 'column',
         gap: 32,
         position: 'relative',
-        overflow: 'hidden',
         border: '1px solid rgba(255, 255, 255, 0.05)',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
         fontFamily: "'Inter', sans-serif"
       }}>
-        {/* Shine glow */}
-        <div style={{ position: 'absolute', top: '-50%', left: '-20%', width: '60%', height: '100%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 60%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
-
         {/* Header row */}
         <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 24 }}>
           <div>
@@ -640,8 +635,15 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
           <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
               <div style={{ fontSize: 12, color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Current Streak</div>
-              <div style={{ fontSize: 32, fontWeight: 800, color: streakCount > 0 ? '#F59E0B' : '#FFFFFF', fontFamily: "'Outfit', 'Inter', sans-serif", lineHeight: 1 }}>
-                {streakCount} {streakCount > 0 ? '🔥' : 'd'}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ fontSize: 32, fontWeight: 800, color: streakCount > 0 ? '#F59E0B' : '#FFFFFF', fontFamily: "'Outfit', 'Inter', sans-serif", lineHeight: 1 }}>
+                  {streakCount} {streakCount === 0 && 'd'}
+                </div>
+                {streakCount > 0 && (
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FF9800" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: 'translateY(-2px)' }}>
+                    <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
+                  </svg>
+                )}
               </div>
             </div>
             
@@ -670,7 +672,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
               onMouseEnter={e => { if (!checkedToday) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(37, 99, 235, 0.4)'; } }}
               onMouseLeave={e => { if (!checkedToday) { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(37, 99, 235, 0.3)'; } }}
             >
-              {checkedToday ? '✓ Claimed Today' : 'Claim Reward'}
+              {checkedToday ? '✓ Checked-in Today' : 'Check-in'}
             </button>
           </div>
         </div>
