@@ -501,7 +501,7 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
               <div className="raffle-stat-gap" style={{ display: 'flex', gap: 32, marginTop: 12, flexWrap: 'wrap', alignItems: 'flex-start' }}>
                 {/* Prize Pool Plate */}
                 <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 16, padding: '16px 32px', minWidth: 420, backdropFilter: 'blur(12px)', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Prize Pool</div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Daily Prize Pool</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <img src="/logo.jfif" alt="" style={{ width: 36, height: 36, borderRadius: '50%', boxShadow: '0 0 12px rgba(255,255,255,0.1)' }} />
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
