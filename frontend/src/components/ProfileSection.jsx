@@ -827,7 +827,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
                setShowClubModal(true)
              }}
              style={{
-               background: '#8B5CF6',
+               background: '#3B82F6',
                color: '#FFFFFF',
                borderRadius: 12,
                padding: '14px 24px',
@@ -839,8 +839,8 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
                marginBottom: 32,
                transition: 'background 0.2s'
              }}
-             onMouseEnter={e => e.currentTarget.style.background = '#7C3AED'}
-             onMouseLeave={e => e.currentTarget.style.background = '#8B5CF6'}
+             onMouseEnter={e => e.currentTarget.style.background = '#2563EB'}
+             onMouseLeave={e => e.currentTarget.style.background = '#3B82F6'}
           >
              Get your membership
           </button>
