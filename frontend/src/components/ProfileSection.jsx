@@ -679,29 +679,19 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
 
       {/* Daily Check-in Card — full width, moved from EarnSection */}
       <div id="daily-checkin-card" style={{
-        background: '#0B1E3F',
+        background: 'var(--card-bg)',
+        backdropFilter: 'blur(12px)',
         borderRadius: 20,
         padding: '16px 18px 14px',
         marginBottom: 16,
-        boxShadow: '0 8px 32px rgba(30,58,138,0.2)',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
         display: 'flex',
         flexDirection: 'column',
         gap: 12,
         position: 'relative',
         overflow: 'hidden',
-        border: '1px solid rgba(59,130,246,0.25)'
+        border: '1px solid var(--card-border)'
       }}>
-        {/* Background image overlay */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: 'url(/banner.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          filter: 'hue-rotate(200deg) brightness(0.35) contrast(1.15)',
-          zIndex: 0,
-          pointerEvents: 'none'
-        }} />
 
         {/* Header row */}
         <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -814,17 +804,18 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
 
       {/* Happy Club Membership Card */}
       <div id="happy-club-card" style={{
-        background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover',
+        background: 'var(--card-bg)',
+        backdropFilter: 'blur(12px)',
         borderRadius: 20,
         padding: '18px 20px',
         marginBottom: 16,
-        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
         display: 'flex',
         flexDirection: 'column',
         gap: 12,
         position: 'relative',
         overflow: 'hidden',
-        border: '1px solid var(--border)'
+        border: '1px solid var(--card-border)'
       }}>
 
         {/* Shine glow */}

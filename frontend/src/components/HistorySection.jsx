@@ -143,21 +143,22 @@ export function HistorySection({ address }) {
 
   return (
     <div style={{
-      background: '#fff',
+      background: 'var(--card-bg)',
+      backdropFilter: 'blur(12px)',
       borderRadius: 24,
       marginTop: 20,
       padding: '20px 18px 16px',
-      boxShadow: '0 8px 32px rgba(0, 82, 255, 0.02)',
-      border: '1px solid #E5E9F0'
+      boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+      border: '1px solid var(--card-border)'
     }}>
       {/* Header with switcher */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-        <div style={{ fontSize: 13.5, fontWeight: 850, color: '#0A0B0D' }}>History</div>
+        <div style={{ fontSize: 13.5, fontWeight: 850, color: '#FFFFFF' }}>History</div>
         {/* HP / $HH Switcher */}
         <div style={{
           display: 'flex',
-          background: '#EEF0F3',
-          border: '1px solid #DEE1E7',
+          background: 'rgba(0,0,0,0.2)',
+          border: '1px solid rgba(255,255,255,0.05)',
           borderRadius: 10,
           padding: 3,
           gap: 3
@@ -173,8 +174,8 @@ export function HistorySection({ address }) {
                 padding: '4px 10px',
                 borderRadius: 7,
                 border: 'none',
-                background: historyTab === t.id ? '#FFFFFF' : 'transparent',
-                color: historyTab === t.id ? '#0000FF' : '#717886',
+                background: historyTab === t.id ? 'rgba(255,255,255,0.1)' : 'transparent',
+                color: historyTab === t.id ? '#FFFFFF' : 'rgba(255,255,255,0.5)',
                 fontSize: 10.5,
                 fontWeight: 800,
                 cursor: 'pointer',
@@ -191,7 +192,7 @@ export function HistorySection({ address }) {
 
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         {filteredHistory.length === 0 ? (
-          <div style={{ textAlign: 'center', color: '#717886', fontSize: 12, padding: '12px 0' }}>
+          <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)', fontSize: 12, padding: '12px 0' }}>
             No {historyTab === 'hp' ? 'HP' : '$HH'} history yet
           </div>
         ) : filteredHistory.map((record, index) => {
@@ -230,10 +231,10 @@ export function HistorySection({ address }) {
               alignItems: 'center',
               gap: 6,
               padding: '10px 0',
-              borderBottom: index !== filteredHistory.length - 1 ? '1px solid #F1F3F7' : 'none'
+              borderBottom: index !== filteredHistory.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none'
             }}>
               {/* 1. Action Type */}
-              <div style={{ fontSize: 11, fontWeight: 800, color: '#0A0B0D', whiteSpace: 'nowrap' }}>
+              <div style={{ fontSize: 11, fontWeight: 800, color: '#FFFFFF', whiteSpace: 'nowrap' }}>
                 {historyTab === 'hp' && record.type === 'checkin' ? 'Check-in' : config.label}
               </div>
 
