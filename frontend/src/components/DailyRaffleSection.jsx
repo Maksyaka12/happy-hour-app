@@ -546,7 +546,10 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
             overflow: 'hidden'
           }}>
             <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF' }}>Eligibility Tasks</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF' }}>Eligibility Tasks</div>
+                <div className="status-dot blinking" style={{ background: '#10B981', boxShadow: '0 0 12px rgba(16, 185, 129, 0.4)' }}></div>
+              </div>
               {dailyUserTickets > 0 && (
                 <div style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34D399', padding: '4px 12px', borderRadius: 12, fontSize: 12, fontWeight: 800 }}>
                   {dailyUserTickets} TICKET{dailyUserTickets > 1 ? 'S' : ''}
@@ -609,24 +612,6 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
               </div>
             </div>
 
-            {/* Status / Triggers */}
-            <div style={{ padding: '16px 24px', background: 'rgba(255,255,255,0.02)', display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {dailyTimeRemaining === 0 && (
-                <button
-                  type="button"
-                  onClick={triggerDailyDraw}
-                  style={{ width: '100%', padding: '12px', borderRadius: 12, border: 'none', background: '#10B981', color: '#FFFFFF', fontSize: 14, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 12px rgba(16, 185, 129, 0.2)' }}
-                >
-                  🎯 Trigger Daily Draw (VRF)
-                </button>
-              )}
-              
-              <div style={{ textAlign: 'center' }}>
-                <span onClick={simulateDailyEligibility} style={{ fontSize: 11, fontWeight: 600, color: '#64748B', cursor: 'pointer', textDecoration: 'underline' }}>
-                  [Dev] Simulate eligibility (10 tickets)
-                </span>
-              </div>
-            </div>
           </div>
         </div>
 
