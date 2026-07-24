@@ -63,71 +63,7 @@ const safeParseUnits = (amountStr, decimals = 18) => {
 
 export function ProfileSection({ address, basename, totalUsers, setTab, onRequireWallet, onLogout }) {
   const { user: privyUser } = usePrivy()
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { useDisconnect, useWriteContract, useBalance, useReadContract, useChainId, useSwitchChain } from 'wagmi'
-import { usePrivy, useWallets } from '@privy-io/react-auth'
-import { formatUnits, parseUnits, encodeFunctionData } from 'viem'
-import { base } from 'wagmi/chains'
-import { APP_URL, FOUNDATION, CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI, HH_MANAGER_ADDRESS, STAKING_ADDRESS, STAKING_ABI, MEMBERSHIP_ADDRESS, MEMBERSHIP_ABI } from '../config/constants'
-import { db } from '../config/supabase'
-import { UserAvatar } from './UserAvatar'
-import { HistorySection } from './HistorySection'
-import { useBuilderWrite } from '../hooks/useBuilderWrite'
-import { TxModal } from './TxModal'
 
-const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '—')
-
-const formatNumber = (num, decimals = 2) => {
-  return parseFloat(num || 0).toLocaleString('en-US', {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals
-  })
-}
-
-const formatConcise = (num) => {
-  const n = parseFloat(num || 0)
-  if (n >= 1e9) {
-    const val = (n / 1e9).toFixed(2)
-    return val.endsWith('.00') ? val.slice(0, -3) + 'b' : val.endsWith('0') ? val.slice(0, -1) + 'b' : val + 'b'
-  }
-  if (n >= 1e6) {
-    const val = (n / 1e6).toFixed(2)
-    return val.endsWith('.00') ? val.slice(0, -3) + 'm' : val.endsWith('0') ? val.slice(0, -1) + 'm' : val + 'm'
-  }
-  if (n >= 1e3) {
-    const val = (n / 1e3).toFixed(2)
-    return val.endsWith('.00') ? val.slice(0, -3) + 'k' : val.endsWith('0') ? val.slice(0, -1) + 'k' : val + 'k'
-  }
-  return n.toFixed(2).replace(/\.00$/, '')
-}
-
-const formatExactOrConcise = (balanceData) => {
-  if (!balanceData) return '0.00';
-  const num = parseFloat(balanceData.formatted);
-  return num.toLocaleString('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 6
-  });
-}
-
-const safeParseUnits = (amountStr, decimals = 18) => {
-  if (!amountStr || isNaN(amountStr)) return 0n;
-  const parts = amountStr.trim().split('.');
-  let processed = amountStr.trim();
-  if (parts.length > 1) {
-    processed = `${parts[0]}.${parts[1].slice(0, decimals)}`;
-  }
-  try {
-    return parseUnits(processed, decimals);
-  } catch (e) {
-    console.error("Error parsing units:", e);
-    return 0n;
-  }
-}
-
-
-export function ProfileSection({ address, basename, totalUsers, setTab, onRequireWallet, onLogout }) {
-  const { user: privyUser } = usePrivy()
   const { disconnect } = useDisconnect()
   const { wallets } = useWallets()
   const { writeContract: wagmiWriteContract } = useWriteContract()
