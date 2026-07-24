@@ -441,7 +441,8 @@ export function RaffleSection({ address, basename, onRequireWallet }) {
                   display: 'flex', alignItems: 'center', gap: 6,
                   fontFamily: "'Outfit', 'Inter', sans-serif"
                 }}>
-                  {isClosed ? 'DEPOSITS CLOSED' : 'ACTIVE'}
+                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: isClosed ? '#FC401F' : '#10B981', animation: 'blinkDot 1s infinite' }} />
+                  {isClosed ? 'DEPOSIT CLOSED · WAITING FOR THE NEXT ROUND' : 'ACTIVE'}
                 </div>
               </div>
               
@@ -513,24 +514,6 @@ export function RaffleSection({ address, basename, onRequireWallet }) {
             </div>
           </div>
 
-          {/* Closed warning */}
-          {isClosed && (
-            <div style={{
-              background: 'rgba(252, 64, 31, 0.08)',
-              border: '1px solid rgba(252, 64, 31, 0.3)',
-              borderRadius: 14,
-              padding: '10px 16px',
-              marginBottom: 12,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-            }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#FC401F', animation: 'blinkDot 1s infinite' }} />
-              <span style={{ fontSize: 12, color: '#FC401F', fontWeight: 700, fontFamily: "'Outfit', 'Inter', sans-serif" }}>
-                Deposits closed · Draw in {fmt(msLeft)}
-              </span>
-            </div>
-          )}
 
           {/* Wrong chain warning */}
           {wrongChain && (

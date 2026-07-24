@@ -520,14 +520,16 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
             {/* Big Timer Right */}
             <div className="desktop-only" style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '45%', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: '32px 48px', background: 'rgba(255,255,255,0.02)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 32, boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
-                <div style={{ fontSize: 14, fontWeight: 700, color: '#3B82F6', textTransform: 'uppercase', letterSpacing: '2px' }}>Time to Draw</div>
-                <div className="raffle-timer-value" style={{ fontSize: 56, fontWeight: 900, color: dailyTimeRemaining > 0 ? '#FFFFFF' : '#FC401F', fontVariantNumeric: 'tabular-nums', lineHeight: 1, textShadow: dailyTimeRemaining > 0 ? '0 0 30px rgba(59, 130, 246, 0.4)' : '0 0 30px rgba(252, 64, 31, 0.4)' }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '2px' }}>
+                  {dailyTimeRemaining > 0 ? 'TIME TO DRAW' : 'DRAWS IN'}
+                </div>
+                <div className="raffle-timer-value" style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 64, fontWeight: 700, color: dailyTimeRemaining > 0 ? '#FFFFFF' : '#FC401F', fontVariantNumeric: 'tabular-nums', letterSpacing: '2px', lineHeight: 1, textShadow: dailyTimeRemaining > 0 ? '0 0 20px rgba(255,255,255,0.2)' : '0 0 20px rgba(252, 64, 31, 0.3)' }}>
                   {dailyTimeRemaining > 0 ? new Date(dailyTimeRemaining * 1000).toISOString().substr(11, 8) : '00:00:00'}
                 </div>
-                <div style={{ display: 'flex', gap: 24, color: '#94A3B8', fontSize: 12, fontWeight: 600, marginTop: -4 }}>
-                  <span style={{ width: 44, textAlign: 'center' }}>HOURS</span>
-                  <span style={{ width: 44, textAlign: 'center' }}>MINS</span>
-                  <span style={{ width: 44, textAlign: 'center' }}>SECS</span>
+                <div style={{ display: 'flex', gap: 32, opacity: 0.5 }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: '#FFF', letterSpacing: '1px' }}>HOURS</div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: '#FFF', letterSpacing: '1px' }}>MINS</div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: '#FFF', letterSpacing: '1px' }}>SECS</div>
                 </div>
               </div>
             </div>
