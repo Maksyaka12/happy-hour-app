@@ -479,7 +479,7 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
                   <span>{dailySponsor}</span>
                   <span style={{ background: 'rgba(59, 130, 246, 0.2)', width: 16, height: 16, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10 }}>ℹ</span>
                   <div className="hh-tooltip-text">
-                    The lottery sponsor can be any project / member of the Base Ecosystem. The reward pool can be formed from any ERC-20 / B20 tokens on Base.
+                    The sponsor of the daily prize pool can be any project / member of the Base Ecosystem. The reward pool can be formed from any ERC-20 / B20 tokens on Base.
                   </div>
                 </div>
 
