@@ -517,12 +517,12 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
       {/* Profile Hero Banner */}
       <div
         style={{
-          background: 'linear-gradient(135deg, rgba(28,29,44,0.95) 0%, rgba(28,29,44,0.85) 100%), url(/banner.jpg) center/cover',
+        style={{
+          background: 'var(--card-bg)',
+          backdropFilter: 'blur(12px)',
           borderRadius: 24,
           padding: '24px 32px',
-          position: 'relative',
-          overflow: 'hidden',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
           border: '1px solid var(--card-border)',
           display: 'flex',
           flexDirection: 'column',
@@ -546,7 +546,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
               <UserAvatar address={address} size={56} profilePictureUrl={privyUser?.twitter?.profilePictureUrl} />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <div style={{ fontSize: 20, fontWeight: 900, color: '#fff', letterSpacing: -0.3, fontFamily: "'Inter', sans-serif" }}>
+              <div style={{ fontSize: 20, fontWeight: 900, color: '#FFFFFF', letterSpacing: '-0.3px', fontFamily: "'Outfit', sans-serif" }}>
                 {basename || short(address)}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -566,18 +566,19 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
           <button
             onClick={() => onLogout ? onLogout() : disconnect()}
             style={{
-              background: 'rgba(255,255,255,0.1)',
-              backdropFilter: 'blur(8px)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              color: 'rgba(255,255,255,0.9)',
-              borderRadius: 50,
+              background: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              color: '#FFFFFF',
+              borderRadius: 12,
               padding: '8px 16px',
-              fontSize: 11,
+              fontSize: 11.5,
               fontWeight: 800,
               cursor: 'pointer',
               transition: 'all 0.2s ease',
               outline: 'none'
             }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'; }}
           >
             DISCONNECT
           </button>
@@ -590,19 +591,17 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
         <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           {/* HP Balance */}
           <div style={{
-            background: 'var(--card-bg)',
-            backdropFilter: 'blur(12px)',
+            background: 'rgba(0, 0, 0, 0.2)',
             padding: '20px',
             borderRadius: 'var(--card-radius)',
-            border: '1px solid var(--card-border)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+            border: '1px solid rgba(255, 255, 255, 0.05)',
             display: 'flex',
             flexDirection: 'column',
             gap: 4
           }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#94A3B8' }}>Loyalty Balance</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-              <span style={{ fontSize: 32, fontWeight: 900, color: '#fff', fontFamily: "'Barlow Condensed',sans-serif" }}>
+              <span style={{ fontSize: 32, fontWeight: 900, color: '#fff', fontFamily: "'Outfit', sans-serif" }}>
                 {userStats.points.toLocaleString()}
               </span>
               <span style={{ fontSize: 16, fontWeight: 900, color: '#A5B4FC' }}>HP</span>
@@ -611,19 +610,17 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
 
           {/* $HH Wallet Balance */}
           <div style={{
-            background: 'var(--card-bg)',
-            backdropFilter: 'blur(12px)',
+            background: 'rgba(0, 0, 0, 0.2)',
             padding: '20px',
             borderRadius: 'var(--card-radius)',
-            border: '1px solid var(--card-border)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+            border: '1px solid rgba(255, 255, 255, 0.05)',
             display: 'flex',
             flexDirection: 'column',
             gap: 4
           }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#94A3B8' }}>Wallet Balance</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-              <span style={{ fontSize: 32, fontWeight: 900, color: '#fff', fontFamily: "'Barlow Condensed',sans-serif" }}>
+              <span style={{ fontSize: 32, fontWeight: 900, color: '#fff', fontFamily: "'Outfit', sans-serif" }}>
                 {formatConcise(walletBalance)}
               </span>
               <span style={{ fontSize: 16, fontWeight: 900, color: '#A5B4FC' }}>$HH</span>
