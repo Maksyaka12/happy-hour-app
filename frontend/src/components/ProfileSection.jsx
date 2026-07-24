@@ -682,7 +682,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
             </div>
           </div>
         )}
-
+      </div>
 
       {/* Daily Check-in Card — full width, moved from EarnSection */}
       <div id="daily-checkin-card" style={{
