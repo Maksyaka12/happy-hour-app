@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useDisconnect, useWriteContract, useBalance, useReadContract, useChainId, useSwitchChain } from 'wagmi'
-import { usePrivy } from '@privy-io/react-auth'
-import { formatUnits, parseUnits } from 'viem'
+import { usePrivy, useWallets } from '@privy-io/react-auth'
+import { formatUnits, parseUnits, encodeFunctionData } from 'viem'
 import { base } from 'wagmi/chains'
 import { APP_URL, FOUNDATION, CHECKIN_TARGET, USDC_ADDRESS, USDC_ABI, HH_ADDRESS, HH_ABI, HH_MANAGER_ADDRESS, STAKING_ADDRESS, STAKING_ABI, MEMBERSHIP_ADDRESS, MEMBERSHIP_ABI } from '../config/constants'
 import { db } from '../config/supabase'
@@ -64,6 +64,7 @@ const safeParseUnits = (amountStr, decimals = 18) => {
 export function ProfileSection({ address, basename, totalUsers, setTab, onRequireWallet, onLogout }) {
   const { user: privyUser } = usePrivy()
   const { disconnect } = useDisconnect()
+  const { wallets } = useWallets()
   const { writeContract: wagmiWriteContract } = useWriteContract()
 
   // DexScreener States
@@ -71,51 +72,66 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
   const [priceChange, setPriceChange] = useState(8.4)
 
   // Happy Club Purchase States
-  const [duration, setDuration] = useState(30)
+  const [showClubModal, setShowClubModal] = useState(false)
+  const [clubModalDuration, setClubModalDuration] = useState(30)
+  const [clubModalToken, setClubModalToken] = useState('usdc')
+  const [clubModalWalletType, setClubModalWalletType] = useState('embedded')
+  const [clubIsSending, setClubIsSending] = useState(false)
+  const [clubTxHash, setClubTxHash] = useState(null)
+  const [clubError, setClubError] = useState(null)
 
-  const buyMembership = (tokenType) => {
-    if (!address) {
-      if (onRequireWallet) onRequireWallet()
-      return
-    }
-    
-    if (tokenType === 'hh') {
-      const cost = (hhPriceMember * duration) / 30
-      wagmiWriteContract({
-        address: MEMBERSHIP_ADDRESS,
-        abi: MEMBERSHIP_ABI,
-        functionName: 'purchaseWithHH',
-        args: [BigInt(duration)],
-        chainId: base.id
+  // Wallets logic
+  const embeddedWallet = wallets.find(w => w.walletClientType === 'privy')
+  const linkedExternalAddresses = new Set(
+    (privyUser?.linkedAccounts || [])
+      .filter(a => a.type === 'wallet' && a.walletClientType !== 'privy' && a.connectorType !== 'embedded')
+      .map(a => a.address?.toLowerCase())
+  )
+  const externalWallet = wallets.find(w => w.walletClientType !== 'privy' && linkedExternalAddresses.has(w.address?.toLowerCase()))
+  const activeClubWallet = clubModalWalletType === 'embedded' ? embeddedWallet : externalWallet
+
+  const handleBuyMembership = async () => {
+    if (!activeClubWallet) return
+    setClubIsSending(true)
+    setClubError(null)
+    try {
+      const provider = await activeClubWallet.getEthereumProvider()
+      let data
+      let value = '0x0'
+      
+      if (clubModalToken === 'hh') {
+        data = encodeFunctionData({ abi: MEMBERSHIP_ABI, functionName: 'purchaseWithHH', args: [BigInt(clubModalDuration)] })
+      } else if (clubModalToken === 'usdc') {
+        data = encodeFunctionData({ abi: MEMBERSHIP_ABI, functionName: 'purchaseWithUSDC', args: [BigInt(clubModalDuration)] })
+      } else if (clubModalToken === 'eth') {
+        const cost = (ethPriceMember * clubModalDuration) / 30
+        data = encodeFunctionData({ abi: MEMBERSHIP_ABI, functionName: 'purchaseWithETH', args: [BigInt(clubModalDuration)] })
+        value = '0x' + parseUnits(cost.toFixed(18), 18).toString(16)
+      }
+
+      const tx = await provider.request({
+        method: 'eth_sendTransaction',
+        params: [{
+          from: activeClubWallet.address,
+          to: MEMBERSHIP_ADDRESS,
+          data: data,
+          value: value
+        }]
       })
-    } else if (tokenType === 'usdc') {
-      const cost = (usdcPriceMember * duration) / 30
-      wagmiWriteContract({
-        address: MEMBERSHIP_ADDRESS,
-        abi: MEMBERSHIP_ABI,
-        functionName: 'purchaseWithUSDC',
-        args: [BigInt(duration)],
-        chainId: base.id
-      })
-    } else if (tokenType === 'eth') {
-      const cost = (ethPriceMember * duration) / 30
-      wagmiWriteContract({
-        address: MEMBERSHIP_ADDRESS,
-        abi: MEMBERSHIP_ABI,
-        functionName: 'purchaseWithETH',
-        args: [BigInt(duration)],
-        value: parseUnits(cost.toFixed(18), 18),
-        chainId: base.id
-      })
+      setClubTxHash(tx)
+    } catch(e) {
+      setClubError(e?.message || 'Transaction failed')
+    } finally {
+      setClubIsSending(false)
     }
   }
 
   const simulateBuyMembership = () => {
     try {
       localStorage.setItem('hh_simulated_member', 'true')
-      localStorage.setItem('hh_simulated_expiry', (Math.floor(Date.now() / 1000) + duration * 24 * 3600).toString())
+      localStorage.setItem('hh_simulated_expiry', (Math.floor(Date.now() / 1000) + 30 * 24 * 3600).toString())
       setSimulatedMember(true)
-      setSimulatedExpiry(Math.floor(Date.now() / 1000) + duration * 24 * 3600)
+      setSimulatedExpiry(Math.floor(Date.now() / 1000) + 30 * 24 * 3600)
     } catch (e) { console.error(e) }
   }
 
@@ -633,20 +649,6 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
-              <div style={{ fontSize: 12, color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Current Streak</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <div style={{ fontSize: 32, fontWeight: 800, color: streakCount > 0 ? '#F59E0B' : '#FFFFFF', fontFamily: "'Outfit', 'Inter', sans-serif", lineHeight: 1 }}>
-                  {streakCount} {streakCount === 0 && 'd'}
-                </div>
-                {streakCount > 0 && (
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FF9800" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: 'translateY(-2px)' }}>
-                    <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
-                  </svg>
-                )}
-              </div>
-            </div>
-            
             <button
               onClick={() => {
                 if (!address) {
@@ -674,6 +676,20 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
             >
               {checkedToday ? '✓ Checked-in Today' : 'Check-in'}
             </button>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+              <div style={{ fontSize: 12, color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Current Streak</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ fontSize: 32, fontWeight: 800, color: streakCount > 0 ? '#F59E0B' : '#FFFFFF', fontFamily: "'Outfit', 'Inter', sans-serif", lineHeight: 1 }}>
+                  {streakCount} {streakCount === 0 && 'd'}
+                </div>
+                {streakCount > 0 && (
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FF9800" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: 'translateY(-2px)' }}>
+                    <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
+                  </svg>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -742,204 +758,100 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
 
       {/* Happy Club Membership Card */}
       <div id="happy-club-card" style={{
-        background: '#1A1C24',
-        borderRadius: 16,
-        padding: '20px 24px',
-        marginBottom: 16,
+        background: 'rgba(26, 29, 36, 0.4)',
+        borderRadius: 24,
+        padding: '32px 40px',
+        marginBottom: 24,
         display: 'flex',
         flexDirection: 'column',
-        gap: 12,
         position: 'relative',
-        overflow: 'hidden',
-        border: '1px solid rgba(255, 255, 255, 0.05)'
+        border: '1px solid rgba(193, 196, 205, 0.1)',
+        fontFamily: "'Inter', sans-serif"
       }}>
-
-        {/* Shine glow */}
-        <div style={{
-          position: 'absolute',
-          top: -40,
-          right: -40,
-          width: 140,
-          height: 140,
-          borderRadius: '50%',
-          background: isClubMember 
-            ? 'radial-gradient(circle, rgba(59, 130, 246, 0.25) 0%, transparent 75%)' 
-            : 'radial-gradient(circle, rgba(139, 92, 246, 0.25) 0%, transparent 75%)',
-          pointerEvents: 'none',
-          zIndex: 1
-        }} />
-
         {/* Title row */}
-        <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 20 }}>👑</span>
-            <div>
-              <div style={{ fontSize: 16, fontWeight: 950, color: '#FFFFFF', letterSpacing: '0.1px', fontFamily: "'Outfit', sans-serif" }}>
-                HAPPY CLUB
-              </div>
-              <div style={{ fontSize: 9.5, color: isClubMember ? '#93C5FD' : '#C084FC', fontWeight: 800, textTransform: 'uppercase', marginTop: 2 }}>
-                {isClubMember ? 'Premium Member' : 'AI Automation & Perks'}
-              </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+          <img src="/logo.jfif" alt="HH" style={{ width: 28, height: 28, borderRadius: 8, objectFit: 'cover' }} />
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#FFFFFF' }}>
+            Happy Club Membership
+          </div>
+        </div>
+
+        {/* Pricing & Description */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+          <div style={{ color: '#94A3B8', fontSize: 13, lineHeight: 1.5, maxWidth: 300 }}>
+             From:
+          </div>
+          <div style={{ fontSize: 24, fontWeight: 700, color: '#FFFFFF' }}>
+            ${usdcPriceMember.toFixed(2)} <span style={{ fontSize: 14, color: '#94A3B8', fontWeight: 500 }}>/mo</span>
+          </div>
+        </div>
+
+        <div style={{ color: '#94A3B8', fontSize: 13, lineHeight: 1.5, marginBottom: 24 }}>
+           Paid in <strong>any token</strong> and automatically debited from your wallet. Cancel anytime.
+        </div>
+        
+        {isClubMember ? (
+          <div style={{ fontSize: 13, color: '#E2E8F0', fontWeight: 600, lineHeight: 1.4, padding: '16px', background: 'rgba(34, 197, 94, 0.1)', borderRadius: 12, border: '1px solid rgba(34, 197, 94, 0.2)', marginBottom: 24 }}>
+            Your Premium subscription is active! Agents automatically perform daily check-ins and participate in raffles.
+            <div style={{ fontSize: 12, color: '#4ADE80', marginTop: 8, fontWeight: 700 }}>
+              📅 Expires on: {new Date(membershipExpiry * 1000).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
             </div>
           </div>
-          <span style={{
-            background: isClubMember ? 'rgba(59, 130, 246, 0.15)' : 'rgba(139, 92, 246, 0.15)',
-            color: isClubMember ? '#60A5FA' : '#C084FC',
-            padding: '4px 10px',
-            borderRadius: 8,
-            fontSize: 10,
-            fontWeight: 900,
-            border: isClubMember ? '1px solid rgba(59, 130, 246, 0.3)' : '1px solid rgba(139, 92, 246, 0.3)',
-            fontFamily: "'Outfit', sans-serif"
-          }}>
-            {isClubMember ? 'ACTIVE' : 'UPGRADE'}
-          </span>
+        ) : (
+          <button 
+             onClick={() => {
+               if (!address) {
+                 if (onRequireWallet) onRequireWallet()
+                 return
+               }
+               setShowClubModal(true)
+             }}
+             style={{
+               background: '#8B5CF6',
+               color: '#FFFFFF',
+               borderRadius: 12,
+               padding: '14px 24px',
+               fontSize: 14,
+               fontWeight: 600,
+               border: 'none',
+               cursor: 'pointer',
+               width: '100%',
+               marginBottom: 32,
+               transition: 'background 0.2s'
+             }}
+             onMouseEnter={e => e.currentTarget.style.background = '#7C3AED'}
+             onMouseLeave={e => e.currentTarget.style.background = '#8B5CF6'}
+          >
+             Get your membership
+          </button>
+        )}
+
+        {/* Checklist */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+           {['Automatic Daily Check-ins', 'Automatic Lottery participation', 'Unlimited AI Assistant usage', 'Early Access to new features'].map(perk => (
+             <div key={perk} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+               <span style={{ color: '#E2E8F0', marginTop: 2 }}>✓</span>
+               <span style={{ color: '#94A3B8', fontSize: 13, lineHeight: 1.4 }}>{perk}</span>
+             </div>
+           ))}
         </div>
-
-        {/* Main Content */}
-        <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', gap: 6 }}>
-          {isClubMember ? (
-            <div style={{ fontSize: 12.5, color: '#E2E8F0', fontWeight: 600, lineHeight: 1.4 }}>
-              Your Premium subscription is active! Agents automatically perform daily check-ins and participate in raffles.
-              <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 8, fontWeight: 700 }}>
-                📅 Expires on: {new Date(membershipExpiry * 1000).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
-              </div>
-            </div>
-          ) : (
-            <>
-              <div style={{ fontSize: 12, color: 'rgba(255, 255, 255, 0.8)', fontWeight: 600, lineHeight: 1.4 }}>
-                Get unlimited access to the AI assistant, along with automatic daily check-ins and raffle entries handled by our routine agents.
-              </div>
-              
-              {/* Duration Selector */}
-              <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
-                <button 
-                  type="button"
-                  onClick={() => setDuration(30)}
-                  style={{
-                    flex: 1,
-                    padding: '8px 10px',
-                    borderRadius: 10,
-                    border: duration === 30 ? '1px solid #C084FC' : '1px solid rgba(255, 255, 255, 0.15)',
-                    background: duration === 30 ? 'rgba(139, 92, 246, 0.2)' : 'rgba(255, 255, 255, 0.05)',
-                    color: '#FFFFFF',
-                    fontSize: 11.5,
-                    fontWeight: 800,
-                    cursor: 'pointer'
-                  }}
-                >
-                  30 Days (1 mo)
-                </button>
-                <button 
-                  type="button"
-                  onClick={() => setDuration(365)}
-                  style={{
-                    flex: 1,
-                    padding: '8px 10px',
-                    borderRadius: 10,
-                    border: duration === 365 ? '1px solid #C084FC' : '1px solid rgba(255, 255, 255, 0.15)',
-                    background: duration === 365 ? 'rgba(139, 92, 246, 0.2)' : 'rgba(255, 255, 255, 0.05)',
-                    color: '#FFFFFF',
-                    fontSize: 11.5,
-                    fontWeight: 800,
-                    cursor: 'pointer'
-                  }}
-                >
-                  365 Days (Save 20%)
-                </button>
-              </div>
-
-              {/* Payment Grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginTop: 4 }}>
-                <button
-                  type="button"
-                  onClick={() => buyMembership('hh')}
-                  style={{
-                    padding: '10px 8px',
-                    borderRadius: 12,
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    background: 'rgba(255, 255, 255, 0.08)',
-                    color: '#FFFFFF',
-                    fontSize: 11,
-                    fontWeight: 900,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: 4
-                  }}
-                >
-                  <span>🪙 $HH</span>
-                  <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.5)', fontWeight: 700 }}>
-                    {formatConcise((hhPriceMember * duration) / 30)}
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => buyMembership('usdc')}
-                  style={{
-                    padding: '10px 8px',
-                    borderRadius: 12,
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    background: 'rgba(255, 255, 255, 0.08)',
-                    color: '#FFFFFF',
-                    fontSize: 11,
-                    fontWeight: 900,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: 4
-                  }}
-                >
-                  <span>💵 USDC</span>
-                  <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.5)', fontWeight: 700 }}>
-                    ${((usdcPriceMember * duration) / 30).toFixed(0)}
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => buyMembership('eth')}
-                  style={{
-                    padding: '10px 8px',
-                    borderRadius: 12,
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    background: 'rgba(255, 255, 255, 0.08)',
-                    color: '#FFFFFF',
-                    fontSize: 11,
-                    fontWeight: 900,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: 4
-                  }}
-                >
-                  <span>🛡️ ETH</span>
-                  <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.5)', fontWeight: 700 }}>
-                    {((ethPriceMember * duration) / 30).toFixed(4)}
-                  </span>
-                </button>
-              </div>
-
-              {/* Dev simulation button */}
-              <div style={{ textAlign: 'center', marginTop: 4 }}>
-                <span 
-                  onClick={simulateBuyMembership}
-                  style={{ 
-                    fontSize: 8.5, 
-                    fontWeight: 800, 
-                    color: 'rgba(255,255,255,0.3)', 
-                    cursor: 'pointer',
-                    textDecoration: 'underline'
-                  }}
-                >
-                  [Dev] Enable free membership for testing
-                </span>
-              </div>
-            </>
-          )}
-        </div>
+        
+        {!isClubMember && (
+          <div style={{ textAlign: 'center', marginTop: 16 }}>
+            <span 
+              onClick={simulateBuyMembership}
+              style={{ 
+                fontSize: 10, 
+                fontWeight: 600, 
+                color: 'rgba(255,255,255,0.2)', 
+                cursor: 'pointer',
+                textDecoration: 'underline'
+              }}
+            >
+              [Dev] Enable free membership for testing
+            </span>
+          </div>
+        )}
       </div>
 
 
@@ -948,16 +860,127 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
       {/* Daily Check-in TxModal */}
       {checkinTxModal && (
         <TxModal
-          title="Daily Check-in"
-          subtitle="Claim your daily free HP and keep your streak going!"
-          amount="0.0001"
-          isPending={isCheckinPending}
-          isConfirming={isCheckinConfirming}
+          isOpen={checkinTxModal}
+          onClose={() => setCheckinTxModal(false)}
+          isConfirming={isCheckinPending || isCheckinConfirming}
           isSuccess={isCheckinSuccess}
-          error={checkinWriteError}
-          onConfirm={sendCheckin}
-          onCancel={() => { setCheckinTxModal(false); resetCheckin(); }}
+          hash={checkinTxHash}
+          error={checkinWriteError || checkinError}
+          title="Daily Check-in"
+          successMessage="Check-in successful! +1 HP added to your streak."
         />
+      )}
+
+      {/* Happy Club Payment Modal */}
+      {showClubModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }} onClick={() => setShowClubModal(false)}>
+          <div style={{ background: '#11131F', borderRadius: 24, padding: 24, width: 400, maxWidth: '90%', border: '1px solid rgba(255,255,255,0.1)', fontFamily: "'Inter', sans-serif" }} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <h2 style={{ color: '#FFFFFF', fontSize: 18, fontWeight: 700, margin: 0 }}>Happy Club Membership</h2>
+              <button onClick={() => setShowClubModal(false)} style={{ background: 'transparent', border: 'none', color: '#94A3B8', fontSize: 20, cursor: 'pointer' }}>✕</button>
+            </div>
+            
+            {clubTxHash ? (
+              <div style={{ textAlign: 'center', padding: '24px 0' }}>
+                <div style={{ fontSize: 40, marginBottom: 12 }}>✅</div>
+                <div style={{ color: '#22C55E', fontWeight: 700, fontSize: 16, marginBottom: 8 }}>Payment Sent!</div>
+                <div style={{ color: '#94A3B8', fontSize: 13, fontFamily: 'monospace', wordBreak: 'break-all' }}>{clubTxHash}</div>
+                <button onClick={() => { setShowClubModal(false); setClubTxHash(null); }} style={{ width: '100%', background: '#3B82F6', color: '#FFF', border: 'none', padding: '14px', borderRadius: 12, marginTop: 24, cursor: 'pointer', fontWeight: 600 }}>Close</button>
+              </div>
+            ) : (
+              <>
+                {/* Duration */}
+                <div style={{ marginBottom: 16 }}>
+                  <label style={{ display: 'block', color: '#94A3B8', fontSize: 13, marginBottom: 8, fontWeight: 600 }}>Plan</label>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button 
+                      onClick={() => setClubModalDuration(30)}
+                      style={{ flex: 1, padding: '12px', borderRadius: 12, border: clubModalDuration === 30 ? '1px solid #3B82F6' : '1px solid rgba(255,255,255,0.1)', background: clubModalDuration === 30 ? 'rgba(59,130,246,0.1)' : 'rgba(255,255,255,0.02)', color: '#FFF', cursor: 'pointer', fontWeight: 600, fontSize: 13 }}
+                    >
+                      30 Days
+                    </button>
+                    <button 
+                      onClick={() => setClubModalDuration(365)}
+                      style={{ flex: 1, padding: '12px', borderRadius: 12, border: clubModalDuration === 365 ? '1px solid #3B82F6' : '1px solid rgba(255,255,255,0.1)', background: clubModalDuration === 365 ? 'rgba(59,130,246,0.1)' : 'rgba(255,255,255,0.02)', color: '#FFF', cursor: 'pointer', fontWeight: 600, fontSize: 13 }}
+                    >
+                      365 Days <span style={{ color: '#F59E0B', fontSize: 11 }}>(-20%)</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Wallet mode toggle */}
+                <div style={{ marginBottom: 16 }}>
+                  <label style={{ display: 'block', color: '#94A3B8', fontSize: 13, marginBottom: 8, fontWeight: 600 }}>Wallet mode</label>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', background: 'rgba(255,255,255,0.03)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div>
+                      <div style={{ fontSize: 14, color: '#F8FAFC', fontWeight: 600 }}>{clubModalWalletType === 'embedded' ? 'Embedded Wallet' : 'External Wallet'}</div>
+                    </div>
+                    <button
+                      onClick={() => setClubModalWalletType(prev => prev === 'embedded' ? 'external' : 'embedded')}
+                      style={{
+                        position: 'relative', width: 44, height: 24, background: clubModalWalletType === 'external' ? '#3B82F6' : 'rgba(255,255,255,0.15)', borderRadius: 12, border: 'none', cursor: 'pointer', transition: 'background 0.2s', padding: 0,
+                      }}
+                    >
+                      <div style={{ position: 'absolute', top: 3, left: clubModalWalletType === 'external' ? 23 : 3, width: 18, height: 18, background: '#FFFFFF', borderRadius: '50%', transition: 'left 0.2s' }} />
+                    </button>
+                  </div>
+                  {!activeClubWallet && (
+                    <div style={{ color: '#F59E0B', fontSize: 12, marginTop: 4 }}>
+                      {clubModalWalletType === 'external' ? 'No external wallet found. Connect one in Account settings.' : 'No embedded wallet found.'}
+                    </div>
+                  )}
+                </div>
+
+                {/* Token */}
+                <div style={{ marginBottom: 24 }}>
+                  <label style={{ display: 'block', color: '#94A3B8', fontSize: 13, marginBottom: 8, fontWeight: 600 }}>Pay with</label>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    {['usdc', 'eth', 'hh'].map(t => (
+                      <button
+                        key={t}
+                        onClick={() => setClubModalToken(t)}
+                        style={{
+                          flex: 1, padding: '12px 0', borderRadius: 12, border: clubModalToken === t ? '1px solid #3B82F6' : '1px solid rgba(255,255,255,0.1)', background: clubModalToken === t ? 'rgba(59,130,246,0.1)' : 'rgba(255,255,255,0.02)', color: '#FFF', cursor: 'pointer', fontWeight: 600, fontSize: 13, textTransform: 'uppercase'
+                        }}
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Amount */}
+                <div style={{ background: 'rgba(0,0,0,0.2)', padding: 16, borderRadius: 12, marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: '#94A3B8', fontSize: 14 }}>Amount to pay</span>
+                  <span style={{ color: '#FFF', fontSize: 18, fontWeight: 700 }}>
+                    {clubModalToken === 'hh' ? formatConcise((hhPriceMember * clubModalDuration) / 30) : clubModalToken === 'usdc' ? ((usdcPriceMember * clubModalDuration) / 30).toFixed(0) : ((ethPriceMember * clubModalDuration) / 30).toFixed(4)} {clubModalToken.toUpperCase()}
+                  </span>
+                </div>
+
+                {clubError && <div style={{ color: '#EF4444', fontSize: 13, marginBottom: 16 }}>{clubError}</div>}
+
+                <button
+                  onClick={handleBuyMembership}
+                  disabled={clubIsSending || !activeClubWallet}
+                  style={{
+                    width: '100%',
+                    padding: '14px',
+                    background: '#3B82F6',
+                    color: '#FFF',
+                    border: 'none',
+                    borderRadius: 12,
+                    fontSize: 15,
+                    fontWeight: 700,
+                    cursor: clubIsSending || !activeClubWallet ? 'not-allowed' : 'pointer',
+                    opacity: clubIsSending || !activeClubWallet ? 0.5 : 1
+                  }}
+                >
+                  {clubIsSending ? 'Processing...' : 'Confirm Payment'}
+                </button>
+              </>
+            )}
+          </div>
+        </div>
       )}
 
     </div>
