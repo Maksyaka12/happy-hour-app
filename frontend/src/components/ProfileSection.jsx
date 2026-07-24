@@ -607,7 +607,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
 
       {/* Daily Check-in Card — dark theme */}
       <div id="daily-checkin-card" style={{
-        background: 'var(--card-bg)',
+        background: 'rgba(26, 29, 36, 0.4)',
         borderRadius: 24,
         padding: '32px 40px',
         marginBottom: 24,
@@ -615,7 +615,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
         flexDirection: 'column',
         gap: 32,
         position: 'relative',
-        border: '1px solid rgba(255, 255, 255, 0.05)',
+        border: '1px solid rgba(193, 196, 205, 0.1)',
         fontFamily: "'Inter', sans-serif"
       }}>
         {/* Header row */}
