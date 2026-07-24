@@ -536,12 +536,7 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
 
         {/* Content Left */}
         <div style={{ flex: 1, padding: '32px 48px', position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {/* Top Blue Badge */}
-          <div style={{ display: 'flex' }}>
-            <span style={{
-              background: 'rgba(59, 130, 246, 0.15)', color: '#3B82F6', padding: '4px 12px', borderRadius: 12, fontSize: 11, fontWeight: 700, border: '1px solid rgba(59, 130, 246, 0.3)'
-            }}>Happy Hour: User Card</span>
-          </div>
+
           
           <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
             <div style={{
@@ -598,139 +593,149 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
         <div className="desktop-only" style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '45%', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: '32px 48px', background: 'rgba(255,255,255,0.02)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 32, boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
             <div style={{ fontSize: 14, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '2px' }}>
-              LOYALTY BALANCE
+              HAPPY POINTS
             </div>
             <div style={{ fontFamily: "'Outfit', 'Inter', sans-serif", fontSize: 64, fontWeight: 700, color: '#FFFFFF', letterSpacing: '2px', lineHeight: 1, textShadow: '0 0 20px rgba(255,255,255,0.2)' }}>
               {userStats.points.toLocaleString()}
             </div>
             <div style={{ display: 'flex', gap: 32, opacity: 0.5 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: '#FFF', letterSpacing: '1px' }}>HP EARNED</div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#FFF', letterSpacing: '1px' }}>LOYALTY POINTS</div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Daily Check-in Card — full width, moved from EarnSection */}
+      {/* Daily Check-in Card — full width, premium design */}
       <div id="daily-checkin-card" style={{
-        background: '#1A1C24',
-        borderRadius: 16,
-        padding: '20px 24px',
-        marginBottom: 16,
+        background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.5) 0%, rgba(15, 23, 42, 0.5) 100%)',
+        borderRadius: 24,
+        padding: '32px 40px',
+        marginBottom: 24,
         display: 'flex',
         flexDirection: 'column',
-        gap: 12,
+        gap: 32,
         position: 'relative',
         overflow: 'hidden',
-        border: '1px solid rgba(255, 255, 255, 0.05)'
+        border: '1px solid rgba(255, 255, 255, 0.05)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+        fontFamily: "'Inter', sans-serif"
       }}>
+        {/* Shine glow */}
+        <div style={{ position: 'absolute', top: '-50%', left: '-20%', width: '60%', height: '100%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 60%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
 
         {/* Header row */}
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 24 }}>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 900, color: '#FFFFFF', letterSpacing: '0.1px' }}>Daily Check-in</div>
-            <div style={{ fontSize: 10, color: 'rgba(255, 255, 255, 0.7)', marginTop: 3, fontWeight: 600 }}>
-              daily free HP
-              <span style={{ margin: '0 5px', opacity: 0.5 }}>·</span>
-              keep your streak
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ fontSize: 24, fontWeight: 700, color: '#FFFFFF', letterSpacing: '-0.3px' }}>Daily Check-in</div>
+              <span style={{ fontSize: 12, fontWeight: 800, background: 'rgba(59, 130, 246, 0.15)', color: '#3B82F6', padding: '4px 10px', borderRadius: 8, border: '1px solid rgba(59, 130, 246, 0.3)' }}>
+                +1 HP / Day
+              </span>
+            </div>
+            <div style={{ fontSize: 14, color: '#94A3B8', marginTop: 8, fontWeight: 400, maxWidth: 400, lineHeight: 1.5 }}>
+              Keep your streak alive to unlock milestone bonuses. Rewards reset after 30 days.
             </div>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
-            <span style={{ fontSize: 10, fontWeight: 900, background: 'rgba(255,255,255,0.15)', color: '#FFFFFF', padding: '2px 8px', borderRadius: 6 }}>
-              +1 HP
-            </span>
-            {streakCount > 0 && (
-              <span style={{ fontSize: 10, fontWeight: 800, color: '#FBBF24' }}>
-                {streakCount}d 🔥
-              </span>
-            )}
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+              <div style={{ fontSize: 12, color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Current Streak</div>
+              <div style={{ fontSize: 32, fontWeight: 800, color: streakCount > 0 ? '#F59E0B' : '#FFFFFF', fontFamily: "'Outfit', 'Inter', sans-serif", lineHeight: 1 }}>
+                {streakCount} {streakCount > 0 ? '🔥' : 'd'}
+              </div>
+            </div>
+            
+            <button
+              onClick={() => {
+                if (!address) {
+                  if (onRequireWallet) onRequireWallet()
+                  return
+                }
+                setCheckinTxModal(true)
+              }}
+              disabled={checkedToday}
+              style={{
+                padding: '14px 28px',
+                borderRadius: 14,
+                border: checkedToday ? '1px solid rgba(255,255,255,0.1)' : 'none',
+                background: checkedToday ? 'rgba(255,255,255,0.05)' : 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
+                color: checkedToday ? '#94A3B8' : '#FFFFFF',
+                fontSize: 14,
+                fontWeight: 700,
+                cursor: checkedToday ? 'not-allowed' : 'pointer',
+                outline: 'none',
+                transition: 'all 0.2s',
+                boxShadow: checkedToday ? 'none' : '0 4px 12px rgba(37, 99, 235, 0.3)'
+              }}
+              onMouseEnter={e => { if (!checkedToday) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(37, 99, 235, 0.4)'; } }}
+              onMouseLeave={e => { if (!checkedToday) { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(37, 99, 235, 0.3)'; } }}
+            >
+              {checkedToday ? '✓ Claimed Today' : 'Claim Reward'}
+            </button>
           </div>
         </div>
 
+        {checkinError && (
+          <div style={{ position: 'relative', zIndex: 1, color: '#FCA5A5', fontSize: 13, fontWeight: 600 }}>
+            ⚠️ {checkinError}
+          </div>
+        )}
+
         {/* Streak Progress Bar */}
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ position: 'relative', height: 6, background: 'rgba(255,255,255,0.12)', borderRadius: 10, marginBottom: 18 }}>
+        <div style={{ position: 'relative', zIndex: 1, padding: '0 24px', marginTop: 12 }}>
+          <div style={{ position: 'relative', height: 12, background: 'rgba(255,255,255,0.05)', borderRadius: 12 }}>
             {/* Progress fill */}
             <div style={{
               position: 'absolute',
               left: 0,
               top: 0,
               height: '100%',
-              borderRadius: 10,
+              borderRadius: 12,
               width: `${Math.min(100, (streakCount / 30) * 100)}%`,
-              background: 'linear-gradient(90deg, #3B82F6 0%, #60A5FA 100%)',
-              transition: 'width 0.5s ease',
-              boxShadow: '0 0 8px rgba(59,130,246,0.6)'
+              background: 'linear-gradient(90deg, #3B82F6 0%, #8B5CF6 100%)',
+              transition: 'width 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+              boxShadow: '0 0 16px rgba(59,130,246,0.5)'
             }} />
 
             {/* Milestone dots */}
-            {[{day: 7, pct: (7/30)*100, label: '7d', reward: '+3 HP'}, {day: 14, pct: (14/30)*100, label: '14d', reward: '+7 HP'}, {day: 30, pct: 100, label: '30d', reward: '+15 HP'}].map(m => (
+            {[{day: 7, pct: (7/30)*100, label: '7 Days', reward: '+3 HP'}, {day: 14, pct: (14/30)*100, label: '14 Days', reward: '+7 HP'}, {day: 30, pct: 100, label: '30 Days', reward: '+15 HP'}].map(m => (
               <div key={m.day} style={{
                 position: 'absolute',
                 left: `${m.pct}%`,
                 top: '50%',
                 transform: 'translate(-50%, -50%)',
-                width: 12,
-                height: 12,
+                width: 24,
+                height: 24,
                 borderRadius: '50%',
-                background: streakCount >= m.day ? '#60A5FA' : 'rgba(255,255,255,0.25)',
-                border: `2px solid ${streakCount >= m.day ? '#3B82F6' : 'rgba(255,255,255,0.3)'}`,
-                boxShadow: streakCount >= m.day ? '0 0 8px rgba(59,130,246,0.8)' : 'none',
-                zIndex: 2
+                background: streakCount >= m.day ? '#8B5CF6' : '#1E293B',
+                border: `3px solid ${streakCount >= m.day ? '#C4B5FD' : 'rgba(255,255,255,0.1)'}`,
+                boxShadow: streakCount >= m.day ? '0 0 12px rgba(139, 92, 246, 0.6)' : 'none',
+                zIndex: 2,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
               }}>
+                {streakCount >= m.day && <span style={{ color: '#FFF', fontSize: 12, fontWeight: 900 }}>✓</span>}
+                
                 {/* Label below dot */}
                 <div style={{
                   position: 'absolute',
-                  top: 14,
+                  top: 32,
                   left: '50%',
                   transform: 'translateX(-50%)',
                   whiteSpace: 'nowrap',
                   textAlign: 'center'
                 }}>
-                  <div style={{ fontSize: 8, fontWeight: 800, color: streakCount >= m.day ? '#60A5FA' : 'rgba(255,255,255,0.5)' }}>{m.label}</div>
-                  <div style={{ fontSize: 7, fontWeight: 700, color: streakCount >= m.day ? '#FBBF24' : 'rgba(255,255,255,0.35)', marginTop: 1 }}>{m.reward}</div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: streakCount >= m.day ? '#E2E8F0' : '#64748B' }}>{m.label}</div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: streakCount >= m.day ? '#FBBF24' : '#475569', marginTop: 4 }}>{m.reward}</div>
                 </div>
               </div>
             ))}
           </div>
         </div>
-
-        {/* Claim Button */}
-        <button
-          onClick={() => {
-            if (!address) {
-              if (onRequireWallet) onRequireWallet()
-              return
-            }
-            setCheckinTxModal(true)
-          }}
-          disabled={checkedToday}
-          style={{
-            position: 'relative',
-            zIndex: 1,
-            width: '100%',
-            padding: '10px 12px',
-            borderRadius: 12,
-            border: checkedToday ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.25)',
-            background: checkedToday ? 'rgba(255,255,255,0.05)' : 'rgba(255, 255, 255, 0.12)',
-            color: checkedToday ? '#94A3B8' : '#FFFFFF',
-            fontSize: 13,
-            fontWeight: 800,
-            cursor: checkedToday ? 'not-allowed' : 'pointer',
-            outline: 'none',
-            transition: 'background 0.2s',
-            textAlign: 'center'
-          }}
-          onMouseEnter={e => { if (!checkedToday) e.currentTarget.style.background = 'rgba(255,255,255,0.2)' }}
-          onMouseLeave={e => { if (!checkedToday) e.currentTarget.style.background = 'rgba(255,255,255,0.12)' }}
-        >
-          {checkedToday ? '✓ Claimed — Resets at 00:00 UTC' : 'Claim'}
-        </button>
-
-        {checkinError && (
-          <div style={{ position: 'relative', zIndex: 1, color: '#FCA5A5', fontSize: 10.5, fontWeight: 700, textAlign: 'center', marginTop: -4 }}>
-            ⚠️ {checkinError}
-          </div>
-        )}
+        
+        {/* Spacer for milestone labels so they aren't cut off */}
+        <div style={{ height: 32 }} />
       </div>
 
       {/* Happy Club Membership Card */}
