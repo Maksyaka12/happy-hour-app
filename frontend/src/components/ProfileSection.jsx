@@ -517,12 +517,12 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
       {/* Profile Hero Banner */}
       <div
         style={{
-          background: 'var(--card-bg)',
-          backdropFilter: 'blur(12px)',
+          background: 'linear-gradient(135deg, rgba(16,18,27,1) 0%, rgba(20,22,35,1) 100%)',
           borderRadius: 24,
-          padding: '24px 32px',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
-          border: '1px solid var(--card-border)',
+          padding: '40px 48px',
+          position: 'relative',
+          overflow: 'hidden',
+          border: '1px solid rgba(255,255,255,0.05)',
           display: 'flex',
           flexDirection: 'column',
           gap: 24
@@ -590,9 +590,9 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
         <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           {/* HP Balance */}
           <div style={{
-            background: 'rgba(0, 0, 0, 0.2)',
-            padding: '20px',
-            borderRadius: 'var(--card-radius)',
+            background: '#1A1C24',
+            padding: '24px',
+            borderRadius: 16,
             border: '1px solid rgba(255, 255, 255, 0.05)',
             display: 'flex',
             flexDirection: 'column',
@@ -609,9 +609,9 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
 
           {/* $HH Wallet Balance */}
           <div style={{
-            background: 'rgba(0, 0, 0, 0.2)',
-            padding: '20px',
-            borderRadius: 'var(--card-radius)',
+            background: '#1A1C24',
+            padding: '24px',
+            borderRadius: 16,
             border: '1px solid rgba(255, 255, 255, 0.05)',
             display: 'flex',
             flexDirection: 'column',
@@ -675,18 +675,16 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
 
       {/* Daily Check-in Card — full width, moved from EarnSection */}
       <div id="daily-checkin-card" style={{
-        background: 'var(--card-bg)',
-        backdropFilter: 'blur(12px)',
-        borderRadius: 20,
-        padding: '16px 18px 14px',
+        background: '#1A1C24',
+        borderRadius: 16,
+        padding: '20px 24px',
         marginBottom: 16,
-        boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
         display: 'flex',
         flexDirection: 'column',
         gap: 12,
         position: 'relative',
         overflow: 'hidden',
-        border: '1px solid var(--card-border)'
+        border: '1px solid rgba(255, 255, 255, 0.05)'
       }}>
 
         {/* Header row */}
@@ -800,18 +798,16 @@ export function ProfileSection({ address, basename, totalUsers, setTab, onRequir
 
       {/* Happy Club Membership Card */}
       <div id="happy-club-card" style={{
-        background: 'var(--card-bg)',
-        backdropFilter: 'blur(12px)',
-        borderRadius: 20,
-        padding: '18px 20px',
+        background: '#1A1C24',
+        borderRadius: 16,
+        padding: '20px 24px',
         marginBottom: 16,
-        boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
         display: 'flex',
         flexDirection: 'column',
         gap: 12,
         position: 'relative',
         overflow: 'hidden',
-        border: '1px solid var(--card-border)'
+        border: '1px solid rgba(255, 255, 255, 0.05)'
       }}>
 
         {/* Shine glow */}

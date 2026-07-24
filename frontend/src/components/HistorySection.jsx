@@ -143,13 +143,11 @@ export function HistorySection({ address }) {
 
   return (
     <div style={{
-      background: 'var(--card-bg)',
-      backdropFilter: 'blur(12px)',
-      borderRadius: 24,
+      background: '#1A1C24',
+      borderRadius: 16,
       marginTop: 20,
-      padding: '20px 18px 16px',
-      boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
-      border: '1px solid var(--card-border)'
+      padding: '20px 24px',
+      border: '1px solid rgba(255, 255, 255, 0.05)'
     }}>
       {/* Header with switcher */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
