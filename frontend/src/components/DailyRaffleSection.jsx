@@ -557,8 +557,10 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
             {/* Task 1: Buy Hourly Ticket */}
             <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
-                  🎫
+                <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3B82F6' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M15 5.5a2 2 0 0 1 0-4h-6a2 2 0 0 1 0 4 2 2 0 0 0 0 4a2 2 0 0 1 0 4 2 2 0 0 0 0 4a2 2 0 0 1 0 4h6a2 2 0 0 1 0-4 2 2 0 0 0 0-4a2 2 0 0 1 0-4 2 2 0 0 0 0-4Z" />
+                  </svg>
                 </div>
                 <div>
                   <div style={{ fontSize: 15, fontWeight: 600, color: '#FFFFFF' }}>Buy Hourly Ticket</div>
@@ -581,8 +583,10 @@ export function DailyRaffleSection({ address, basename, onRequireWallet }) {
             {/* Task 2: Follow on X */}
             <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, opacity: isDailyEligible ? 1 : 0.5, pointerEvents: isDailyEligible ? 'auto' : 'none' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
-                  𝕏
+                <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF' }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  </svg>
                 </div>
                 <div>
                   <div style={{ fontSize: 15, fontWeight: 600, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: 8 }}>
