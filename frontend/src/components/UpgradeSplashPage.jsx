@@ -24,7 +24,7 @@ export function UpgradeSplashPage({
       onBypassAdmin();
     } else {
       setPasscodeError(true);
-      setTimeout(() => setPasscodeError(false), 2000);
+      setTimeout(() => setPasscodeError(false), 2500);
     }
   };
 
@@ -36,14 +36,23 @@ export function UpgradeSplashPage({
         <div className="splash-orbit splash-orbit-2" />
         <div className="splash-orbit splash-orbit-3" />
         
-        <div className="splash-particle" style={{ top: '25%', left: '20%', width: '3px', height: '3px' }} />
-        <div className="splash-particle" style={{ top: '30%', right: '22%', width: '2px', height: '2px', opacity: 0.3 }} />
-        <div className="splash-particle" style={{ bottom: '20%', left: '30%', width: '3px', height: '3px' }} />
-        <div className="splash-particle" style={{ bottom: '30%', right: '28%', width: '4px', height: '4px', opacity: 0.18 }} />
+        <div className="splash-particle" style={{ top: '22%', left: '18%', width: '3px', height: '3px' }} />
+        <div className="splash-particle" style={{ top: '28%', right: '20%', width: '2px', height: '2px', opacity: 0.3 }} />
+        <div className="splash-particle" style={{ bottom: '22%', left: '26%', width: '3px', height: '3px' }} />
+        <div className="splash-particle" style={{ bottom: '26%', right: '24%', width: '4px', height: '4px', opacity: 0.2 }} />
       </div>
 
       {/* Main Centered Card Window */}
       <div className="splash-card-window">
+        {/* Ambient Top Glow Line */}
+        <div className="splash-top-glow" />
+
+        {/* Live Status Badge */}
+        <div className="splash-status-pill">
+          <span className="splash-status-dot" />
+          <span>UPGRADE IN PROGRESS</span>
+        </div>
+
         {/* App Logo */}
         <div className="splash-logo-wrap">
           <img
@@ -59,7 +68,10 @@ export function UpgradeSplashPage({
 
         {/* Slogan Pill */}
         <div className="splash-pill-slogan">
-          🔥 TRADE TO WIN
+          <svg className="splash-slogan-icon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+          </svg>
+          <span>TRADE TO WIN</span>
         </div>
 
         {/* Headline */}
@@ -67,37 +79,31 @@ export function UpgradeSplashPage({
           WE ARE COOKING<br />AN UPGRADE
         </h1>
 
-        {/* Tagline */}
+        {/* Signature Serif-Italic Tagline */}
         <div className="splash-tagline">
-          Stay <span className="highlight">Happy</span> while you wait...
+          Stay <span className="highlight-accent">Happy</span> while you wait...
         </div>
 
-        {/* Concise Description */}
+        {/* Clean English Description */}
         <p className="splash-description">
-          Ми готуємо масштабне оновлення платформи, яке з'явиться вже зовсім згодом. 
-          Слідкуйте за анонсами та залишайтесь з нами!
+          We are preparing a major protocol upgrade featuring an all-new daily jackpot engine, 
+          automated trading rewards, and streamlined on-chain lotteries. Stay tuned!
         </p>
 
-        {/* Live Status Badge */}
-        <div className="splash-status-badge">
-          <span className="splash-status-dot" />
-          <span>Status: Upgrade in Progress</span>
-        </div>
-
-        {/* Action Links Grid (X & DexScreener) */}
+        {/* Action Links (X & DexScreener) */}
         <div className="splash-actions-row">
-          {/* X (Twitter) Link */}
+          {/* X Link */}
           <a
             href={X_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="splash-action-pill"
+            className="splash-action-pill splash-action-x"
           >
             <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
               <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
             </svg>
             <span>Follow on X</span>
-            <span style={{ fontSize: '0.80rem', opacity: 0.7 }}>↗</span>
+            <span className="splash-action-arrow">↗</span>
           </a>
 
           {/* DexScreener Link */}
@@ -105,7 +111,7 @@ export function UpgradeSplashPage({
             href={DEXSCREENER_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="splash-action-pill"
+            className="splash-action-pill splash-action-dex"
           >
             <img
               src="/dexscreener.jpg"
@@ -116,7 +122,7 @@ export function UpgradeSplashPage({
               }}
             />
             <span>DexScreener</span>
-            <span style={{ fontSize: '0.80rem', opacity: 0.7 }}>↗</span>
+            <span className="splash-action-arrow">↗</span>
           </a>
         </div>
       </div>
@@ -139,26 +145,27 @@ export function UpgradeSplashPage({
       {isPasscodeModalOpen && (
         <div className="splash-modal-overlay" onClick={() => setIsPasscodeModalOpen(false)}>
           <div className="splash-modal-card" onClick={(e) => e.stopPropagation()}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <h3 style={{ fontFamily: 'var(--splash-font-display)', fontSize: '1.15rem', color: '#FFF' }}>
-                ADMIN ACCESS
-              </h3>
+            <div className="splash-modal-header">
+              <div className="splash-modal-title-row">
+                <span className="splash-modal-dot" />
+                <h3 className="splash-modal-title">ADMIN ACCESS</h3>
+              </div>
               <button
                 onClick={() => setIsPasscodeModalOpen(false)}
-                style={{ background: 'transparent', border: 'none', color: '#94A3B8', cursor: 'pointer', fontSize: '1.2rem' }}
+                className="splash-modal-close-btn"
               >
                 ✕
               </button>
             </div>
             
-            <p style={{ fontSize: '0.86rem', color: 'var(--splash-text-secondary)', lineHeight: 1.5, margin: 0 }}>
-              Введіть пароль розробника для входу в адмін-робочу область.
+            <p className="splash-modal-desc">
+              Enter developer passcode to bypass maintenance mode and access the workspace.
             </p>
 
             <form onSubmit={handlePasscodeSubmit}>
               <input
                 type="password"
-                placeholder="Введіть пароль (hh2026)"
+                placeholder="Enter passcode (hh2026)"
                 value={passcode}
                 onChange={(e) => setPasscode(e.target.value)}
                 className="splash-modal-input"
@@ -166,21 +173,21 @@ export function UpgradeSplashPage({
               />
               
               {passcodeError && (
-                <div style={{ color: '#F87171', fontSize: '0.82rem', marginBottom: '14px', fontWeight: 600 }}>
-                  Невірний пароль. Спробуйте ще раз.
+                <div className="splash-modal-error">
+                  Incorrect passcode. Please try again.
                 </div>
               )}
 
-              <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              <div className="splash-modal-actions">
                 <button
                   type="button"
                   onClick={() => setIsPasscodeModalOpen(false)}
                   className="splash-btn-secondary"
                 >
-                  Скасувати
+                  Cancel
                 </button>
                 <button type="submit" className="splash-btn-primary">
-                  Розблокувати ↗
+                  Unlock Platform ↗
                 </button>
               </div>
             </form>
