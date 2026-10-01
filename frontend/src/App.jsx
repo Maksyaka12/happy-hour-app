@@ -25,6 +25,7 @@ import { DailyRaffleSection } from './components/DailyRaffleSection'
 import { ComingSoonScreen } from './components/ComingSoonScreen'
 import SwapSection from './components/SwapSection'
 import { AdminPage } from './components/AdminPage'
+import { UpgradeSplashPage } from './components/UpgradeSplashPage'
 
 const short = (a) => (a ? `${a.slice(0, 6)}\u2026${a.slice(-4)}` : '\u2014')
 
@@ -331,24 +332,26 @@ export default function App({ onLogin, onLogout, privyUser, privyWallets = [] })
 
   const displayName = basename || short(effectiveAddress)
 
-  // Maintenance Mode Toggle
-  const IS_MAINTENANCE_MODE = false;
+  // Maintenance & Upgrade Mode (Web3 Design System)
+  const [adminBypass, setAdminBypass] = useState(() => {
+    try {
+      return localStorage.getItem('hh_admin_bypass') === 'true' || window.location.search.includes('admin=true')
+    } catch { return false }
+  })
 
-  if (IS_MAINTENANCE_MODE && !isAdmin) {
+  const IS_UPGRADE_MODE = true;
+
+  if (IS_UPGRADE_MODE && !isAdmin && !adminBypass) {
     return (
-      <>
-        <style dangerouslySetInnerHTML={{ __html: CSS }} />
-        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#F8F9FC', padding: 24 }}>
-          <HappyHourLogo size={64} />
-          <h1 style={{ marginTop: 24, fontSize: 28, fontWeight: 900, color: '#0A0B0D', textAlign: 'center', letterSpacing: '-0.5px' }}>
-            System Debugging & Maintenance
-          </h1>
-          <p style={{ marginTop: 16, fontSize: 16, color: '#717886', textAlign: 'center', maxWidth: 455, lineHeight: 1.6 }}>
-            We are currently conducting a debugging process and system maintenance.<br /><br />
-            The app will be back online shortly. Thank you for your patience! 🛠️✨
-          </p>
-        </div>
-      </>
+      <UpgradeSplashPage
+        privyUser={privyUser}
+        onLogin={onLogin}
+        onLogout={onLogout}
+        onBypassAdmin={() => {
+          try { localStorage.setItem('hh_admin_bypass', 'true') } catch {}
+          setAdminBypass(true)
+        }}
+      />
     )
   }
 
@@ -800,6 +803,50 @@ export default function App({ onLogin, onLogout, privyUser, privyWallets = [] })
         className="app-container" 
         style={{ minHeight: '100vh', color: 'var(--text)', position: 'relative', display: 'flex', background: 'var(--bg2)' }}
       >
+        {/* Floating Admin Workspace Pill */}
+        {(isAdmin || adminBypass) && (
+          <div style={{
+            position: 'fixed',
+            bottom: 20,
+            right: 20,
+            zIndex: 99999,
+            background: 'rgba(13, 20, 32, 0.92)',
+            backdropFilter: 'blur(16px)',
+            border: '1px solid rgba(43, 92, 255, 0.5)',
+            borderRadius: '999px',
+            padding: '8px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.6), 0 0 16px rgba(43, 92, 255, 0.3)',
+            fontSize: '0.80rem',
+            color: '#F5F5F7',
+            fontFamily: "'IBM Plex Mono', monospace"
+          }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 8px #10B981' }} />
+            <span style={{ fontWeight: 700 }}>ADMIN WORKSPACE</span>
+            <button
+              onClick={() => {
+                try { localStorage.removeItem('hh_admin_bypass') } catch {}
+                setAdminBypass(false)
+              }}
+              style={{
+                background: 'rgba(239, 68, 68, 0.18)',
+                border: '1px solid rgba(239, 68, 68, 0.35)',
+                color: '#F87171',
+                borderRadius: '999px',
+                padding: '3px 10px',
+                cursor: 'pointer',
+                fontSize: '0.74rem',
+                fontWeight: 600,
+                marginLeft: '4px'
+              }}
+            >
+              Lock Splash 🔒
+            </button>
+          </div>
+        )}
+
         {/* Wrong Network Banner */}
         {onWrongChain && (
           <div style={{
