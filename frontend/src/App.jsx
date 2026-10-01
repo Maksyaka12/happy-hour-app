@@ -160,6 +160,13 @@ export default function App({ onLogin, onLogout, privyUser, privyWallets = [] })
   const [caCopied, setCaCopied] = useState(false)
   const [initialContest, setInitialContest] = useState(null)
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
+  
+  // Maintenance & Upgrade Mode Bypass (Web3 Design System)
+  const [adminBypass, setAdminBypass] = useState(() => {
+    try {
+      return localStorage.getItem('hh_admin_bypass') === 'true' || window.location.search.includes('admin=true')
+    } catch { return false }
+  })
 
   // useAccount().chainId returns the REAL wallet chain (even if unsupported)
   // useChainId() returns base.id by default when chain is not in wagmi config — can't use it here
@@ -270,11 +277,30 @@ export default function App({ onLogin, onLogout, privyUser, privyWallets = [] })
     return () => { db.removeChannel(sub) }
   }, [address, isAdmin])
 
+  const displayName = basename || short(effectiveAddress)
+
+  // Maintenance & Upgrade Mode (Web3 Design System)
+  const IS_UPGRADE_MODE = true;
+
+  if (IS_UPGRADE_MODE && !isAdmin && !adminBypass) {
+    return (
+      <UpgradeSplashPage
+        privyUser={privyUser}
+        onLogin={onLogin}
+        onLogout={onLogout}
+        onBypassAdmin={() => {
+          try { localStorage.setItem('hh_admin_bypass', 'true') } catch {}
+          setAdminBypass(true)
+        }}
+      />
+    )
+  }
+
   if (isConnecting || isReconnecting) {
     return (
       <>
         <style dangerouslySetInnerHTML={{ __html: CSS }} />
-        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F8F9FC' }}>
+        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#05070D' }}>
           <div style={{ textAlign: 'center' }}>
             <HappyHourLogo size={48} />
             <div style={{ marginTop: 16, fontSize: 14, color: '#717886' }}>
@@ -299,20 +325,20 @@ export default function App({ onLogin, onLogout, privyUser, privyWallets = [] })
     return (
       <>
         <style dangerouslySetInnerHTML={{ __html: CSS }} />
-        <div style={{ minHeight: '100vh', background: '#F8F9FC', padding: '24px 16px' }}>
+        <div style={{ minHeight: '100vh', background: '#05070D', padding: '24px 16px' }}>
           <div style={{ maxWidth: 560, margin: '0 auto', paddingTop: 72 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
               <HappyHourLogo size={40} />
-              <div style={{ fontSize: 28, fontWeight: 900, color: '#0A0B0D' }}>happy hour <span style={{ color: '#0052FF' }}>based</span></div>
+              <div style={{ fontSize: 28, fontWeight: 900, color: '#F5F5F7' }}>happy hour <span style={{ color: '#0052FF' }}>based</span></div>
             </div>
-            <div style={{ background: '#fff', border: '1px solid #DEE1E7', borderLeft: '4px solid #FC401F', borderRadius: 18, padding: 20, boxShadow: '0 6px 24px rgba(10,11,13,0.06)' }}>
-              <div style={{ fontSize: 18, fontWeight: 800, color: '#0A0B0D', marginBottom: 8 }}>
+            <div style={{ background: '#0D1420', border: '1px solid rgba(255,255,255,0.08)', borderLeft: '4px solid #FC401F', borderRadius: 18, padding: 20, boxShadow: '0 6px 24px rgba(0,0,0,0.5)' }}>
+              <div style={{ fontSize: 18, fontWeight: 800, color: '#F5F5F7', marginBottom: 8 }}>
                 App setup is incomplete
               </div>
-              <div style={{ fontSize: 14, lineHeight: 1.7, color: '#717886', marginBottom: 14 }}>
+              <div style={{ fontSize: 14, lineHeight: 1.7, color: '#94A3B8', marginBottom: 14 }}>
                 This deployment is missing Supabase frontend environment variables, so the app cannot load live data yet.
               </div>
-              <div style={{ background: '#EEF0F3', borderRadius: 12, padding: 14, fontFamily: "'DM Mono', monospace", fontSize: 12, color: '#32353D', lineHeight: 1.8 }}>
+              <div style={{ background: '#16202E', borderRadius: 12, padding: 14, fontFamily: "'DM Mono', monospace", fontSize: 12, color: '#F5F5F7', lineHeight: 1.8 }}>
                 VITE_SUPABASE_URL
                 <br />
                 VITE_SUPABASE_ANON
@@ -327,31 +353,6 @@ export default function App({ onLogin, onLogout, privyUser, privyWallets = [] })
           </div>
         </div>
       </>
-    )
-  }
-
-  const displayName = basename || short(effectiveAddress)
-
-  // Maintenance & Upgrade Mode (Web3 Design System)
-  const [adminBypass, setAdminBypass] = useState(() => {
-    try {
-      return localStorage.getItem('hh_admin_bypass') === 'true' || window.location.search.includes('admin=true')
-    } catch { return false }
-  })
-
-  const IS_UPGRADE_MODE = true;
-
-  if (IS_UPGRADE_MODE && !isAdmin && !adminBypass) {
-    return (
-      <UpgradeSplashPage
-        privyUser={privyUser}
-        onLogin={onLogin}
-        onLogout={onLogout}
-        onBypassAdmin={() => {
-          try { localStorage.setItem('hh_admin_bypass', 'true') } catch {}
-          setAdminBypass(true)
-        }}
-      />
     )
   }
 
