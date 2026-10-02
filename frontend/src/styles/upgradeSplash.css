@@ -1,28 +1,27 @@
 /* ==========================================================================
-   Web3 Premium Modern Design System — Luxury Minimalist Splash Card
+   Web3 Premium Modern Design System — Open Canvas Splash (§9b Compliant)
    ========================================================================== */
 
 :root {
   --splash-radius-xs: 8px;
   --splash-radius-sm: 12px;
   --splash-radius-md: 18px;
-  --splash-radius-lg: 26px;
+  --splash-radius-lg: 24px;
   --splash-radius-xl: 36px;
   --splash-radius-pill: 999px;
 
-  /* Light Page Background Tokens with Sky Blue Accents */
+  /* Luminous Light Canvas Tokens */
   --splash-bg: #F8FAFC;
   --splash-surface: #0A0F1D;
   --splash-elevated: #111827;
-  --splash-card-bg: rgba(10, 15, 29, 0.95);
-  --splash-text: #F8FAFC;
-  --splash-text-muted: #94A3B8;
-  --splash-border: rgba(255, 255, 255, 0.10);
+  --splash-text: #0F172A;
+  --splash-text-muted: #64748B;
+  --splash-border: rgba(15, 23, 42, 0.08);
 
   /* Signature Web3 Accent */
   --splash-accent: #2563EB;
   --splash-accent-hover: #1D4ED8;
-  --splash-accent-glow: rgba(37, 99, 235, 0.48);
+  --splash-accent-glow: rgba(37, 99, 235, 0.45);
   --splash-cyan: #38BDF8;
   --splash-cyan-glow: rgba(56, 189, 248, 0.35);
 
@@ -37,10 +36,10 @@
   width: 100%;
   background-color: var(--splash-bg);
   background-image: 
-    radial-gradient(ellipse 85% 60% at 50% -8%, rgba(56, 189, 248, 0.30) 0%, transparent 70%),
-    radial-gradient(circle at 10% 85%, rgba(37, 99, 235, 0.14) 0%, transparent 45%),
-    radial-gradient(circle at 90% 80%, rgba(56, 189, 248, 0.20) 0%, transparent 50%),
-    radial-gradient(circle at 50% 50%, rgba(240, 246, 255, 0.85) 0%, transparent 100%);
+    radial-gradient(ellipse 85% 60% at 50% -8%, rgba(56, 189, 248, 0.28) 0%, transparent 70%),
+    radial-gradient(circle at 8% 85%, rgba(37, 99, 235, 0.14) 0%, transparent 45%),
+    radial-gradient(circle at 92% 80%, rgba(56, 189, 248, 0.20) 0%, transparent 50%),
+    radial-gradient(circle at 50% 45%, rgba(240, 246, 255, 0.90) 0%, transparent 100%);
   color: var(--splash-text);
   font-family: var(--splash-font-body);
   position: relative;
@@ -49,8 +48,41 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 36px 16px;
+  padding: 56px 20px 40px;
   box-sizing: border-box;
+}
+
+/* Top Marquee Ticker Bar (§4 & §9b - Break Grid Symmetry) */
+.splash-top-ticker-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(37, 99, 235, 0.08);
+  padding: 8px 0;
+  overflow: hidden;
+  z-index: 15;
+}
+
+.splash-ticker-track {
+  display: flex;
+  gap: 32px;
+  white-space: nowrap;
+  animation: splash-ticker-scroll 24s linear infinite;
+  font-family: var(--splash-font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #0284C7;
+  text-transform: uppercase;
+}
+
+@keyframes splash-ticker-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
 /* Background Orbit Rings & Ambient Stardust (§5 & §8) */
@@ -70,9 +102,9 @@
   border-radius: 50%;
   border: 1.5px solid rgba(37, 99, 235, 0.08);
 }
-.splash-orbit-1 { width: 480px; height: 480px; border-color: rgba(56, 189, 248, 0.18); }
-.splash-orbit-2 { width: 840px; height: 840px; border-color: rgba(37, 99, 235, 0.12); }
-.splash-orbit-3 { width: 1220px; height: 1220px; border-color: rgba(56, 189, 248, 0.10); }
+.splash-orbit-1 { width: 520px; height: 520px; border-color: rgba(56, 189, 248, 0.18); }
+.splash-orbit-2 { width: 900px; height: 900px; border-color: rgba(37, 99, 235, 0.10); }
+.splash-orbit-3 { width: 1320px; height: 1320px; border-color: rgba(56, 189, 248, 0.08); }
 
 .splash-particle {
   position: absolute;
@@ -82,55 +114,33 @@
   filter: blur(0.5px);
 }
 
-/* Main Centered Card Window (§2, §4 & §9) - Luxury Dark Glass Card on Light Canvas */
-.splash-card-window {
+/* Hero Canvas Container (§9b - Direct Canvas Living, No Enclosing Outer Box) */
+.splash-hero-canvas {
   position: relative;
   z-index: 10;
   width: 100%;
-  max-width: 580px;
-  background: var(--splash-card-bg);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  border: 1px solid var(--splash-border);
-  border-radius: var(--splash-radius-xl);
-  padding: 44px 38px 40px;
-  text-align: center;
-  box-shadow: 
-    0 40px 100px -20px rgba(15, 23, 42, 0.40),
-    0 0 50px rgba(37, 99, 235, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  max-width: 720px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-sizing: border-box;
-}
-
-/* Top Glow Beam Highlight */
-.splash-top-glow {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 55%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.95), rgba(37, 99, 235, 0.95), transparent);
-  border-radius: var(--splash-radius-pill);
+  text-align: center;
+  margin: 0 auto;
 }
 
 /* App Logo Squircle (§2) */
 .splash-logo-wrap {
-  width: 82px;
-  height: 82px;
-  border-radius: 24px;
+  width: 86px;
+  height: 86px;
+  border-radius: 26px;
   background: linear-gradient(135deg, #1E293B 0%, #0A0F1D 100%);
-  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  border: 2px solid rgba(255, 255, 255, 0.85);
   box-shadow: 
-    0 14px 34px rgba(0, 0, 0, 0.70), 
-    0 0 32px rgba(37, 99, 235, 0.40);
+    0 16px 36px rgba(15, 23, 42, 0.25), 
+    0 0 36px rgba(56, 189, 248, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   overflow: hidden;
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
 }
@@ -138,45 +148,74 @@
 .splash-logo-wrap:hover {
   transform: scale(1.06) translateY(-2px);
   box-shadow: 
-    0 18px 40px rgba(0, 0, 0, 0.75), 
-    0 0 38px rgba(56, 189, 248, 0.50);
+    0 22px 48px rgba(15, 23, 42, 0.32), 
+    0 0 44px rgba(37, 99, 235, 0.45);
 }
 
 .splash-logo-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 22px;
+  border-radius: 24px;
 }
 
-/* Slogan in Serif-Italic (§3) */
+/* Slogan in Signature Serif-Italic (§3) */
 .splash-slogan-serif {
   font-family: var(--splash-font-accent);
   font-style: italic;
   font-weight: 700;
-  font-size: 1.40rem;
-  color: #E2E8F0;
+  font-size: 1.55rem;
+  color: #1E293B;
   letter-spacing: 0.02em;
   margin-bottom: 22px;
-  text-shadow: 0 0 20px rgba(56, 189, 248, 0.30);
+  text-shadow: 0 2px 14px rgba(56, 189, 248, 0.30);
 }
 
-/* Accent Loading Progress Plaque (§5 & §9) */
+/* Giant Dominant Display Headline (§3 & §9b) */
+.splash-title {
+  font-family: var(--splash-font-display);
+  font-size: clamp(2.8rem, 6.8vw, 4.2rem);
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  color: #0A0F1D;
+  margin: 0 0 14px 0;
+  text-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+}
+
+/* Signature Serif-Italic Tagline (§3) */
+.splash-tagline {
+  font-family: var(--splash-font-accent);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 1.40rem;
+  color: #64748B;
+  margin-bottom: 34px;
+  letter-spacing: 0.01em;
+}
+
+.splash-tagline .highlight-accent {
+  color: #2563EB;
+  font-style: italic;
+  text-shadow: 0 0 20px rgba(37, 99, 235, 0.30);
+}
+
+/* Standalone High-Tech Progress Plaque Widget (§9b) */
 .splash-progress-card {
   width: 100%;
-  max-width: 440px;
-  background: rgba(14, 22, 41, 0.85);
-  border: 1px solid rgba(56, 189, 248, 0.30);
+  max-width: 480px;
+  background: var(--splash-surface);
+  border: 1px solid rgba(56, 189, 248, 0.35);
   border-radius: var(--splash-radius-lg);
-  padding: 13px 18px 15px;
-  margin-bottom: 26px;
+  padding: 15px 22px 17px;
+  margin-bottom: 30px;
   box-shadow: 
-    0 10px 30px -5px rgba(0, 0, 0, 0.65), 
-    0 0 24px rgba(37, 99, 235, 0.18), 
-    inset 0 1px 0 rgba(255, 255, 255, 0.10);
+    0 24px 60px -12px rgba(15, 23, 42, 0.35), 
+    0 0 32px rgba(37, 99, 235, 0.20), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   box-sizing: border-box;
 }
 
@@ -192,7 +231,7 @@
   align-items: center;
   gap: 8px;
   font-family: var(--splash-font-mono);
-  font-size: 0.78rem;
+  font-size: 0.80rem;
   font-weight: 700;
   letter-spacing: 0.10em;
   color: var(--splash-cyan);
@@ -215,20 +254,20 @@
 
 .splash-progress-tag {
   font-family: var(--splash-font-mono);
-  font-size: 0.68rem;
+  font-size: 0.70rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   color: #94A3B8;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 3px 8px;
+  padding: 3px 9px;
   border-radius: var(--splash-radius-pill);
 }
 
 .splash-progress-track {
   width: 100%;
   height: 6px;
-  background: rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: var(--splash-radius-pill);
   overflow: hidden;
   position: relative;
@@ -239,7 +278,7 @@
   top: 0;
   left: 0;
   height: 100%;
-  width: 68%;
+  width: 70%;
   background: linear-gradient(90deg, #2563EB, #38BDF8, #60A5FA, #2563EB);
   background-size: 200% 100%;
   border-radius: var(--splash-radius-pill);
@@ -254,39 +293,8 @@
 
 @keyframes splash-loading-grow {
   0% { width: 55%; }
-  50% { width: 82%; }
-  100% { width: 68%; }
-}
-
-/* Display Headline (§3 & §9 - Visual Hero) */
-.splash-title {
-  font-family: var(--splash-font-display);
-  font-size: clamp(2.3rem, 6.2vw, 2.9rem);
-  line-height: 1.03;
-  letter-spacing: -0.035em;
-  text-transform: uppercase;
-  color: #FFFFFF;
-  margin: 0 0 10px 0;
-  text-shadow: 
-    0 4px 18px rgba(0, 0, 0, 0.7),
-    0 0 32px rgba(37, 99, 235, 0.25);
-}
-
-/* Signature Serif-Italic Tagline (§3) */
-.splash-tagline {
-  font-family: var(--splash-font-accent);
-  font-style: italic;
-  font-weight: 700;
-  font-size: 1.30rem;
-  color: #CBD5E1;
-  margin-bottom: 32px;
-  letter-spacing: 0.01em;
-}
-
-.splash-tagline .highlight-accent {
-  color: #60A5FA;
-  font-style: italic;
-  text-shadow: 0 0 16px rgba(96, 165, 250, 0.5);
+  50% { width: 85%; }
+  100% { width: 70%; }
 }
 
 /* Action Links Grid (§9 - Primary & Secondary Hierarchy) */
@@ -295,7 +303,7 @@
   grid-template-columns: 1fr 1fr;
   gap: 14px;
   width: 100%;
-  max-width: 440px;
+  max-width: 480px;
 }
 
 /* PRIMARY BUTTON (Filled Accent with Glowing Ambient Light - §9) */
@@ -303,18 +311,18 @@
   background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: var(--splash-radius-pill);
-  padding: 13px 20px;
+  padding: 14px 22px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   color: #FFFFFF;
   text-decoration: none;
-  font-size: 0.90rem;
+  font-size: 0.92rem;
   font-weight: 700;
   box-shadow: 
-    0 12px 28px -4px rgba(37, 99, 235, 0.48), 
-    0 0 20px rgba(37, 99, 235, 0.25),
+    0 14px 32px -4px rgba(37, 99, 235, 0.45), 
+    0 0 22px rgba(37, 99, 235, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.25);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   box-sizing: border-box;
@@ -324,8 +332,8 @@
   background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
   transform: translateY(-2px);
   box-shadow: 
-    0 16px 36px -4px rgba(37, 99, 235, 0.62), 
-    0 0 28px rgba(56, 189, 248, 0.40),
+    0 18px 40px -4px rgba(37, 99, 235, 0.60), 
+    0 0 30px rgba(56, 189, 248, 0.40),
     inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
@@ -333,31 +341,32 @@
   transform: translateY(0);
 }
 
-/* SECONDARY BUTTON (Sophisticated Glass Outline - §9) */
+/* SECONDARY BUTTON (Sophisticated Light Glass Outline - §9) */
 .splash-action-secondary-pill {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.11);
+  background: #FFFFFF;
+  border: 1px solid rgba(15, 23, 42, 0.12);
   border-radius: var(--splash-radius-pill);
-  padding: 13px 20px;
+  padding: 14px 22px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  color: #F8FAFC;
+  color: #0F172A;
   text-decoration: none;
-  font-size: 0.90rem;
-  font-weight: 600;
+  font-size: 0.92rem;
+  font-weight: 700;
+  box-shadow: 0 10px 24px -4px rgba(15, 23, 42, 0.08);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   box-sizing: border-box;
 }
 
 .splash-action-secondary-pill:hover {
-  background: rgba(255, 255, 255, 0.09);
-  border-color: rgba(255, 255, 255, 0.25);
+  background: #F1F5F9;
+  border-color: rgba(37, 99, 235, 0.30);
   transform: translateY(-2px);
   box-shadow: 
-    0 10px 24px rgba(0, 0, 0, 0.45), 
-    0 0 18px rgba(37, 99, 235, 0.18);
+    0 14px 30px -4px rgba(15, 23, 42, 0.12), 
+    0 0 20px rgba(37, 99, 235, 0.14);
 }
 
 .splash-action-secondary-pill:active {
@@ -365,7 +374,7 @@
 }
 
 .splash-action-arrow {
-  font-size: 0.84rem;
+  font-size: 0.86rem;
   opacity: 0.75;
   transition: transform 0.15s ease, opacity 0.15s ease;
 }
@@ -377,9 +386,9 @@
 }
 
 .splash-icon-dex {
-  width: 17px;
-  height: 17px;
-  border-radius: 4px;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
   object-fit: cover;
 }
 
@@ -428,7 +437,7 @@
 
 .splash-modal-card {
   background: var(--splash-surface);
-  border: 1px solid var(--splash-border);
+  border: 1px solid rgba(255, 255, 255, 0.10);
   border-radius: var(--splash-radius-lg);
   padding: 28px 24px;
   max-width: 390px;
@@ -485,7 +494,7 @@
 
 .splash-modal-desc {
   font-size: 0.86rem;
-  color: var(--splash-text-muted);
+  color: #94A3B8;
   line-height: 1.5;
   margin: 0 0 16px 0;
 }
@@ -493,7 +502,7 @@
 .splash-modal-input {
   width: 100%;
   background: var(--splash-elevated);
-  border: 1px solid var(--splash-border);
+  border: 1px solid rgba(255, 255, 255, 0.10);
   border-radius: var(--splash-radius-pill);
   padding: 12px 18px;
   color: #FFFFFF;
@@ -543,12 +552,12 @@
 
 .splash-btn-secondary {
   background: rgba(255, 255, 255, 0.05);
-  color: var(--splash-text);
+  color: #FFFFFF;
   border-radius: var(--splash-radius-pill);
   padding: 10px 16px;
   font-weight: 600;
   font-size: 0.86rem;
-  border: 1px solid var(--splash-border);
+  border: 1px solid rgba(255, 255, 255, 0.10);
   cursor: pointer;
   transition: background 0.15s ease;
 }
@@ -558,15 +567,14 @@
 }
 
 @media (max-width: 540px) {
-  .splash-card-window {
-    padding: 34px 22px 30px;
-    border-radius: var(--splash-radius-lg);
+  .splash-container {
+    padding: 60px 16px 36px;
   }
   .splash-actions-row {
     grid-template-columns: 1fr;
     gap: 10px;
   }
   .splash-progress-card {
-    padding: 12px 14px;
+    padding: 14px 16px;
   }
 }

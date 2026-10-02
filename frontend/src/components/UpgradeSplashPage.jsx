@@ -30,24 +30,37 @@ export function UpgradeSplashPage({
 
   return (
     <div className="splash-container">
-      {/* Background Orbit Rings & Ambient Stardust */}
+      {/* Top Ambient Marquee Ticker (§4 & §9b - Dynamic Layering) */}
+      <div className="splash-top-ticker-bar">
+        <div className="splash-ticker-track">
+          <span>• PROTOCOL UPGRADE IN PROGRESS</span>
+          <span>• HAPPY HOUR PROTOCOL</span>
+          <span>• DAILY JACKPOT ENGINE</span>
+          <span>• TRADE TO WIN</span>
+          <span>• BASE MAINNET</span>
+          <span>• PROTOCOL UPGRADE IN PROGRESS</span>
+          <span>• HAPPY HOUR PROTOCOL</span>
+          <span>• DAILY JACKPOT ENGINE</span>
+          <span>• TRADE TO WIN</span>
+          <span>• BASE MAINNET</span>
+        </div>
+      </div>
+
+      {/* Background Orbit Rings & Ambient Stardust (§5 & §8) */}
       <div className="splash-orbit-decorations">
         <div className="splash-orbit splash-orbit-1" />
         <div className="splash-orbit splash-orbit-2" />
         <div className="splash-orbit splash-orbit-3" />
         
-        <div className="splash-particle" style={{ top: '22%', left: '18%', width: '3px', height: '3px' }} />
-        <div className="splash-particle" style={{ top: '28%', right: '20%', width: '2px', height: '2px', opacity: 0.3 }} />
-        <div className="splash-particle" style={{ bottom: '22%', left: '26%', width: '3px', height: '3px' }} />
-        <div className="splash-particle" style={{ bottom: '26%', right: '24%', width: '4px', height: '4px', opacity: 0.2 }} />
+        <div className="splash-particle" style={{ top: '20%', left: '16%', width: '4px', height: '4px' }} />
+        <div className="splash-particle" style={{ top: '26%', right: '18%', width: '3px', height: '3px', opacity: 0.35 }} />
+        <div className="splash-particle" style={{ bottom: '24%', left: '22%', width: '4px', height: '4px' }} />
+        <div className="splash-particle" style={{ bottom: '28%', right: '20%', width: '5px', height: '5px', opacity: 0.25 }} />
       </div>
 
-      {/* Main Centered Card Window */}
-      <div className="splash-card-window">
-        {/* Ambient Top Glow Line */}
-        <div className="splash-top-glow" />
-
-        {/* App Logo Squircle */}
+      {/* Hero Canvas Content (§9b - Lives directly on canvas, NOT inside a box) */}
+      <main className="splash-hero-canvas">
+        {/* App Logo Squircle (§2) */}
         <div className="splash-logo-wrap">
           <img
             src="/logo.png"
@@ -60,13 +73,23 @@ export function UpgradeSplashPage({
           />
         </div>
 
-        {/* Slogan in Serif-Italic */}
+        {/* Slogan in Signature Serif-Italic (§3) */}
         <div className="splash-slogan-serif">
           Trade to Win
         </div>
 
-        {/* Accent Loading Progress Plaque */}
-        <div className="splash-progress-card">
+        {/* Giant Dominant Display Headline (§3 & §9b) */}
+        <h1 className="splash-title">
+          WE ARE COOKING<br />AN UPGRADE
+        </h1>
+
+        {/* Signature Serif-Italic Tagline (§3) */}
+        <div className="splash-tagline">
+          Stay <span className="highlight-accent">Happy</span> while you wait...
+        </div>
+
+        {/* Standalone High-Tech Progress Plaque Widget (§9b) */}
+        <section className="splash-progress-card" aria-label="Protocol upgrade status">
           <div className="splash-progress-info">
             <div className="splash-progress-label">
               <span className="splash-status-dot" />
@@ -76,21 +99,10 @@ export function UpgradeSplashPage({
           </div>
           <div className="splash-progress-track">
             <div className="splash-progress-fill" />
-            <div className="splash-progress-glow" />
           </div>
-        </div>
+        </section>
 
-        {/* Display Headline */}
-        <h1 className="splash-title">
-          WE ARE COOKING<br />AN UPGRADE
-        </h1>
-
-        {/* Signature Serif-Italic Tagline */}
-        <div className="splash-tagline">
-          Stay <span className="highlight-accent">Happy</span> while you wait...
-        </div>
-
-        {/* Action Links Grid (Primary & Secondary Hierarchy) */}
+        {/* Action Links Grid (§9 - Primary & Secondary Hierarchy) */}
         <div className="splash-actions-row">
           {/* Primary Action Button (Follow on X) */}
           <a
@@ -125,7 +137,7 @@ export function UpgradeSplashPage({
             <span className="splash-action-arrow">↗</span>
           </a>
         </div>
-      </div>
+      </main>
 
       {/* Secret Admin Corner Access */}
       <div className="splash-admin-access-corner">
