@@ -1,25 +1,27 @@
 /* ==========================================================================
-   Web3 Premium Modern Design System — Luxury Minimalist Splash Card
+   Web3 Premium Modern Design System — Refined Splash Card (§9 Compliant)
    ========================================================================== */
 
 :root {
   --splash-radius-xs: 8px;
   --splash-radius-sm: 12px;
   --splash-radius-md: 18px;
-  --splash-radius-lg: 24px;
-  --splash-radius-xl: 32px;
+  --splash-radius-lg: 26px;
+  --splash-radius-xl: 36px;
   --splash-radius-pill: 999px;
 
   --splash-bg: #04060B;
   --splash-surface: #0A0F1D;
   --splash-elevated: #111827;
-  --splash-card-bg: rgba(10, 15, 29, 0.82);
+  --splash-card-bg: rgba(10, 15, 29, 0.85);
   --splash-text: #F8FAFC;
   --splash-text-muted: #94A3B8;
-  --splash-border: rgba(255, 255, 255, 0.08);
+  --splash-border: rgba(255, 255, 255, 0.09);
 
+  /* Signature Web3 Accent */
   --splash-accent: #2563EB;
-  --splash-accent-glow: rgba(37, 99, 235, 0.40);
+  --splash-accent-hover: #1D4ED8;
+  --splash-accent-glow: rgba(37, 99, 235, 0.48);
   --splash-cyan: #38BDF8;
   --splash-cyan-glow: rgba(56, 189, 248, 0.35);
 
@@ -34,9 +36,9 @@
   width: 100%;
   background-color: var(--splash-bg);
   background-image: 
-    radial-gradient(ellipse 70% 45% at 50% -5%, rgba(37, 99, 235, 0.26) 0%, transparent 65%),
-    radial-gradient(circle at 10% 90%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(37, 99, 235, 0.10) 0%, transparent 45%);
+    radial-gradient(ellipse 70% 45% at 50% -5%, rgba(37, 99, 235, 0.28) 0%, transparent 65%),
+    radial-gradient(circle at 12% 88%, rgba(56, 189, 248, 0.09) 0%, transparent 42%),
+    radial-gradient(circle at 88% 82%, rgba(37, 99, 235, 0.12) 0%, transparent 48%);
   color: var(--splash-text);
   font-family: var(--splash-font-body);
   position: relative;
@@ -45,11 +47,11 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 32px 16px;
+  padding: 36px 16px;
   box-sizing: border-box;
 }
 
-/* Background Orbit Rings & Ambient Stardust */
+/* Background Orbit Rings & Ambient Stardust (§5 & §8) */
 .splash-orbit-decorations {
   position: absolute;
   inset: 0;
@@ -66,9 +68,9 @@
   border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, 0.035);
 }
-.splash-orbit-1 { width: 420px; height: 420px; border-color: rgba(56, 189, 248, 0.04); }
-.splash-orbit-2 { width: 750px; height: 750px; border-color: rgba(37, 99, 235, 0.06); }
-.splash-orbit-3 { width: 1100px; height: 1100px; border-color: rgba(255, 255, 255, 0.025); }
+.splash-orbit-1 { width: 440px; height: 440px; border-color: rgba(56, 189, 248, 0.05); }
+.splash-orbit-2 { width: 780px; height: 780px; border-color: rgba(37, 99, 235, 0.07); }
+.splash-orbit-3 { width: 1140px; height: 1140px; border-color: rgba(255, 255, 255, 0.025); }
 
 .splash-particle {
   position: absolute;
@@ -78,23 +80,23 @@
   filter: blur(0.5px);
 }
 
-/* Main Centered Card Window */
+/* Main Centered Card Window (§2, §4 & §9) */
 .splash-card-window {
   position: relative;
   z-index: 10;
   width: 100%;
-  max-width: 470px;
+  max-width: 480px;
   background: var(--splash-card-bg);
-  backdrop-filter: blur(32px);
-  -webkit-backdrop-filter: blur(32px);
+  backdrop-filter: blur(36px);
+  -webkit-backdrop-filter: blur(36px);
   border: 1px solid var(--splash-border);
   border-radius: var(--splash-radius-xl);
-  padding: 38px 32px 34px;
+  padding: 40px 32px 36px;
   text-align: center;
   box-shadow: 
-    0 32px 80px -16px rgba(0, 0, 0, 0.90),
-    0 0 50px rgba(37, 99, 235, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    0 36px 90px -18px rgba(0, 0, 0, 0.92),
+    0 0 55px rgba(37, 99, 235, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -107,28 +109,28 @@
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 50%;
+  width: 55%;
   height: 2px;
   background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.95), rgba(37, 99, 235, 0.95), transparent);
   border-radius: var(--splash-radius-pill);
 }
 
-/* Live Status Badge */
+/* Status Pill Badge (§5) */
 .splash-status-pill {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(56, 189, 248, 0.07);
+  border: 1px solid rgba(56, 189, 248, 0.18);
   border-radius: var(--splash-radius-pill);
-  padding: 5px 14px;
+  padding: 6px 14px;
   font-family: var(--splash-font-mono);
   font-size: 0.70rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: #94A3B8;
-  margin-bottom: 20px;
+  color: #BAE6FD;
+  margin-bottom: 22px;
 }
 
 .splash-status-dot {
@@ -136,43 +138,46 @@
   height: 6px;
   border-radius: 50%;
   background: var(--splash-cyan);
-  box-shadow: 0 0 8px var(--splash-cyan);
+  box-shadow: 0 0 10px var(--splash-cyan);
   animation: splash-dot-pulse 2s infinite ease-in-out;
 }
 
 @keyframes splash-dot-pulse {
   0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.8); }
-  70% { transform: scale(1.2); box-shadow: 0 0 0 6px rgba(56, 189, 248, 0); }
+  70% { transform: scale(1.25); box-shadow: 0 0 0 7px rgba(56, 189, 248, 0); }
   100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
 }
 
-/* App Logo Squircle */
+/* App Logo Squircle (§2) */
 .splash-logo-wrap {
-  width: 74px;
-  height: 74px;
-  border-radius: 22px;
+  width: 78px;
+  height: 78px;
+  border-radius: 24px;
   background: linear-gradient(135deg, #1E293B 0%, #0A0F1D 100%);
-  border: 1.5px solid rgba(255, 255, 255, 0.16);
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
   box-shadow: 
-    0 12px 30px rgba(0, 0, 0, 0.65), 
-    0 0 28px rgba(37, 99, 235, 0.35);
+    0 14px 34px rgba(0, 0, 0, 0.70), 
+    0 0 32px rgba(37, 99, 235, 0.40);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 18px;
   overflow: hidden;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
 }
 
 .splash-logo-wrap:hover {
-  transform: scale(1.05) translateY(-2px);
+  transform: scale(1.06) translateY(-2px);
+  box-shadow: 
+    0 18px 40px rgba(0, 0, 0, 0.75), 
+    0 0 38px rgba(56, 189, 248, 0.50);
 }
 
 .splash-logo-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 20px;
+  border-radius: 22px;
 }
 
 /* Slogan Pill */
@@ -181,43 +186,42 @@
   align-items: center;
   gap: 6px;
   background: rgba(37, 99, 235, 0.12);
-  border: 1px solid rgba(56, 189, 248, 0.28);
+  border: 1px solid rgba(56, 189, 248, 0.32);
   border-radius: var(--splash-radius-pill);
-  padding: 5px 14px;
+  padding: 5px 15px;
   font-family: var(--splash-font-mono);
   font-size: 0.74rem;
   font-weight: 700;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.10em;
   color: var(--splash-cyan);
-  margin-bottom: 16px;
-  box-shadow: 0 0 16px rgba(56, 189, 248, 0.12);
+  margin-bottom: 18px;
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.14);
 }
 
 .splash-slogan-icon {
   color: #38BDF8;
 }
 
-/* Display Headline */
+/* Display Headline (§3 & §9 - Dominant, High-contrast, Visual Hero) */
 .splash-title {
   font-family: var(--splash-font-display);
-  font-size: clamp(2rem, 5.5vw, 2.45rem);
-  line-height: 1.05;
-  letter-spacing: -0.03em;
+  font-size: clamp(2.15rem, 6vw, 2.65rem);
+  line-height: 1.04;
+  letter-spacing: -0.035em;
   text-transform: uppercase;
-  background: linear-gradient(180deg, #FFFFFF 20%, #E2E8F0 75%, #94A3B8 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  margin: 0 0 10px 0;
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  color: #FFFFFF;
+  margin: 0 0 12px 0;
+  text-shadow: 
+    0 4px 18px rgba(0, 0, 0, 0.7),
+    0 0 32px rgba(37, 99, 235, 0.25);
 }
 
-/* Signature Serif-Italic Tagline */
+/* Signature Serif-Italic Tagline Twist (§3) */
 .splash-tagline {
   font-family: var(--splash-font-accent);
   font-style: italic;
   font-weight: 700;
-  font-size: 1.25rem;
+  font-size: 1.28rem;
   color: #CBD5E1;
   margin-bottom: 16px;
   letter-spacing: 0.01em;
@@ -226,20 +230,20 @@
 .splash-tagline .highlight-accent {
   color: #60A5FA;
   font-style: italic;
-  text-shadow: 0 0 14px rgba(96, 165, 250, 0.4);
+  text-shadow: 0 0 16px rgba(96, 165, 250, 0.5);
 }
 
 /* Clean English Description */
 .splash-description {
-  font-size: 0.92rem;
+  font-size: 0.94rem;
   color: var(--splash-text-muted);
-  line-height: 1.62;
-  max-width: 380px;
-  margin: 0 0 26px 0;
+  line-height: 1.64;
+  max-width: 390px;
+  margin: 0 0 30px 0;
   font-weight: 400;
 }
 
-/* Action Links Row (X & DexScreener) */
+/* Action Links Grid (§9 - Primary & Secondary Hierarchy) */
 .splash-actions-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -247,43 +251,80 @@
   width: 100%;
 }
 
-.splash-action-pill {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+/* PRIMARY BUTTON (Filled Accent with Glowing Ambient Light - §9) */
+.splash-action-primary-pill {
+  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: var(--splash-radius-pill);
-  padding: 12px 18px;
+  padding: 13px 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   color: #FFFFFF;
   text-decoration: none;
-  font-size: 0.86rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  box-shadow: 
+    0 12px 28px -4px rgba(37, 99, 235, 0.48), 
+    0 0 20px rgba(37, 99, 235, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.splash-action-primary-pill:hover {
+  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+  transform: translateY(-2px);
+  box-shadow: 
+    0 16px 36px -4px rgba(37, 99, 235, 0.62), 
+    0 0 28px rgba(56, 189, 248, 0.40),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.splash-action-primary-pill:active {
+  transform: translateY(0);
+}
+
+/* SECONDARY BUTTON (Sophisticated Glass Outline - §9) */
+.splash-action-secondary-pill {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: var(--splash-radius-pill);
+  padding: 13px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #F8FAFC;
+  text-decoration: none;
+  font-size: 0.88rem;
   font-weight: 600;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   box-sizing: border-box;
 }
 
-.splash-action-pill:hover {
+.splash-action-secondary-pill:hover {
   background: rgba(255, 255, 255, 0.09);
-  border-color: rgba(255, 255, 255, 0.24);
+  border-color: rgba(255, 255, 255, 0.25);
   transform: translateY(-2px);
   box-shadow: 
     0 10px 24px rgba(0, 0, 0, 0.45), 
-    0 0 18px rgba(37, 99, 235, 0.20);
+    0 0 18px rgba(37, 99, 235, 0.18);
 }
 
-.splash-action-pill:active {
+.splash-action-secondary-pill:active {
   transform: translateY(0);
 }
 
 .splash-action-arrow {
-  font-size: 0.82rem;
-  opacity: 0.7;
+  font-size: 0.84rem;
+  opacity: 0.75;
   transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
-.splash-action-pill:hover .splash-action-arrow {
+.splash-action-primary-pill:hover .splash-action-arrow,
+.splash-action-secondary-pill:hover .splash-action-arrow {
   transform: translate(2px, -2px);
   opacity: 1;
 }
@@ -444,12 +485,13 @@
   font-size: 0.86rem;
   border: none;
   cursor: pointer;
+  box-shadow: 0 8px 20px var(--splash-accent-glow);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .splash-btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 20px var(--splash-accent-glow);
+  box-shadow: 0 12px 24px var(--splash-accent-glow);
 }
 
 .splash-btn-secondary {
@@ -470,7 +512,7 @@
 
 @media (max-width: 480px) {
   .splash-card-window {
-    padding: 30px 20px 26px;
+    padding: 32px 20px 28px;
     border-radius: var(--splash-radius-lg);
   }
   .splash-actions-row {

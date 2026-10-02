@@ -30,7 +30,7 @@ export function UpgradeSplashPage({
 
   return (
     <div className="splash-container">
-      {/* Background Orbit Rings & Ambient Stardust */}
+      {/* Background Orbit Rings & Ambient Stardust (§5 & §8) */}
       <div className="splash-orbit-decorations">
         <div className="splash-orbit splash-orbit-1" />
         <div className="splash-orbit splash-orbit-2" />
@@ -42,18 +42,18 @@ export function UpgradeSplashPage({
         <div className="splash-particle" style={{ bottom: '26%', right: '24%', width: '4px', height: '4px', opacity: 0.2 }} />
       </div>
 
-      {/* Main Centered Card Window */}
+      {/* Main Centered Card Window (§2, §4 & §9) */}
       <div className="splash-card-window">
         {/* Ambient Top Glow Line */}
         <div className="splash-top-glow" />
 
-        {/* Live Status Badge */}
+        {/* Live Status Badge (§5) */}
         <div className="splash-status-pill">
           <span className="splash-status-dot" />
           <span>UPGRADE IN PROGRESS</span>
         </div>
 
-        {/* App Logo */}
+        {/* App Logo Squircle (§2) */}
         <div className="splash-logo-wrap">
           <img
             src="/logo.png"
@@ -74,12 +74,12 @@ export function UpgradeSplashPage({
           <span>TRADE TO WIN</span>
         </div>
 
-        {/* Headline */}
+        {/* Display Headline (§3 & §9 - Visual Hero) */}
         <h1 className="splash-title">
           WE ARE COOKING<br />AN UPGRADE
         </h1>
 
-        {/* Signature Serif-Italic Tagline */}
+        {/* Signature Serif-Italic Tagline (§3) */}
         <div className="splash-tagline">
           Stay <span className="highlight-accent">Happy</span> while you wait...
         </div>
@@ -90,14 +90,14 @@ export function UpgradeSplashPage({
           automated trading rewards, and streamlined on-chain lotteries. Stay tuned!
         </p>
 
-        {/* Action Links (X & DexScreener) */}
+        {/* Action Links Grid (§9 - Primary & Secondary Hierarchy) */}
         <div className="splash-actions-row">
-          {/* X Link */}
+          {/* Primary Action Button (Follow on X) */}
           <a
             href={X_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="splash-action-pill splash-action-x"
+            className="splash-action-primary-pill"
           >
             <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
               <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
@@ -106,12 +106,12 @@ export function UpgradeSplashPage({
             <span className="splash-action-arrow">↗</span>
           </a>
 
-          {/* DexScreener Link */}
+          {/* Secondary Action Button (DexScreener) */}
           <a
             href={DEXSCREENER_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="splash-action-pill splash-action-dex"
+            className="splash-action-secondary-pill"
           >
             <img
               src="/dexscreener.jpg"
