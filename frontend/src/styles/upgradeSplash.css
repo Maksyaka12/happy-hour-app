@@ -1,27 +1,28 @@
 /* ==========================================================================
-   Web3 Premium Modern Design System — Open Canvas Splash (§9b Compliant)
+   Web3 Premium Modern Design System — Splash Canvas (§9c Compliant)
    ========================================================================== */
 
 :root {
   --splash-radius-xs: 8px;
   --splash-radius-sm: 12px;
   --splash-radius-md: 18px;
-  --splash-radius-lg: 24px;
+  --splash-radius-lg: 26px;
   --splash-radius-xl: 36px;
   --splash-radius-pill: 999px;
 
-  /* Luminous Light Canvas Tokens */
-  --splash-bg: #F8FAFC;
+  /* Signature Dark Luxury Canvas */
+  --splash-bg: #04060B;
   --splash-surface: #0A0F1D;
   --splash-elevated: #111827;
-  --splash-text: #0F172A;
-  --splash-text-muted: #64748B;
-  --splash-border: rgba(15, 23, 42, 0.08);
+  --splash-card-bg: rgba(10, 15, 29, 0.90);
+  --splash-text: #F8FAFC;
+  --splash-text-muted: #94A3B8;
+  --splash-border: rgba(255, 255, 255, 0.09);
 
   /* Signature Web3 Accent */
   --splash-accent: #2563EB;
   --splash-accent-hover: #1D4ED8;
-  --splash-accent-glow: rgba(37, 99, 235, 0.45);
+  --splash-accent-glow: rgba(37, 99, 235, 0.48);
   --splash-cyan: #38BDF8;
   --splash-cyan-glow: rgba(56, 189, 248, 0.35);
 
@@ -36,10 +37,9 @@
   width: 100%;
   background-color: var(--splash-bg);
   background-image: 
-    radial-gradient(ellipse 85% 60% at 50% -8%, rgba(56, 189, 248, 0.28) 0%, transparent 70%),
-    radial-gradient(circle at 8% 85%, rgba(37, 99, 235, 0.14) 0%, transparent 45%),
-    radial-gradient(circle at 92% 80%, rgba(56, 189, 248, 0.20) 0%, transparent 50%),
-    radial-gradient(circle at 50% 45%, rgba(240, 246, 255, 0.90) 0%, transparent 100%);
+    radial-gradient(ellipse 75% 50% at 50% -5%, rgba(37, 99, 235, 0.28) 0%, transparent 68%),
+    radial-gradient(circle at 12% 88%, rgba(56, 189, 248, 0.09) 0%, transparent 42%),
+    radial-gradient(circle at 88% 82%, rgba(37, 99, 235, 0.12) 0%, transparent 48%);
   color: var(--splash-text);
   font-family: var(--splash-font-body);
   position: relative;
@@ -48,20 +48,20 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 56px 20px 40px;
+  padding: 56px 16px 36px;
   box-sizing: border-box;
 }
 
-/* Top Marquee Ticker Bar (§4 & §9b - Break Grid Symmetry) */
+/* Top Marquee Ticker Bar (§4 & §9c - Dynamic Activity) */
 .splash-top-ticker-bar {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(37, 99, 235, 0.08);
+  background: rgba(10, 15, 29, 0.80);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   padding: 8px 0;
   overflow: hidden;
   z-index: 15;
@@ -76,7 +76,7 @@
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.12em;
-  color: #0284C7;
+  color: var(--splash-cyan);
   text-transform: uppercase;
 }
 
@@ -100,26 +100,26 @@
   left: 50%;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  border: 1.5px solid rgba(37, 99, 235, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.035);
 }
-.splash-orbit-1 { width: 520px; height: 520px; border-color: rgba(56, 189, 248, 0.18); }
-.splash-orbit-2 { width: 900px; height: 900px; border-color: rgba(37, 99, 235, 0.10); }
-.splash-orbit-3 { width: 1320px; height: 1320px; border-color: rgba(56, 189, 248, 0.08); }
+.splash-orbit-1 { width: 520px; height: 520px; border-color: rgba(56, 189, 248, 0.05); }
+.splash-orbit-2 { width: 900px; height: 900px; border-color: rgba(37, 99, 235, 0.07); }
+.splash-orbit-3 { width: 1320px; height: 1320px; border-color: rgba(255, 255, 255, 0.025); }
 
 .splash-particle {
   position: absolute;
   border-radius: 50%;
-  background: #0284C7;
-  opacity: 0.30;
+  background: #ffffff;
+  opacity: 0.25;
   filter: blur(0.5px);
 }
 
-/* Hero Canvas Container (§9b - Direct Canvas Living, No Enclosing Outer Box) */
+/* Hero Canvas Container */
 .splash-hero-canvas {
   position: relative;
   z-index: 10;
   width: 100%;
-  max-width: 720px;
+  max-width: 680px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -127,20 +127,30 @@
   margin: 0 auto;
 }
 
+/* ==========================================================================
+   ZONE 1: HERO CANVAS (Directly on dark background, no border card - §9c)
+   ========================================================================== */
+.splash-zone-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
 /* App Logo Squircle (§2) */
 .splash-logo-wrap {
-  width: 86px;
-  height: 86px;
-  border-radius: 26px;
+  width: 82px;
+  height: 82px;
+  border-radius: 24px;
   background: linear-gradient(135deg, #1E293B 0%, #0A0F1D 100%);
-  border: 2px solid rgba(255, 255, 255, 0.85);
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
   box-shadow: 
-    0 16px 36px rgba(15, 23, 42, 0.25), 
-    0 0 36px rgba(56, 189, 248, 0.35);
+    0 14px 34px rgba(0, 0, 0, 0.70), 
+    0 0 32px rgba(37, 99, 235, 0.40);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
   overflow: hidden;
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
 }
@@ -148,15 +158,15 @@
 .splash-logo-wrap:hover {
   transform: scale(1.06) translateY(-2px);
   box-shadow: 
-    0 22px 48px rgba(15, 23, 42, 0.32), 
-    0 0 44px rgba(37, 99, 235, 0.45);
+    0 18px 40px rgba(0, 0, 0, 0.75), 
+    0 0 38px rgba(56, 189, 248, 0.50);
 }
 
 .splash-logo-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 24px;
+  border-radius: 22px;
 }
 
 /* Slogan in Signature Serif-Italic (§3) */
@@ -164,23 +174,25 @@
   font-family: var(--splash-font-accent);
   font-style: italic;
   font-weight: 700;
-  font-size: 1.55rem;
-  color: #1E293B;
+  font-size: 1.45rem;
+  color: #E2E8F0;
   letter-spacing: 0.02em;
-  margin-bottom: 22px;
-  text-shadow: 0 2px 14px rgba(56, 189, 248, 0.30);
+  margin-bottom: 18px;
+  text-shadow: 0 0 24px rgba(56, 189, 248, 0.35);
 }
 
-/* Giant Dominant Display Headline (§3 & §9b) */
+/* Giant Dominant Display Headline (§3 & §9c) */
 .splash-title {
   font-family: var(--splash-font-display);
-  font-size: clamp(2.8rem, 6.8vw, 4.2rem);
-  line-height: 0.98;
-  letter-spacing: -0.04em;
+  font-size: clamp(2.6rem, 6.5vw, 3.8rem);
+  line-height: 1.0;
+  letter-spacing: -0.035em;
   text-transform: uppercase;
-  color: #0A0F1D;
-  margin: 0 0 14px 0;
-  text-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+  color: #FFFFFF;
+  margin: 0 0 10px 0;
+  text-shadow: 
+    0 6px 24px rgba(0, 0, 0, 0.8),
+    0 0 36px rgba(37, 99, 235, 0.30);
 }
 
 /* Signature Serif-Italic Tagline (§3) */
@@ -188,50 +200,56 @@
   font-family: var(--splash-font-accent);
   font-style: italic;
   font-weight: 700;
-  font-size: 1.40rem;
-  color: #64748B;
-  margin-bottom: 34px;
+  font-size: 1.32rem;
+  color: #CBD5E1;
+  margin-bottom: 32px;
   letter-spacing: 0.01em;
 }
 
 .splash-tagline .highlight-accent {
-  color: #2563EB;
+  color: #60A5FA;
   font-style: italic;
-  text-shadow: 0 0 20px rgba(37, 99, 235, 0.30);
+  text-shadow: 0 0 16px rgba(96, 165, 250, 0.5);
 }
 
-/* Standalone High-Tech Progress Plaque Widget (§9b) */
-.splash-progress-card {
+/* ==========================================================================
+   ZONE 2: PROOF & DATA WIDGET CARD (Distinct visual box with data - §9c)
+   ========================================================================== */
+.splash-data-card {
   width: 100%;
-  max-width: 480px;
-  background: var(--splash-surface);
-  border: 1px solid rgba(56, 189, 248, 0.35);
+  max-width: 500px;
+  background: var(--splash-card-bg);
+  backdrop-filter: blur(36px);
+  -webkit-backdrop-filter: blur(36px);
+  border: 1px solid rgba(56, 189, 248, 0.28);
   border-radius: var(--splash-radius-lg);
-  padding: 15px 22px 17px;
-  margin-bottom: 30px;
+  padding: 22px 24px 24px;
+  text-align: center;
   box-shadow: 
-    0 24px 60px -12px rgba(15, 23, 42, 0.35), 
-    0 0 32px rgba(37, 99, 235, 0.20), 
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    0 32px 80px -16px rgba(0, 0, 0, 0.90),
+    0 0 45px rgba(37, 99, 235, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  align-items: center;
   box-sizing: border-box;
 }
 
-.splash-progress-info {
+/* Meta Top Row */
+.splash-card-meta-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  margin-bottom: 16px;
 }
 
-.splash-progress-label {
+.splash-meta-live {
   display: flex;
   align-items: center;
   gap: 8px;
   font-family: var(--splash-font-mono);
-  font-size: 0.80rem;
+  font-size: 0.74rem;
   font-weight: 700;
   letter-spacing: 0.10em;
   color: var(--splash-cyan);
@@ -252,9 +270,9 @@
   100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
 }
 
-.splash-progress-tag {
+.splash-meta-badge {
   font-family: var(--splash-font-mono);
-  font-size: 0.70rem;
+  font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   color: #94A3B8;
@@ -264,13 +282,82 @@
   border-radius: var(--splash-radius-pill);
 }
 
+/* Stat & Data Display Row (§9c) */
+.splash-stat-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 16px;
+  padding: 10px 0 6px;
+}
+
+.splash-stat-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.splash-stat-label {
+  font-family: var(--splash-font-mono);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  color: #94A3B8;
+  margin-bottom: 2px;
+}
+
+.splash-stat-value {
+  font-family: var(--splash-font-display);
+  display: flex;
+  align-items: baseline;
+  line-height: 1;
+}
+
+.splash-stat-num {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #FFFFFF;
+  letter-spacing: -0.02em;
+  text-shadow: 0 0 20px rgba(56, 189, 248, 0.40);
+}
+
+.splash-stat-pct {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--splash-cyan);
+  margin-left: 2px;
+}
+
+.splash-stat-right {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+}
+
+.splash-stat-chip {
+  font-family: var(--splash-font-mono);
+  font-size: 0.70rem;
+  font-weight: 600;
+  color: #CBD5E1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 5px 10px;
+  border-radius: var(--splash-radius-sm);
+  white-space: nowrap;
+}
+
+/* Dynamic Progress Bar Track */
 .splash-progress-track {
   width: 100%;
   height: 6px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.07);
   border-radius: var(--splash-radius-pill);
   overflow: hidden;
   position: relative;
+  margin: 16px 0 20px;
 }
 
 .splash-progress-fill {
@@ -278,11 +365,11 @@
   top: 0;
   left: 0;
   height: 100%;
-  width: 70%;
+  width: 88%;
   background: linear-gradient(90deg, #2563EB, #38BDF8, #60A5FA, #2563EB);
   background-size: 200% 100%;
   border-radius: var(--splash-radius-pill);
-  animation: splash-loading-flow 2.2s linear infinite, splash-loading-grow 5s ease-in-out infinite alternate;
+  animation: splash-loading-flow 2.2s linear infinite;
   box-shadow: 0 0 14px var(--splash-cyan);
 }
 
@@ -291,19 +378,12 @@
   100% { background-position: -100% 0; }
 }
 
-@keyframes splash-loading-grow {
-  0% { width: 55%; }
-  50% { width: 85%; }
-  100% { width: 70%; }
-}
-
 /* Action Links Grid (§9 - Primary & Secondary Hierarchy) */
 .splash-actions-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: 12px;
   width: 100%;
-  max-width: 480px;
 }
 
 /* PRIMARY BUTTON (Filled Accent with Glowing Ambient Light - §9) */
@@ -311,18 +391,18 @@
   background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: var(--splash-radius-pill);
-  padding: 14px 22px;
+  padding: 13px 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   color: #FFFFFF;
   text-decoration: none;
-  font-size: 0.92rem;
+  font-size: 0.90rem;
   font-weight: 700;
   box-shadow: 
-    0 14px 32px -4px rgba(37, 99, 235, 0.45), 
-    0 0 22px rgba(37, 99, 235, 0.25),
+    0 12px 28px -4px rgba(37, 99, 235, 0.48), 
+    0 0 20px rgba(37, 99, 235, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.25);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   box-sizing: border-box;
@@ -332,8 +412,8 @@
   background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
   transform: translateY(-2px);
   box-shadow: 
-    0 18px 40px -4px rgba(37, 99, 235, 0.60), 
-    0 0 30px rgba(56, 189, 248, 0.40),
+    0 16px 36px -4px rgba(37, 99, 235, 0.62), 
+    0 0 28px rgba(56, 189, 248, 0.40),
     inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
@@ -341,32 +421,31 @@
   transform: translateY(0);
 }
 
-/* SECONDARY BUTTON (Sophisticated Light Glass Outline - §9) */
+/* SECONDARY BUTTON (Sophisticated Glass Outline - §9) */
 .splash-action-secondary-pill {
-  background: #FFFFFF;
-  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.11);
   border-radius: var(--splash-radius-pill);
-  padding: 14px 22px;
+  padding: 13px 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  color: #0F172A;
+  color: #F8FAFC;
   text-decoration: none;
-  font-size: 0.92rem;
-  font-weight: 700;
-  box-shadow: 0 10px 24px -4px rgba(15, 23, 42, 0.08);
+  font-size: 0.90rem;
+  font-weight: 600;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   box-sizing: border-box;
 }
 
 .splash-action-secondary-pill:hover {
-  background: #F1F5F9;
-  border-color: rgba(37, 99, 235, 0.30);
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.25);
   transform: translateY(-2px);
   box-shadow: 
-    0 14px 30px -4px rgba(15, 23, 42, 0.12), 
-    0 0 20px rgba(37, 99, 235, 0.14);
+    0 10px 24px rgba(0, 0, 0, 0.45), 
+    0 0 18px rgba(37, 99, 235, 0.18);
 }
 
 .splash-action-secondary-pill:active {
@@ -374,7 +453,7 @@
 }
 
 .splash-action-arrow {
-  font-size: 0.86rem;
+  font-size: 0.84rem;
   opacity: 0.75;
   transition: transform 0.15s ease, opacity 0.15s ease;
 }
@@ -386,13 +465,13 @@
 }
 
 .splash-icon-dex {
-  width: 18px;
-  height: 18px;
-  border-radius: 5px;
+  width: 17px;
+  height: 17px;
+  border-radius: 4px;
   object-fit: cover;
 }
 
-/* Admin Access Button in Corner (Adapted for Light Background) */
+/* Admin Access Button in Corner */
 .splash-admin-access-corner {
   position: absolute;
   bottom: 18px;
@@ -401,23 +480,23 @@
 }
 
 .splash-lock-btn {
-  background: rgba(15, 23, 42, 0.06);
-  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 50%;
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #64748B;
+  color: var(--splash-text-muted);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .splash-lock-btn:hover {
-  background: rgba(15, 23, 42, 0.14);
-  color: #0F172A;
-  border-color: rgba(15, 23, 42, 0.25);
+  background: rgba(255, 255, 255, 0.10);
+  color: #FFFFFF;
+  border-color: rgba(255, 255, 255, 0.20);
   transform: scale(1.08);
 }
 
@@ -425,7 +504,7 @@
 .splash-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.75);
+  background: rgba(4, 6, 11, 0.88);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   z-index: 1000;
@@ -437,7 +516,7 @@
 
 .splash-modal-card {
   background: var(--splash-surface);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  border: 1px solid var(--splash-border);
   border-radius: var(--splash-radius-lg);
   padding: 28px 24px;
   max-width: 390px;
@@ -494,7 +573,7 @@
 
 .splash-modal-desc {
   font-size: 0.86rem;
-  color: #94A3B8;
+  color: var(--splash-text-muted);
   line-height: 1.5;
   margin: 0 0 16px 0;
 }
@@ -502,7 +581,7 @@
 .splash-modal-input {
   width: 100%;
   background: var(--splash-elevated);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  border: 1px solid var(--splash-border);
   border-radius: var(--splash-radius-pill);
   padding: 12px 18px;
   color: #FFFFFF;
@@ -552,12 +631,12 @@
 
 .splash-btn-secondary {
   background: rgba(255, 255, 255, 0.05);
-  color: #FFFFFF;
+  color: var(--splash-text);
   border-radius: var(--splash-radius-pill);
   padding: 10px 16px;
   font-weight: 600;
   font-size: 0.86rem;
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  border: 1px solid var(--splash-border);
   cursor: pointer;
   transition: background 0.15s ease;
 }
@@ -568,13 +647,21 @@
 
 @media (max-width: 540px) {
   .splash-container {
-    padding: 60px 16px 36px;
+    padding: 50px 16px 30px;
+  }
+  .splash-stat-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .splash-stat-right {
+    align-items: flex-start;
   }
   .splash-actions-row {
     grid-template-columns: 1fr;
     gap: 10px;
   }
-  .splash-progress-card {
-    padding: 14px 16px;
+  .splash-data-card {
+    padding: 18px 16px 20px;
   }
 }

@@ -30,16 +30,16 @@ export function UpgradeSplashPage({
 
   return (
     <div className="splash-container">
-      {/* Top Ambient Marquee Ticker (§4 & §9b - Dynamic Layering) */}
+      {/* Top Ambient Marquee Ticker (§4 & §9c - Dynamic Activity) */}
       <div className="splash-top-ticker-bar">
         <div className="splash-ticker-track">
           <span>• PROTOCOL UPGRADE IN PROGRESS</span>
-          <span>• HAPPY HOUR PROTOCOL</span>
+          <span>• HAPPY HOUR V3.0</span>
           <span>• DAILY JACKPOT ENGINE</span>
           <span>• TRADE TO WIN</span>
           <span>• BASE MAINNET</span>
           <span>• PROTOCOL UPGRADE IN PROGRESS</span>
-          <span>• HAPPY HOUR PROTOCOL</span>
+          <span>• HAPPY HOUR V3.0</span>
           <span>• DAILY JACKPOT ENGINE</span>
           <span>• TRADE TO WIN</span>
           <span>• BASE MAINNET</span>
@@ -52,92 +52,117 @@ export function UpgradeSplashPage({
         <div className="splash-orbit splash-orbit-2" />
         <div className="splash-orbit splash-orbit-3" />
         
-        <div className="splash-particle" style={{ top: '20%', left: '16%', width: '4px', height: '4px' }} />
-        <div className="splash-particle" style={{ top: '26%', right: '18%', width: '3px', height: '3px', opacity: 0.35 }} />
-        <div className="splash-particle" style={{ bottom: '24%', left: '22%', width: '4px', height: '4px' }} />
-        <div className="splash-particle" style={{ bottom: '28%', right: '20%', width: '5px', height: '5px', opacity: 0.25 }} />
+        <div className="splash-particle" style={{ top: '22%', left: '16%', width: '3px', height: '3px' }} />
+        <div className="splash-particle" style={{ top: '28%', right: '18%', width: '2px', height: '2px', opacity: 0.35 }} />
+        <div className="splash-particle" style={{ bottom: '22%', left: '22%', width: '3px', height: '3px' }} />
+        <div className="splash-particle" style={{ bottom: '26%', right: '20%', width: '4px', height: '4px', opacity: 0.22 }} />
       </div>
 
-      {/* Hero Canvas Content (§9b - Lives directly on canvas, NOT inside a box) */}
-      <main className="splash-hero-canvas">
-        {/* App Logo Squircle (§2) */}
-        <div className="splash-logo-wrap">
-          <img
-            src="/logo.png"
-            alt="Happy Hour Logo"
-            className="splash-logo-img"
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = '/logo_200.png';
-            }}
-          />
-        </div>
-
-        {/* Slogan in Signature Serif-Italic (§3) */}
-        <div className="splash-slogan-serif">
-          Trade to Win
-        </div>
-
-        {/* Giant Dominant Display Headline (§3 & §9b) */}
-        <h1 className="splash-title">
-          WE ARE COOKING<br />AN UPGRADE
-        </h1>
-
-        {/* Signature Serif-Italic Tagline (§3) */}
-        <div className="splash-tagline">
-          Stay <span className="highlight-accent">Happy</span> while you wait...
-        </div>
-
-        {/* Standalone High-Tech Progress Plaque Widget (§9b) */}
-        <section className="splash-progress-card" aria-label="Protocol upgrade status">
-          <div className="splash-progress-info">
-            <div className="splash-progress-label">
-              <span className="splash-status-dot" />
-              <span>UPGRADE IN PROGRESS</span>
-            </div>
-            <span className="splash-progress-tag">LIVE DEPLOYMENT</span>
+      {/* Main Canvas Area */}
+      <div className="splash-hero-canvas">
+        {/* =================================================================
+            ZONE 1: HERO CANVAS (Directly on dark background, no border card - §9c)
+            ================================================================= */}
+        <div className="splash-zone-hero">
+          {/* App Logo Squircle */}
+          <div className="splash-logo-wrap">
+            <img
+              src="/logo.png"
+              alt="Happy Hour Logo"
+              className="splash-logo-img"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = '/logo_200.png';
+              }}
+            />
           </div>
+
+          {/* Slogan in Signature Serif-Italic */}
+          <div className="splash-slogan-serif">
+            Trade to Win
+          </div>
+
+          {/* Giant Dominant Display Headline */}
+          <h1 className="splash-title">
+            WE ARE COOKING<br />AN UPGRADE
+          </h1>
+
+          {/* Signature Serif-Italic Tagline */}
+          <div className="splash-tagline">
+            Stay <span className="highlight-accent">Happy</span> while you wait...
+          </div>
+        </div>
+
+        {/* =================================================================
+            ZONE 2: PROOF & DATA WIDGET CARD (Distinct visual box with data - §9c)
+            ================================================================= */}
+        <div className="splash-data-card">
+          {/* Top meta row */}
+          <div className="splash-card-meta-row">
+            <div className="splash-meta-live">
+              <span className="splash-status-dot" />
+              <span>DEPLOYING ON BASE</span>
+            </div>
+            <span className="splash-meta-badge">V3.0 PROTOCOL</span>
+          </div>
+
+          {/* Big live data / status block */}
+          <div className="splash-stat-row">
+            <div className="splash-stat-left">
+              <span className="splash-stat-label">ENGINE SYNC</span>
+              <span className="splash-stat-value">
+                <span className="splash-stat-num">88</span>
+                <span className="splash-stat-pct">%</span>
+              </span>
+            </div>
+            <div className="splash-stat-right">
+              <span className="splash-stat-chip">Daily Real-World Jackpots</span>
+              <span className="splash-stat-chip">Automated Trading Rewards</span>
+            </div>
+          </div>
+
+          {/* Dynamic glowing progress track */}
           <div className="splash-progress-track">
             <div className="splash-progress-fill" />
           </div>
-        </section>
 
-        {/* Action Links Grid (§9 - Primary & Secondary Hierarchy) */}
-        <div className="splash-actions-row">
-          {/* Primary Action Button (Follow on X) */}
-          <a
-            href={X_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="splash-action-primary-pill"
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-            </svg>
-            <span>Follow on X</span>
-            <span className="splash-action-arrow">↗</span>
-          </a>
+          {/* Action Links Row (Primary & Secondary Hierarchy - §9) */}
+          <div className="splash-actions-row">
+            {/* Primary Action Button */}
+            <a
+              href={X_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="splash-action-primary-pill"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+              <span>Follow on X</span>
+              <span className="splash-action-arrow">↗</span>
+            </a>
 
-          {/* Secondary Action Button (DexScreener) */}
-          <a
-            href={DEXSCREENER_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="splash-action-secondary-pill"
-          >
-            <img
-              src="/dexscreener.jpg"
-              alt="DexScreener"
-              className="splash-icon-dex"
-              onError={(e) => {
-                e.target.style.display = 'none';
-              }}
-            />
-            <span>DexScreener</span>
-            <span className="splash-action-arrow">↗</span>
-          </a>
+            {/* Secondary Action Button */}
+            <a
+              href={DEXSCREENER_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="splash-action-secondary-pill"
+            >
+              <img
+                src="/dexscreener.jpg"
+                alt="DexScreener"
+                className="splash-icon-dex"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                }}
+              />
+              <span>DexScreener</span>
+              <span className="splash-action-arrow">↗</span>
+            </a>
+          </div>
         </div>
-      </main>
+      </div>
 
       {/* Secret Admin Corner Access */}
       <div className="splash-admin-access-corner">
