@@ -30,7 +30,7 @@ export function UpgradeSplashPage({
 
   return (
     <div className="splash-container">
-      {/* Background Orbit Rings & Ambient Stardust (§5 & §8) */}
+      {/* Background Orbit Rings & Ambient Stardust */}
       <div className="splash-orbit-decorations">
         <div className="splash-orbit splash-orbit-1" />
         <div className="splash-orbit splash-orbit-2" />
@@ -42,18 +42,12 @@ export function UpgradeSplashPage({
         <div className="splash-particle" style={{ bottom: '26%', right: '24%', width: '4px', height: '4px', opacity: 0.2 }} />
       </div>
 
-      {/* Main Centered Card Window (§2, §4 & §9) */}
+      {/* Main Centered Card Window */}
       <div className="splash-card-window">
         {/* Ambient Top Glow Line */}
         <div className="splash-top-glow" />
 
-        {/* Live Status Badge (§5) */}
-        <div className="splash-status-pill">
-          <span className="splash-status-dot" />
-          <span>UPGRADE IN PROGRESS</span>
-        </div>
-
-        {/* App Logo Squircle (§2) */}
+        {/* App Logo Squircle */}
         <div className="splash-logo-wrap">
           <img
             src="/logo.png"
@@ -66,31 +60,37 @@ export function UpgradeSplashPage({
           />
         </div>
 
-        {/* Slogan Pill */}
-        <div className="splash-pill-slogan">
-          <svg className="splash-slogan-icon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-          </svg>
-          <span>TRADE TO WIN</span>
+        {/* Slogan in Serif-Italic */}
+        <div className="splash-slogan-serif">
+          Trade to Win
         </div>
 
-        {/* Display Headline (§3 & §9 - Visual Hero) */}
+        {/* Accent Loading Progress Plaque */}
+        <div className="splash-progress-card">
+          <div className="splash-progress-info">
+            <div className="splash-progress-label">
+              <span className="splash-status-dot" />
+              <span>UPGRADE IN PROGRESS</span>
+            </div>
+            <span className="splash-progress-tag">LIVE DEPLOYMENT</span>
+          </div>
+          <div className="splash-progress-track">
+            <div className="splash-progress-fill" />
+            <div className="splash-progress-glow" />
+          </div>
+        </div>
+
+        {/* Display Headline */}
         <h1 className="splash-title">
           WE ARE COOKING<br />AN UPGRADE
         </h1>
 
-        {/* Signature Serif-Italic Tagline (§3) */}
+        {/* Signature Serif-Italic Tagline */}
         <div className="splash-tagline">
           Stay <span className="highlight-accent">Happy</span> while you wait...
         </div>
 
-        {/* Clean English Description */}
-        <p className="splash-description">
-          We are preparing a major protocol upgrade featuring an all-new daily jackpot engine, 
-          automated trading rewards, and streamlined on-chain lotteries. Stay tuned!
-        </p>
-
-        {/* Action Links Grid (§9 - Primary & Secondary Hierarchy) */}
+        {/* Action Links Grid (Primary & Secondary Hierarchy) */}
         <div className="splash-actions-row">
           {/* Primary Action Button (Follow on X) */}
           <a
